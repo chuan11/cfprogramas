@@ -1,0 +1,15 @@
+History of the TICMP
+
+1997-04-20  0.1  first published version, only for ICMP.DLL, TPing and
+                 TTraceRoute
+
+1997-07-02  0.2  added support for winsock ICMP calls (TPing only yet)
+                 removed the NumberOfPackets property for TPing - must be
+                 done with multiple call of action (to make the winsock calls
+                 more consistently and asynchronous)
+
+1997-09-10  0.3  problem with D3 and packages fixed, could cause runtime
+                 errors or access violations
+                 Windows couldn't reboot while one of these component is
+                 running - fixed
+                 added new demo application ip_trace (need TStringAlignGrid)

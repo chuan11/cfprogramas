@@ -1,0 +1,119 @@
+AfalinaSoft Flat Controls order notes
+-------------------------------------------------------------------------------
+
+This document contains:
+    - Registered user benefits
+    - Common remarks
+    - Order online
+    - Order offline
+
+
+REGISTERED USER BENEFITS
+-------------------------------------------------------------------------------
+    - Flat Controls complete source code
+    - Free updates till release of Flat Controls 2.0
+    - Discount on Flat Controls 2.0
+    - Online Help files
+    - E-mail support
+
+
+COMMON REMARKS
+-------------------------------------------------------------------------------
+Afalina Co., Ltd. uses ShareIt! registration service, which is a well-known 
+company for online money transfer, to process your order. ShareIt has several 
+payment options: 
+    - Visa, MasterCard/EuroCard, American Express, Diners Club;
+    - Banktransfer/Wire;
+    - Check;
+    - Cash;
+    - Eurocheques (only in Europe). 
+You can also make your order by fax or mail through ShareIt. 
+
+Once you complete your registration, you will receive an email within 48 hours, 
+which will provide you with the download link to Fully Functional Version. This 
+link will be valid for two weeks. 
+
+IMPORTANT: ShareIt! only processes registration and does not supply technical 
+support. For technical support please contact: flatcontrols-support@afalinasoft.com. 
+
+
+ORDER ONLINE
+-------------------------------------------------------------------------------
+This is the fastest and easiest way to order our products. Your order will be 
+processed in real-time and the registration email will be sent to you right 
+away. There is almost no risk involved! The secure HTTP protocol that ShareIt! 
+uses to encrypt all their data holds the VeriSign seal, and that means that it 
+is practically impossible to crack. 
+
+After you have completed the online order form and your payment has been 
+authorized in about a minute, you will receive an email within 48 hours, 
+which will provide you with the download link to Fully Functional Version. 
+This link will be valid for two weeks. 
+
+IMPORTANT: Please note that we DO NOT accept online orders from free or 
+anonymous e-mail addresses like yahoo.com, usa.net, hotmail.com etc. 
+If that's the only address that you have, please let us know and we'll find 
+a solution to this problem. Alternatively you can pay by check or wire 
+transfer. We are sorry for the inconvenience. 
+Thank you for your understanding. 
+
+Current price is available at http://www.afalinasoft.com/order.html
+ 
+If you have any questions about ordering procedure, please contact us via 
+email: sales@afalinasoft.com. 
+
+
+ORDER OFFLINE
+-------------------------------------------------------------------------------
+Once you complete your registration, you will receive an email within 48 hours, 
+which will provide you with the download link to Fully Functional Version. This 
+link will be valid for two weeks. 
+
+Current price is available at http://www.afalinasoft.com/order.html
+Please print out the order form now (see form.txt file), and fax or mail it to:
+
+    -  US and Canada	 
+        ShareIt! Inc.
+        PO Box 844
+        Greensburg, PA 15601-0844
+        U.S.A
+        Tel. +1 (724) 850-8186
+        Fax.+1 (724) 850-8187
+        E-Mail: register@shareit.com
+
+    -  Other countries
+        ShareIt!
+        element 5 AG
+        Vogelsanger Str.78
+        50823 Koeln
+        Germany
+        Tel: +49 - 221 - 31088-20
+        Fax: +49 - 221 - 31088-29
+        E-Mail: register@shareit.com
+ 
+If you prefer to pay by cash or check, please send payment to: 
+
+    -  US customers
+        ShareIt! Inc.
+        PO Box 844
+        Greensburg, PA 15601-0844
+        U.S.A
+        Please make U.S. checks payable to ShareIt! Inc.
+
+    -  European customers
+        ShareIt!
+        element 5 AG
+        Vogelsanger Str.78
+        50823 Koeln
+        Germany
+        Please make checks payable to element 5 AG 
+
+If you have any questions about ordering procedure, please contact us 
+via email: sales@afalinasoft.com. 
+
+IMPORTANT: ShareIt! only processes registration and does not supply technical 
+support. For technical support please contact: flatcontrols-support@afalinasoft.com. 
+
+-------------------------------------------------------------------------------
+Copyright (c) 1999, 2002 Afalina Co., Ltd. 
+All rights reserved.

@@ -1,0 +1,17 @@
+@                                                                              15/07/2005  08:50:32  pag 1
+Tabela Geral de Precos                                                                 WALTER/CASAFREITAS
+Codigo da Loja: LE CF General Bezerril   Tipo Preco: ATACADO   Ordernar Por: : CODIGO                    
+
+Codigo   Descrição                                                                             Preco Novo
+-------- ------------------------------------------------------------------------------------- ----------
+0010003  BOLICHAO 264                            ROSITA                                             28,10
+0010004  REGADOR  G 401                          ROSITA                                              6,48
+0010005  REGADOR "P" 402                         ROSITA                                              5,28
+0010006  PEIXAO DE PRAIA 404                     ROSITA                                             13,85
+0010007  SUPER TRUCK DE PRAIA 415                ROSITA                                             25,02
+0010012  JOGO PRAIA TURMA DA MONICA 418      ROSITA                                                 12,30
+0010014  KIT BELEZA 015                          ROSITA                                              5,40
+0010016  SACOLA PRAIA TURMA DA MONICA 419        ROSITA                                             18,36
+0010018  OFICINA MECANICA 102                    ROSITA                                             43,08
+0010019  CONJ PRAIA DINOSSAURO 429               ROSITA                                              0,00
+0010020  SACOLA PRAIA ZORRO 463                  ROSITA                                             23,88

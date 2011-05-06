@@ -1,0 +1,681 @@
+unit Unit3;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, Grids, DBGrids, ComCtrls, ADODB, DB, Menus,
+  SoftDBGrid, adLabelNumericEdit, adLabelDBNumericEdit, DBCtrls,
+  adLabelDBLookupComboBox, Mask, adLabelDBEdit, adLabelEdit, ExtCtrls,
+  TFlatButtonUnit,  adLabelDBComboBox, bde, adLabelComboBox,
+  funcoes, RpCon, RpConDS, RpRave, RpDefine, RpBase, RpSystem,funcSQl,
+  fCtrls, verificaSenhas, adLabelSpinEdit ;
+
+type
+  TForm3 = class(TForm)
+    MainMenu3: TMainMenu;
+    Abrirumalista1: TMenuItem;
+    Imprimirumalista1: TMenuItem;
+    Panel1: TPanel;
+    edNmNoiva: TadLabelEdit;
+    edNmNoivo: TadLabelEdit;
+    Panel2: TPanel;
+    DBEdit1: TadLabelDBEdit;
+    DBEdit2: TadLabelDBEdit;
+    DBEdit3: TadLabelDBEdit;
+    Bevel1: TBevel;
+    Panel3: TPanel;
+    lbNumLista: TLabel;
+    DsProdutos: TDataSource;
+    dbeditnum: TadLabelDBEdit;
+    btIncluir: TFlatButton;
+    btAltera: TFlatButton;
+    btComprador: TFlatButton;
+    btExclui: TFlatButton;
+    BitBtn1: TFlatButton;
+    btCancela: TFlatButton;
+    PdQuery: TADOQuery;
+    DBLCBox: TadLabelDBLookupComboBox;
+    DataSource1: TDataSource;
+    ADOTable1: TADOTable;
+    DBGrid1: TSoftDBGrid;
+    DBEdit7: TadLabelDBEdit;
+    PdQueryNumLista: TIntegerField;
+    PdQueryCodigo: TStringField;
+    PdQueryconvidado: TStringField;
+    PdQueryNomeProduto: TStringField;
+    PdQueryRef: TBCDField;
+    PdQueryTipo: TStringField;
+    PdQueryljBaixa: TWideStringField;
+    PdQueryvalor: TBCDField;
+    PdQuerydtcompra: TDateTimeField;
+    PdQueryObsItem: TStringField;
+    Label2: TLabel;
+    QueryEntrega: TADOQuery;
+    PopupMenu1: TPopupMenu;
+    GerarGuiadeentrega1: TMenuItem;
+    lbComprados: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    lbTotalComprado: TLabel;
+    Label9: TLabel;
+    lbdtEvento: TLabel;
+    RvSystem1: TRvSystem;
+    RvPGuiaEntrega: TRvProject;
+    DSCGuiaEntrega: TRvDataSetConnection;
+    edCodProd: TadLabelEdit;
+    Devolveramercadoria1: TMenuItem;
+    Baixaavulsa1: TMenuItem;
+    lbNumCli: TLabel;
+    btVoltar: TfsBitBtn;
+    PdQueryispromocao: TBooleanField;
+    edDesc: TadLabelSpinEdit;
+    PdQueryDesconto: TIntegerField;
+    edPcProduto: TadLabelNumericEdit;
+    FlatButton1: TFlatButton;
+    Label1: TLabel;
+    lbTotaisLista: TLabel;
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ToolButton1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure Abrirumalista1Click(Sender: TObject);
+    procedure edNmNoivaEnter(Sender: TObject);
+    procedure Carregalista(num:String);
+    procedure BitBtn1Click(Sender: TObject);
+    procedure btIncluirClick(Sender: TObject);
+    procedure btCompradorClick(Sender: TObject);
+    procedure btCancelaClick(Sender: TObject);
+    procedure btExcluiClick(Sender: TObject);
+    function  ErroAoIncluirLista(Sender:Tobject):string;
+    procedure Imprimirumalista1Click(Sender: TObject);
+    procedure btAlteraClick(Sender: TObject);
+    procedure PdQueryBeforeClose(DataSet: TDataSet);
+    procedure DBEdit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure GerarGuiadeentrega1Click(Sender: TObject);
+    procedure CarregarResumoLista(numLista:string);
+    procedure DBEdit1Change(Sender: TObject);
+    procedure GetDadosProduto(Sender: Tobject);
+    procedure DBGrid1TitleClick(Column: TColumn);
+    procedure Devolveramercadoria1Click(Sender: TObject);
+    function ehProdutoDevolvido():Boolean;
+    procedure PopupMenu1Popup(Sender: TObject);
+    procedure ConexaoWellWillExecute(Connection: TADOConnection; var CommandText: WideString; var CursorType: TCursorType;   var LockType: TADOLockType; var CommandType: TCommandType;      var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;      const Command: _Command; const Recordset: _Recordset);
+    procedure ConexaoWellExecuteComplete(Connection: TADOConnection;  RecordsAffected: Integer; const Error: Error; var EventStatus: TEventStatus; const Command: _Command;      const Recordset: _Recordset);
+    procedure Baixaavulsa1Click(Sender: TObject);
+    procedure preparaParaBaixaAvulsa(Sender:Tobject);
+    procedure fecharLista();
+    procedure incluirProduto(Sender:Tobject);
+    procedure incluirProdutoAvulso(Sender:Tobject);
+    function obterDadosDoProduto(Sender:Tobject; codigo : String):TdataSet;
+    procedure geraGuiaListaNormal(SenDer:Tobject);
+    procedure chamadevolucaoDeProduto(Sender:Tobject);
+    procedure btVoltarClick(Sender: TObject);
+    procedure chamaCarregamentoDeLista(num:String);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form3: TForm3;
+  mostraCampoDesc, EhCompra:boolean;
+
+implementation
+uses Unit1, Unit4, Unit5, uBaixaAvulsa;
+
+{}
+{$R *.dfm}
+
+function TForm3.obterDadosDoProduto(Sender:Tobject; codigo : String):TdataSet;
+var
+   ds:TDataSet;
+   cmd:String;
+begin //
+   cmd :=  ' Exec Z_CF_getInformacoesProduto ' + QuotedStr(codigo) + ' , ' + rParReg('listas','uoPreco') + ' , ' + rParReg('listas','CodPreco');
+   ds := funcsql.getDataSetQ(cmd,  form1.ConexaoWell);
+   if ds.IsEmpty = false then
+   begin
+      result := ds;
+   end
+   else
+   begin
+      MsgTela('', 'Produto não cadastrado ', MB_OK + MB_ICONERROR);
+      result := nil;
+   end;
+end;
+
+
+procedure TForm3.GetDadosProduto(Sender: Tobject);
+var
+  qr:TadoQuery;
+  cmd:string;
+begin
+   qr := TADoQuery.Create(pdQuery);
+   qr.Connection:= form1.ConexaoWell;
+   cmd := 'Exec Z_CF_getInformacoesProduto ' + QuotedStr(edCodProd.text) + ' , ' +
+          rParReg('listas','uoPreco') + ' , ' + rParReg('listas','CodPreco');
+   qr.SQL.Add( cmd );
+   form1.salvacomandosprograma(cmd);
+   qr.open;
+   if qr.IsEmpty = false then
+   begin
+      dbEdit1.Text := qr.fieldByName('CODIGO').AsString;
+      dbEdit2.Text := qr.fieldByName('DESCRICAO').AsString;
+      edPcProduto.text := qr.fieldByName('PRECO').AsString;
+
+      if qr.fieldByName('PRECO').AsFloat = 0 then
+         MsgTela('', 'Este produto não tem preço.' , MB_ICONERROR  + MB_OK );
+   end
+   else
+      MsgTela('', 'Não cadastrado...' , MB_ICONERROR  + MB_OK );
+end;
+
+function TForm3.ErroAoIncluirLista(Sender:Tobject): string;
+var
+  str:string;
+begin
+  if length(dbedit2.text) < 4 then
+     str := str + '   - Falta a descrição.  '+ #13;
+
+  if dblcbox.Text  = '' then
+     str := str + '   - Escolha o tipo do item.  '+ #13;
+
+  if (EhCompra = true) and ( form1.rParReg('IpServerWell') <> '')   then
+  begin
+     if (dbedit3.text = '') then
+        str := str + '   - Falta o nome do comprador.  '+ #13;
+
+     if GetValorWell( 'O', ' exec Z_CF_getInformacoesProduto ' + quotedstr(edCodProd.text) + ' , ' + rParReg('listas','uoPreco') + ' , ' + rParReg('listas','CodPreco'), 'descricao', form1.ConexaoWell)  = '' then
+        str := str + '   - É obrigatório informar o código da loja para o produto.  '+ #13;
+
+     if  ( edPcProduto.Value < 1 )  then
+         str := str + '   - Informe o valor do produto'+ #13;
+
+  end;
+  if str <> '' then
+     ErroAoIncluirLista := ' Alguns campos estão errados ou incompletos, verifique:    '+#13 + str;
+end;
+
+procedure TForm3.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+   action := Cafree;
+   Form1.mostraMenu(sender);
+end;
+
+procedure TForm3.ToolButton1Click(Sender: TObject);
+begin
+showmessage('');
+end;
+
+procedure TForm3.FormCreate(Sender: TObject);
+begin
+   form3.Menu := mainmenu3;
+   form3.Caption := ' Produtos das listas ';
+   mostraCampoDesc := false;   
+end;
+
+
+procedure TForm3.Abrirumalista1Click(Sender: TObject);
+begin
+   fecharLista();
+   form1.AbreFormPesquisa(sender,1); {1 é abrir lista}
+end;
+
+procedure TForm3.edNmNoivaEnter(Sender: TObject);
+begin
+   btVoltar.SetFocus
+end;
+
+procedure TForm3.Carregalista(num: string);
+var
+   cmd:String;
+   ds:TdataSet;
+begin
+   ds:= funcsql.getDataSetQ('Select noiva, noivo, loja , dataCasamento, codWell, dataCasamento from listas where numLista = ' + num , Form1.ADOConnection1);
+
+   if form3.tag = 0 then
+       cmd :=(' Exec ListaProdDeUmaLista_02 ' + quotedstr(num) )
+   else
+       cmd :=(' select top 50 * from produtos (nolock) where numlista = ' + quotedstr(num) + ' and ljBaixa = ' + form1.RParReg('loja') + ' order by ref desc ' );
+
+
+   funcsql.doQuery(form1.ADOConnection1, pdquery, cmd );
+   dsprodutos.DataSet := PdQuery;
+
+   form1.sb.Panels[0].text := inttoStr(pdquery.RecordCount) + ' Item(s).';
+   edNmNoiva.text := ds.FieldByname('noiva').AsString;
+   edNmNoivo.text := ds.FieldByname('noivo').AsString;
+   label2.caption := ds.FieldByname('loja').AsString;
+   lbNumCli.Caption := ds.FieldByname('codWell').AsString;
+
+   dbeditnum.DataField := 'NumLista';
+   dbedit1.DataField := 'codigo';
+   dbedit2.DataField := 'nomeProduto';
+   dbedit3.DataField := 'convidado';
+
+   dbedit7.DataField := 'obsItem';
+
+   DBLCBox.DataField := 'tipo';
+   adotable1.Active := true;
+   panel1.visible:= true;
+   lbNumLista.caption := num;
+   panel3.visible:= true;
+
+   form1.LerColunasDbgrid('form3',dbgrid1);
+
+  if form1.EhlistaDaloja(label2.caption,false) = false then
+  begin
+     btIncluir.Enabled := false;
+     btExclui.Enabled := false;
+     btAltera.Enabled := false;
+  end
+  else
+  begin
+     btIncluir.Enabled := true;
+     btExclui.Enabled := true;
+     btAltera.Enabled := true;
+  end;
+
+  CarregarResumoLista(num);
+
+   lbdtEvento.Visible := false;
+   if ds.FieldByName('dataCasamento').AsString <> '' then
+   begin
+      lbdtevento.Caption := ds.FieldValues['dataCasamento'];
+      if ds.FieldValues['dataCasamento'] < now then
+         lbdtevento.Font.Color := clREd
+      else
+         lbdtevento.Font.Color := clBlack;
+      lbdtEvento.Visible := true;
+   end;
+
+   DBGrid1.Columns[3].Visible := ( form1.GetParamBD('CampoDesconto', form1.RParReg('Loja') ) = '1' );
+
+   dbgrid1.Visible := true;
+
+   ds.Destroy();
+end;
+
+procedure TForm3.BitBtn1Click(Sender: TObject);
+begin
+   if ErroAoIncluirLista(Sender) = '' then
+   begin
+      if EhCompra = true then
+      begin
+         if (edDesc.Value <> 0 ) then
+            PdQuery.FieldByName('isPromocao').AsString := '1'
+         else
+            PdQuery.FieldByName('isPromocao').AsString := '0';
+
+         PdQuery.FieldByName('ljBaixa').AsString := form1.RParReg('loja');
+         PdQuery.FieldByName('dtCompra').AsString := DateToStr(now);
+         PdQuery.FieldByName('desconto').AsString := edDesc.Text;
+         PdQuery.FieldByName('valor').AsFloat := edPcProduto.Value;
+//edPcProduto
+
+      end;
+      pdQuery.Post;
+      carregarResumoLista(lbNumLista.Caption);
+      btCancelaClick(Sender);
+   end
+   else
+      form1.MsgTela(ErroAoIncluirLista(Sender),mb_iconerror+mb_ok);
+end;
+
+procedure TForm3.btCompradorClick(Sender: TObject);
+var
+  isJaBaixado:boolean;
+begin
+   isJaBaixado := true;
+   if length(dbedit3.text) > 3 then
+      if form1.MsgTela(' Já existe comprador para esse produto. '+ #13 + '    Deseja alterar o item ou incluir outro comprador?  ', mb_iconquestion+mb_yesno) = mrNo then
+         isJaBaixado := false;
+
+   if isJaBaixado = true then
+   begin
+
+      EhCompra := true;
+      PdQuery.Edit;
+      panel2.visible := true;
+      panel3.visible := false;
+      bitbtn1.Visible := true;
+      btCancela.Visible := true;
+      dbedit3.Enabled:= true;
+
+      edCodProd.SetFocus;
+      dbgrid1.enabled:= false;
+      dbedit1.Text := '';
+      dbedit2.Enabled:= false;
+      edPcProduto.Enabled:= true;
+
+      dblcbox.Enabled := false;
+
+      edDesc.Visible := ( form1.GetParamBD('CampoDesconto', form1.RParReg('Loja') ) = '1' );
+   end;
+end;
+
+procedure TForm3.btCancelaClick(Sender: TObject);
+begin
+   EhCompra:= false;
+   pdquery.Cancel;
+   panel2.visible := false;
+   panel3.visible := true;
+   bitbtn1.Visible := false;
+   btCancela.Visible := false;
+
+   dbgrid1.enabled:=true;
+   dbedit1.Enabled:= true;
+   dbedit2.Enabled:= true;
+   edPcProduto.Enabled:= true;
+   dblcbox.Enabled := true;
+
+   dbedit3.Enabled := false;
+   edDesc.Text := '0';
+
+   if form1.ConexaoWell.Connected = true then
+      form1.ConexaoWell.Close;
+end;
+
+procedure TForm3.btExcluiClick(Sender: TObject);
+var
+   isAutorizado:boolean;
+begin
+   if (PdQuery.IsEmpty = true) then
+      isAutorizado := false
+   else
+      isAutorizado := ( VerificaSenhas.TelaAutorizacao2(form1.ConexaoWell, form1.GetParamBD('gruposAutorizadores', '99') , '') <> '');
+
+   if (isAutorizado = true) then
+      if length(dbedit3.text) > 3 then
+      begin
+          if form1.MsgTela(' Já existe comprador para esse produto. '+ #13 + ' Produtos comprados não podem ser excluídos sem autorização do gerente.'+#13+'Deseja excluir mesmo?', mb_iconquestion+mb_yesno) = mrYes then
+             pdquery.Delete;
+       end
+       else
+          pdquery.Delete;
+end;
+
+procedure TForm3.Imprimirumalista1Click(Sender: TObject);
+begin
+   fecharLista();
+   form1.AbreFormPesquisa(sender,2); //2 é imprime lista
+end;
+
+procedure TForm3.btAlteraClick(Sender: TObject);
+var
+  PodeEditar:boolean;
+begin
+   PodeEditar := true;
+   if (length(dbedit3.Text) > 3) and (form1.MsgTela(inttoStr(length(dbedit3.Text))+ ' Ja existe comprador para esse produto. '+ #13 + '    Deseja alterar o item ?  ', mb_iconquestion+mb_yesno) = mrNo )then
+         PodeEditar := false;
+   if PodeEditar = true then
+   begin
+      PdQuery.Edit;
+      panel2.visible := true;
+      panel3.visible := false;
+      bitbtn1.Visible := true;
+      btCancela.Visible := true;
+      dbedit2.SetFocus;
+      dbgrid1.enabled:= false;
+      dbedit3.Enabled := false;
+      carregaCampoDesconto();
+   end;
+end;
+
+procedure TForm3.PdQueryBeforeClose(DataSet: TDataSet);
+begin
+   dbgrid1.Visible := false;
+end;
+
+procedure TForm3.DBEdit1KeyDown(Sender: TObject; var Key: Word;  Shift: TShiftState);
+var
+  pode:boolean;
+  nomeProduto:string;
+begin
+   nomeproduto := '';
+   if key = VK_Return then
+   begin
+      Pode := true;
+      if form1.RParReg('IpServerWell') = '' then
+         Pode := false
+      else
+      begin
+         if (dbedit2.text <> '') and ( EhCompra = true ) and  ( form1.RParReg('IpServerWell') = '' )  then
+            if form1.MsgTela('Você já informou o produto. '+#13+' Deseja mudar a descrição para a descricao do Well???',mb_yesNo + mb_iconQuestion) = MrNo then
+               Pode := false;
+         if Pode = true then
+            GetDadosProduto(nil);
+      end;
+   end;
+end;
+
+
+procedure TForm3.CarregarResumoLista(numLista:string);
+var
+  itensPromo, itensComprados: integer;
+  totalPromo, totalComprado:real;
+begin
+   itensComprados := 0;
+   totalComprado := 0;
+
+
+   itensPromo := 0 ;
+   totalPromo := 0 ;
+
+
+   pdQuery.First;
+   while not(pdQuery.Eof) do
+   begin
+      if( pdQuery.fieldByName('valor').asFloat <> 0) and  ( pdQuery.fieldByName('ljbaixa').asString <> '') then
+      begin
+         if (pdQuery.fieldByName('isPromocao').AsInteger = 0) then
+         begin
+            inc(itensComprados);
+            totalComprado := totalComprado + pdQuery.fieldByName('valor').asfloat;
+         end
+         else
+         begin
+            inc(itensPromo);
+            totalPromo := totalPromo + pdQuery.fieldByName('valor').asfloat;
+         end;
+      end;
+        pdQuery.Next;
+   end;
+
+   lbComprados.Caption := funcoes.preencheCampo(03,'0','e', inttostr(itensComprados));
+//   lbCompPromo.Caption := funcoes.preencheCampo(03,'0','e', inttostr(itensPromo));
+
+   lbTotalComprado.Caption := floattostrf( totalComprado ,ffNumber,18,2);
+
+   lbTotaisLista.Caption :=
+   funcoes.preencheCampo(03,'0','e', inttostr(itensComprados + itensPromo)) + ' - '+
+   floattostrf( totalComprado + totalPromo ,ffNumber,18,2);
+
+   // atualizar o cadastro da lista
+   form1.atualizaDadosItensLista(intToStr( pdQuery.RecordCount),  intToStr(itensComprados ),  funcoes.ValorSql( floattostr(totalComprado) ) , numlista );
+   pdQuery.First;
+end;
+
+
+procedure TForm3.DBEdit1Change(Sender: TObject);
+begin
+   edcodprod.Text := dbedit1.Text;
+end;
+
+
+procedure TForm3.DBGrid1TitleClick(Column: TColumn);
+begin
+   funcsql.OrganizarQuery( pdQuery, column  );
+end;
+
+function TForm3.ehProdutoDevolvido: Boolean;
+begin
+  if funcsql.openSQL('Select ref from devolucoes where ref = '+ PdQuery.fieldByName('ref').asString , 'ref', Form1.ADOConnection1 ) = '' then
+     result := false
+  else
+     result := true;
+end;
+
+
+procedure TForm3.PopupMenu1Popup(Sender: TObject);
+var
+   i:integer;
+   active:boolean;
+begin
+   if PdQuery.FieldByName('ljBaixa').asString <> '' then
+       active :=true;
+    for i:=0 to PopupMenu1.Items.Count-1 do
+       PopupMenu1.Items[i].Enabled := active
+end;
+
+procedure TForm3.ConexaoWellWillExecute(Connection: TADOConnection;  var CommandText: WideString; var CursorType: TCursorType;  var LockType: TADOLockType; var CommandType: TCommandType;  var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;  const Command: _Command; const Recordset: _Recordset);
+begin
+   screen.cursor := crHourGlass;
+   form1.salvacomandosprograma(CommandText);
+end;
+
+procedure TForm3.ConexaoWellExecuteComplete(Connection: TADOConnection; RecordsAffected: Integer; const Error: Error;  var EventStatus: TEventStatus; const Command: _Command;  const Recordset: _Recordset);
+begin
+   screen.cursor := crDefault;
+end;
+procedure TForm3.fecharLista();
+begin
+   edNmNoiva.Text:='';
+   edNmNoivo.Text:='';
+   panel1.Visible  := false;
+   panel2.Visible := false;
+   panel3.Visible := false;
+   PdQuery.Close();
+   adotable1.Close();
+   DBGrid1.Visible := false;
+end;
+
+procedure TForm3.preparaParaBaixaAvulsa(Sender: Tobject);
+var
+  nListaAvulsa:String;
+begin
+   fecharLista();
+   nListaAvulsa := openSQL( 'Select valor from configuracoes where loja = '''' and param = ''NumeroDaListaAvulsa'' ', 'valor', form1.ADOConnection1);
+   form3.tag := 1;
+   Carregalista(nListaAvulsa);
+   btIncluir.Enabled := true;
+   btAltera.Enabled := false;
+   btComprador.Enabled := false;
+   form3.tag := 1;
+end;
+
+procedure TForm3.incluirProdutoAvulso(Sender:Tobject);
+begin
+   Application.CreateForm(TfmBaixaAvulsa, fmBaixaAvulsa);
+   fmBaixaAvulsa.show;
+end;
+
+procedure TForm3.incluirProduto(Sender:Tobject);
+begin
+   pdquery.Append;
+   pdquery.Fields[0].AsString := lbNumLista.Caption;
+   dbedit3.text := ' ';
+   panel2.visible := true;
+   panel3.visible := false;
+   bitbtn1.Visible := true;
+   btCancela.Visible := true;
+   edCodProd.SetFocus;
+   dbedit1.Text:= '';
+   dbgrid1.enabled:= false;
+end;
+
+
+procedure TForm3.btIncluirClick(Sender: TObject);
+begin
+   case form3.Tag of
+     0:incluirProduto(nil);
+     1:incluirProdutoAvulso(nil);
+   end;
+end;
+procedure TForm3.Baixaavulsa1Click(Sender: TObject);
+begin
+   preparaParaBaixaAvulsa(nil);
+end;
+
+
+procedure TForm3.geraGuiaListaNormal(SenDer: Tobject);
+var
+  params:TStringList;
+begin
+   params := TStringList.Create();
+   Params.add( form1.RParReg('ArqLogo')  );
+   Params.add( form1.GetParamBD('horarioTrocas',  form1.RParReg('loja'))   );
+   Params.add( form1.GetParamBD('horarioTrocas',  form1.RParReg('loja'))   );
+   Params.add( form1.RParReg('titRel') );
+   QueryEntrega.SQL.Clear;
+   QueryEntrega.SQL.add( 'Exec stoComandaEntregaDeProduto '+ pdQuery.fieldByName('ref').AsString + ' , '+  intTostr(form3.Tag) );
+   QueryEntrega.open;
+   form1.impressaoRave(QueryEntrega, 'ComandaDeEntrega', params);
+end;
+
+procedure TForm3.GerarGuiadeentrega1Click(Sender: TObject);
+begin
+   geraGuiaListaNormal(nil);
+end;
+
+
+procedure TForm3.chamadevolucaoDeProduto(Sender: Tobject);
+var
+  erro:String;
+begin
+   erro:='';
+   if ehProdutoDevolvido() = true then
+      erro := erro  + ' - Esse produto já foi devolvido.' + #13;
+
+   if lbNumCli.Caption = '' then
+      erro := erro  + ' - Falta o codigo do cliente no well. ' + #13;
+   if erro = '' then
+   begin
+      funcSql.devolucaoDeProduto( pdQuery.fieldByName('codigo').AsString ,
+                                  form1.RParReg('uoPreco'),
+                                  '10002935', // cd_usu da dsusu
+                                  lbNumCli.Caption,
+                                  form1.RParReg('CodEmpWell'),
+                                  lbNumLista.Caption,
+                                  '10000168', // codigo da sq_opf de devolucao
+                                  form1.RParReg('CodPreco'),
+                                  'GE',
+                                  pdQuery.fieldByName('valor').asFloat,
+                                  form1.ConexaoWell);
+   end
+   else
+   begin
+      erro := 'Erros encontrados: ' +#13+  erro;
+      funcoes.MsgTela('',erro,MB_ICONERROR + MB_OK);
+   end;
+end;
+
+procedure TForm3.btVoltarClick(Sender: TObject);
+begin
+   form1.SalvaColDbgrid('form3',dbgrid1);
+   QueryEntrega.SQL.Clear;
+   form3.close;
+end;
+
+procedure TForm3.Devolveramercadoria1Click(Sender: TObject);
+begin
+   case form3.tag of
+      1:msgTela('','Lista avulsa não faz devolução de itens.', mb_ok + MB_ICONERROR);
+      0:msgTela('','Para devolver o produto, use a tela de devolução do Well.', mb_ok + MB_ICONERROR);//chamadevolucaoDeProduto(nil);
+   end;
+end;
+
+procedure TForm3.chamaCarregamentoDeLista(num: String);
+begin
+   if funcSql.openSQL('Select gerouCredito from listas where numLista = ' + num, 'gerouCredito' , form1.ADOConnection1  )  <> '' then
+      MsgTela('','Essa lista já gerou crédito e não pode ser editada', MB_OK +  MB_ICONERROR)
+   else
+      carregalista( num);
+end;
+
+
+end.
+
+

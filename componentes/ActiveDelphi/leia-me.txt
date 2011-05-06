@@ -1,0 +1,285 @@
+ActiveDelphi Components
+
+Índice:
+
+1.  Introdução
+2.  Nome dos pacotes
+3.  Instalação
+4.  Contribuição
+5.  Histórico das versões
+    Liberação atual: 1.4
+
+=================================================================
+
+1. Introdução:
+
+Há muito tempo atrás alguns desenvolvedores passaram a me 
+solicitar alguns componentes específicos que os ajudassem, 
+conforme as suas necessidades, a agilizar o processo de 
+desenvolvimento de novas telas para os seus sistemas.
+Com o passar do tempo, surgiu à idéia de publicar tais 
+componentes à comunidade Borland.
+Eu achei a idéia fascinante!
+Então passei a estudar uma forma simples e objetiva, de todos 
+participarem desta empreitada...
+Assim surgiu a primeira versão da suíte de componentes 
+ActiveDelphi, com aproximadamente 21 componentes para facilitar 
+o nosso dia-a-dia.
+
+Você poderá redistribuí-la e/ou modificá-la sob os termos e 
+condições da licença pública GNU GPL 
+(http://lie-br.conectiva.com.br/licenca_gnu.html) versão 2.1 ou
+posterior (seja qual for a sua escolha), publicada pela Funcação 
+de Software Livre.
+
+Nota:
+-----
+Esta biblioteca é totalmente gratuíta e com todos os códigos 
+fontes incluso.
+Há a esperança de que ela seja útil, mas SEM QUALQUER GARANTIA; 
+sem até a garantia de MERCADO ou PROPÓSITO PARTICULAR. 
+Para maiores detalhes, veja a licença GNU.
+
+Para finalizar, fica aqui o meu convite a você!
+Colabore com novos componentes, idéias e sugestões...
+Assim, iremos enriquecer ainda mais o conteúdo deste pacote.
+
+=================================================================
+
+2. Nome dos pacotes:
+
+A nomenclatura dos pacotes possui a seguinte estrutura:
+
+  ActiveDelphi_NVKK.*
+               |||
+               ||+-> Tipo do pacote (DT=Designtime, RT=Runtime)
+               |+--> Identifica a versão da distribuição Borland 
+               |     (7=Delphi 7, 3=Kylix 3, etc...)
+               +---> Identifica a distribuição Borland 
+                     (D=Delphi, K=Kylix, etc...)
+
+Por exemplo, o nome do pacote "Designtime" para a distribuição 
+Delphi 7 é ActiveDelphi_D7DT.* e para o "Runtime" é 
+ActiveDelphi_D7RT.*
+
+O pacote "Runtime" contém funcionalidades que não necessitam ser 
+instalados na IDE. 
+Já o "Designtime" possui a chamada para registrar o editor de 
+propriedades e os componentes usados na IDE.
+
+A nomenclatura para o grupo de pacotes possui a seguinte 
+estrutura:
+
+  ActiveDelphi_NV.bpg
+               ||
+               ||
+               |+--> Identifica a versão da distribuição Borland 
+               |     (7=Delphi 7, 3=Kylix 3, etc...)
+               +---> Identifica a distribuição Borland 
+                     (D=Delphi, K=Kylix, etc...)
+
+=================================================================
+
+3. Instalação:
+
+Para entender a estutura de diretórios da suite ActiveDelphi 
+components, veja as explicações abaixo:
+
+[LOCAL DE INSTALAÇÃO] 
+É justamente onde você instalou ou descompactou o arquivo que 
+representa a suite ActiveDelphi Components.
+
+[LOCAL DE INSTALAÇÃO]\activedelphi\examples
+Contém alguns exemplos de como utilizar os componentes que 
+compoem a suite.
+
+[LOCAL DE INSTALAÇÃO]\activedelphi\packages
+Estão localizados neste diretório os respectivos subdiretórios 
+que representam a distribuição que você possui em seu 
+microcomputador, onde:
+
+    delphi5 --> Ditribuição Borland Delphi 5
+    delphi6 --> Ditribuição Borland Delphi 6
+    delphi7 --> Ditribuição Borland Delphi 7
+    delphi8 --> Ditribuição Borland Delphi 8
+    delphi9 --> Ditribuição Borland Delphi 9 
+                (Comercialmente conhecido como 2005)
+    kylix1  --> Ditribuição Borland Kylix 1
+    kylix2  --> Ditribuição Borland Kylix 2
+    kylix3  --> Ditribuição Borland Kylix 3
+
+[LOCAL DE INSTALAÇÃO]\activedelphi\source
+Contém todos os códigos fontes dos componentes que compoem a 
+suite ActiveDelphi Components.
+
+Você poderá instalar os componentes através do grupo de pacotes, 
+que esta localizado dentro do subdiretório o qual representa a 
+sua distribuição Borland, exemplo:
+
+[LOCAL DE INSTALAÇÃO]\activedelphi\packages\delphi7\ActiveDelphi_D7.bpg
+Basta abrir este arquivo e clicar no item de menu Project->Build All Projects
+
+Ou você, também, poderá abrir individualmente os pacotes conforme as instruções
+abaixo:
+
+  1. Descompactar o arquivo ActiveDelphi.zip em algum diretório de sua 
+     preferência (Por exemplo: c:\activedelphi).
+
+  2. Inicie o seu Borland Delphi ou Kylix.
+
+  3. Adicione o subdiretório (Por exemplo: c:\activedelphi\source), contendo 
+     os fontes dos componentes, no caminho das bibliotecas da IDE 
+     (IDE library path)
+     OBS: No Delphi 7 você deve acessar o item de menu "Tools", em seguida
+     "Environment Options" e logo em seguida a pasta "Library".
+
+  4. Primeiro abra e compile o pacote "Runtime" que será utilizado, conforme 
+     a sua distribuição.
+     (Por exemplo: c:\activedelphi\packages\Delphi7\ActiveDelphi_D7RT.dpk)
+  
+  5. Abra e instale o pacote "Designtime" específico da sua distribuição
+     (Por exemplo: c:\activedelphi\packages\Delphi7\ActiveDelphi_D7DT.dpk)
+     OBS: A IDE irá lhe notificar os componentes instalados...
+
+IMPORTANTE:
+-----------
+
+SE VOCÊ ESTIVER UTILIZANDO UMA VERSÃO ANTERIOR AO BORLAND DELPHI 6, SERÁ
+NECESSÁRIO EDITAR O ARQUIVO activedelphi.inc LOCALIZADO NO DIRETÓRIO
+[LOCAL DE INSTALAÇÃO]\activedelphi\source
+NESTE ARQUIVO VOCÊ DEVERÁ SUBSTITUIR A DIRETIVA DE COMPILAÇÃO 
+{$DEFINE WITH_DBX} POR {.$DEFINE WITH_DBX}
+ISSO FARÁ COM QUE O SEU BORLAND DELPHI NÃO TENHA PROBLEMAS NA COMPILAÇÃO.
+
+=================================================================
+
+4. Contribuição:
+
+Para que você possa participar, do grupo de desenvolvimento da suite 
+ActiveDelphi Components, basta enviar seu(s) componente(s) com o(s) código(s) 
+fonte(s) e qualquer arquivo necessário para a sua instalação e utilização.
+Enviar o email e nome completo para contato; se possível, também, uma URL (site) 
+e uma logomarca (imagem .BMP) seguindo estas dimensões:
+* Largura mínima de 170 pixel´s e máxima de 330 pixel´s.
+* Altura mínima de 80 pixel´s e máxima de 150 pixel´s.
+
+NOTA: 
+-----
+Manter o máximo possível de documentação sobre qualquer alteração ou implementação 
+no código fonte.
+
+Um grande abraço,
+
+Dennys S. Sobrinho
+Membro do grupo editorial da revista ActiveDelphi
+Moderador da suite ActiveDelphi Components
+
+=================================================================
+
+5. Histórico das versões:
+
+5.1   Liberação (Release 1.0) - Dennys S. Sobrinho
+      08/04/2005 - Foi implementado a propriedade Version para informar a versão 
+                   atual do componente 
+                   e os créditos dos colaboradores.
+5.2   Liberação (Release 1.1) - Dennys S. Sobrinho
+      28/04/2005 - Foi criado o componente TadLabelDBLookupDialog, cujo objetivo
+                   é de apresentar uma caixa de dialogo para que seja escolhido
+                   um registro do DataSet associado.
+5.3   Liberação (Release 1.1) - Dennys S. Sobrinho
+      01/05/2005 - Foi necessário modificar os métodos, abaixo, da classe 
+                   TadComponentEditor para que fosse possível apresentar um
+                   "preview" durante o design do formulário, possibilitando
+                   assim visualizar ou ajustar o layout da tela de pesquisa:
+                   * GetVerbCount
+                   * GetVerb
+                   * ExecuteVerb
+5.4   Liberação (Release 1.1) - Dennys S. Sobrinho
+      06/05/2005 - Para auxiliar o componente TadLabelDBLookupDialog, foram 
+                   criadas as rotinas: GetCommandSelect, GetCommandWhere, 
+                   GetCommandGroupBy, GetCommandHaving, GetCommandOrderBy
+                   Sua finalidade é de dividir o comando SQL em partes 
+                   pré-definidas.
+
+5.5   Liberação (Release 1.1) - Dennys S. Sobrinho
+      12/05/2005 - Foi implementado a subclasse TadColors, à ser utilizada em
+                   todos os componentes "visuais" que possam receber foco.
+                   Tais componentes receberam algumas modificações, nos métodos
+                   citados abaixo, para que a cor seja alterada quando o objeto 
+                   entrar ou sair de foco.
+                   * CMVisiblechanged
+                   * CMEnabledchanged
+                   * CMMouseEnter
+                   * CMMouseLeave
+                   * DoEnter;
+                   * DoExit; 
+5.6   Liberação (Release 1.1) - Dennys S. Sobrinho
+      16/05/2005 - Foram adicionados algumas diretivas de compilação no arquivo 
+                   ActiveDelphi.inc para que o Desenvolvedor possa definir qual 
+                   o tipo de componente que acessará o banco de dados.
+                   {$DEFINE WITH_DBX}     // Borland Database Express
+                   {$DEFINE WITH_ZEOSLIB} // ZeosDBO www.zeoslib.net
+                   {$DEFINE WITH_IBX}     // Borland Interbase Express
+                   {$DEFINE WITH_BDE}     // Borland Database Engine
+                   {$DEFINE WITH_ADO}     // Microsoft Access Database Objects
+                 - Foram aplicadas as diretivas de compilação, citadas acima,
+                   na unit adLabelDBLookupDialogForm.pas, para que o código 
+                   possa se auto ajustar conforme a escolha do desenvolvedor.
+
+5.7   Liberação (Release 1.1) - Dennys S. Sobrinho
+      17/05/2005 - Foram ajustadas, corretamente, as diretivas de compilação no 
+                   arquivo ActiveDelphi.inc para corrigir alguns erros de 
+                   compilação em versões anteriores ao Delphi 7
+
+5.8   Liberação (Release 1.2) - Dennys S. Sobrinho
+      18/05/2005 - Foram adicionados a suite de componentes ActiveDelphi, mais 
+                   quatro novos componentes, sendo eles:
+                   * TadLabelNumericEdit
+                   * TadLabelDBNumericEdit
+                   * TadLabelSpinEdit
+                   * TadLabelDBSpinEdit
+
+5.9   Liberação (Release 1.3) - Dennys S. Sobrinho
+      25/05/2005 - Foi adicionado a suite de componentes ActiveDelphi, mais 
+                   um novo componente, sendo ele:
+                   * TadDBGridEX
+                   
+5.10  Liberação (Release 1.3) - Dennys S. Sobrinho
+      25/05/2005 - Foi feito uma implementação no arquivo ActiveDelphiReg.pas,
+                   para que fosse possível associar o DisplayLabel do TField,
+                   selecionado através do DataField, à propriedade Caption
+                   do LabelDefs.
+                   
+5.11  Liberação (Release 1.3) - Dennys S. Sobrinho
+      01/06/2005 - BUG corrigido no componente TadLabelDBLookupDialog.
+                   Estava ocorrendo um "Access Violation" na tela de localização
+                   de registros, quando o usuário informava um valor no campo
+                   "Informe (...) :". Tal problema, se dava pela falta do 
+                   DataSource na propriedade ListSource.
+
+5.12  Liberação (Release 1.3) - Dennys S. Sobrinho
+      01/06/2005 - BUG corrigido no componente TadLabelDBLookupDialog.
+                   Não estava funcionando corretamente com TClientDataSet
+                   associado ao ListSource.
+
+5.13  Liberação (Release 1.3) - Dennys S. Sobrinho
+      07/06/2005 - Implementações ocorridas no componente TadDBGridEX:
+                   * Eventos: OnMoveRecords e OnMouseWheel
+                   * Sub-Propriedades: HighlightColor, HighlightFontColor e RowHighlight
+                   
+5.14  Liberação (Release 1.3) - Dennys S. Sobrinho
+      12/06/2005 - Implementações ocorridas no componente TadDBGridEX:
+                   * Evento: HighlightCell
+                   * Sub-Propriedades: ChangeRowColOnMouseMove, ColumnColors, 
+                     LocateOptions e RowColors
+
+5.15  Liberação (Release 1.4) - Dennys S. Sobrinho
+      14/06/2005 - Foram adicionados a suite de componentes ActiveDelphi, mais 
+                   dois novos componentes na paleta AD - N-Tiers, sendo eles:
+                   * TadServerConnection
+                   * TadClientConnection
+
+5.16  Liberação (Release 1.4) - Dennys S. Sobrinho
+      14/06/2005 - Foi necessário fazer uma implementação, no componente TadDBLookupDialog,
+                   para localizar o registro quando a tela for apresentada e já existir 
+                   um valor associado.

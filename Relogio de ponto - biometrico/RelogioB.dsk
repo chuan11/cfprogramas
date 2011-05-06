@@ -1,0 +1,262 @@
+[Closed Files]
+File_0=SourceModule,'C:\Projetos\Programas  da Casa Freitas\uMain.pas',0,1,1,1,1,0,0
+File_1=SourceModule,'C:\Projetos\Funcoes\verificaSenhas.pas',0,1,50,22,59,0,0
+File_2=SourceModule,'C:\Projetos\Funcoes\funcSQL.pas',0,1,120,1,133,0,0
+File_3=SourceModule,'C:\Program Files\Borland\Delphi7\Imports\GrFingerXLib_TLB.pas',0,1,182,1,53,0,0
+File_4=SourceModule,'C:\Projetos\Relogio de ponto\RelogioPonto.pas',0,1,815,1,698,1,0
+File_5=SourceModule,'C:\Projetos\Relogio de ponto\Justificativas.pas',0,1,82,44,39,1,0
+File_6=SourceModule,'C:\Projetos\Relogio de ponto\Relogio.dpr',0,1,1,22,10,0,0
+
+[Modules]
+Module0=C:\Projetos\Relogio de ponto - biometrico\RelogioPonto.pas
+Module1=C:\Projetos\Relogio de ponto - biometrico\RelogioB.dpr
+Module2=C:\Projetos\Relogio de ponto - biometrico\Justificativas.pas
+Module3=C:\Projetos\Relogio de ponto - biometrico\UOcorrencia.pas
+Module4=C:\Projetos\Relogio de ponto - biometrico\uDBClass.pas
+Module5=C:\Projetos\Relogio de ponto - biometrico\uUtil.pas
+Module6=C:\Projetos\ExportaArquivoParaExcel\Unit7.pas
+Count=7
+EditWindowCount=1
+
+[C:\Projetos\Relogio de ponto - biometrico\RelogioPonto.pas]
+ModuleType=SourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Projetos\Relogio de ponto - biometrico\RelogioB.dpr]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Projetos\Relogio de ponto - biometrico\Justificativas.pas]
+ModuleType=SourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Projetos\Relogio de ponto - biometrico\UOcorrencia.pas]
+ModuleType=SourceModule
+FormState=1
+FormOnTop=0
+
+[C:\Projetos\Relogio de ponto - biometrico\uDBClass.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Projetos\Relogio de ponto - biometrico\uUtil.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Projetos\ExportaArquivoParaExcel\Unit7.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Program Files\Borland\Delphi7\Projects\ProjectGroup1.bpg]
+FormState=0
+FormOnTop=0
+
+[EditWindow0]
+ViewCount=7
+CurrentView=1
+View0=0
+View1=1
+View2=2
+View3=3
+View4=4
+View5=5
+View6=6
+CodeExplorer=CodeExplorer@EditWindow0
+MessageView=MessageView@EditWindow0
+Create=1
+Visible=1
+State=0
+Left=204
+Top=143
+Width=1282
+Height=684
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1266
+ClientHeight=646
+LeftPanelSize=0
+LeftPanelClients=CodeExplorer@EditWindow0
+LeftPanelData=00000400010000000C000000436F64654578706C6F726572000000000000000000000000000000000001000000000000000000000000FFFFFFFF
+RightPanelSize=0
+BottomPanelSize=0
+BottomPanelClients=MessageView@EditWindow0
+BottomPanelData=00000400010000000B0000004D6573736167655669657700000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
+
+[View0]
+Module=C:\Projetos\Relogio de ponto - biometrico\RelogioB.dpr
+CursorX=1
+CursorY=13
+TopLine=1
+LeftCol=1
+
+[View1]
+Module=C:\Projetos\Relogio de ponto - biometrico\RelogioPonto.pas
+CursorX=6
+CursorY=81
+TopLine=67
+LeftCol=1
+
+[View2]
+Module=C:\Projetos\ExportaArquivoParaExcel\Unit7.pas
+CursorX=1
+CursorY=1
+TopLine=53
+LeftCol=1
+
+[View3]
+Module=C:\Projetos\Relogio de ponto - biometrico\uUtil.pas
+CursorX=12
+CursorY=390
+TopLine=372
+LeftCol=1
+
+[View4]
+Module=C:\Projetos\Relogio de ponto - biometrico\uDBClass.pas
+CursorX=74
+CursorY=133
+TopLine=109
+LeftCol=1
+
+[View5]
+Module=C:\Projetos\Relogio de ponto - biometrico\UOcorrencia.pas
+CursorX=135
+CursorY=781
+TopLine=670
+LeftCol=1
+
+[View6]
+Module=C:\Projetos\Relogio de ponto - biometrico\Justificativas.pas
+CursorX=1
+CursorY=323
+TopLine=295
+LeftCol=1
+
+[Watches]
+Count=0
+
+[Breakpoints]
+Count=0
+
+[AddressBreakpoints]
+Count=0
+
+[Main Window]
+Create=1
+Visible=1
+State=0
+Left=0
+Top=0
+Width=1680
+Height=122
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1664
+ClientHeight=84
+
+[ProjectManager]
+Create=1
+Visible=0
+State=0
+Left=369
+Top=372
+Width=446
+Height=313
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=430
+ClientHeight=279
+TBDockHeight=313
+LRDockWidth=446
+Dockable=1
+
+[AlignmentPalette]
+Create=1
+Visible=0
+State=0
+Left=200
+Top=68
+Width=156
+Height=84
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=150
+ClientHeight=60
+
+[PropertyInspector]
+Create=1
+Visible=1
+State=0
+Left=0
+Top=144
+Width=190
+Height=871
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=174
+ClientHeight=837
+TBDockHeight=567
+LRDockWidth=190
+Dockable=1
+SplitPos=85
+ArrangeBy=Name
+SelectedItem=Caption
+ExpandedItems=
+HiddenCategories=
+
+[ObjectTree]
+Create=1
+Visible=0
+State=0
+Left=0
+Top=66
+Width=190
+Height=380
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=174
+ClientHeight=346
+TBDockHeight=380
+LRDockWidth=190
+Dockable=1
+
+[CodeExplorer@EditWindow0]
+Create=1
+Visible=0
+State=0
+Left=0
+Top=12
+Width=140
+Height=613
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=140
+ClientHeight=613
+TBDockHeight=305
+LRDockWidth=140
+Dockable=1
+
+[MessageView@EditWindow0]
+Create=1
+Visible=0
+State=0
+Left=12
+Top=0
+Width=1254
+Height=85
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1254
+ClientHeight=85
+TBDockHeight=85
+LRDockWidth=443
+Dockable=1
+
+[DockHosts]
+DockHostCount=0
+

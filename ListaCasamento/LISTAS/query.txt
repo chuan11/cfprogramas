@@ -1,0 +1,1 @@
+Select NumLista, Loja, noiva, noivo from listas order by noiva

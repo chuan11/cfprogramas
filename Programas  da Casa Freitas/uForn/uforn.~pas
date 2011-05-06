@@ -1,0 +1,81 @@
+unit Uforn;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Grids, DBGrids, SoftDBGrid, DB, StdCtrls, adLabelEdit,
+  fCtrls, ADODB, Buttons ;
+
+type
+  TfmForn = class(TForm)
+    DataSource1: TDataSource;
+    fnGrid: TSoftDBGrid;
+    edit1: TadLabelEdit;
+    fsBuscaNumero: TfsCheckBox;
+    qrCredores: TADOQuery;
+    fsBitBtn1: TfsBitBtn;
+//    BitBtn1: TBitBtn;
+    procedure BitBtn3Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure fsBuscaNumeroClick(Sender: TObject);
+    procedure FlatButton1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure btOkClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmForn: TfmForn;
+implementation
+uses uMain;
+{$R *.dfm}
+
+procedure TfmForn.BitBtn3Click(Sender: TObject);
+begin
+   ModalResult := Cancel;
+   fmForn.close;
+end;
+
+procedure TfmForn.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+   action := caFree;
+end;
+
+procedure TfmForn.fsBuscaNumeroClick(Sender: TObject);
+begin
+   edit1Change(sender);
+end;
+
+procedure TfmForn.FlatButton1Click(Sender: TObject);
+var
+   cmd:string;
+begin
+   if fsBuscaNumero.Checked = false then
+      cmd := 'Select is_cred, cd_pes as codigo, nm_razsoc as fornecedor from dscre where  nm_razsoc like ' + quotedstr(edit1.text+'%')
+   else
+      cmd := 'Select is_cred, cd_pes as codigo, nm_razsoc as fornecedor from dscre where  is_cred = ' +  edit1.text ;
+   qrCredores.SQL.Clear;
+   qrCredores.sql.Add(cmd);
+   qrCredores.Open;
+   fnGrid.Columns[ qrCredores.FieldByName('codigo').Index ].Visible := false;
+end;
+
+procedure TfmForn.BitBtn2Click(Sender: TObject);
+begin
+   if (qrCredores.IsEmpty = true) then
+     self.ModalResult := mrNone;
+end;
+
+procedure TfmForn.btOkClick(Sender: TObject);
+begin
+   if( qrCredores.IsEmpty = true) then
+      ModalResult := mrNone
+   else
+      ModalResult := mrOk;
+end;
+
+end.

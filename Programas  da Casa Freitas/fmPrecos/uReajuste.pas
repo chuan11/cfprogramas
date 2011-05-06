@@ -1,0 +1,128 @@
+unit uReajuste;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, DB, ADODB, Grids, DBGrids, SoftDBGrid,
+  TFlatButtonUnit, adLabelNumericEdit, StdCtrls, adLabelEdit, funcsql,
+  TFlatCheckBoxUnit, adLabelComboBox, funcoes;
+
+type
+  TfmReajuste = class(TForm)
+    edCodigo: TadLabelEdit;
+    edIPI: TadLabelNumericEdit;
+    FlatButton4: TFlatButton;
+    gpReajuste: TSoftDBGrid;
+    DataSource1: TDataSource;
+    Panel1: TPanel;
+    FlatButton1: TFlatButton;
+    cbPc01: TadLabelComboBox;
+    tb: TADOTable;
+    chArredonda: TFlatCheckBox;
+    cbCusto: TFlatCheckBox;
+    procedure FlatButton4Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormShow(Sender: TObject);
+    procedure criarTabela(Sender:Tobject);
+    procedure FlatButton1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmReajuste: TfmReajuste;
+
+implementation
+uses uMain, Uprecoswell;
+
+{$R *.dfm}
+
+procedure TfmReajuste.criarTabela(Sender: Tobject);
+var
+  nTable,str:String;
+begin
+   nTable := funcsql.getNomeTableTemp;
+   str := 'Create table ' +nTable+ '( is_ref int, [codigo] varchar(08) , [Descricao] varchar(50),  [PrecoAntigo] money , [PrecoNovo] money,  CRCU money )';
+   funcsql.execSQL(str,FmMain.Conexao);
+   tb.TableName := ntable;
+end;
+
+procedure TfmReajuste.FlatButton4Click(Sender: TObject);
+var
+  cmd :String;
+begin
+   if (edCodigo.text <> '') and (edIPI.Value <> 0)  then
+   begin
+      if tb.TableName = '' then
+         criarTabela(nil);
+
+      while tb.IsEmpty = false do
+        tb.Delete;
+
+      cmd :=' insert ' +tb.TableName+ ' Select is_ref, cd_ref as [Codigo] ,ds_ref  as [Descricao]' +
+            ' , dbo.Z_CF_funObterPrecoProduto_CF('+ funcoes.getCodPc(cbPc01) +' , is_ref, '+ fmMain.getUoLogada()  +',  0 )  as [PrecoAntigo] , 0 as [PrecoNovo] ';
+       if cbCusto.Checked = true then
+           cmd := cmd + ' ,dbo.Z_CF_funObterPrecoProduto_CF(  7 , is_ref,  '+ fmMain.getUoLogada()  +',   0 )  as CRUC '
+       else
+           cmd := cmd + ' , 0 as CRCU';
+
+      cmd := cmd + ' from crefe with(nolock) where cd_ref like ' + quotedstr(edCodigo.Text + '%') + 'Order by cd_ref ';
+      funcsql.execSQL(cmd, fmMain.Conexao);
+      tb.close;
+      tb.open;
+      gpReajuste.Columns[00].Visible := false;
+      gpReajuste.Columns[01].Width := 50;
+      gpReajuste.Columns[02].Width := 200;
+      gpReajuste.Columns[03].Width := 50;
+      gpReajuste.Columns[04].Width := 50;
+
+      tb.First;
+      while tb.Eof = false do
+      begin
+         tb.Edit;
+         if tb.FieldByName('PrecoAntigo').asFloat > 0 then
+            tb.FieldByName('PrecoNovo').AsString :=  funcoes.calculaReajuste( tb.FieldByName('PrecoAntigo').asFloat , edIPI.Value, chArredonda.Checked );
+         tb.post;
+         tb.Next;
+      end;
+   end;
+end;
+
+
+procedure TfmReajuste.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+   fmReajuste := nil;
+   action := cafree;
+end;
+
+procedure TfmReajuste.FormShow(Sender: TObject);
+begin
+   cbPc01.items := funcsql.getListaPrecos(fmMain.Conexao,false,false,false, fmMain.getGrupoLogado());
+   cbPc01.ItemIndex :=0;
+end;
+
+procedure TfmReajuste.FlatButton1Click(Sender: TObject);
+begin
+   tb.First;
+
+   while tb.Eof = false do
+   begin
+        if tb.FieldByName('precoNovo').asFloat > 0 then
+           fmLancaPrecos.Table.AppendRecord([
+                                   tb.fieldByName('codigo').AsString,
+                                   tb.fieldByName('descricao').AsString,
+                                   tb.fieldByname('precoAntigo').asString,
+                                   tb.fieldByname('precoNovo').asString,
+                                   fmLancaPrecos.AjustaPreco( tb.fieldByname('precoNovo').asString , '1,'+fmLancaPrecos.edVlMrg02.TEXT , chArredonda.checked ),
+                                   fmLancaPrecos.AjustaPreco( tb.fieldByname('precoNovo').asString , '1,'+fmLancaPrecos.edVlMrg03.TEXT , chArredonda.checked ),
+                                   tb.fieldByName('is_ref').AsString,
+                                   tb.fieldByName('CRCU').AsString
+                                  ]);
+                                  tb.Next;
+   end;
+end;
+
+end.

@@ -1,0 +1,779 @@
+object Form3: TForm3
+  Left = 590
+  Top = 244
+  BorderIcons = []
+  BorderStyle = bsNone
+  ClientHeight = 515
+  ClientWidth = 783
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  KeyPreview = True
+  Menu = MainMenu3
+  OldCreateOrder = False
+  Position = poDefault
+  Visible = True
+  WindowState = wsMaximized
+  OnClose = FormClose
+  OnCreate = FormCreate
+  DesignSize = (
+    783
+    515)
+  PixelsPerInch = 96
+  TextHeight = 13
+  object btCancela: TFlatButton
+    Left = 617
+    Top = 144
+    Width = 71
+    Height = 26
+    Caption = '&Cancelar'
+    Glyph.Data = {
+      DE010000424DDE01000000000000760000002800000024000000120000000100
+      0400000000006801000000000000000000001000000000000000000000000000
+      80000080000000808000800000008000800080800000C0C0C000808080000000
+      FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+      333333333333333333333333000033338833333333333333333F333333333333
+      0000333911833333983333333388F333333F3333000033391118333911833333
+      38F38F333F88F33300003339111183911118333338F338F3F8338F3300003333
+      911118111118333338F3338F833338F3000033333911111111833333338F3338
+      3333F8330000333333911111183333333338F333333F83330000333333311111
+      8333333333338F3333383333000033333339111183333333333338F333833333
+      00003333339111118333333333333833338F3333000033333911181118333333
+      33338333338F333300003333911183911183333333383338F338F33300003333
+      9118333911183333338F33838F338F33000033333913333391113333338FF833
+      38F338F300003333333333333919333333388333338FFF830000333333333333
+      3333333333333333333888330000333333333333333333333333333333333333
+      0000}
+    Layout = blGlyphLeft
+    NumGlyphs = 2
+    TabOrder = 5
+    Visible = False
+    OnClick = btCancelaClick
+  end
+  object BitBtn1: TFlatButton
+    Left = 544
+    Top = 144
+    Width = 71
+    Height = 26
+    Caption = '&OK'
+    Glyph.Data = {
+      DE010000424DDE01000000000000760000002800000024000000120000000100
+      0400000000006801000000000000000000001000000000000000000000000000
+      80000080000000808000800000008000800080800000C0C0C000808080000000
+      FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+      3333333333333333333333330000333333333333333333333333F33333333333
+      00003333344333333333333333388F3333333333000033334224333333333333
+      338338F3333333330000333422224333333333333833338F3333333300003342
+      222224333333333383333338F3333333000034222A22224333333338F338F333
+      8F33333300003222A3A2224333333338F3838F338F33333300003A2A333A2224
+      33333338F83338F338F33333000033A33333A222433333338333338F338F3333
+      0000333333333A222433333333333338F338F33300003333333333A222433333
+      333333338F338F33000033333333333A222433333333333338F338F300003333
+      33333333A222433333333333338F338F00003333333333333A22433333333333
+      3338F38F000033333333333333A223333333333333338F830000333333333333
+      333A333333333333333338330000333333333333333333333333333333333333
+      0000}
+    Layout = blGlyphLeft
+    NumGlyphs = 2
+    TabOrder = 4
+    Visible = False
+    OnClick = BitBtn1Click
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 783
+    Height = 57
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 0
+    Visible = False
+    DesignSize = (
+      783
+      57)
+    object Bevel1: TBevel
+      Left = 8
+      Top = 52
+      Width = 763
+      Height = 2
+      Anchors = [akLeft, akTop, akRight]
+    end
+    object lbNumLista: TLabel
+      Left = 49
+      Top = 4
+      Width = 52
+      Height = 13
+      Caption = 'lbNumLista'
+      Visible = False
+    end
+    object Label2: TLabel
+      Left = 133
+      Top = 3
+      Width = 32
+      Height = 13
+      Caption = 'Label2'
+      Visible = False
+    end
+    object lbComprados: TLabel
+      Left = 306
+      Top = 36
+      Width = 29
+      Height = 13
+      Caption = '9999'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label7: TLabel
+      Left = 153
+      Top = 36
+      Width = 150
+      Height = 13
+      Caption = 'Itens comprados sem desconto:'
+    end
+    object Label8: TLabel
+      Left = 339
+      Top = 36
+      Width = 27
+      Height = 13
+      Caption = 'Valor:'
+    end
+    object lbTotalComprado: TLabel
+      Left = 371
+      Top = 36
+      Width = 29
+      Height = 13
+      Caption = '9999'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label9: TLabel
+      Left = 8
+      Top = 36
+      Width = 63
+      Height = 13
+      Caption = 'Data Evento:'
+    end
+    object lbdtEvento: TLabel
+      Left = 76
+      Top = 36
+      Width = 69
+      Height = 13
+      Caption = '11/11/1111'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lbNumCli: TLabel
+      Left = 176
+      Top = 3
+      Width = 41
+      Height = 13
+      Caption = 'lbNumCli'
+      Visible = False
+    end
+    object lbtotaisTitulo: TLabel
+      Left = 519
+      Top = 11
+      Width = 118
+      Height = 13
+      Caption = 'Total de compras na lista'
+      Visible = False
+    end
+    object lbTotaisLista: TLabel
+      Left = 528
+      Top = 28
+      Width = 98
+      Height = 13
+      Caption = '9999 - 9.9999,99'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Visible = False
+    end
+    object edNmNoiva: TadLabelEdit
+      Left = 7
+      Top = 14
+      Width = 224
+      Height = 19
+      LabelDefs.Width = 31
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'Noiva:'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      Colors.WhenExitFocus.BackColor = clInfoBk
+      Ctl3D = False
+      ParentCtl3D = False
+      MaxLength = 40
+      TabOrder = 0
+      Text = 'edNmNoiva'
+      OnEnter = edNmNoivaEnter
+    end
+    object edNmNoivo: TadLabelEdit
+      Left = 250
+      Top = 14
+      Width = 222
+      Height = 19
+      LabelDefs.Width = 31
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'Noivo:'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      Colors.WhenExitFocus.BackColor = clInfoBk
+      Ctl3D = False
+      ParentCtl3D = False
+      MaxLength = 40
+      TabOrder = 1
+      Text = 'adLabelEdit1'
+      OnEnter = edNmNoivaEnter
+    end
+    object FlatButton1: TFlatButton
+      Left = 482
+      Top = 12
+      Width = 30
+      Height = 21
+      Caption = '...'
+      Layout = blGlyphLeft
+      NumGlyphs = 2
+      TabOrder = 2
+      OnClick = FlatButton1Click
+    end
+  end
+  object Panel2: TPanel
+    Left = 6
+    Top = 61
+    Width = 530
+    Height = 122
+    BevelOuter = bvNone
+    Ctl3D = False
+    ParentCtl3D = False
+    TabOrder = 1
+    Visible = False
+    object DBEdit1: TadLabelDBEdit
+      Left = 135
+      Top = 14
+      Width = 22
+      Height = 19
+      CharCase = ecUpperCase
+      Ctl3D = False
+      DataSource = DsProdutos
+      ParentCtl3D = False
+      TabOrder = 0
+      Visible = False
+      OnChange = DBEdit1Change
+      LabelDefs.Width = 33
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'Codigo'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      Colors.WhenExitFocus.BackColor = clWhite
+    end
+    object DBEdit2: TadLabelDBEdit
+      Left = 178
+      Top = 15
+      Width = 226
+      Height = 19
+      CharCase = ecUpperCase
+      Ctl3D = False
+      DataSource = DsProdutos
+      ParentCtl3D = False
+      TabOrder = 1
+      LabelDefs.Width = 85
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'Descri'#231#227'o do item'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      Colors.WhenExitFocus.BackColor = clWhite
+    end
+    object DBEdit3: TadLabelDBEdit
+      Left = 178
+      Top = 50
+      Width = 340
+      Height = 19
+      CharCase = ecUpperCase
+      Ctl3D = False
+      DataSource = DsProdutos
+      Enabled = False
+      ParentCtl3D = False
+      TabOrder = 2
+      LabelDefs.Width = 51
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'Convidado'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      Colors.WhenExitFocus.BackColor = clWhite
+    end
+    object DBLCBox: TadLabelDBLookupComboBox
+      Left = 407
+      Top = 15
+      Width = 111
+      Height = 19
+      BevelInner = bvSpace
+      BevelOuter = bvNone
+      BevelKind = bkSoft
+      Ctl3D = False
+      DataField = 'tipo'
+      DataSource = DsProdutos
+      KeyField = 'Descricao'
+      ListField = 'Descricao'
+      ListSource = DataSource1
+      ParentCtl3D = False
+      TabOrder = 3
+      LabelDefs.Width = 21
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'Tipo'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+    end
+    object DBEdit7: TadLabelDBEdit
+      Left = 178
+      Top = 91
+      Width = 340
+      Height = 19
+      CharCase = ecUpperCase
+      Ctl3D = False
+      DataSource = DsProdutos
+      ParentCtl3D = False
+      TabOrder = 4
+      LabelDefs.Width = 113
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'Observa'#231#227'o para o item'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      Colors.WhenExitFocus.BackColor = clWhite
+    end
+    object edCodProd: TadLabelEdit
+      Left = 8
+      Top = 15
+      Width = 143
+      Height = 19
+      LabelDefs.Width = 33
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'C'#243'digo'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      Colors.WhenExitFocus.BackColor = clInfoBk
+      Ctl3D = False
+      ParentCtl3D = False
+      MaxLength = 13
+      TabOrder = 5
+      OnKeyDown = DBEdit1KeyDown
+    end
+    object edDesc: TadLabelSpinEdit
+      Left = 8
+      Top = 87
+      Width = 73
+      Height = 22
+      Cursor = crDefault
+      LabelDefs.Width = 57
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'Desconto %'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      Decimals = 0
+      MaxValue = 100.000000000000000000
+      TabOrder = 6
+      Increment = 5.000000000000000000
+      RoundValues = False
+      Wrap = False
+    end
+    object edPcProduto: TadLabelNumericEdit
+      Left = 8
+      Top = 49
+      Width = 99
+      Height = 19
+      LabelDefs.Width = 24
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'Valor'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      ReadOnly = True
+      TabOrder = 7
+    end
+  end
+  object Panel3: TPanel
+    Left = 649
+    Top = 57
+    Width = 123
+    Height = 108
+    Anchors = [akTop]
+    BevelOuter = bvNone
+    TabOrder = 2
+    Visible = False
+    object btIncluir: TFlatButton
+      Left = 4
+      Top = 2
+      Width = 109
+      Height = 26
+      Caption = '&Incluir'
+      Glyph.Data = {
+        76010000424D7601000000000000760000002800000020000000100000000100
+        04000000000000010000130B0000130B00001000000000000000000000000000
+        800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+        33333333FF33333333FF333993333333300033377F3333333777333993333333
+        300033F77FFF3333377739999993333333333777777F3333333F399999933333
+        33003777777333333377333993333333330033377F3333333377333993333333
+        3333333773333333333F333333333333330033333333F33333773333333C3333
+        330033333337FF3333773333333CC333333333FFFFF77FFF3FF33CCCCCCCCCC3
+        993337777777777F77F33CCCCCCCCCC3993337777777777377333333333CC333
+        333333333337733333FF3333333C333330003333333733333777333333333333
+        3000333333333333377733333333333333333333333333333333}
+      Layout = blGlyphLeft
+      NumGlyphs = 2
+      TabOrder = 0
+      OnClick = btIncluirClick
+    end
+    object btAltera: TFlatButton
+      Left = 4
+      Top = 28
+      Width = 109
+      Height = 26
+      Caption = 'Alte&rar'
+      Glyph.Data = {
+        76010000424D7601000000000000760000002800000020000000100000000100
+        04000000000000010000120B0000120B00001000000000000000000000000000
+        800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333000000
+        000033333377777777773333330FFFFFFFF03FF3FF7FF33F3FF700300000FF0F
+        00F077F777773F737737E00BFBFB0FFFFFF07773333F7F3333F7E0BFBF000FFF
+        F0F077F3337773F3F737E0FBFBFBF0F00FF077F3333FF7F77F37E0BFBF00000B
+        0FF077F3337777737337E0FBFBFBFBF0FFF077F33FFFFFF73337E0BF0000000F
+        FFF077FF777777733FF7000BFB00B0FF00F07773FF77373377373330000B0FFF
+        FFF03337777373333FF7333330B0FFFF00003333373733FF777733330B0FF00F
+        0FF03333737F37737F373330B00FFFFF0F033337F77F33337F733309030FFFFF
+        00333377737FFFFF773333303300000003333337337777777333}
+      Layout = blGlyphLeft
+      NumGlyphs = 2
+      TabOrder = 1
+      OnClick = btAlteraClick
+    end
+    object btComprador: TFlatButton
+      Left = 4
+      Top = 80
+      Width = 109
+      Height = 26
+      Caption = '&Comprador'
+      Glyph.Data = {
+        76010000424D7601000000000000760000002800000020000000100000000100
+        04000000000000010000120B0000120B00001000000000000000000000000000
+        800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00300000000000
+        0000377777777777777707FFFFFFFFFFFF70773FF33333333F770F77FFFFFFFF
+        77F07F773FFFFFFF77F70FFF7700000000007F337777777777770FFFFF0BBBBB
+        BBB07F333F7F3FF33FF70FFF700B00BB00B07F3F777F77F377370F707F0BB0B0
+        0BB07F77337F37F77337007EEE0BB0B0BBB077FFFF7F37F7F3370777770EE000
+        EEE07777777F3777F3F7307EEE0E0E00E0E03773FF7F7377F73733707F0EE000
+        0EE03337737F377773373333700EEE00EEE03333377F3377FF373333330EEEE0
+        0EE03333337F33377F373333330EEEE00EE03333337F333773373333330EEEEE
+        EEE03333337FFFFFFFF733333300000000003333337777777777}
+      Layout = blGlyphLeft
+      NumGlyphs = 2
+      TabOrder = 2
+      OnClick = btCompradorClick
+    end
+    object btExclui: TFlatButton
+      Left = 4
+      Top = 54
+      Width = 109
+      Height = 26
+      Caption = '&Excluir'
+      Glyph.Data = {
+        76010000424D7601000000000000760000002800000020000000100000000100
+        04000000000000010000130B0000130B00001000000000000000000000000000
+        800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+        333333333333333333FF33333333333330003333333333333777333333333333
+        300033FFFFFF3333377739999993333333333777777F3333333F399999933333
+        3300377777733333337733333333333333003333333333333377333333333333
+        3333333333333333333F333333333333330033333F33333333773333C3333333
+        330033337F3333333377333CC3333333333333F77FFFFFFF3FF33CCCCCCCCCC3
+        993337777777777F77F33CCCCCCCCCC399333777777777737733333CC3333333
+        333333377F33333333FF3333C333333330003333733333333777333333333333
+        3000333333333333377733333333333333333333333333333333}
+      Layout = blGlyphLeft
+      NumGlyphs = 2
+      TabOrder = 3
+      OnClick = btExcluiClick
+    end
+  end
+  object dbeditnum: TadLabelDBEdit
+    Left = 224
+    Top = 11
+    Width = 49
+    Height = 21
+    DataField = 'NumLista'
+    DataSource = DsProdutos
+    TabOrder = 3
+    Visible = False
+    LabelDefs.Width = 44
+    LabelDefs.Height = 13
+    LabelDefs.Caption = 'NumLista'
+  end
+  object DBGrid1: TSoftDBGrid
+    Left = 0
+    Top = 189
+    Width = 783
+    Height = 326
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    DataSource = DsProdutos
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
+    PopupMenu = PopupMenu1
+    TabOrder = 6
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+    TitleFont.Style = []
+    Visible = False
+    OnTitleClick = DBGrid1TitleClick
+    AlternateColor = True
+    ColorLow = clWindow
+    ColorHigh = clInfoBk
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'Codigo'
+        Title.Font.Charset = ANSI_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -11
+        Title.Font.Name = 'Georgia'
+        Title.Font.Style = []
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'Tipo'
+        Title.Font.Charset = DEFAULT_CHARSET
+        Title.Font.Color = clWindowText
+        Title.Font.Height = -11
+        Title.Font.Name = 'MS Sans Serif'
+        Title.Font.Style = [fsBold]
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'valor'
+        Title.Caption = 'Valor'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'Desconto'
+        ReadOnly = True
+        Title.Alignment = taRightJustify
+        Title.Caption = '% Desc'
+        Width = 42
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'NomeProduto'
+        Title.Caption = 'Descri'#231#227'o do produto'
+        Width = 187
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'convidado'
+        Title.Caption = 'Convidado'
+        Width = 198
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'ljBaixa'
+        Title.Caption = 'Loja'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'dtcompra'
+        Title.Caption = 'Data'
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'ObsItem'
+        Title.Caption = 'Observa'#231#227'o item'
+        Visible = True
+      end>
+  end
+  object btVoltar: TfsBitBtn
+    Left = 693
+    Top = 8
+    Width = 79
+    Height = 29
+    Anchors = [akTop, akRight]
+    Caption = 'Voltar'
+    TabOrder = 7
+    OnClick = btVoltarClick
+    Glyph.Data = {
+      76010000424D7601000000000000760000002800000020000000100000000100
+      04000000000000010000120B0000120B00001000000000000000000000000000
+      800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
+      FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00330000000000
+      03333377777777777F333301BBBBBBBB033333773F3333337F3333011BBBBBBB
+      0333337F73F333337F33330111BBBBBB0333337F373F33337F333301110BBBBB
+      0333337F337F33337F333301110BBBBB0333337F337F33337F333301110BBBBB
+      0333337F337F33337F333301110BBBBB0333337F337F33337F333301110BBBBB
+      0333337F337F33337F333301110BBBBB0333337F337FF3337F33330111B0BBBB
+      0333337F337733337F333301110BBBBB0333337F337F33337F333301110BBBBB
+      0333337F3F7F33337F333301E10BBBBB0333337F7F7F33337F333301EE0BBBBB
+      0333337F777FFFFF7F3333000000000003333377777777777333}
+    NumGlyphs = 2
+  end
+  object MainMenu3: TMainMenu
+    AutoHotkeys = maManual
+    AutoLineReduction = maManual
+    Left = 99
+    Top = 299
+    object Abrirumalista1: TMenuItem
+      Caption = 'Abrir     '
+      OnClick = Abrirumalista1Click
+    end
+    object Imprimirumalista1: TMenuItem
+      Caption = 'Imprimir'
+      OnClick = Imprimirumalista1Click
+    end
+    object Baixaavulsa1: TMenuItem
+      Caption = 'Baixa avulsa'
+      OnClick = Baixaavulsa1Click
+    end
+  end
+  object DsProdutos: TDataSource
+    AutoEdit = False
+    DataSet = PdQuery
+    Left = 44
+    Top = 272
+  end
+  object PdQuery: TADOQuery
+    Connection = Form1.ADOConnection1
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'select top 01 * from produtos')
+    Left = 8
+    Top = 272
+    object PdQueryNumLista: TIntegerField
+      FieldName = 'NumLista'
+    end
+    object PdQueryCodigo: TStringField
+      FieldName = 'Codigo'
+      Size = 7
+    end
+    object PdQueryconvidado: TStringField
+      FieldName = 'convidado'
+      Size = 40
+    end
+    object PdQueryNomeProduto: TStringField
+      FieldName = 'NomeProduto'
+      Size = 40
+    end
+    object PdQueryRef: TBCDField
+      FieldName = 'Ref'
+      ReadOnly = True
+      Precision = 10
+      Size = 0
+    end
+    object PdQueryTipo: TStringField
+      FieldName = 'Tipo'
+      FixedChar = True
+    end
+    object PdQueryljBaixa: TWideStringField
+      FieldName = 'ljBaixa'
+      Size = 10
+    end
+    object PdQueryvalor: TBCDField
+      FieldName = 'valor'
+      DisplayFormat = '#,###,###0.00'
+      Precision = 10
+    end
+    object PdQuerydtcompra: TDateTimeField
+      FieldName = 'dtcompra'
+    end
+    object PdQueryObsItem: TStringField
+      FieldName = 'ObsItem'
+      Size = 30
+    end
+    object PdQueryispromocao: TBooleanField
+      FieldName = 'ispromocao'
+      Visible = False
+    end
+    object PdQueryDesconto: TIntegerField
+      FieldName = 'Desconto'
+      Visible = False
+    end
+  end
+  object DataSource1: TDataSource
+    DataSet = ADOTable1
+    Left = 417
+    Top = 72
+  end
+  object ADOTable1: TADOTable
+    Connection = Form1.ADOConnection1
+    CursorType = ctStatic
+    TableName = 'TipoProdutos'
+    Left = 457
+    Top = 72
+  end
+  object QueryEntrega: TADOQuery
+    Connection = Form1.ADOConnection1
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'exec stoComandaEntregaProduto 515958')
+    Left = 416
+    Top = 304
+  end
+  object PopupMenu1: TPopupMenu
+    OnPopup = PopupMenu1Popup
+    Left = 264
+    Top = 256
+    object GerarGuiadeentrega1: TMenuItem
+      Caption = 'Gerar Guia de entrega'
+      OnClick = GerarGuiadeentrega1Click
+    end
+    object Devolveramercadoria1: TMenuItem
+      Caption = 'Devolver a mercadoria'
+      Enabled = False
+      OnClick = Devolveramercadoria1Click
+    end
+  end
+  object RvSystem1: TRvSystem
+    TitleSetup = 'Impress'#227'o de lista'
+    TitleStatus = 'Pr'#233'via de impress'#227'o'
+    TitlePreview = 'Espelho de lista '
+    SystemSetups = [ssAllowSetup, ssAllowCopies, ssAllowCollate, ssAllowDuplex, ssAllowDestPreview, ssAllowDestPrinter, ssAllowPrinterSetup, ssAllowPreviewSetup]
+    DefaultDest = rdPrinter
+    SystemFiler.StatusFormat = 'Generating page %p'
+    SystemPreview.FormHeight = 500
+    SystemPreview.FormState = wsMaximized
+    SystemPreview.ZoomFactor = 75.000000000000000000
+    SystemPrinter.ScaleX = 100.000000000000000000
+    SystemPrinter.ScaleY = 100.000000000000000000
+    SystemPrinter.StatusFormat = 'Printing page %p'
+    SystemPrinter.Title = 'Espelho de lista '
+    SystemPrinter.UnitsFactor = 1.000000000000000000
+    Left = 354
+    Top = 304
+  end
+  object RvPGuiaEntrega: TRvProject
+    Engine = RvSystem1
+    Left = 386
+    Top = 304
+  end
+  object DSCGuiaEntrega: TRvDataSetConnection
+    RuntimeVisibility = rtEndUser
+    DataSet = QueryEntrega
+    Left = 323
+    Top = 304
+  end
+end

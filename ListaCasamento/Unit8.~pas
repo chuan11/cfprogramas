@@ -1,0 +1,241 @@
+unit Unit8;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ComCtrls, TFlatButtonUnit, StdCtrls, adLabelComboBox, Grids,
+  DBGrids, SoftDBGrid, DB, ADODB,funcsql, unit1, funcoes, ExtCtrls, ImgList,
+  DBCtrls, fDBCtrls, verificaSenhas, Menus;
+
+type
+  TForm8 = class(TForm)
+    cbLojas: TadLabelComboBox;
+    BitBtn2: TFlatButton;
+    Query: TADOQuery;
+    DataSource1: TDataSource;
+    grid: TSoftDBGrid;
+    Panel1: TPanel;
+    GroupBox1: TGroupBox;
+    GroupBox2: TGroupBox;
+    cbTpListas: TadLabelComboBox;
+    GroupBox3: TGroupBox;
+    dt1: TDateTimePicker;
+    dt2: TDateTimePicker;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    btGeraCredito: TFlatButton;
+    PopupMenu1: TPopupMenu;
+    Gerarorecibodobonus1: TMenuItem;
+    procedure BitBtn2Click(Sender: TObject);
+    procedure gridTitleClick(Column: TColumn);
+    procedure preparaTelaCredito(Sender:Tobject; usuario:String);
+    procedure FormCreate(Sender: TObject);
+    procedure consultaRelatorioVendas(Sender:Tobject; tipoDeLista:String);
+    procedure chamaConsultaCredito(Sender:Tobject);
+    procedure btGeraCreditoClick(Sender: TObject);
+    procedure gerarCreditos(Sender:Tobject; usAutorizador:String);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Gerarorecibodobonus1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form8: TForm8;
+  perfil:integer;
+  AUTORIZADOR:String;
+implementation
+
+{$R *.dfm}
+
+
+
+procedure TForm8.consultaRelatorioVendas(Sender: Tobject; tipoDeLista:String);
+var
+   NumLoja ,cmd :String;
+begin
+  query.SQL.Clear();
+  grid.Visible := false;
+  NumLoja := funcoes.SohNumeros( cbLojas.Items[cblojas.itemIndex]);
+
+  cmd := ' exec stoListaValoresComprasPorListas ' +
+         funcoes.DateTimeToSqlDateTime( dt1.Date,'') +' , '+
+         funcoes.DateTimeToSqlDateTime( dt2.Date,'') +' , '+
+         quotedstr(numLoja)  +' , ';
+
+  if tipoDeLista <> '' then
+     cmd := cmd +  quotedStr(tipoDeLista)
+  else
+     quotedStr(funcoes.tiraEspaco(copy(cbTpListas.items[cbTpListas.ItemIndex],40,20))) ;
+
+
+   funcsql.AbrirQuery( Query, form1.ADOConnection1, cmd );
+   grid.Columns[0].Width := 22;
+   grid.Columns[1].Width := 134;
+   grid.Columns[2].Width := 176;
+   grid.Columns[3].Width := 185;
+   grid.Columns[4].Width :=54;
+   grid.Columns[5].Width :=72;
+   grid.Columns[6].Width :=62;
+   grid.Columns[7].Width :=82;
+   grid.Columns[8].Width :=82;
+
+
+   grid.Columns[ Query.Fields.IndexOf(query.FieldByName('codWell'))].visible := false;
+   grid.Columns[ Query.Fields.IndexOf(query.FieldByName('numLista'))].visible := false;   
+
+   label2.caption :=    funcsql.SomaColQuery( query, 'valor', 2 );
+   label3.caption :=    funcsql.SomaColQuery( query, 'Itens comprados', 0 );
+   grid.Visible := true;
+   query.First();   
+end;
+
+procedure TForm8.gridTitleClick(Column: TColumn);
+begin
+    funcsql.OrganizarQuery(query,column);
+end;
+
+procedure TForm8.preparaTelaCredito(Sender: Tobject; usuario:String);
+begin
+   cbLojas.Items.Clear;
+   cbLojas.Items.Add( form1.RParReg('loja') );
+   cbLojas.ItemIndex := 0;
+   dt1.Date := now -1;
+   dt2.Date := dt1.Date;
+   cbTpListas.Visible := false;
+   perfil := 2;
+   AUTORIZADOR:= usuario;
+end;
+
+procedure TForm8.FormCreate(Sender: TObject);
+begin
+   cblojas.Items := form1.GetNumLojas(sender, form1.RParReg('Loja'));
+   cbTpListas.Items := form1.GetTiposListas(true,'');
+   cbTpListas.ItemIndex := 0;
+   cblojas.ItemIndex := 0;
+   dt1.Date := now;
+   dt2.Date := now;
+   form8.Width := screen.Width;
+   form8.Left := 0;
+   form8.Top := 1;
+end;
+
+
+procedure TForm8.chamaConsultaCredito(Sender: Tobject);
+var
+  tiposDelista:String;
+begin
+   tiposDelista := form1.GetParamBD('TpListasPCredito', form1.RParReg('loja'));
+
+   if (dt1.Date >= now)  or  (dt2.Date >= now) then
+      MsgTela('','Voce só pode consultar listas que os eventos em que a data seja menor que a data de hoje. ', MB_ICONERROR + mb_ok)
+    else
+    begin
+      consultaRelatorioVendas(nil, tiposDelista );
+      if (query.IsEmpty = false) then
+         btGeraCredito.Visible := true;
+    end;
+end;
+
+procedure TForm8.BitBtn2Click(Sender: TObject);
+begin
+   case perfil of
+      1:consultaRelatorioVendas(nil,'');
+      2:chamaConsultaCredito(nil);
+   end;
+end;
+
+procedure TForm8.gerarCreditos(Sender: Tobject; usAutorizador:String);
+var
+  errocad,erro:String;
+  valor:real;
+  aviso:boolean;
+begin
+   erro := '';
+   errocad := '';
+   aviso:= false;
+   valor:=0;
+
+   if Query.FieldByName('codWell').AsInteger = 0 then
+      erro := 'Falta o código do cliente no well'
+   else if funcsql.openSQL('Select nm_pes from dspes where cd_pes = ' + Query.FieldByName('codWell').AsString, 'nm_pes' , Form1.ConexaoWell ) = '' then
+      erroCad := 'O código informado para o cliente Well é inválido.';
+
+   if Query.FieldByName('Credito gerado').asString = 'Sim' then
+      erro := erro + ' Já consta crédito gerado para essa lista.'+ #13;
+
+   if (erro <> '') or (errocad <> '')  or ( query.fieldByname('valor').asFloat = 0 ) then
+   begin
+      if (erro <> '') then
+      begin
+          erro := 'Corrija antes esses erros: ' +#13+ erro;
+          msgTela('',erro, MB_ICONERROR + MB_OK);
+      end;
+
+      if (erroCad <> '') then
+         msgTela('',' O codigo de cliente informado para well é inválido, '+#13,mb_ok + MB_ICONERROR);
+
+      if (query.fieldByname('valor').asFloat = 0) then
+         msgTela('',' Nenhum item foi comprado para essa lista., '+#13,mb_ok + MB_ICONERROR);
+
+      if (query.fieldByname('valor').AsString = 'sim' ) then
+
+
+   end
+   else
+   begin
+      valor := query.fieldByname('valor').asFloat * 0.1;
+      funcSql.gerarCreditoDecliente( Form1.GetParamBD('codEmpWell',''), usAutorizador, query.fieldByname('codWell').AsString , Form1.RParReg('loja') , StrToMoney( floattostr( valor)), form1.ConexaoWell );
+      execSQL('update listas set gerouCredito = ''1'' where numlista = ' + query.fieldByname('numLista').asString, form1.ADOConnection1  );
+      msgTela('','   Para imprimir os comprovantes de crédito, acesse a funcionalidade do well: Consulta ao crédito.', MB_OK + MB_ICONEXCLAMATION);
+      BitBtn2Click(nil);
+   end;
+end;
+
+procedure TForm8.btGeraCreditoClick(Sender: TObject);
+var
+  usr:String;
+begin
+   msgTela('','Para gerar o crédito, é preciso: ' + #13+
+              ' - Que o código do cliente no well seja informado no cadastro da lista ' +#13+
+              ' - Que o evento já tenha ocorrido ' + #13+
+              'Após a geração do crédito a lista não poderá mais ser alterada.'  + #13+
+              'Listas que já tenham gerado crédio não geram novamente.'  + #13
+              , MB_OK + MB_ICONWARNING );
+   begin
+      gerarCreditos( nil, AUTORIZADOR );
+   end;
+end;
+
+
+procedure TForm8.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+   if form1.ConexaoWell.Connected = true then
+      form1.ConexaoWell.Close;
+   action := CaFree;
+end;
+
+procedure TForm8.Gerarorecibodobonus1Click(Sender: TObject);
+var
+  lst:Tstringlist;
+begin
+   if Query.fieldByname('Credito gerado').AsString = 'Sim' then
+   begin
+      lst := TStringList.Create();
+      lst.Add( Query.fieldByname('Noiva').AsString );
+      lst.Add( Query.fieldByname('Noivo').AsString );
+      lst.Add( funcoes.floatToDinheiro( (Query.fieldByname('Valor').AsFloat * 0.1)));
+      lst.Add( DateToStr(now) );
+      lst.Add( form1.RParReg('TitRel') );
+      lst.Add( form1.RParReg('arqLogo') );
+      form1.impressaoRave(Query,'rpRecibo', lst);
+   end
+   else
+      MsgTela('','Só é gerado o recibo de bonus após a geração do crédito', MB_OK + MB_ICONERROR);
+end;
+
+end.

@@ -1,0 +1,27 @@
+unit utilSocket;
+
+interface
+
+uses
+   uMeusocket;
+
+function initialize(host:String; port:integer):boolean;
+
+//procedure connect();
+implementation
+
+uses RelogioPonto;
+
+var
+   soc: TMeuSocket;
+
+
+function initialize(host:String; port:integer):boolean;
+begin
+   soc := TMeuSocket.create();
+   result := soc.connect(host, port);
+end;
+
+
+
+end.

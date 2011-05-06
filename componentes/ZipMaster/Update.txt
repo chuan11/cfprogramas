@@ -1,0 +1,4 @@
+Updates from previous versions
+1.7.0.5 - fixed bug affecting AddStreamToStream
+		- Added support to AddFromDate (use AddOption AddFromDate, set AddFrom to the date)
+		

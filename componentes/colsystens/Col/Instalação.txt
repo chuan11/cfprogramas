@@ -1,0 +1,37 @@
+Colsystem Componentes
+---------------------
+
+Licença:
+
+Os componentes são livre, sem codigo fonte.
+Caso queira adquirir algum componente entre em contato pelo site.
+
+
+Instalações:
+
+1. Copiar Tutil32.dll da pasta de Util para pasta do system do windows
+
+2. Abrir COLSYSTEM.DPK
+
+3. Clica em "Complile" e depois clica em "Install"
+
+4. Se a instalação foi concluido com sucesso, vai aparecer uma janela 
+com todos os componentes instalados, clica OK.
+
+5. Fecha arquivo e salva.
+
+6. Na barra de componentes sera incluido a pasta "Col" para componentes diversos e "ColDB" para componentes Database
+
+7. No library path (menu Tools-Evironment Options...aba library) incluir o caminho do diretório da pasta source.
+
+Obs: Caso dar erro: Required package 'vclactnband' not found
+     Precisa instalar o pacote do QReport (dclqrt70.bpl) no delphi 7, caso não queira instalar QReport retira o ColReport da unit Registra.pas
+ 
+
+Site:
+
+www.colsystem.com.br
+
+E-mail
+
+contato@colsystem.com.br

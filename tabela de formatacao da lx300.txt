@@ -1,0 +1,100 @@
+procedure TForm1.Button1Click(Sender: TObject);
+const
+cJustif = #27#97#51;
+cEject = #12;
+
+{ Tamanho da fonte }
+c10cpi = #18;
+c12cpi = #27#77;
+c17cpi = #15;
+cIExpandido = #14;
+cFExpandido = #20;
+{ Formatação da fonte }
+cINegrito = #27#71;
+cFNegrito = #27#72;
+cIItalico = #27#52;
+cFItalico = #27#53;
+var
+Texto: string;
+F: TextFile;
+begin
+Texto := c10cpi +
+'Este e um teste para impressora Epson LX 300. ' +
+'O objetivo e imprimir texto justificado sem deixar ' +
+'de usar formatacao, tais como: ' +
+cINegrito + 'Negrito, ' + cFNegrito +
+cIItalico + 'Italico, ' + cFItalico +
+c17cpi + 'Condensado (17cpi), ' + c10cpi +
+c12cpi + '12 cpi, ' + c10cpi +
+cIExpandido + 'Expandido.' + cFExpandido +
+' Este e apenas um exemplo, mas voce podera adapta-lo ' +
+'a sua realidade conforme a necessidade.';
+
+AssignFile(F, 'LPT1');
+Rewrite(F);
+try
+WriteLn(F, cJustif, Texto);
+WriteLn(F, cEject);
+finally
+CloseFile(F);
+end;
+end;
+
+
+
+Veja abaixo alguns códigos usados pelas impressoras HP:
+
+RESET = 027/069
+BOLD1 = 027/040/115/051/066
+BOLD0 = 027/040/115/048/066
+ITALIC1 = 027/040/115/049/083
+ITALIC0 = 027/040/115/048/083
+UNDERLINE1 = 027/038/100/049/068
+UNDERLINE0 = 027/038/100/064
+LPI6 = 027/038/108/054/068
+LPI8 = 027/038/108/056/068
+CPI5 = 027/040/115/053/072
+CPI6 = 027/040/115/054/072
+CPI8 = 027/040/115/056/072
+CPI10 = 027/040/115/049/048/072
+CPI12 = 027/040/115/049/050/072
+CPI17 = 027/040/115/049/054/046/054/055/072
+CPI20 = 027/040/115/050/048/072
+
+============================================
+
+Codigo Usado Pela Impressoras matricial
+
+Inicializa = #27#64; // Inicializa a Impressora
+Justifica = #27#97#51; // Justifica o Texto a Ser impresso
+Draft = #27#120#0; // Aciona Modo Draft
+Imediato = #27#105#1; // Aciona Modo Imediato
+Caracter = #27#77; // Aciona Modo Caracter Rápido.
+Centro = #27#97#49; // Centraliza a Impressão
+Esquerda = #27#97#48; // Posiciona na Margem Esquerda
+MEsquerda = #27#108#5; // Define a Margem Esquerda
+MDireita = #27#81+#78; // Define a Margem Direita
+Tab1 = #27#68#32; // Define a Tabulação 1 = 32;
+Tab2 = #27#68#41#50; // Define a Tabulação 2 = 50;
+Tab3 = #27#68#27; // Define a Tabulação 3 = 27;
+Tab4 = #27#68#37; // Define a Tabulação 4 = 37;
+Tab5 = #27#68#45; // Define a Tabulação 5 = 45;
+Tab6 = #27#68#10; // Define a Tabulação 6 = 10;
+Tab7 = #27#68#46; // Define a Tabulação 7 = 46;
+Tab8 = #27#68#20; // Define a Tabulação 8 = 20;
+Normal = #20; // Define Caracter 20 Tamanho Normal;
+Condensado = #15; // Define Caracter 15 Modo Condensado;
+Expandido = #14; // Define Caracter 14 Modo Expandido;
+CNegrito = #27#71; // Define Caracter Negrito;
+SNegrito = #27#72; // Define Caracter Não Negrito;
+CSublinha = #27#49;
+SSublinha = #27#48;
+Ass = #27#9; // Tabulação Assume a Posição;
+Saltar = #27#102#49#5; // Nº de Linhas a Saltar;
+TabEXP0 = #27#68#0;
+TabEXP1 = #27#68#7;
+TabEXP2 = #27#68#38;
+TabEXP3 = #27#68#49;
+TabEXP4 = #27#68#44;
+TabEXP5 = #27#68#25;
+TabEXP6 = #27#68#20; 

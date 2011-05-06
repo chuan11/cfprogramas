@@ -1,0 +1,35 @@
+If you develop a database related software, then very popular task is to save some files (documents/images/reports/etc) in some BLOB field of table and use these saved data later.
+
+Nesta dica que eu quero mostrar como essa tarefa pode ser resolvido. In this tip I want to show how this task could be solved.
+
+Para salvar um arquivo para BLOB: To save a file to BLOB:
+
+ blob: = yourDataset.CreateBlobStream (yourDataset.FieldByName ('YOUR_BLOB'), bmWrite); blob := yourDataset.CreateBlobStream(yourDataset.FieldByName( 'YOUR_BLOB' ), bmWrite);
+tente try 
+   blob.Seek (0, soFromBeginning); blob.Seek(0, soFromBeginning);
+
+  fs: = TFileStream.Create ('c: \ your_name.doc' fmOpenRead ou fmShareDenyWrite); fs := TFileStream.Create( 'c:\your_name.doc' , fmOpenRead or fmShareDenyWrite);
+  tente try 
+     blob.CopyFrom (fs, fs.Size) blob.CopyFrom(fs, fs.Size)
+  finalmente finally 
+     fs.Free fs.Free
+  efeito; end ;
+finalmente finally 
+   blob.Free blob.Free
+efeito; end ;
+
+Para carregar a partir de BLOB: To load from BLOB:
+
+ blob: = yourDataset.CreateBlobStream (yourDataset.FieldByName ('YOUR_BLOB'), bmRead); blob := yourDataset.CreateBlobStream(yourDataset.FieldByName( 'YOUR_BLOB' ), bmRead);
+tente try 
+   blob.Seek (0, soFromBeginning); blob.Seek(0, soFromBeginning);
+
+  com TFileStream.Create ('c: \ your_name.doc' fmCreate or fmShareExclusive) fazer with TFileStream.Create( 'c:\your_name.doc' , fmCreate) do 
+     tente try 
+       Copyfrom (blob, blob.Size) CopyFrom(blob, blob.Size)
+    finalmente finally 
+       Grátis Free
+    efeito; end ;
+finalmente finally 
+   blob.Free blob.Free
+efeito; end ;

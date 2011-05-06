@@ -1,0 +1,27 @@
+unit uImportaIBGE;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, funcoes, funcSQL,
+  Dialogs, StdCtrls;
+
+type
+  TfmImportaIBGE = class(TForm)
+    mmAlteradas: TMemo;
+    mmIgnoradas: TMemo;
+    edArq: TEdit;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmImportaIBGE: TfmImportaIBGE;
+
+implementation
+
+{$R *.dfm}
+
+end.

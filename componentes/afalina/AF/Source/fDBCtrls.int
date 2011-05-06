@@ -1,0 +1,392 @@
+{*******************************************************************}
+{                                                                   }
+{       AfalinaSoft Visual Component Library                        }
+{       Flat Controls 1.53                                          }
+{                                                                   }
+{       Copyright (c) 1998-2002 Afalina Co., Ltd.                   }
+{       ALL RIGHTS RESERVED                                         }
+{                                                                   }
+{   The entire contents of this file is protected by U.S. and       }
+{   International Copyright Laws. Unauthorized reproduction,        }
+{   reverse-engineering, and distribution of all or any portion of  }
+{   the code contained in this file is strictly prohibited and may  }
+{   result in severe civil and criminal penalties and will be       }
+{   prosecuted to the maximum extent possible under the law.        }
+{                                                                   }
+{   RESTRICTIONS                                                    }
+{                                                                   }
+{   THIS SOURCE CODE AND ALL RESULTING INTERMEDIATE FILES           }
+{   (DCU, OBJ, DLL, ETC.) ARE CONFIDENTIAL AND PROPRIETARY TRADE    }
+{   SECRETS OF AFALINA CO., LTD. THE REGISTERED DEVELOPER IS        }
+{   LICENSED TO DISTRIBUTE THE FLAT CONTROLS AND ALL ACCOMPANYING   }
+{   VCL COMPONENTS AS PART OF AN EXECUTABLE PROGRAM ONLY.           }
+{                                                                   }
+{   THE SOURCE CODE CONTAINED WITHIN THIS FILE AND ALL RELATED      }
+{   FILES OR ANY PORTION OF ITS CONTENTS SHALL AT NO TIME BE        }
+{   COPIED, TRANSFERRED, SOLD, DISTRIBUTED, OR OTHERWISE MADE       }
+{   AVAILABLE TO OTHER INDIVIDUALS WITHOUT WRITTEN CONSENT          }
+{   AND PERMISSION FROM AFALINA CO., LTD.                           }
+{                                                                   }
+{   CONSULT THE END USER LICENSE AGREEMENT FOR INFORMATION ON       }
+{   ADDITIONAL RESTRICTIONS.                                        }
+{                                                                   }
+{*******************************************************************}
+unit fDBCtrls;
+
+interface
+
+uses
+  Windows, Messages, Classes, Graphics, Controls, Grids,
+  DB, DBCtrls, DBGrids,
+  fCtrls, fUtils;
+
+type
+  TfsDBGrid = class(TDBGrid)
+  private
+    FFlatStyle: TFlatStyle;
+    FMouseInControl: Boolean;
+    procedure SetFlatStyle(const Value: TFlatStyle);
+    procedure CMCtl3DChanged(var Message: TMessage); message CM_CTL3DCHANGED;
+    procedure CMEnter(var Message: TCMEnter); message CM_ENTER;
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+    procedure WMNCCalcSize(var Message: TWMNCCalcSize); message WM_NCCALCSIZE;
+    procedure WMNCPaint(var Message: TMessage); message WM_NCPAINT;
+    procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
+  protected
+    procedure DrawCell(ACol, ARow: Longint; ARect: TRect; AState: TGridDrawState); override;
+    procedure DoDrawBorders(Handle: HWND; NeedDraw3D: Boolean); virtual;
+    procedure CreateParams(var Params: TCreateParams); override;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property FlatStyle: TFlatStyle read FFlatStyle write SetFlatStyle default fsFlat;
+  end;
+
+  TfsDBText = class(TDBText)
+  private
+    FFlatStyle: TFlatStyle;
+    FFlatFont: TFont;
+    FStandardFont: TFont;
+    FMouseInControl: Boolean;
+    procedure SetFlatStyle(const Value: TFlatStyle);
+    procedure SetFlatFont(const Value: TFont);
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+  protected
+    procedure Click; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property FlatStyle: TFlatStyle read FFlatStyle write SetFlatStyle default fsFlat;
+    property FlatFont: TFont read FFlatFont write SetFlatFont;
+    property FocusControl;
+  end;
+
+  TfsDBEdit = class(TDBEdit)
+  private
+    FMouseInControl: Boolean;
+    FFlatStyle: TFlatStyle;
+    procedure SetFlatStyle(const Value: TFlatStyle);
+    procedure CMCtl3DChanged(var Message: TMessage); message CM_CTL3DCHANGED;
+    procedure CMEnter(var Message: TCMEnter); message CM_ENTER;
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+    procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
+  protected
+    procedure CreateParams(var Params: TCreateParams); override;
+    procedure DoDrawBorders(Handle: HWND; NeedDraw3D: Boolean); virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property Align;
+    property FlatStyle: TFlatStyle read FFlatStyle write SetFlatStyle default fsFlat;
+  end;
+
+  TfsDBMemo = class(TDBMemo)
+  private
+    FFlatStyle: TFlatStyle;
+    FMouseInControl: Boolean;
+    procedure SetFlatStyle(const Value: TFlatStyle);
+    procedure CMEnter(var Message: TCMEnter); message CM_ENTER;
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+    procedure WMNCCalcSize(var Message: TWMNCCalcSize); message WM_NCCALCSIZE;
+    procedure WMNCPaint(var Message: TMessage); message WM_NCPAINT;
+    procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
+  protected
+    procedure CreateParams(var Params: TCreateParams); override;
+    procedure DoDrawBorders(Handle: HWND; NeedDraw3D: Boolean); virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property FlatStyle: TFlatStyle read FFlatStyle write SetFlatStyle default fsFlat;
+  end;
+
+  TfsDBListBox = class(TDBListBox)
+  private
+    FFlatStyle: TFlatStyle;
+    FMouseInControl: Boolean;
+    procedure SetFlatStyle(const Value: TFlatStyle);
+    procedure CMEnter(var Message: TCMEnter); message CM_ENTER;
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+    procedure WMNCCalcSize(var Message: TWMNCCalcSize); message WM_NCCALCSIZE;
+    procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
+  protected
+    procedure CreateParams(var Params: TCreateParams); override;
+    procedure DoDrawBorders(Handle: HWND; NeedDraw3D: Boolean); virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property FlatStyle: TFlatStyle read FFlatStyle write SetFlatStyle default fsFlat;
+  end;
+
+  TfsDBComboBox = class(TDBComboBox)
+  private
+    FFlatStyle: TFlatStyle;
+    FMouseInControl: Boolean;
+    procedure SetFlatStyle(const Value: TFlatStyle);
+    procedure CMEnter(var Message: TCMEnter); message CM_ENTER;
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+  protected
+    procedure DoDrawBorders(Handle: HWND; NeedDraw3D: Boolean); virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property Align;
+    property FlatStyle: TFlatStyle read FFlatStyle write SetFlatStyle default fsFlat;
+  end;
+
+  TfsDBCheckBox = class(TDBCheckBox)
+  private
+    FFlatStyle: TFlatStyle;
+    FFlatFont: TFont;
+    FStandardFont: TFont;
+    FMouseInControl: Boolean;
+    procedure SetFlatFont(const Value: TFont);
+    procedure SetFlatStyle(const Value: TFlatStyle);
+    procedure CMEnter(var Message: TCMEnter); message CM_ENTER;
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+    procedure BMSetCheck(var Message: TMessage); message BM_SETCHECK;
+  protected
+    procedure DoDrawBorders(Handle: HWND; NeedDraw3D: Boolean); virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property Align;
+    property FlatStyle: TFlatStyle read FFlatStyle write SetFlatStyle default fsFlat;
+    property FlatFont: TFont read FFlatFont write SetFlatFont;
+  end;
+
+  TfsDBRadioGroup = class(TfsCustomRadioGroup)
+  private
+    FDataLink: TFieldDataLink;
+    FValue: string;
+    FValues: TStrings;
+    FInSetValue: Boolean;
+    FOnChange: TNotifyEvent;
+    procedure DataChange(Sender: TObject);
+    procedure UpdateData(Sender: TObject);
+    function GetDataField: string;
+    function GetDataSource: TDataSource;
+    function GetField: TField;
+    function GetReadOnly: Boolean;
+    function GetButtonValue(Index: Integer): string;
+    procedure SetDataField(const Value: string);
+    procedure SetDataSource(Value: TDataSource);
+    procedure SetReadOnly(Value: Boolean);
+    procedure SetValue(const Value: string);
+    procedure SetItems(Value: TStrings);
+    procedure SetValues(Value: TStrings);
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+  protected
+    procedure Change; dynamic;
+    procedure Click; override;
+    procedure KeyPress(var Key: Char); override;
+    function CanModify: Boolean; override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    property DataLink: TFieldDataLink read FDataLink;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    function ExecuteAction(Action: TBasicAction): Boolean; override;
+    function UpdateAction(Action: TBasicAction): Boolean; override;
+    function UseRightToLeftAlignment: Boolean; override;
+    property Field: TField read GetField;
+    property ItemIndex;
+    property Value: string read FValue write SetValue;
+  published
+    property Align;
+    property Anchors;
+    property BiDiMode;
+    property Caption;
+    property Color;
+    property Columns;
+    property Constraints;
+    property Ctl3D;
+    property DataField: string read GetDataField write SetDataField;
+    property DataSource: TDataSource read GetDataSource write SetDataSource;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
+    property Enabled;
+    property Font;
+    property Items write SetItems;
+    property ParentBiDiMode;
+    property ParentColor;
+    property ParentCtl3D;
+    property ParentFont;
+    property ParentShowHint;
+    property PopupMenu;
+    property ReadOnly: Boolean read GetReadOnly write SetReadOnly default False;
+    property ShowHint;
+    property TabOrder;
+    property TabStop;
+    property Values: TStrings read FValues write SetValues;
+    property Visible;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+    property OnClick;
+{$IFNDEF VER120}
+    property OnContextPopup;
+{$ENDIF}
+    property OnDragDrop;
+    property OnDragOver;
+    property OnEndDock;
+    property OnEndDrag;
+    property OnEnter;
+    property OnExit;
+    property OnStartDock;
+    property OnStartDrag;
+  end;
+
+  TfsDBLookupListBox = class(TDBLookupListBox)
+  private
+    FFlatStyle: TFlatStyle;
+    FMouseInControl: Boolean;
+    procedure SetFlatStyle(const Value: TFlatStyle);
+    procedure CMEnter(var Message: TCMEnter); message CM_ENTER;
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+    procedure WMNCCalcSize(var Message: TWMNCCalcSize); message WM_NCCALCSIZE;
+    procedure WMEraseBkgnd(var Message: TWmEraseBkgnd); message WM_ERASEBKGND;
+  protected
+    procedure CreateParams(var Params: TCreateParams); override;
+    procedure DoDrawBorders(Handle: HWND; NeedDraw3D: Boolean); virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property FlatStyle: TFlatStyle read FFlatStyle write SetFlatStyle default fsFlat;
+  end;
+
+  TfsDBLookupComboBox = class(TDBLookupComboBox)
+  private
+    FFlatStyle: TFlatStyle;
+    FMouseInControl: Boolean;
+    procedure SetFlatStyle(const Value: TFlatStyle);
+    procedure CMEnter(var Message: TCMEnter); message CM_ENTER;
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+  protected
+    procedure DoDrawBorders(Handle: HWND; NeedDraw3D: Boolean); virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property Align;
+    property FlatStyle: TFlatStyle read FFlatStyle write SetFlatStyle default fsFlat;
+  end;
+
+  TfsDBRichEdit = class(TDBRichEdit)
+  private
+    FFlatStyle: TFlatStyle;
+    FMouseInControl: Boolean;
+    procedure SetFlatStyle(const Value: TFlatStyle);
+    procedure CMEnter(var Message: TCMEnter); message CM_ENTER;
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
+    procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    procedure WMPaint(var Message: TWMPaint); message WM_PAINT;
+    procedure WMNCCalcSize(var Message: TWMNCCalcSize); message WM_NCCALCSIZE;
+    procedure WMNCPaint(var Message: TMessage); message WM_NCPAINT;
+    procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
+  protected
+    procedure CreateParams(var Params: TCreateParams); override;
+    procedure DoDrawBorders(Handle: HWND; NeedDraw3D: Boolean); virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property FlatStyle: TFlatStyle read FFlatStyle write SetFlatStyle default fsFlat;
+  end;
+
+  TfsDBDateTimePicker = class(TfsDateTimePicker)
+  private
+    FDataLink: TFieldDataLink;
+    function GetField: TField;
+    function GetDataField: string;
+    procedure SetDataField(const Value: string);
+    function GetDataSource: TDataSource;
+    procedure SetDataSource(const Value: TDataSource);
+    procedure CMExit(var Message: TCMExit); message CM_EXIT;
+  protected
+    procedure Change; override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure KeyDown(var Key: Word; Shift: TShiftState); override;
+    procedure KeyPress(var Key: Char); override;
+    procedure DataChange(Sender: TObject);
+    procedure UpdateData(Sender: TObject);
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    property Field: TField read GetField;
+  published
+    property DataField: string read GetDataField write SetDataField;
+    property DataSource: TDataSource read GetDataSource write SetDataSource;
+  end;
+
+  TfsDBComboEdit = class(TfsDBEdit)
+  private
+    FButton: TfsSpeedButton;
+    FButtonWidth: Integer;
+    FOnButtonClick: TNotifyEvent;
+    function GetGlyph: TBitmap;
+    procedure SetGlyph(const Value: TBitmap);
+    procedure DoButtonClick(Sender: TObject);
+    procedure DoMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure WMSize(var Message: TWMSize); message WM_SIZE;
+  protected
+    function GetClientRect: TRect; override;
+    procedure DoDrawBorders(Handle: HWND; NeedDraw3D: Boolean); override;
+    procedure KeyDown(var Key: word; Shift: TShiftState); override;
+    procedure CreateWnd; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+  published
+    property ButtonGlyph: TBitmap read GetGlyph write SetGlyph;
+    property OnButtonClick: TNotifyEvent read FOnButtonClick write FOnButtonClick;
+  end;
+
+procedure Register;
+
+implementation

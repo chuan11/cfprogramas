@@ -1,0 +1,4 @@
+fdsfdf
+32  - O arquivo ja esta aberto
+103 - File not open	
+105-  File not open for output	(ou nn preenchido o nome)

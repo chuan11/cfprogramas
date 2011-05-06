@@ -1,0 +1,142 @@
+unit uListaFornecedores;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, fCtrls, TFlatButtonUnit, adLabelEdit, DB,
+  ADODB, Grids, DBGrids, SoftDBGrid;
+
+type
+  TfmListaFornecedores = class(TForm)
+    fnGrid: TSoftDBGrid;
+    edit1: TadLabelEdit;
+    btBusca: TfsBitBtn;
+    fsBitBtn2: TfsBitBtn;
+    fsBitBtn3: TfsBitBtn;
+    dsPes: TDataSource;
+    procedure btBuscaClick(Sender: TObject);
+    procedure fsBitBtn3Click(Sender: TObject);
+    procedure edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormActivate(Sender: TObject);
+    procedure listarFornecedor();
+    procedure listarCliente();
+    procedure setPerfil(codPerfil:char);
+    procedure ajustBuscaDefornecedor();
+    procedure ajustBuscaDeCliente();
+
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmListaFornecedores: TfmListaFornecedores;
+  PERFIL:char;
+implementation
+
+uses funcoes , uCF, uMain, funcSQL;
+
+{$R *.dfm}
+
+procedure TfmListaFornecedores.listarFornecedor();
+begin
+ if length( funcoes.SohNumeros(edit1.Text)) = length(edit1.Text) then
+    dsPes.DataSet := uCF.getDadosFornecedor(edit1.Text,'')
+ else
+    dsPes.DataSet := uCF.getDadosFornecedor('', edit1.Text);
+
+   if dsPes.DataSet.IsEmpty = false then
+   begin
+      fnGrid.Columns[  dspes.DataSet.FieldByName('fornecedor').Index ].Width := 150;
+   end;
+end;
+
+procedure TfmListaFornecedores.listarCliente();
+begin
+   if length( funcoes.SohNumeros(edit1.Text)) = length(edit1.Text) then
+      dsPes.DataSet := uCF.getDadosCliente(edit1.Text,'')
+   else
+      dsPes.DataSet := uCF.getDadosCliente('', edit1.Text);
+
+   if (dsPes.DataSet.IsEmpty = false) then
+   begin
+      fnGrid.Columns[dspes.DataSet.FieldByName('nome').Index ].Width := 150;
+      fnGrid.Columns[dspes.DataSet.FieldByName('endereco').Index ].Width := 250;
+   end;
+end;
+
+procedure TfmListaFornecedores.fsBitBtn3Click(Sender: TObject);
+begin
+  if (dsPes.DataSet.isEmpty = true) then
+     ModalResult := mrCancel
+   else
+     ModalResult := mrOk;
+end;
+
+procedure TfmListaFornecedores.edit1KeyDown(Sender: TObject; var Key: Word;  Shift: TShiftState);
+begin
+   if(key=VK_RETURN)then
+      btBuscaClick(nil);
+end;
+
+procedure TfmListaFornecedores.FormActivate(Sender: TObject);
+begin
+   edit1.SelectAll();
+end;
+
+
+
+procedure TfmListaFornecedores.ajustBuscaDefornecedor;
+begin
+   edit1.LabelDefs.Caption := 'Digite o nome do fornecedor para buscar:';
+   fmListaFornecedores.Caption := 'Buscar fornecedor';
+end;
+
+procedure TfmListaFornecedores.ajustBuscaDeCliente;
+begin
+   edit1.LabelDefs.Caption := 'Digite o nome do cliente para buscar:';
+   fmListaFornecedores.Caption := 'Buscar cliente';
+end;
+
+procedure TfmListaFornecedores.btBuscaClick(Sender: TObject);
+begin
+  if ( Perfil = 'F') then
+      listarFornecedor();
+  if ( Perfil = 'C') then
+      listarCliente();
+end;
+
+procedure TfmListaFornecedores.setPerfil(codPerfil: char);
+begin
+   if ( codPerfil = 'F') then
+      ajustBuscaDefornecedor();
+
+   if ( codPerfil = 'C') then
+      ajustBuscaDeCliente();
+   PERFIL := codPerfil;
+end;
+
+
+
+
+end.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
