@@ -1,0 +1,66 @@
+O Delphi 7 é uma ferramenta maravilhosa. De longe a melhor IDE de programação que conheço e ainda não superada nem pelas suas versões mais novas (pelo menos pra mim).
+
+Mas como qualquer software, o Delphi 7 também não é perfeito. E um dos problemas mais comuns enfrentados por quem trabalha com ele no dia-a-dia é quando tem se tem que trocar de máquina ou formatar a máquina atual. É terrível sobretudo quando temos dezenas de componentes instalados. É um martírio ter que reinstalar aquilo tudo um por um. Muito chato.
+
+Chega a ser irônico. Você tem dezenas de soluções de backup desenvolvidas em Delphi mas o próprio Delphi não tem uma solução de backup de suas configurações. Então acabei – meio que na tentativa e erro – descobrindo um meio de fazer este backup de uma forma satisfatória com um trabalho menor do que reinstalar as dezenas de componentes que utilizo.
+
+Alguns colegas que viram o que fiz sempre me pedem para lhes ajudar quando precisam migrar de máquina e sempre ajudo. Numa destas ajudas surgiu a idéia de se fazer um artigo com um tutorial passo-a-passo do que é preciso se fazer para realizar com sucesso este backup. Então, dedicado a Marcos Moraes e a Carlito Jr., aí vai o tutorial:
+
+Tutorial – Backup das Configurações do Delphi para um Novo Computador
+Antes de Começar, Alguns Pontos
+
+    * É bom ressaltar aqui que não vou entrar em detalhes de como utilizar o editor de registro. Como programador acho que você já deve estar bastante familiarizado com a utilização dele.
+    * Também não vou colocar fotos (screenshots) do processo por não achar necessário já que é um procedimento muito simples.
+    * A não ser que você vá formatar o computador para instalar de novo, é recomendável deixar a instalação anterior intacta até ter tudo funcionando na nova máquina. Podem surgir excessões e com a instalação intacta é bem mais fácil resolver o problema visto que o Delphi irá informar qual/quais arquivos estão faltando. Mas acho que as dicas que dei até aqui cobrem tudo.
+
+Primeira Parte – o Backup da Máquina/Instalação Antiga
+Preparativos
+
+Crie uma pasta onde salvaremos todos os arquivos que precisarão ser copiados. A pasta se chamará aqui c:\bkpdelphi. Dentro desta pasta crie as pastas c:\bkpdelphi\registros\, c:\bkpdelphi\borland\, c:\bkpdelphi\componentes\ e c:\bkpdelphi\system32\.
+Copiando o Registro
+
+Primeiro vamos salvar os arquivos de registro utilizados pelo Delphi. Execute o Editor de Registro através do comando Iniciar > Executar… clicando em ou usando a tecla de atalho Windows+R. Digite “regedit” e clique no botão OK ou pressione ENTER.
+
+Assim que o Editor de Registro inicializar, maximize-o para ter uma melhor visão e procure pela chave de registro HKEY_CURRENT_USER\Software\Borland aí clique no menu Arquivo > Exportar… para gerar um arquivo. Lembre-se de salvar com o nome de registro-bkp-delphi-1.reg na pasta c:\bkpdelphi\registros\. Repita a mesma operação com a chave HKEY_LOCAL_MACHINE\SOFTWARE\Borland desta vez salvando como registro-bkp-delphi-2.reg.
+Copiando os Arquivos do Delphi Necessários
+
+Agora é a vez de copiar os arquivos da pasta de instalação do Delphi. Copie a pasta C:\Arquivos de programas\Borland\ juntamente com tudo que há nela para a pasta c:\bkpdelphi\borland\. Na verdade apenas alguns arquivos daqui são necessários, mas para não ter que dizer um por um, é mais fácil copiar tudo já que não é tão grande assim.
+Copiando os Arquivos de System32
+
+Não sei porque, mas o Delphi deixa vários arquivos .BPL no diretório System32 do Windows. Acho um problema, mas fazer o que? Você deve copiar todos os arquivos de extensão .BPL que encontrar na pasta c:\Windows\System32 para a pasta c:\bkpdelphi\system32\. Para facilitar ordene os arquivos por TIPO e assim todos os arquivos .BPL ficarão juntos facilitando a cópia.
+Arquivos dos Componentes
+
+Você deve copiar para a pasta c:\bkpdelphi\componentes\ todos os componentes que você utiliza. Talvez este passo nem seja necessário porque geralmente você deve normalmente fazer o backup dos componentes juntamente com o backup de seus fontes. Mas em todo caso não custa nada lembrar.
+
+    NOTA 1: Um detalhe importante é que você deve reproduzir no computador de destino EXATAMENTE a mesma hierarquia de diretórios que você utiliza para seus componentes. Por exemplo. Se você guarda seus componentes atualmente na pasta c:\empresa\fontes\componentes. copie esta pasta componentes e quando for salvar no computador de destino, salve a pasta componentes no mesmo diretório c:\empresa\fontes\componentes. Senão não funciona!
+
+    NOTA 2: Eu utilizo uma única pasta para guardar todos os meus componentes e isto facilita este processo. Para o caso de você ter vários componentes instalados em várias pastas, eu recomendo que você reinstale seu Delphi da maneira normal e centralize todos os seus componentes em um único diretório. Na próxima vez você terá maior facilidade em fazer a migração.
+
+Com isto, concluímos a primeira parte, que é a preparação para o backup. Salve todo o conteúdo de c:\bkpdelphi\ em um CD ou DVD para levarmos para a máquina nova. Vamos lá!
+Segunda Parte – a Restauração do Backup na Nova Máquina/Instalação
+
+Os procedimentos na nova máquina são bem simples e seguem quase que a mesma lógica do backup – só que invertida, é claro. Desta vez vamos assumir que os arquivos de backup estão num CD/DVD-ROM sob a letra D: e portanto na pasta d:\bkpdelphi\. Mas antes é preciso instalar o Delphi.
+Instalando e Preparando o Delphi
+
+Primeiro você instala normalmente o seu Delphi a partir do CD/DVD de instalação. Tomando o cuidado de ativar (se é que você se lembra) as mesmas opções ativadas quando você instalou na máquina anterior. Se não lembra, utilize a instalação padrão.
+
+Com o Delphi instalado, reinicie o computador e execute-o pela primeira vez para que o Delphi realize as últimas configurações e preparações necessárias. Apos o Delphi abrir e terminar seu carregamento, não há nada pra fazer nele agora. Feche-o para darmos prosseguimento ao processo de restauração do backup.
+Restaurando os Arquivos do Delphi
+
+Agora você deve copiar de volta os arquivos que estão no CD/DVD-ROM, para seus locais de origem. Vamos começar pelos arquivos da pasta de instalação do Delphi. Você irá copiar a pasta c:\bkpdelphi\borland\Borland para a pasta C:\Arquivos de programas\Borland\. A maioria dos arquivos já existe na pasta de destino, portanto, na medida que o sistema vai pedindo para substituir você diz SIM ou SIM PARA TODOS ou NÃO ou NÃO PARA TODOS, tanto faz. O que importa são os arquivos que não existiam e que serão copiados aos seus devidos lugares neste processo.
+A Pasta System32
+
+O mesmo deve ser feito com a pasta d:\bkpdelphi\System32 todos os seus arquivos devem ser copiados para c:\Windows\System32 substituindo ou não os arquivos repetidos quando isto for perguntado.
+Os Arquivos dos Componentes
+
+Da mesma forma, você deve copiar seus componentes para a mesmíssima pasta onde ficavam no seu computador anterior. Se algum componente estiver em diretório diferente ele não irá funcionar no Delphi e na hora de compilar seus sistemas faltalmente ocorrerão erros.
+Os Arquivos de Registro
+
+Por último você deve restaurar os arquivos .REG que estão na pasta d:\bkpdelphi\registros. Basta clicar duas vezes em cada arquivo que está lá e quando o sistema perguntar algo, responda SIM ou OK em todas as vezes. Não tem mistério. Execute o arquivo .REG e clique em SIM e em OK e pronto.
+Última Parte – Testando o Delphi
+
+Pronto! Agora você pode abrir o Delphi e então verá – se nada de diferente ocorrer e se você não fez nada errado – que está tudo no seu lugar como antes. Inclusive as configurações do Delphi, ambiente, posição e disposição de janelas, cores, tudo. Os componentes estarão lá todos registrados.
+
+É isso aí! Espero que este artigo venha a ser útil para vocês como é pra mim. Não deixem de comentar aqui se há algo a acrescentar ou corrigir.
+
+Grande abraço!

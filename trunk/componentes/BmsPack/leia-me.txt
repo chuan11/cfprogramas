@@ -1,0 +1,7 @@
+Instalação:
+Não tem segredo, se você tem o Delphi5 abra o BmsPack_D5.dpk, compile e instale. Se voce tiver o Delphi 6, entao compile e instale o BmsPack_D6.dpk. Feito isso nao se esqueca de colocar o Caminho de onde estao os .PAS lá no Enviroment Options -> Library.
+Bom divertimento!
+
+Desenvolvido por:
+Bruno Martins Stuani ( Nildo )
+brunildo.st@ig.com.br

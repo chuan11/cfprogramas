@@ -1,0 +1,60 @@
+package ActiveDelphi_K2RT;
+
+{$R *.res}
+{$ALIGN 1}
+{$ASSERTIONS OFF}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA OFF}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS OFF}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'ActiveDelphi Components (Cross Platform) - Rumtime'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+{$RUNONLY ON}
+
+requires
+  designide;
+
+contains
+  adLabelDBLookupDialog in '..\..\source\adLabelDBLookupDialog.pas',
+  adLabelImageEX in '..\..\source\adLabelImageEX.pas',
+  adLabelEdit in '..\..\source\adLabelEdit.pas',
+  adLabelImage in '..\..\source\adLabelImage.pas',
+  adLabelListBox in '..\..\source\adLabelListBox.pas',
+  adLabelMaskEdit in '..\..\source\adLabelMaskEdit.pas',
+  adLabelMemo in '..\..\source\adLabelMemo.pas',
+  adBoundLabel in '..\..\source\adBoundLabel.pas',
+  adLabelCheckListBox in '..\..\source\adLabelCheckListBox.pas',
+  adLabelComboBox in '..\..\source\adLabelComboBox.pas',
+  adLabelDBComboBox in '..\..\source\adLabelDBComboBox.pas',
+  adLabelDBEdit in '..\..\source\adLabelDBEdit.pas',
+  adLabelDBImage in '..\..\source\adLabelDBImage.pas',
+  adLabelDBListBox in '..\..\source\adLabelDBListBox.pas',
+  adLabelDBLookupComboBox in '..\..\source\adLabelDBLookupComboBox.pas',
+  adLabelDBMemo in '..\..\source\adLabelDBMemo.pas',
+  adLabelDBLookupDialogForm in '..\..\source\adLabelDBLookupDialogForm.pas' {frm_LookupDialog},
+  adLabelNumericEdit in '..\..\source\adLabelNumericEdit.pas',
+  adLabelSpinEdit in '..\..\source\adLabelSpinEdit.pas',
+  adLabelDBNumericEdit in '..\..\source\adLabelDBNumericEdit.pas',
+  adLabelDBSpinEdit in '..\..\source\adLabelDBSpinEdit.pas',
+  adDBGridEX in '..\..\source\adDBGridEX.pas',
+  adClientConnection in '..\..\source\adClientConnection.pas',
+  adServerConnection in '..\..\source\adServerConnection.pas',
+  adUtils in '..\..\source\adUtils.pas';
+
+end.

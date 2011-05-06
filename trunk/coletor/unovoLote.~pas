@@ -1,0 +1,47 @@
+unit unovoLote;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, TFlatButtonUnit, funcoes;
+
+type
+  TfmNovoLote = class(TForm)
+    edNovoLote: TEdit;
+    FlatButton1: TFlatButton;
+    FlatButton2: TFlatButton;
+    procedure FlatButton1Click(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmNovoLote: TfmNovoLote;
+
+implementation
+
+uses uColetaContagem;
+
+{$R *.dfm}
+
+procedure TfmNovoLote.FlatButton1Click(Sender: TObject);
+begin
+   if (funcoes.SohNumeros(edNovoLote.Text) = '') then
+   begin
+      MsgTela2('','Número inválido',0);
+      edNovoLote.SetFocus();
+   end
+   else
+      ModalResult:= mrOk;
+end;
+
+procedure TfmNovoLote.FormActivate(Sender: TObject);
+begin
+   fmNovoLote.Position := poMainFormCenter;
+end;
+
+end.

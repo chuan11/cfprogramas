@@ -1,0 +1,61 @@
+{*******************************************************************}
+{                                                                   }
+{       AfalinaSoft Visual Component Library                        }
+{       Flat Controls 1.53                                          }
+{                                                                   }
+{       Copyright (c) 1998-2002 Afalina Co., Ltd.                   }
+{       ALL RIGHTS RESERVED                                         }
+{                                                                   }
+{   The entire contents of this file is protected by U.S. and       }
+{   International Copyright Laws. Unauthorized reproduction,        }
+{   reverse-engineering, and distribution of all or any portion of  }
+{   the code contained in this file is strictly prohibited and may  }
+{   result in severe civil and criminal penalties and will be       }
+{   prosecuted to the maximum extent possible under the law.        }
+{                                                                   }
+{   RESTRICTIONS                                                    }
+{                                                                   }
+{   THIS SOURCE CODE AND ALL RESULTING INTERMEDIATE FILES           }
+{   (DCU, OBJ, DLL, ETC.) ARE CONFIDENTIAL AND PROPRIETARY TRADE    }
+{   SECRETS OF AFALINA CO., LTD. THE REGISTERED DEVELOPER IS        }
+{   LICENSED TO DISTRIBUTE THE FLAT CONTROLS AND ALL ACCOMPANYING   }
+{   VCL COMPONENTS AS PART OF AN EXECUTABLE PROGRAM ONLY.           }
+{                                                                   }
+{   THE SOURCE CODE CONTAINED WITHIN THIS FILE AND ALL RELATED      }
+{   FILES OR ANY PORTION OF ITS CONTENTS SHALL AT NO TIME BE        }
+{   COPIED, TRANSFERRED, SOLD, DISTRIBUTED, OR OTHERWISE MADE       }
+{   AVAILABLE TO OTHER INDIVIDUALS WITHOUT WRITTEN CONSENT          }
+{   AND PERMISSION FROM AFALINA CO., LTD.                           }
+{                                                                   }
+{   CONSULT THE END USER LICENSE AGREEMENT FOR INFORMATION ON       }
+{   ADDITIONAL RESTRICTIONS.                                        }
+{                                                                   }
+{*******************************************************************}
+unit fUtils;
+
+{$DEFINE FREE}
+
+interface
+
+uses Windows, Classes, Grids;
+
+const
+  BTN_ELLIPSIS = 'BTN_ELLIPSIS';
+
+{ Grids types }
+type
+  PIntArray = ^TIntArray;
+  TIntArray = array[0..MaxCustomExtents] of Integer;
+
+procedure DrawBorders(Handle: HWnd; Need3D: Boolean);
+procedure SetProperty(const APropName: string; AComponent: TComponent; Value: Integer);
+function ScrollBarsVisible(const Handle: HWND): Boolean;
+function StackAlloc(Size: Integer): Pointer; register;
+procedure StackFree(P: Pointer); register;
+procedure FillDWord(var Dest; Count, Value: Integer); register;
+
+var
+  ColorInner: COLORREF;
+  Registered: Boolean = True;
+
+implementation

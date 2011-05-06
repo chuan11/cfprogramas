@@ -1,0 +1,5 @@
+"CF_NoCopyOnSpan" (10186): "CopyZippedFiles não é implementada para arquivos ZIP divididos em múltiplos volumes"
+
+"DL_NoDelOnSpan"  (10402): "Não é possível deletar arquivos de um ZIP dividido em múltiplos volumes"
+
+

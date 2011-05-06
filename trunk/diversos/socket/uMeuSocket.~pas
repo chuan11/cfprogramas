@@ -1,0 +1,37 @@
+unit uMeuSocket;
+
+interface
+
+uses
+  classes, SysUtils, GrFingerXLib_TLB, ActiveX, verificaSenhas, Controls,
+  dialogs, funcSQl, QForms,funcoes, funcDatas,
+
+  ScktComp ;
+
+type
+  TMeuSocket = class
+
+  sock: TclientSocket;
+
+    public
+    procedure create(Host:String);
+    procedure destroy();
+end;
+
+implementation
+
+procedure TMeuSocket.Create(Host:String);
+begin
+   sock := TClientSocket.Create(nil);
+   sock.Host := Host;
+   sock.Port := 3436;
+end;
+
+
+procedure TMeuSocket.destroy();
+begin
+   sock.Close();
+   sock.Free();
+end;
+
+end.

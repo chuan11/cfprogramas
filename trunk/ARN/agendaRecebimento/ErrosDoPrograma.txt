@@ -1,0 +1,31 @@
+EDatabaseError - ADOTable1: Cannot perform this operation on a closed dataset
+EDatabaseError - ADOTable1: Cannot perform this operation on a closed dataset
+EDateTimeError - You must be in ShowCheckbox mode to set to this date
+EDateTimeError - You must be in ShowCheckbox mode to set to this date
+EDatabaseError - ADOQuery1: Missing SQL property
+EOleException - Erro de sintaxe (operador faltando) na expressão de consulta '* agenda where RECEBIDA = '0'
+and PrevChegada = '27/06/2007''
+EDatabaseError - ADOQuery1: Missing SQL property
+EOleException - Tipo de dados imcompatível na expressão de critério
+EDatabaseError - ADOQuery1: Cannot perform this operation on a closed dataset
+EDatabaseError - ADOQuery1: Cannot perform this operation on a closed dataset
+EDatabaseError - ADOQuery1: Cannot perform this operation on a closed dataset
+EDatabaseError - ADOQuery1: Cannot perform this operation on a closed dataset
+EDatabaseError - ADOQuery1: Cannot perform this operation on a closed dataset
+EDatabaseError - ADOQuery1: Cannot perform this operation on a closed dataset
+EDatabaseError - ADOQuery1: Cannot perform this operation on a closed dataset
+EOleException - Tipo de dados imcompatível na expressão de critério
+EOleException - Tipo de dados imcompatível na expressão de critério
+EOleException - Tipo de dados imcompatível na expressão de critério
+EOleException - Tipo de dados imcompatível na expressão de critério
+EOleException - Tipo de dados imcompatível na expressão de critério
+EOleException - Tipo de dados imcompatível na expressão de critério
+EOleException - Tipo de dados imcompatível na expressão de critério
+EDatabaseError - ADOTable1: Cannot perform this operation on a closed dataset
+EDatabaseError - ADOTable1: Cannot perform this operation on a closed dataset
+EOleException - Erro de sintaxe (operador faltando) na expressão de consulta 'and PrevChegada = 27/07/2007'
+EOleException - Erro de sintaxe (operador faltando) na expressão de consulta 'and PrevChegada = 27/07/2007'
+EOleException - Tipo de dados imcompatível na expressão de critério
+EOleException - Tipo de dados imcompatível na expressão de critério
+EConvertError - '' is not a valid integer value
+EConvertError - '' is not a valid integer value

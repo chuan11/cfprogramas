@@ -1,0 +1,673 @@
+unit uAjustaSPED;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, fCtrls, Buttons, adLabelEdit, funcoes, IniFiles, funcSql ;
+
+type
+  TfmAjustaSPED = class(TForm)
+    edArq: TadLabelEdit;
+    fsBitBtn1: TfsBitBtn;
+    memo: TfsMemo;
+    btOcoProduto: TButton;
+    edRef: TEdit;
+    Button1: TButton;
+
+    function getCampo(indice:integer; str:String):String;
+    function getCampoInt(indice:integer; str:String):integer;
+    function getIdxReg(arq:TStringList; idRegistro:String):integer;
+    function getIsRef(linha:String):String;
+    function getItensFaturados(arq:TstringList):TStringList;
+    function getItensReg0200(arq:TStringList):TStringList;
+    function getNumNota(str:String):integer;
+    function getNumReg(linha:String):String;
+    function getNumRegDuplo(linha:String):String;
+    function getPosInicio(idCampo:integer; linha:String):integer;
+    function updateCampo(linha:String; idCampo:integer; novoValor:String):String;
+    function updateCampoArq(var arq:TStringlist; idRegistro:String; idCampo:integer; novoValor:String):boolean;
+    procedure ajustaEmissorNota(nmArquivo:String);
+    procedure ajustaNumeracoesNotas(nmArquivo:String);
+    procedure ajustarArqParaSPED(arq:String);
+    procedure ajustaRegistroInventario(nmArquivo:String);
+    procedure atualizaTotalLinhas(var arq:Tstringlist);
+    procedure btOcoProdutoClick(Sender: TObject);
+    procedure edArqDblClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure fsBitBtn1Click(Sender: TObject);
+    procedure incluirItensFaturados(nmArquivo:String);
+    procedure insereItensReg200(var arq:TStringList; itensAInserir: TStringList);
+    procedure Log(str:String);
+    procedure pesqMovimentoItem(isRef:String);
+    procedure removeItensSemNota(nArq:String);
+    procedure ajustaRegC425(nArq:String);
+
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmAjustaSPED: TfmAjustaSPED;
+
+implementation
+uses uMain;
+
+{$R *.dfm}
+
+procedure TfmAjustaSPED.atualizaTotalLinhas(var arq: Tstringlist);
+begin
+   arq[arq.count-1] := updateCampo(arq[arq.count-1], 2, intToStr( arq.count));
+end;
+
+function TfmAjustaSPED.getIsRef(linha: String): String;
+begin
+   if ( getNumReg(linha) = 'C170')  then
+      result := getCampo(3, linha)
+   else if (getNumReg(linha) = 'C425') or (getNumReg(linha) = 'H010')  then
+      result := getCampo(2, linha)
+   else
+      result := '';
+end;
+
+
+
+function TfmAjustaSPED.getNumNota(str: String): integer;
+begin
+   if (getCampo(8, str) <> '') then
+      result := strToInt( getCampo(8, str) )
+   else
+      result := 0;
+end;
+
+
+function TfmAjustaSPED.getItensFaturados(arq: TstringList): TStringList;
+var
+   prodNotas :TStringList;
+   i:integer;
+   item:String;
+begin //
+   prodNotas := TStringList.Create();
+   for i:=0 to arq.Count -1 do
+   begin
+      item := getIsRef(arq[i]);
+      if (item <> '') then
+         if ( prodNotas.IndexOf(item) = -1) then
+            prodNotas.Add(item);
+//      end;
+   end;
+   prodNotas.SaveToFile('c:\produtos.txt');
+   result := prodNotas;
+end;
+
+function TfmAjustaSPED.getPosInicio(idCampo:integer; linha:String):integer;
+var
+  campoAtual, posInicio:integer;
+begin
+   posInicio := 0;
+   campoAtual := 1;
+   while ( (posInicio <= Length(linha)) and (campoAtual <= idCampo) ) do
+   begin
+      inc(posInicio);
+      if copy(linha, posInicio,01) = '|' then
+         inc(campoAtual);
+   end;
+   result := posInicio;
+end;
+
+
+function TfmAjustaSPED.getIdxReg(arq: TStringList; idRegistro: String): integer;
+var
+   idx, i:integer;
+begin
+   idx := -1;
+   for i:=0 to arq.Count-1 do
+      if  ( getNumReg(arq[i]) = idRegistro) then
+      begin
+         idx := i;
+         break;
+      end;
+   result := idx;
+end;
+
+function TfmAjustaSPED.updateCampo(linha:String; idCampo: integer; novoValor: String): String;
+var
+   lengthLinha, posInicio:integer;
+begin
+   posInicio := getPosInicio(idCampo, linha)+1;
+   lengthLinha := length(linha);
+   while  (copy(linha, posInicio, 01) <> '|') and (posInicio <= lengthLinha   )  do
+      delete(linha, posInicio, 01);
+   insert(novoValor, linha, posInicio);
+   funcoes.gravaLog('TfmAjustaSPED.updateCampo linha: ' + intToStr(idCampo) + ' Novo valor: '+ novoValor);
+   result := linha;
+end;
+
+function TfmAjustaSPED.updateCampoArq(var arq:TStringlist; idRegistro:String; idCampo:integer; novoValor:String):boolean;
+var
+  i:integer;
+begin
+   Log('Atualizando registro '  + idRegistro +' campo: ' + IntToStr(idCampo) );
+
+   if length(idRegistro) = 4 then
+   begin
+      for i:=0 to arq.Count-1 do
+         if ( getNumReg(arq[i]) = idRegistro ) then
+            arq[i] :=   updateCampo(arq[i], idCampo, novoValor);
+   end
+   else
+   begin
+      for i:=0 to arq.Count-1 do
+         if ( getNumRegDuplo(arq[i]) = idRegistro ) then
+            arq[i] :=   updateCampo(arq[i], idCampo, novoValor);
+   end;
+   result := true;
+end;
+
+function TfmAjustaSPED.getNumRegDuplo(linha:String):String;
+begin
+   result := copy(linha, 02, 09 );
+end;
+
+function TfmAjustaSPED.getNumReg(linha:String):String;
+begin
+   result := copy(linha, 02, 04 );
+end;
+
+
+function TfmAjustaSPED.getCampo(indice:integer; str:String): String;
+var
+  posInicio, tamanho:integer;
+begin
+   tamanho := 1;
+   posInicio := getPosInicio(indice, str);
+   while ( ( (tamanho+posInicio) <= Length(str) ) and  ( copy(str, (posInicio+tamanho), 01) <> '|')  ) do
+      inc(tamanho);
+   result := copy(str, posInicio+1, tamanho-1);
+end;
+
+function TfmAjustaSPED.getCampoInt(indice: integer; str: String): integer;
+begin
+   result := strToInt(getCampo(indice, str));
+end;
+
+
+procedure TfmAjustaSPED.Log(str: String);
+begin
+   funcoes.gravaLog(str);
+   memo.Lines.Add(str);
+end;
+
+
+procedure TfmAjustaSPED.removeItensSemNota(nArq: String);
+var
+   arq, dest,  prodNotas:TStringList;
+   qtItens, i:integer;
+   item:String;
+begin
+   log('Removendo itens que não tem movimentação fiscal...');
+
+   arq := TStringList.Create();
+   arq.LoadFromFile(nArq);
+   prodNotas := TStringList.Create();
+
+   dest := TStringList.Create();
+
+// criando a lista de itens que tem notas de venda ou redução
+   prodNotas := getItensFaturados(arq);
+
+   qtItens := -1;
+   for i:= 0 to arq.Count -1  do
+   begin
+      if ( getNumReg(arq[i]) = '0200' ) then
+      begin
+         inc(qtItens);
+         item := getCampo(2, arq[i]);
+
+         if ( prodNotas.IndexOf(item) < 0 ) then
+         begin
+            qtItens := qtItens -1;
+            gravaLog('Removido: '+ arq[i])
+         end
+         else
+            dest.Add(arq[i]);
+      end
+      else
+         dest.Add(arq[i]);
+   end;
+
+
+// Alterar a quantidade de registros de produtos
+   funcoes.gravaLog('Ajutando o registro 9900|0200 valor: '+ intToStr(qtItens) );
+   updateCampoArq(dest, '9900|0200', 3, intToStr(qtItens+1) );
+
+
+// Atualizar o numero de linhas do arquivo
+   atualizaTotalLinhas(dest);
+
+   i := getIdxReg(dest, '0990');
+   dest[i] := updateCampo(dest[i], 2, intToStr(i+1));
+
+   arq.Destroy();
+
+   dest.SaveToFile(nArq);
+
+   dest.Destroy();
+end;
+
+
+procedure TfmAjustaSPED.edArqDblClick(Sender: TObject);
+begin
+   edArq.Text := funcoes.DialogAbrArq('txt','c:\');
+end;
+
+procedure TfmAjustaSPED.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+   funcoes.salvaCampos(fmAjustaSPED);
+   action := Cafree;
+   fmAjustaSPED := nil;
+end;
+
+
+
+procedure TfmAjustaSPED.FormCreate(Sender: TObject);
+begin
+   fmMain.getParametrosForm(fmAjustaSPED);
+   memo.Lines.Clear();
+end;
+
+
+procedure TfmAjustaSPED.pesqMovimentoItem(isRef: String);
+var
+   arq:TStringList;
+   qtSai, qtEnt, idxNota, i:integer;
+begin //
+   qtSai := 0 ;
+   qtEnt := 0 ;
+
+   arq := TStringList.Create();
+   arq.LoadFromFile(edArq.Text);
+
+// registros das notas
+   for i:= 0 to arq.Count-1 do
+   begin
+      if (getNumReg(arq[i]) = 'C170') then
+         if ( getCampo(3, arq[i]) =  isRef ) then
+         begin
+            idxNota := i- getCampoInt(2, arq[i]) ;
+            // verificar se e nota de entrada ou saida
+            if ( getCampo(2, arq[idxNota]) = '0') then
+            begin
+               log(' Entrada, nota : ' + getCampo(7, arq[idxNota]) + '/'+ getCampo(8, arq[idxNota]) + ' quantidade: ' +  getCampo(5, arq[i]) +  ' linha:' + intToStr(i+1));
+               qtEnt := qtEnt + getCampoInt(5, arq[i])
+            end
+            else
+            begin
+               log(' saida, nota : ' + getCampo(7, arq[idxNota]) + '/'+ getCampo(8, arq[idxNota]) + ' quantidade: ' +  getCampo(5, arq[i]) +  ' linha:' + intToStr(i+1) );
+               qtSai := qtSai + getCampoInt(5, arq[i]);
+            end
+         end;
+   end;
+
+// registros das reduções
+   for i:= 0 to arq.Count-1 do
+   begin
+      if (getNumReg(arq[i]) = 'C425') then
+         if (getCampo(2, arq[i]) = isRef) then
+         begin
+             idxNota := i;
+             while ( getNumReg(arq[idxNota]) <> 'C405' ) do
+                idxNota := idxNota -1;
+
+             log('Reducao, data:' + getCampo(2, arq[idxNota])  + ' quantidade: ' + getCampo(3, arq[i]));
+             qtSai := qtSai + getCampoInt(3, arq[i]);
+         end;
+   end;
+
+   log('Saidas: ' + intToStr(qtSai) + ' Entradas: ' + intToStr(qtEnt));
+   arq.Destroy();
+end;
+
+procedure TfmAjustaSPED.btOcoProdutoClick(Sender: TObject);
+begin
+   screen.Cursor := crHourGlass;
+   if (fileExists(edArq.Text) = true) and ( edRef.Text <> '' ) then
+      pesqMovimentoItem(edRef.Text);
+   screen.Cursor := crDefault;
+end;
+
+
+procedure TfmAjustaSPED.FormResize(Sender: TObject);
+begin
+   memo.Width :=   fmAjustaSPED.Width - 50;
+   memo.height :=  fmAjustaSPED.height - 130;
+end;
+
+procedure TfmAjustaSPED.ajustaEmissorNota(nmArquivo: String);
+var
+   itens,arq:TStringList;
+   i:integer;
+begin
+   log('Ajustando a emissão das notas de entrada');
+   arq := TStringList.Create();
+   arq.LoadFromFile(nmArquivo);
+   for i:=0 to arq.Count -1 do
+   begin
+      if( getNumReg(arq[i]) = 'C100') and ( getCampo(2, arq[i]) = '0') then
+         if ( ( getCampo(11, arq[i+1]) = '1152') or ( getCampo(11, arq[i+1]) = '2152') or ( getCampo(11, arq[i+1]) = '1102') or ( getCampo(11, arq[i+1]) = '2102') ) then
+            if ( getCampo(2, arq[i]) <> '1') then
+            begin
+
+               arq[i] := updateCampo(arq[i], 3, '1' );
+            end;
+   end;
+   arq.SaveToFile(nmArquivo);
+   arq.Destroy();
+end;
+
+procedure TfmAjustaSPED.ajustaNumeracoesNotas(nmArquivo:String);
+var
+   series,arq: TStringList;
+   idNotas, i:integer;
+   notas:TiniFile;
+   arqNotas:String;
+begin //
+//   arqNotas :=  funcoes.TempDir() + 'notas.txt'
+   arqNotas :=  'c:\notas.txt';
+
+   log('Ajustando o registro de inicio fim das notas...');
+   arq :=  TStringList.Create();
+   arq.LoadFromFile(nmArquivo);
+
+    if FileExists(arqNotas) = true  then
+       DeleteFile( arqNotas );
+
+    notas := TIniFile.Create(arqNotas);
+
+
+   for i:=0 to arq.Count -1 do
+      if ( (getNumReg(arq[i]) = 'C100')  and  (getCampo(3, arq[i] ) = '0')  )  then
+      begin
+         if (notas.ReadString(getCampo(7,arq[i]), 'MAX' ,  '' ) = '') then
+         begin
+            notas.WriteString(getCampo(7,arq[i]), 'MIN', getCampo(8,arq[i])  );
+            notas.WriteString(getCampo(7,arq[i]), 'MAX', getCampo(8,arq[i])  );
+         end
+         else
+         begin
+             if ( getNumNota(arq[i]) < notas.ReadInteger(getCampo(7, arq[i]), 'MIN', 0)  ) then
+                notas.WriteString(getCampo(7,arq[i]), 'MIN', getCampo(8,arq[i])  );
+
+             if ( getNumNota(arq[i]) > notas.ReadInteger(getCampo(7, arq[i]), 'MAX', 0) ) then
+                notas.WriteString(getCampo(7,arq[i]), 'MAX', getCampo(8,arq[i])  );
+         end;
+      end;
+   notas.UpdateFile();
+
+
+// remver os registros antigos de inicio e fim das series
+   for i:= arq.Count-1 downto 1 do
+   begin
+      if (getNumReg(arq[i]) = '1001') then
+      begin
+         idNotas := i;
+         break;
+      end;
+      if (getNumReg(arq[i]) = '1700') then
+         arq.Delete(i);
+   end;
+
+   series := TStringList.Create();
+   notas.ReadSections(series);
+//   series.SaveToFile('c:\series.txt');
+
+// inserir as novas series
+   for i:= 0 to series.Count-1 do
+       arq.Insert(idNotas+i+1, '|1700|03|01|'+ series[i] +'||'+ funcoes.preencheCampo(12,'0','E', notas.ReadString( series[i], 'MIN', '0')) +'|'+ funcoes.preencheCampo(12,'0','E', notas.ReadString(series[i], 'MAX', '0')) +'||' );
+
+// atualizar o registro 1990 - numero de registros 1700
+   for i:= arq.Count-1 downto 1 do
+      if (getNumReg(arq[i]) ='1990') then
+      begin
+         arq[i] := updateCampo(arq[i], 2, intToStr(series.count+2) );
+         break;
+      end;
+
+// atualizar o registro 9900|1700 - numero de registros
+   for i:= arq.Count-1 downto 1 do
+      if (getNumRegDuplo(arq[i]) = '9900|1700') then
+      begin
+         arq[i] := updateCampo(arq[i], 3, intToStr(series.count) );
+         break;
+      end;
+
+// atualizar o numero de linhas do arquivo
+   atualizaTotalLinhas(arq);
+
+   arq.SaveToFile(nmArquivo);
+   arq.Free();
+
+   notas.Free();
+   log('Ajustando o registro de inicio fim das notas... ok ');
+end;
+
+
+procedure TfmAjustaSPED.insereItensReg200(var arq:TStringList; itensAInserir: TStringList);
+var
+   idxReg200, i:integer;
+   descItem, regItem:String;
+begin
+   fmMain.MsgStatus('insereItensReg200');
+
+   idxReg200 :=  getIdxReg(arq, '0200');
+
+   for i :=0 to itensAInserir.Count -1 do
+   begin
+      descItem := copy(funcSql.openSQL('Select cd_ref from crefe where is_ref = ' + itensAInserir[i],'cd_ref', fmMain.Conexao) , 01, 50 ) ;
+      regItem :=  '|0200|' + itensAInserir[i] +'|'+ descItem +    '|||000001|00|||||17|';
+      arq.Insert(idxReg200, regItem);
+   end;
+end;
+
+
+function TfmAjustaSPED.getItensReg0200(arq:TStringList): TStringList;
+var
+   itens:Tstringlist;
+   i:integer;
+begin
+   itens := TStringlist.create();
+   for i := 0 to arq.Count -1 do
+      if  ( getNumReg(arq[i]) = '0200') then
+         itens.Add( getCampo(2, arq[i]) );
+   itens.SaveToFile('c:\itensReg200.txt');
+   result := itens;
+end;
+
+
+procedure TfmAjustaSPED.ajustaRegistroInventario(nmArquivo: String);
+var
+   arq, itens:TStringList;
+   idxInv, idxCad:integer;
+   i:integer;
+begin
+   arq :=  TStringList.Create();
+   arq.LoadFromFile(nmArquivo);
+
+   itens := getItensFaturados(arq);
+
+   arq.SaveToFile('c:\itensFaturados.txt');
+   arq.Free();
+end;
+
+procedure TfmAjustaSPED.incluirItensFaturados(nmArquivo: String);
+var
+   ItensNovos, itensReg200, itens, arq:TStringlist;
+   i:integer;
+   codItem:String;
+begin
+   log('Inserir itens faturados na lista de itens');
+
+   fmMain.MsgStatus('IncluirItensFaturados');
+
+   arq := TStringlist.create();
+   arq.LoadFromFile(nmArquivo);
+
+   itens := TStringlist.create();
+   ItensNovos := TStringlist.create();
+
+   itens := getItensFaturados(arq);
+   itensReg200 :=  getItensReg0200(arq);
+
+   for i:=0 to itens.Count-1 do
+     if (itensReg200.IndexOf(itens[i]) < 0) then
+        ItensNovos.add(itens[i]);
+
+   if (ItensNovos.Count > 0) then
+   begin
+      ItensNovos.SaveToFile('c:\ItensAInserirReg200.txt');
+      insereItensReg200( arq, ItensNovos );
+
+      updateCampoArq(arq, '0990', 2, intToStr(ItensNovos.Count + itens.Count) );
+
+      atualizaTotalLinhas(arq);
+      arq.SaveToFile(nmArquivo);
+      arq.Free();
+   end
+   else
+     Log('Sem itens para inserir no registro 0200');
+
+
+
+end;
+
+procedure TfmAjustaSPED.ajustarArqParaSPED(arq: String);
+begin
+//   ajustaRegC425(arq);
+   incluirItensFaturados(arq);
+   removeItensSemNota(arq);
+   ajustaEmissorNota(arq);
+   ajustaNumeracoesNotas(arq);
+//   ajustaRegistroInventario(arq);
+   Log('Alteracoes feitas no arquivo :' + arq );
+end;
+
+procedure TfmAjustaSPED.fsBitBtn1Click(Sender: TObject);
+var
+  arq:TStringList;
+  nmArq : String;
+begin
+   screen.Cursor := crHourglass;
+   if ( fileExists(edArq.Text) = true) then
+   begin
+      nmArq := edArq.Text;
+      insert('_ajustado', nmArq, length(nmArq)-3);
+
+      arq :=TStringList.Create();
+      arq.LoadFromFile(edArq.Text);
+      arq.SaveToFile(nmArq);
+      arq.Free();
+      ajustarArqParaSPED(nmArq);
+   end
+   else
+      msgTela('',' Escolha um arquivo', MB_ICONEXCLAMATION);
+   screen.Cursor := crDefault;
+end;
+
+procedure TfmAjustaSPED.ajustaRegC425(nArq: String);
+var
+   dest, arq:TStringList;
+   vc990, vC490, idxAtual, j, i:integer;
+   vContabil, vBase, vICMS:real;
+   linha:String;
+begin
+   vC490 := 0;
+
+   arq := TStringlist.Create();
+   dest:= TStringlist.Create();
+   arq.LoadFromFile(nArq);
+   i:=0;
+   while (i <= arq.Count -1 ) do
+   begin
+      vContabil := 0;
+      vBase := 0 ;
+      vICMS := 0 ;
+
+
+     if ( getNumReg(arq[i]) = 'C490') then
+      begin
+         inc(vC490);
+         linha := arq[i];  log('achei c490');
+         idxAtual := i;
+
+         if ( getCampo(5, linha) <> '') then  vContabil :=  strTofloat( ( getCampo(5, linha)));
+         if ( getCampo(6, arq[i]) <> '') then vBase :=  strTofloat( ( getCampo(6, linha)));
+         if ( getCampo(7, linha) <> '') then  vICMS :=  strTofloat( ( getCampo(7, linha)));
+
+         j:= idxAtual+1;
+         if ( getNumReg(arq[j]) = 'C490') then
+         begin
+            inc(i);
+            Log('reg duplicado ' + intTostr(j) );
+            if ( getCampo(5, arq[j]) <> '') then vContabil := vContabil +   strTofloat(  getCampo(5, arq[j]));
+            if ( getCampo(6, arq[j]) <> '') then vBase :=  vBase + StrToFloat(  getCampo(6, arq[j]));
+            if ( getCampo(7, arq[j]) <> '') then vICMS :=  vICMS + strTofloat(  getCampo(7, arq[j]));
+         end;
+
+         j:= idxAtual+2;
+         if ( getNumReg(arq[j]) = 'C490') then
+         begin
+            inc(i);
+            Log('reg duplicado ' + intTostr(j) );
+            if ( getCampo(5, arq[j]) <> '') then vContabil := vContabil +   strTofloat(  getCampo(5, arq[j]));
+            if ( getCampo(6, arq[j]) <> '') then vBase :=  vBase + StrToFloat(  getCampo(6, arq[j]));
+            if ( getCampo(7, arq[j]) <> '') then vICMS :=  vICMS + strTofloat(  getCampo(7, arq[j]));
+         end;
+
+         linha := updateCampo(linha, 5, FloatToStr(vContabil)  ); linha := updateCampo(linha, 6, FloatToStr(vBase)  ); linha := updateCampo(linha, 7, FloatToStr(vICMS)  );
+         dest.Add(linha);
+         inc(i);
+      end
+      else
+      begin
+         dest.Add(arq[i]);
+         inc(i);
+      end;
+
+      if i mod 10 = 0 then
+         fmMain.MsgStatus(intToStr(i));
+   end;
+   arq.Free();
+
+   atualizaTotalLinhas(dest);
+
+// atualiza o numeo de registros c490
+   updateCampoArq( dest, '9900|C490', 3, intTostr(vC490) );
+
+// atualiza o numeo de registros c990
+   updateCampoArq( dest, 'C990|', 2, intTostr(vc990) );
+
+
+   vc990:=0;
+   for i:=0 to dest.Count -1 do
+      if (copy(getNumReg(dest[i]),01,01) = 'C') then
+        inc(vc990);
+
+   dest.SaveToFile(nArq);
+   dest.Free();
+end;
+
+end.
+
+
+{
+ C170 itens da nota
+ C100 registro da nota
+ c425 totalização dos itens  na redução
+ h010 inventario
+}
+

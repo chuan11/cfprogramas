@@ -1,0 +1,39 @@
+unit uCadDigitais;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls;
+
+type
+  TfmCadDigitais = class(TForm)
+    Image1: TImage;
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmCadDigitais: TfmCadDigitais;
+
+implementation
+
+uses RelogioPonto, uUtil;
+
+{$R *.dfm}
+
+procedure TfmCadDigitais.FormCreate(Sender: TObject);
+begin
+   if (PERFIL = '1') then
+   begin
+      fmMain.GrFingerXCtrl1.Finalize();
+      uUtil.FinalizeGrFinger();
+   end
+
+
+end;
+
+end.

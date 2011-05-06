@@ -1,0 +1,126 @@
+                                              CASA FREITAS - O SHOPPING DA ECONOMIA                                                 
+                                           RELATORIO DE LISTA DE CASAMENTO/CHA DE PANELA                                  PAGINA:001
+ITEMS IMPRESSOS: NÃO COMPRADOS ORDENADO POR: NENHUM
+--------------------------------------------------------[ DADOS  DA LISTA ]---------------------------------------------------------
+NOIVA : NOIVA DE TESTES  DA LISTA DE CASAMENTOS-     NOIVO : NOIVO DE TESTES  DA LISTA DE CASAMENTOS-   DATA CASAMENTO :01/02/2005
+ENDERECO DE ENTREGA: ENTREGA                                      BAIRRO : BAIRRO CENTRO                           
+
+-------------------------------------------------------[ DADOS DOS PRODUTOS ]-------------------------------------------------------
+     CODIGO         DESCRICAO                                            COMPRADOR                                                            
+
+ 1 - 1620012        JOGO BOMBONIERE 750-20                               ________________________________________
+
+ 2 - 1620016        JOGO COPO ACCENT LONG DRINK 376-27                   ________________________________________
+
+ 3 - 1620011        COPO ACCENT ROCKS 374-30                             ________________________________________
+
+ 4 - 1620013        JOGO TIGELA FRUTTI AZUL 542-23                       ________________________________________
+
+ 5 - 1620013        JOGO TIGELA FRUTTI AZUL 542-23                       ________________________________________
+
+ 6 - 1620014        TIGELA FRUTTI AZUL 542-30                            ________________________________________
+
+ 7 - 1620011        COPO ACCENT ROCKS 374-30                             ________________________________________
+
+ 8 - 1620012        JOGO BOMBONIERE 750-20                               ________________________________________
+
+ 9 - 1620013        JOGO TIGELA FRUTTI AZUL 542-23                       ________________________________________
+
+10 - 1620014        TIGELA FRUTTI AZUL 542-30                            ________________________________________
+
+11 - 1620012        JOGO BOMBONIERE 750-20                               ________________________________________
+
+12 - 1620014        TIGELA FRUTTI AZUL 542-30                            ________________________________________
+
+13 - 1620027        JOGO COPO STILLO CERVEJA 803-23                      ________________________________________
+
+14 - 0070015        FAQUEIRO 25 PCS  KOLOR C/ SUPORTE                    ________________________________________
+
+15 - 0070066        ESPUMADEIRA KOLOR AZUL 2352/10  23337/1              ________________________________________
+
+16 - 0600033        PRATO FUNDO  1080SE-1609/023    BRINOX               ________________________________________
+
+17 - 0600024        CONJ CHA E CAFE 1400/101                             ________________________________________
+
+18 - 0600044        SUPORTE P/TALHER C/PT GUARDANAP.1804/10              ________________________________________
+
+19 - 0070055        BANDEJA CLUB QUADRADA 35CM 6352/35  613              ________________________________________
+
+20 - 0070056        FAQUEIRO 42 PCS KOLOR CREME  23399/305               ________________________________________
+
+21 - 0070057        FACA SERRA KOLOR AZUL-CARTELA  23319/11              ________________________________________
+
+22 - 0070058        POLTRONA INF CATTY BRANCA  92263/010                 ________________________________________
+
+23 - 0070059        POLTRONA INF CATTY AZUL  92263/030                   ________________________________________
+
+24 - 0070062        FACA CABO PLASTICO PRETO 6 CARTELA  229              ________________________________________
+
+25 - 0070066        ESPUMADEIRA KOLOR AZUL 2352/10  23337/1              ________________________________________
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+                                              CASA FREITAS - O SHOPPING DA ECONOMIA                                                 
+                                           RELATORIO DE LISTA DE CASAMENTO/CHA DE PANELA                                  PAGINA:002
+ITEMS IMPRESSOS: NÃO COMPRADOS ORDENADO POR: NENHUM
+--------------------------------------------------------[ DADOS  DA LISTA ]---------------------------------------------------------
+NOIVA : NOIVA DE TESTES  DA LISTA DE CASAMENTOS-     NOIVO : NOIVO DE TESTES  DA LISTA DE CASAMENTOS-   DATA CASAMENTO :01/02/2005
+ENDERECO DE ENTREGA: ENTREGA                                      BAIRRO : BAIRRO CENTRO                           
+
+-------------------------------------------------------[ DADOS DOS PRODUTOS ]-------------------------------------------------------
+     CODIGO         DESCRICAO                                            COMPRADOR                                                            
+
+26 - 0070067        PRATO FALSTAFF 6487/30  6487/30                      ________________________________________
+
+27 - 0070068        POLTRONA INF CATTY VERMELHA  92263/040               ________________________________________
+
+28 - 0070069        MESA INFANTIL PAQUETA AZUL 92320/030                 ________________________________________
+
+29 - 1620010        COPO BISTRO LICOR 920-30                             ________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+

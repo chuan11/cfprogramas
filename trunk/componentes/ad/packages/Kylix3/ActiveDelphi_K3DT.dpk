@@ -1,0 +1,37 @@
+package ActiveDelphi_K3DT;
+
+{$R *.res}
+{$ALIGN 1}
+{$ASSERTIONS OFF}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA OFF}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS OFF}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'ActiveDelphi Components (Cross Platform) - Designtime'}
+{$IMPLICITBUILD OFF}
+
+requires
+  designide,
+  ActiveDelphi_K3RT,
+  vcljpg;
+
+contains
+  adFrmAbout in '..\..\source\adFrmAbout.pas' {frm_About},
+  ActiveDelphiReg in '..\..\source\ActiveDelphiReg.pas';
+
+end.

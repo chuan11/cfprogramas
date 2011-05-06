@@ -1,0 +1,18 @@
+program CadastroDeDeDigitais;
+
+uses
+  Forms,
+  uMain in '__GrFingerX_Delphi\uMain.pas' {formMain},
+  uOptions in '__GrFingerX_Delphi\uOptions.pas' {formOptions},
+  uDBClass in '__GrFingerX_Delphi\uDBClass.pas',
+  uUtil in '__GrFingerX_Delphi\uUtil.pas';
+
+{$R *.res}
+
+ begin
+  Application.Initialize;
+  Application.Title := 'Cadastro de Digitais';
+  Application.CreateForm(TformMain, formMain);
+  Application.CreateForm(TformOptions, formOptions);
+  Application.Run;
+end.

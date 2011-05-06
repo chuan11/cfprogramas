@@ -1,0 +1,30 @@
+unit uAbreMovDiario;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, fCtrls, ComCtrls, Buttons;
+
+type
+  TForm1 = class(TForm)
+    fsDateTimePicker1: TfsDateTimePicker;
+    cbLoja: TfsComboBox;
+    Label2: TLabel;
+    Label1: TLabel;
+    btOk: TfsBitBtn;
+    fsBitBtn2: TfsBitBtn;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+end.

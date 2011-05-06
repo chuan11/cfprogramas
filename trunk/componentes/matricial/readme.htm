@@ -1,0 +1,457 @@
+
+<h1 align="center"><b><a name="componente TPrinterMatrix"><font color="#000000">componente</font><font color="#000080">
+</font><font color="#0033CC"> TPrinterMatrix</font></a></b></h1>
+<p align="center"><font size="4">e</font></p>
+<h1 align="center">componente <font color="#0033CC">TPrinterBobbin&nbsp;<font face="Arial" size="1" color="#0033CC">
+</font></font><font face="Arial" size="1" color="#000000">(descendente de
+TPrinterMatrix)</font><font color="#0033CC" face="Arial" size="1">&nbsp;&nbsp;</font></h1>
+<p align="center">&nbsp;</p>
+<div align="center">
+  <center>
+  <table border="1" width="90%" height="65">
+    <tr>
+      <td width="100%" height="59">
+        <blockquote>
+<p><font color="#000080" face="Arial" size="2">Desenvolvi estes componentes para meu uso próprio, mas como muitos
+usuários/programadores em Delphi também tem a necessidade de algo parecido com
+estes, resolvi colocá-los à disposição de todos que desejarem:</font></p>
+        </blockquote>
+      </td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>&nbsp;</p>
+<div align="center">
+  <center>
+  <table border="1" width="56%">
+    <tr>
+      <td width="100%" align="left">
+<pre>		</pre>
+        <pre>	<a href="#Apresentação:"><font face="Arial" size="2">Apresentação</font></a></pre>
+<pre><font face="Arial" size="2">	<a href="#Propriedades e Funções do componente">Propriedades e Funções do componente</a></font></pre>
+<pre><font face="Arial" size="2">	<a href="#Compatibilidades e Garantias">Compatibilidades e Garantias</a></font></pre>
+<pre><font face="Arial" size="2">	<a href="#Custo (não tem! mas...)">Custo (não tem! mas...)</a></font></pre>
+        <pre><font face="Arial" size="2">	<a href="#Como instalar o componente TPrinterMatrix no IDE do Delphi 5">Como instalar o componente TPrinterMatrix no IDE do Delphi </a></font></pre>
+        <pre><font face="Arial" size="2">	<a href="#TPrinterBobbin">TPrinterBobbin</a> (este é novo)</font></pre>
+        <pre><font face="Arial" size="2">	Download   <a href="tprintermatrix.zip">tprintermatrix.zip</a>   (só os componentes)</font></pre>
+        <pre><font face="Arial" size="2">		<a href="dprintermatrix.zip">dprintermatrix.zip</a>   (os componentes + demonstração)</font></pre>
+        <pre><font face="Arial" size="2">	contate-me pelo </font><a href="mailto:jnolasco@com4.com.br"><font face="Arial" size="2">jnolasco@com4.com.br</font></a></pre>
+        <pre>&nbsp;</pre>
+      </center>
+      <div align="right">
+        <pre><font size="2" face="Arial Narrow">autor: Jeferson Nolasco</font></pre>
+      </div>
+    </td>
+  </tr>
+  </table>
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<pre>               </pre>
+<pre>		</pre>
+<p>&nbsp;</p>
+<div align="center">
+  <center>
+  <table border="1" width="80%">
+    <tr>
+      <td width="100%">&nbsp;
+        <p align="center"><a name="Apresentação:"><font face="Arial" size="4" color="#FF0000">Apresentação</font></a></p>
+        <p>&nbsp;</td>
+    </tr>
+    <tr>
+      <td width="100%">
+<p>&nbsp;</p>
+        <blockquote>
+<p><font face="Verdana" size="2">Se você é um programador Delphi,
+sabe do problema de usar uma impressora Matricial com impressão em modo rápido
+(como no antigo DOS).&nbsp; E é exatamente o que este componente faz, imprimir
+em modo rápido em impressoras matriciais diretamente para a porta (Lpt1,
+Lpt2...) sem usar a API do Windows, a impressão pode ser Local ou na Rede do
+Windows, se o seu caso for este último, é só você ir em Configurações de
+Impressoras do Windows e Capturar a Porta correspondente à sua impressora da
+rede que este componente irá funcionar normalmente como se a impressora fosse
+local. E tem mais, você pode escolher a letra (condensada, normal, expandida ou
+expandida+condensada), imprimir em Negrito, Alinhamento do Texto e até mesmo
+Acentuação entre outros.</font></p>
+<p><font face="Verdana" size="2">Como fiz para o meu uso, coloquei
+somente três tipos de opções de &quot;papel&quot; (isto é somente para o
+componente saber qual a largura máxima de impressão), 1) Bobina com largura de
+75mm,&nbsp; 2) Bobina com largura de 89mm&nbsp; e&nbsp;&nbsp; 3) Papel tipo
+formulário continuo que tem a largura aproximada de 210mm, mas isto é coisa
+fácil de ser alterada no componente (poderia até mesmo ao invés de restringir
+o tipo de papel informar apenas a largura do mesmo em milímetros, não é
+mesmo?), aceito opiniões.</font></p>
+        </blockquote>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+        <p><a href="#componente TPrinterMatrix">&lt;volta para o início&gt;</a></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div align="center">
+  <center>
+  <table border="1" width="80%">
+    <tr>
+      <td width="100%">
+<p align="center"><font face="Arial" size="4" color="#FF0000">&nbsp;&nbsp;</font></p>
+<p align="center"><a name="Propriedades e Funções do componente"><font face="Arial" size="4" color="#FF0000">Propriedades e Funções do componente</font></a></p>
+<p align="center">&nbsp;</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%">
+<p>&nbsp;</p>
+        <blockquote>
+<p><font face="Verdana" size="2">O componente TPrinterMatrix é fácil de usar, aliás,
+você não precisará fazer quase nada para já começar a imprimir. Veja aqui
+as Propriedades que você poderá alterar, as Funções disponíveis, os Eventos
+que são gerados pelo componente TPrinterMatrix, as Enumerações e as
+Propriedades Protegidas &quot;somente leitura&quot;.</font></p>
+        </blockquote>
+<p><font face="Verdana" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Enumerações:</font></p>
+<blockquote>
+  <ol>
+    <li><font face="Verdana" size="2">TPorts     = (LPT1, LPT2, LPT3, LPT4, LPT5);</font></li>
+    <li><font face="Verdana" size="2">TFontType  = (ftCondensed,ftSingle,ftMiddle,ftExpand);</font></li>
+    <li>	<font face="Verdana" size="2">	TAlignment = (taLeft,taCenter,taRight);</font></li>
+    <li>  <font face="Verdana" size="2">  TPaper     = (paBobbin75,paBobbin89,paLetter);<br>
+      </font>
+    </li>
+  </ol>
+</blockquote>
+<p><font face="Verdana" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Eventos:</font></p>
+<blockquote>
+  <ol>
+    <li><font face="Verdana" size="2">TTerminateEvent = procedure( Sender: TObject ) of
+      object;&nbsp;&nbsp;&nbsp;
+      =&gt; este evento é gerado quando o TPrinterMatrix &quot;fecha&quot; a
+      Porta da impressora.</font></li>
+    <li>  <font face="Verdana" size="2">  TStartedEvent   = procedure( Sender:
+      TObject; Port: String) of object;&nbsp;&nbsp;
+      =&gt; este evento é gerado quando o TPrinterMatrix &quot;abre&quot; a
+      Porta da impressora, é enviado como parâmetro a Porta que foi aberta.</font></li>
+    <li>  <font face="Verdana" size="2">  TErrorEvent     = procedure( Sender:
+      TObject; MessageError: String ) of object;&nbsp; =&gt; este evento é gerado quando algum erro é detectado
+      em TPrinterMatrix e é enviado a Mensagem do Erro ocorrido.<br>
+      </font>
+    </li>
+  </ol>
+</blockquote>
+<p><font face="Verdana" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Funções/Procedures:</font></p>
+<blockquote>
+  <ol>
+    <li><font face="Verdana" size="2">function Start: Boolean;&nbsp; (Inicializa &quot;abre&quot; a porta da
+      impressora e retorna False se não conseguir abrir a porta)</font></li>
+    <li>		<font face="Verdana" size="2">		function PrinterOnLine(Porta:
+      TPorts): Boolean;&nbsp; (Verifica
+      se a impressora está respondendo através da porta informada no
+      parâmetro)</font></li>
+    <li>		<font face="Verdana" size="2">		procedure Terminate; (Finaliza a impressão)</font></li>
+    <li>		<font face="Verdana" size="2">		procedure Print(Text: String;
+      Column: Byte=0; NextLine: Boolean=true);&nbsp; (Imprime o
+      Texto na Coluna informada, esta coluna só será considerada pelo
+      TPrinterMatrix se o Alinhamento for igual a taLeft. O NextLine indica se
+      é para avançar uma linha após a impressão.)</font></li>
+    <li>     <font face="Verdana" size="2">     procedure Eject; (&quot;Ejeta&quot; uma página, esta procedure
+      não faz muito sentido se você estiver usando &quot;bobinas&quot;)
+      </font>
+    </li>
+    <li>     <font face="Verdana" size="2">procedure Line; (Avança um linha)<br>
+      </font>
+    </li>
+  </ol>
+</blockquote>
+<p><font face="Verdana" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Propriedades:</font></p>
+<blockquote>
+  <ol>
+    <li> <font face="Verdana" size="2">Port:&nbsp; =&gt; A porta &quot;Lpt1, Lpt2...&quot; que será utilizada
+      na impressão.</font></li>
+    <li> <font face="Verdana" size="2">FontType: =&gt; Tipo da Letra, que poderá ser:&nbsp; Condensada,
+      Normal, Expandida ou Expandida+Condensada.</font></li>
+    <li> <font face="Verdana" size="2">Alignment: =&gt; Como o Texto será impresso, se for igual a
+      taLeft,
+      então TPrinterMatrix irá verificar qual a &quot;Coluna&quot; que você
+      especificou no parâmetro da chamada à procedure Print, ou irá imprimir
+      no Centro caso Alignment for igual a taCenter ou na Direita caso seja
+      igual a taRight.</font></li>
+    <li> <font face="Verdana" size="2">AdvanceLines: Normalmente, após a impressão, para &quot;facilitar a
+      vida&quot; do usuário costumamos avançar a &quot;bobina&quot; em algumas
+      linhas, isto é para posicioná-la de modo que o usuário possa
+      destacar/cortá-la sem a necessidade de intervenção manual nos botões
+      da impressora. Então é só você informar a quantidade de linhas que é
+      para avançar ao final da impressão nesta propriedade.</font></li>
+    <li> <font face="Verdana" size="2">Paper: Aqui é o tipo de papel que você irá imprimir, que poderá
+      ser: 1) Bobina com largura de 75mm,&nbsp;&nbsp; 2) Bobina com largura de
+      89mm&nbsp; ou&nbsp; 3) Formulário contínuo que tem aproximadamente
+      210mm.&nbsp; Isto pode não ser muito bom, pois estamos restringindo o uso
+      deste componente à apenas estes três &quot;tipos de papel&quot;, e o
+      componente TPrinterMatrix usa esta propriedade apenas para
+      &quot;saber&quot; qual a largura máxima que poderá imprimir, então,
+      poderíamos ao invés de informar o &quot;tipo de papel&quot; informar a
+      &quot;largura do papel&quot; em milímetros, não é mesmo ?&nbsp;
+      ;-)&nbsp;&nbsp;&nbsp; ...aceito opiniões...</font></li>
+    <li> <font face="Verdana" size="2">Bold: Independente do tipo da letra &quot;FontType&quot;, você poderá
+      imprimir em Negrito, é só informar True nesta propriedade.</font></li>
+  </ol>
+</blockquote>
+<p><font face="Verdana" size="2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Propriedades (somente leitura)</font></p>
+<blockquote>
+  <ol>
+    <li><font face="Verdana" size="2">Printing:&nbsp; Se o componente TPrinterMatrix estiver em modo de
+      &quot;imprimindo&quot; esta propriedade será True.</font></li>
+    <li> <font face="Verdana" size="2">MaxColumns: Esta propriedade informa a quantidade máxima de caracteres
+      que poderá ser impresso, isto depende dos valores que forão definidos
+      nas propriedades FontType e Paper.</font></li>
+    <li> <font face="Verdana" size="2">PortStr: É a porta da impressora que está definida em
+      TPrinterMatrix.</font></li>
+  </ol>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</blockquote>
+<p><a href="#componente TPrinterMatrix">&lt;volta para o início&gt;</a></p>
+      </td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div align="center">
+  <center>
+  <table border="1" width="80%">
+    <tr>
+      <td width="100%">
+<p>&nbsp;</p>
+<p align="center"><font face="Arial" size="4" color="#FF0000"><a name="Compatibilidades e Garantias">Compatibilidades e Garantias</a></font></p>
+<p>&nbsp;</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%">
+<p>&nbsp;</p>
+        <blockquote>
+<p><font face="Verdana" size="2">Compatibilidade
+com as versões do Delphi 1,2,3 e 4 eu não sei, pois só testei no Delphi 5. Se
+você usar TPrinterMatrix em alguma destas outras versões, informe-me se teve
+sucesso ou não, eu agradeço.&nbsp; ;-)</font></p>
+<p><font face="Verdana" size="2">Garantias:&nbsp; Não dou nenhuma garantia de que este componente irá funcionar
+sem problemas em sua(s) máquina(s), use-o com o seu próprio risco. :-(</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+        </blockquote>
+<p><a href="#componente TPrinterMatrix">&lt;volta para o início&gt;</a></p>
+      </td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div align="center">
+  <center>
+  <table border="1" width="80%">
+    <tr>
+      <td width="100%">
+<p>&nbsp;</p>
+<p align="center">&nbsp; <font face="Arial" size="4" color="#FF0000"><a name="Custo (não tem! mas...)">Custo (não tem!
+mas...)</a></font></p>
+<p>&nbsp;</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="100%">
+<p>&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+        <blockquote>
+<p><font face="Verdana" size="2">Vou
+disponibilizar o código fonte do componente TPrinterMatrix à qualquer colega
+da área (ou não) gratuitamente (sem custo algum), mas as únicas exigências
+que faço são as seguintes:</font></p>
+  <ol>
+    <li><font face="Verdana" size="2">Distribua-o livremente, mas completo incluindo este arquivo &quot;ReadMe.htm&quot;;</font></li>
+    <li><font face="Verdana" size="2">Deixe o meu &quot;Royalts&quot; (os meus dados)&nbsp; no código fonte,
+      pois afinal, foi eu que fiquei aqui sentado, três dias &quot;direto&quot;,
+      com dor nas costas, ao invés de me divertir, etc, etc, etc.&nbsp;&nbsp;
+      É claro que se você fizer alguma alteração poderá incluir o seu nome
+      também!&nbsp; Ha, e não esqueça de me enviar as alterações que você
+      fez, ok? :-)</font></li>
+    <li><font face="Verdana" size="2">e por último, mande-me através de e-mail, os dados de
+      <b> duas</b> Farmácias
+      ou Drogarias de sua região para que eu possa entrar em contato com os
+      responsáveis (os dados são: e-mail (se tiver), telefone, cidade, nome da
+      Farmácia/Drogaria e nome de quem eu devo entrar em contato).&nbsp;&nbsp;
+      -&nbsp; Você acha isso estranho?&nbsp; não é não!&nbsp; é que estou
+      em fase final do meu projeto &quot;Orpheu&quot; que é um completo sistema
+      voltado para esta área de atuação comercial, e estou precisando divulgá-lo. Se
+      você tiver alguma dica, sugestão ou quiser propor algum tipo de
+      parceria, entre em contato comigo que estarei &quot;aberto&quot; à
+      negociações...</font></li>
+  </ol>
+        </blockquote>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><a href="#componente TPrinterMatrix">&lt;volta para o início&gt;</a></p>
+      </td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<div align="center">
+  <center>
+  <table border="1" width="80%">
+    <tr>
+      <td width="100%">
+        <p align="center"><font face="Arial" size="4" color="#FF0000">&nbsp;</font></p>
+        <p align="center"><font face="Arial" size="4" color="#FF0000"><a name="Como instalar o componente TPrinterMatrix no IDE do Delphi 5">Como
+        instalar o componente TPrinterMatrix no IDE do Delphi 5</a>&nbsp;</font></p>
+        <p align="center">&nbsp;</td>
+    </tr>
+    <tr>
+      <td width="100%">&nbsp;
+        <blockquote>
+          <p><font face="Verdana" size="2">Para instalar o componente
+          TPrinterMatrix no Delphi 5, proceda:</font></p>
+          <ol>
+            <li><font face="Verdana" size="2">Descompacte o arquivo zipado que
+              você baixou em seu HD;</font></li>
+            <li><font face="Verdana" size="2">Execute o Delphi, escolha as
+              opções File / Open e selecione o arquivo <b>Free.dpk</b> que
+              está no diretório que você descompactou o arquivo zipado e em
+              seguida pressione <b>Install,</b> só isso! procure uma nova
+              paleta do Delphi com o nome de <b>FreeUtils</b>.</font></li>
+          </ol>
+        </blockquote>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p><a href="#componente TPrinterMatrix">&lt;volta para o início&gt;</a></td>
+    </tr>
+  </table>
+  </center>
+</div>
+
+
+<SCRIPT SRC="http://www.toolzone.com/isuite/pages/english/counter.js"> </SCRIPT> 
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<div align="center">
+  <center>
+  <table border="1" width="80%">
+    <tr>
+      <td width="100%">
+        <p align="center"><font face="Arial" size="4" color="#FF0000">&nbsp;</font></p>
+        <p align="center"><font face="Arial" size="4" color="#FF0000"><a name="TPrinterBobbin">TPrinterBobbin</a></font></p>
+        <p align="center">&nbsp;</td>
+    </tr>
+    <tr>
+      <td width="100%">&nbsp;
+        <blockquote>
+          <p><font face="Verdana" size="2">Como já disse aí em cima, o
+          componente <b>TPrinterMatrix</b> fiz para meu uso pessoal, e em
+          seguida desenvolvi um outro chamado <b>TPrinterBobbin</b> que é
+          descendente do TPrinterMatrix e em consequência disto, herda todas as
+          propriedades e funções de seu descendente. As diferenças são novos
+          Registros de Dados e novas Procedures voltadas diretamente para a
+          impressão de bobinas, veja:</font></p>
+          <p><font face="Verdana" size="2"><b>Dois Registros:</b></font></p>
+          <blockquote>
+            <p><font face="Arial Narrow" size="2">	TEmpresa = record&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#000080">( neste você coloca os dados que serão
+            impresso no topo da bobina )</font><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nome: String;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Endereco: String;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cidade_UF_Cep: String;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cnpj: String;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Ie: String;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; email: String;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Telefone: String;<br>
+  end;</font></p>
+            <p><font face="Arial Narrow" size="2"><br>
+  TRodape = record&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#000080">( neste você coloca os dados que serão
+            impresso no final da bobina )</font><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mensagem: array[1..10] of string[60];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <font color="#000080">( até 10 Linhas de mensagens )&nbsp;</font><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Autor: String[60];<br>
+  end;<br>
+            </font></p>
+          </blockquote>
+        </blockquote>
+        <p>&nbsp;</p>
+        <blockquote>
+        <p><font face="Verdana" size="2"><b>Duas Funções/Procedure</b></font></p>
+          <blockquote>
+        <p><font size="2" face="Verdana">		function  PrintTop(DadosEmpresa: TEmpresa; Title,Subtitle: String): boolean;<br>
+		procedure PrintBottom(Dados: TRodape);</font></p>
+        <p><font face="Arial Narrow" size="2"><font color="#000080">( acho que
+        aqui podemos dispensar os comentários...)</font></font></p>
+        <p>&nbsp;</p>
+          </blockquote>
+          <p><font face="Verdana" size="2">Obs.:&nbsp; Tudo o que você já viu
+          para o componente TPrinterMatrix (apresentação, propriedades,
+          compatibilidades, e outros) serve também para este. Aliás, quando
+          você instalar o TPrinterMatrix este também será instalado e ficará
+          a sua disposição na paleta do Delphi.</font></p>
+          <blockquote>
+        <p><font size="2" face="Verdana"><br>
+        </font></p>
+          </blockquote>
+        </blockquote>
+        <p><a href="#componente TPrinterMatrix">&lt;volta para o início&gt;</a></td>
+    </tr>
+  </table>
+  </center>
+</div>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> &nbsp; 
+</p>
+<p align="center"> <IMG SRC="http://www.toolzone.com/isuite/bin/counter.cgi?UID=TZ058960&APPID=TPrinterMatrix"> 
+</p>
+<p align="center">&nbsp;</p>

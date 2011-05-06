@@ -1,0 +1,53 @@
+*******************************************************
+
+ TmxNativeExcel for Delphi 5,6,7,2005
+ Copyright (c) 2001-2005 Bitvadász Kft.
+
+*******************************************************
+
+ [*] : Bug
+ [+] : New
+ [-] : Removed
+ [!] : Modification
+
+HISTORY:
+--------
+
+1.24 : 
+ 
+ [+] : Delphi 2005 package and support added
+
+1.23a:
+
+ [*] : Installation bug fixed.
+
+1.23:
+
+ [+] : Delphi 7 compatible release
+
+1.22:
+
+ [+] : Component has been checked and upgraded to D6.
+       Peter Morgan: Thanks for your help.
+
+1.21:
+
+ [*] : Stack overflow bug fixed.
+       Stefan Lewantoski: Thanks for this bug report.
+
+1.20:
+
+ [+] : Delphi 6 compatible version
+
+1.10:
+
+ [!] : Clear procedure name was changed to NewFile
+ [!] : CloseFile procedure added.
+       WARNING: The SaveToFile procedure does not
+                close the output. You have to do that.
+ [!] : Improved font support
+
+1.00:
+
+ [+] : First Public Release. This component was created
+       for my TmxExport component class. 

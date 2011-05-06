@@ -1,0 +1,30 @@
+object fmShowPDF: TfmShowPDF
+  Left = 729
+  Top = 309
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsToolWindow
+  Caption = 'fmShowPDF'
+  ClientHeight = 284
+  ClientWidth = 305
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  FormStyle = fsStayOnTop
+  OldCreateOrder = False
+  Position = poMainFormCenter
+  OnClose = FormClose
+  PixelsPerInch = 96
+  TextHeight = 13
+  object pdf: TAcroPDF
+    Left = 0
+    Top = 0
+    Width = 305
+    Height = 284
+    Align = alClient
+    TabOrder = 0
+    ControlData = {00080000861F00005A1D0000}
+  end
+end

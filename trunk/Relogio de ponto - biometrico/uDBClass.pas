@@ -1,0 +1,869 @@
+unit uDBClass;
+
+interface
+
+uses
+  ADODB, DB, classes, SysUtils, GrFingerXLib_TLB, ActiveX, verificaSenhas, Controls,
+  dialogs, funcSQl, QForms,
+  funcoes, funcDatas, DBGrids;
+
+//const
+  // the database we'll be connecting to
+type
+  // Class TTemplate
+  // Define a type to temporary storage of template
+  TTemplate = class
+
+    public
+      // Template data.
+      tpt:        PSafeArray;
+      // Template size
+      size:       Integer;
+      // Template ID (if retrieved from DB)
+      id:         Integer;
+
+      // Allocates space to template
+      constructor Create;
+      // clean-up
+      destructor Destroy; override;
+  end;
+
+  TDBClass = class
+
+  private
+    dsBatidas: TADOQuery;
+    // a data set to mantain all templates of database
+    dsTemplates: TADODataSet;
+    // Template object used to get a template from database.
+    tptBlob: TTemplate;
+     // the connection object
+    connection: TADOConnection;
+  public
+    function ativaEmpregado(matricula:String):boolean;
+    function addTemplate(template: TTemplate; mat,lado,nome:string): Integer;
+    function deletaEmpregado(cartaoPonto:String):boolean;
+    function desativaEmpregado(matricula:String; dataDemissao:Tdate):boolean;
+    function getAutorizadores():Tstrings;
+    function getBatidas(dtInicio,dtFim,cartao:String):TStringList;
+    function getCadastroDeEmpregados(localizacao:String):TdataSet;
+    function getDadosEmpregado(cartao: String):TDataSet;
+    function getDadosFuncionarios(localizacao:String): Tstrings;
+    function getDetalheEmpregado(cartaoPonto:String):TdataSet;
+    function getHoraPrevista(cartaoPonto, campo:String; ds:TDataSet):String;
+    function getJustificativas():Tstrings;
+    function getLocalEmpregado(cartaoPonto:String): String;
+    function getMatricula(cartaoPonto:String; DS:TdataSet):String;
+    function getNextTemplate(): TTemplate;
+    function GetNomeCartaoPontoEmpregados():TdataSet;
+    function getNomeEmpregado(cartao:String):String;
+    function getNomeLojasPonto(mostraOpcTodas, mostraNenhum:boolean): Tstrings;
+    function getNomeMatPorLocalizacao(localizacao: String): TdataSet;
+    function getTemplate(id: Integer) : TTemplate;
+    function GetTempoAposUltBatida(cartao:String):integer;
+    function getUserAutorizador():String;
+    function getUserAutorizadorPonto(listaJustificativas:boolean):String;
+    function insereEmpregado(empresa,matricula,cartaoPonto, nome,funcao, dataAdmissao, isHoraFlexivel, horario, localizacao, dataDemissao:String):boolean;
+    function insereRegistroFerias(tipo, matricula: String; dtI, dtF:TDate):boolean;
+    function isAtivo(data, matricula: string): boolean;
+    function isCadastroEmpOk(cartaoPonto:String):boolean;
+    function isConnected():boolean;
+    function isDiaBaseFolga(matricula:String; data:Tdate):boolean;
+    function isDSTemplateClosed():boolean;
+    function isFeriado(data, cartaoPonto:String):boolean;
+    function isHaveBatida(dia:Tdate; cartao:String):boolean;
+    function isJustAbonada(codJust:string):boolean;
+    function isJustificado(matricula, ocorrencia:String; data:Tdate; var tpJust, obsJust, jusUsuario:String ):String;
+    function isPontoCadastrado(cartaoPonto:String):boolean;
+    function justificar(mat, just, data1, data2, tipo, hora1,hora2, ocorr,Cartao,DtLancamento,Obs,banco,Estabelecimento,loja, diaGeradorFolga:string):String;
+    function lerParametroBD(parametro:String):String;
+    function numRegistros():integer;
+    function openDB(): boolean;
+    function registraPonto(data, Hora, cartao,loja:string):boolean;
+    function setParamBD(parametro, uo, valor:String):boolean;
+    function removeCadastroDigital(cartaoPonto, lado:String):boolean;
+    procedure listaJustificativas(cartao,dtInicio:String; var qr:TADOQuery);
+    procedure beginTemplates();
+    procedure clearDB();
+    procedure closeDB();
+    procedure criaTbResumo(var Table:TADOTAble);
+    procedure deletajustificativa(numJustificativa:String);
+    procedure getQuery(var qr:TADOQuery; ComandoSQL:string);
+    procedure getTable(var tb:TADOTable; tbFields:string);
+    procedure getTemplates();
+    procedure organizarQuery(var query:TADOQuery;Coluna:Tcolumn);
+    procedure preencheListaDosDias(var tabela:TADOTable; dti,dtf:Tdate);
+    procedure Connection1WillExecute(Connection: TADOConnection;  var CommandText: WideString; var CursorType: TCursorType;  var LockType: TADOLockType; var CommandType: TCommandType; var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;  const Command: _Command; const Recordset: _Recordset);
+    procedure connection1ExecuteComplete(Connection: TADOConnection;  RecordsAffected: Integer; const Error: Error;  var EventStatus: TEventStatus; const Command: _Command;  const Recordset: _Recordset);
+    function isDigitalCadastrada(matricula, lado:String):boolean;
+
+end;
+
+implementation
+
+
+function TDBClass.openDB(): boolean;
+begin
+  try
+     connection := TADOConnection.Create(nil);
+     connection.ConnectionTimeOut := 03;
+     connection.ConnectionString := funcoes.getDadosConexaoUDL('ConexaoAoWell.ini');
+     connection.LoginPrompt := false;
+     connection.OnWillExecute := Connection1WillExecute;
+     connection.OnExecuteComplete :=connection1ExecuteComplete;
+     connection.Open();
+     dsTemplates := TADODataSet.Create(nil);
+     tptBlob := TTemplate.Create();
+     dsBatidas := TADOQuery.Create(nil);
+     dsTemplates.Connection := connection;
+     dsBatidas.Connection :=  connection;
+     openDB := true;
+  except
+     openDB := false;
+  end;
+end;
+
+// Default constructor
+constructor TTemplate.Create();
+var
+  Bounds: array[0..0] of TSafeArrayBound;
+begin
+  // Allocate memory for template and initialize its size to 0
+  Bounds[0].lLbound := 0;
+  Bounds[0].cElements := GR_MAX_SIZE_TEMPLATE;
+  tpt := SafeArrayCreate(VT_UI1, 1, Bounds);
+  size := 0;
+end;
+
+// Default destructor
+destructor TTemplate.Destroy();
+begin
+  // free resources
+  FreeMemory(tpt);
+end;
+
+
+// Close conection
+procedure TDBClass.closeDB();
+begin
+   dsTemplates.Close();
+   dsBatidas.Close();
+   dsTemplates.Free();
+   tptBlob.Free();
+   connection.Close();
+   connection.Free();
+   connection := nil;
+end;
+
+// Clear the database
+procedure TDBClass.clearDB();
+begin
+end;
+
+// Add template to database. Returns added template ID.
+function TDBClass.addTemplate(template: TTemplate; mat,lado,nome:string): Integer;
+var
+  rs: TADODataSet;
+  tptStream: TMemoryStream;
+  id: Integer;
+  p: PChar;
+
+  begin
+  // get DB data and append one row
+  rs := TADODataSet.Create(nil);
+  rs.Connection := connection;
+  rs.CursorType := ctStatic;
+  rs.LockType := ltOptimistic;
+  rs.CommandText := 'SELECT * FROM zcf_pontoCadDigitais where id < 0 ';
+
+  rs.Open();
+  rs.Append();
+  tptStream := TMemoryStream.Create();
+  // write template data to memory stream.
+  SafeArrayAccessData(template.tpt, pointer(p));
+  tptStream.write(p^, template.size);
+  SafeArrayUnaccessData(template.tpt);
+  // save template data from memory stream to database.
+  rs.FieldByName('id').asString := funcoes.preencheCampo(8,'0','E', mat);
+  rs.FieldByName('lado').asString := lado;
+  rs.FieldByName('nome').asString := NOME;
+  (rs.FieldByName('template') as  TBlobField).LoadFromStream(tptStream);
+  // update the database with added template.
+  rs.post();
+  // get the ID of enrolled template.
+  id := rs.FieldByName('ID').AsInteger;
+  // close connection
+  tptStream.Free();
+  rs.Close();
+  rs.Free();
+  addTemplate := id;
+{}
+end;
+
+
+// Start fetching all enrolled templates from database.
+procedure TDBClass.getTemplates();
+begin
+   gravaLog('TDBClass.getTemplates()');
+   dsTemplates.CacheSize := 15000;
+   dsTemplates.CursorLocation := clUseClient;
+   dsTemplates.CursorType := ctOpenForwardOnly;
+   dsTemplates.LockType := ltReadOnly;
+//   dsTemplates.Connection := connection;
+   dsTemplates.CommandText := 'SELECT id, template FROM zcf_PontoCadDigitais where isAtivo = 1 order by id'; {zcf_PontoCadDigitais}
+   dsTemplates.Open();
+   dsTemplates.BlockReadSize := 15000;
+end;
+
+
+// Returns template with supplied ID.
+function TDBClass.getTemplate(id: Integer): TTemplate;
+Var
+  template: TTemplate;
+begin
+  dsTemplates.Close();
+  dsTemplates.Connection := connection;
+  dsTemplates.CursorType := ctDynamic;
+  dsTemplates.LockType := ltReadOnly;
+  dsTemplates.CommandText := 'SELECT * FROM  zcf_PontoCadDigitais WHERE ID = ' + IntToStr(id); {zcf_PontoCadDigitais}
+  // Get query response
+  dsTemplates.Open();
+  // Deserialize template and return it
+  template := getNextTemplate();
+  dsTemplates.Close();
+  getTemplate := template;
+end;
+
+// Return next template from dataset
+function TDBClass.getNextTemplate(): TTemplate;
+Var
+  tmp: String;
+  p: PChar;
+begin
+  // No results?
+  if dsTemplates.Eof then
+  begin
+    tptBlob.size := -1;
+    getNextTemplate := tptBlob;
+  end else
+  begin
+    // Get template ID from database
+    tptBlob.id := dsTemplates.FieldByName('id').AsInteger;
+    // Get template data from database as string.
+    tmp := dsTemplates.FieldByName('template').AsString;
+    // Get template size from database.
+    tptBlob.size := length(tmp);
+    // Move template data from temporary string
+    // to template object.
+    SafeArrayAccessData(tptBlob.tpt, Pointer(p));
+    Move(PChar(tmp)^, p^, tptBlob.size);
+    SafeArrayUnaccessData(tptBlob.tpt);
+    // move foward in the list of templates
+    dsTemplates.Next();
+    getNextTemplate := tptBlob;
+  end;
+end;
+
+procedure TDBClass.beginTemplates;
+begin
+    dsTemplates.First;
+end;
+
+function TDBClass.registraPonto(data, Hora, cartao,loja:string):boolean;
+var
+   cmd :String;
+begin
+   cmd := 'Insert zcf_pontoBatidas values( ' + funcoes.DateTimeToSqlDateTime(data, Hora) +' , '+ cartao + ' , ' +quotedStr(loja) +' )';
+   result := ( funcSQL.execSQL(cmd,connection) = true);
+end;
+
+function TDBClass.getBatidas(dtInicio, dtFim, cartao: String): TStringList;
+var
+   aux:TStringList;
+   ds:TdataSet;
+   cmd:String;
+begin
+   cmd :=
+   ' Select data, loja from zcf_pontoBatidas with(NoLock) ' +
+   ' where cartao = ' +cartao+ ' and' +
+   ' data between ' + funcoes.DateTimeToSqlDateTime(dtInicio, '00:00:00') + ' and ' +
+    funcoes.DateTimeToSqlDateTime(dtFim,'23:59:00')+
+   ' union ' +
+   ' Select data, loja from zcf_digitaisBatidas with(NoLock) ' +
+   ' where cartao = ' +cartao+ ' and' +
+   ' data between ' + funcoes.DateTimeToSqlDateTime(dtInicio, '00:00:00') + ' and ' +
+    funcoes.DateTimeToSqlDateTime(dtFim, '23:59:00');
+
+   ds := funcsql.getDataSetQ(cmd, connection);
+
+   aux := TstringList.Create();
+   ds.First;
+   while ds.eof = false do
+   begin
+     aux.Add(ds.fieldByName('data').AsString +',00000000,'+ funcoes.preencheCampo(3,'0','e', ds.fieldByName('Loja').AsString )  );
+     ds.Next;
+   end;
+   result := aux;
+   ds.close;
+end;
+
+
+
+
+function TDBClass.numRegistros: integer;
+begin
+   result := dsTemplates.RecordCount;
+end;
+
+function TDBClass.getUserAutorizador(): String;
+var
+  users:String;
+   lstUser:Tstrings;
+begin
+   users := funcSQl.getUsersList(connection, 'Select * from zcf_PontoAutorizadores');
+   result := verificaSenhas.TelaAutorizacao2(connection,'',users);
+end;
+
+function TDBClass.getUserAutorizadorPonto(listaJustificativas:boolean):String;
+var
+  lstUsers,lstJus: TStrings;
+begin
+   if listaJustificativas = true then
+      lstJus :=  getJustificativas()
+   else
+      lstJus :=  TStringList.Create();
+
+   lstUsers := getAutorizadores();
+   result := verificaSenhas.telaAutPonto(lstJus, lstUsers);
+end;
+
+function TDBClass.getDadosEmpregado(cartao: String):TDataSet;
+begin
+  result :=  funcSQl.getDataSetQ('select * from zcf_pontoEmpregados e ' +
+                                 ' inner join zcf_pontoHorarios h on e.horario_num = h.num '+
+                                 ' where e.cartaoPonto = ' + quotedStr(cartao), connection)
+end;
+
+function TDBClass.getNomeEmpregado(cartao:String):String;
+var
+  ds:TdataSet;
+  aux:String;
+begin
+   ds := getDadosEmpregado(cartao);
+   if (ds.IsEmpty = true) then
+     result:= ''
+   else
+   begin
+      aux :=  ds.fieldByName('nome').asString;
+      ds.Destroy();
+      result := aux;
+   end;
+end;
+
+
+function TDBClass.getHoraPrevista(cartaoPonto, campo: String; ds:TDataSet): String;
+var
+   aux:String;
+begin
+   if (ds <> nil) and (ds.IsEmpty = true) then
+   begin
+      gravaLog('Pegando a hora prevista via Consulta no BD do campo:' + campo);
+       aux := funcsql.openSQL('Select ' + campo + ' from  zcf_PontoHorarios p inner join zcf_PontoEmpregados e on e.horario_num = p.num where e.cartaoPonto = ' +quotedStr(cartaoPonto), campo, connection)
+   end
+   else
+   begin
+      gravaLog('Pegando a hora prevista via DS do campo:' + campo);
+      aux := ds.fieldByName(campo).AsString;
+   end;
+   gravaLog('Campo: ' + campo +   ' Resultado: ' + aux);
+   result := aux;
+end;
+
+function TDBClass.GetTempoAposUltBatida(cartao: String): integer;
+var
+   cmd:String;
+begin
+   cmd := 'Select datediff(minute, isNull((select top 01 data from zcf_pontoBatidas (nolock) where cartao= ' + cartao + ' order by data desc), getDate()-1), getdate() ) as minutos';
+   result :=  strToInt( funcsql.openSQL(cmd,'minutos',connection));
+end;
+
+function TDBClass.GetNomeCartaoPontoEmpregados():TdataSet;
+begin
+   result := funcsql.getDataSetQ('Select nome, cartaoPonto from zcf_pontoEmpregados (nolock) order by nome', connection);
+end;
+
+function TDBClass.getCadastroDeEmpregados(localizacao:String):TdataSet;
+var
+   ds:TDataSet;
+begin
+   if (localizacao = '') then
+      ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null order by nome', connection)
+   else
+      ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null and localizacao = ' + localizacao + ' order by nome', connection);
+   result := ds;
+end;
+
+procedure TDBClass.listaJustificativas(cartao,dtInicio:String; var qr:TADOQuery);
+var
+   cmd:String;
+begin
+   cmd := ' Select  case jus_tipo when 1 then ''Parcial'' when 2 then ''Total'' end as JUS_TIPO , ' +
+          ' j.JUS_DATA1, j.JUS_DATA2, j.JUS_HORA1, j.JUS_HORA2, ' +
+          '  o.oco_descricao, t.opc_descricao, j.JUS_DATAHORA, j.JUS_usuario, j.JUS_OBSERVACAO, j.JUS_REFERENCIA ' +
+          ' From zcf_PontoJustificativas j ' +
+          ' inner join zcf_pontoJusTipos T on j.jus_justificativa =  t.opc_codigo '+
+          ' inner join zcf_pontoTipoOcorrencia O on o.oco_codigo = j.jus_ocorrencia' +
+          ' where j.jus_Matricula = ' + QuotedStr(cartao)  +
+          ' and j.jus_data1 >= ' + dtInicio;
+   funcSql.getQuery(connection, qr, cmd);
+end;
+
+procedure TDBClass.deletaJustificativa(numJustificativa: String);
+begin
+   funcSql.execSQL(' delete from zcf_pontoJustificativas where jus_referencia = ' + numJustificativa , connection  );
+end;
+
+function TDBClass.isFeriado(data, cartaoPonto:String):boolean;
+var
+   cmd:String;
+begin
+   cmd := 'select data from zcf_pontoFeriados where ' +
+          '(data = ' + funcoes.DateTimeToSqlDateTime(data, '') + ' and localizacao in '+
+          '(select localizacao from zcf_pontoEmpregados where cartaoPonto  = ' + QuotedStr(cartaoPonto) + ' ) ) ';
+   result := ( (funcsql.openSQL(cmd, 'data', connection) <> '') or ( DayOfWeek(strToDate(data)) = 1)   );
+end;
+
+function TDBClass.getAutorizadores():Tstrings;
+var
+   ds:TDataSet;
+   aux:TStringList;
+begin
+   aux := TStringList.Create();
+   ds :=  funcsql.getDataSetQ('select d.nm_usu, u.cd_usu from zcf_pontoAutorizadores U inner join dsusu d on u.cd_usu = d.cd_usu order by d.nm_usu', connection);
+   while ds.Eof = false do
+   begin
+      aux.add(
+             funcoes.preencheCampo(100,' ' ,'D', ds.fieldByName('nm_usu').AsString) +
+             funcoes.preencheCampo(10,' ' ,'D', ds.fieldByName('cd_usu').AsString)
+             );
+      ds.Next();
+   end;
+   ds.Destroy();
+   result := aux;
+end;
+
+
+function TDBClass.isAtivo(data, matricula: string): boolean;
+var
+   isAtivo,isAfastado:boolean;
+   cmd:String;
+begin
+// verificando se estava registrado naquele dia.
+   cmd := ' Select top 01 matricula from zcf_pontoEmpregados where matricula = '+ quotedStr(matricula) + ' and dataAdmissao  <= ' + funcDatas.dateToSqlDate(data) ;
+   isAtivo := ( funcsql.openSQL(cmd, 'matricula', connection ) <> '' );
+   gravaLog(' Verificando se está ativo: ' + BoolToStr(isAtivo,true) );
+
+// verificando se existe afastamento.
+   cmd := ' Select matricula from zcf_pontoAfastamentos where ( matricula = ' + quotedStr(matricula) + ' and '+ FUNCOES.DateTimeToSqlDateTime(data,'') + ' >= dataInicio  and '+FUNCOES.DateTimeToSqlDateTime(data,'') +' <= dataFim ) or ( matricula = ' + quotedStr(matricula) +' and  dataFim is null )';
+   isAfastado := ( funcsql.openSQL(cmd, 'matricula', connection ) <> '' );
+   GravaLog( data + ' Verificando se está afastado ou de ferias: ' + BoolToStr(isAfastado,true) );
+   GravaLog( 'funcao isativo: ' + BoolToStr( (( isAtivo = true ) and (isAfastado = false)) , true ) );
+   result := ( ( isAtivo = true ) and (isAfastado = false) );
+end;
+
+function TDBClass.isJustAbonada(codJust:string):boolean;
+begin
+   if ( funcSql.openSQL('Select abonaAtraso from zcf_pontoJusTipos where opc_codigo in ' +
+                        '(select jus_justificativa from zcf_pontoJustificativas where jus_referencia= '  + quotedStr(codJust) + ')', 'abonaAtraso',connection) = '1') then
+   begin
+      gravaLog('consulta no BD, Justificativa abonada');
+      result := true;
+   end
+   else
+   begin
+      gravaLog('consulta no BD,  Justificativa nao abonada');
+      result := false;
+   end;
+end;
+
+
+function TDBClass.isJustificado(matricula, ocorrencia:String; data:Tdate ; var tpJust, obsJust, jusUsuario:String):String;
+var
+   cmd:String;
+   ds:TdataSet;
+begin
+   cmd := 'Select j.jus_referencia , opc_codigo, tj.opc_descricao, j.jus_observacao, jus_usuario, jus_datahora'+
+          ' from zcf_PontoJustificativas j'+
+          ' left join zcf_PontoJusTipos tj on j.jus_justificativa  = tj.opc_codigo '+
+          ' where' +
+          ' j.jus_matricula= ' + matricula +
+          ' and jus_data1<= '+ funcDatas.DateTimeToSqlDateTime(data,'') +
+          ' and jus_data2>= '+ funcDatas.DateTimeToSqlDateTime(data,'') +
+          ' and jus_ocOrrencia = '+ quotedStr(ocorrencia);
+    ds := funcSql.getDataSetQ(cmd, connection);
+
+    if (ds.IsEmpty = false) then
+    begin
+       tpJust := ds.fieldByName('opc_descricao').AsString;
+       obsJust := ds.fieldByName('jus_observacao').AsString;
+       jusUsuario := ds.fieldByName('jus_usuario').AsString + ' Data: ' + ds.fieldByName('jus_dataHora').AsString ;
+       cmd := ds.fieldByName('jus_referencia').AsString;
+       ds.Destroy();
+       gravaLog('Justificado, seq da justificativa: ' + cmd);
+       result := cmd;
+    end
+    else
+    begin
+       ds.Destroy();
+       gravaLog('Nao Justificado');
+       result := '';
+    end;
+end;
+
+function TDBClass.getMatricula(cartaoPonto: String; DS: TdataSet): String;
+begin
+    if (ds <> nil) and ( ds.IsEmpty = false) then
+    begin
+       gravaLog('getMatricula via DS, cartao:' + cartaoPonto);
+       result := ds.fieldByname('matricula').AsString
+    end
+    else
+    begin
+       gravaLog('getMatricula via consulta ao bd: ' + cartaoPonto );
+       ds:= getDadosEmpregado(cartaoPonto);
+       result := ds.fieldByname('matricula').AsString;
+    end;
+end;
+
+function TDBClass.Justificar(mat, just, data1, data2, tipo, hora1,hora2, ocorr,Cartao,DtLancamento,Obs,banco,Estabelecimento,loja, diaGeradorFolga:string):String;
+var
+   comando :String;
+begin
+   comando := 'insert zcf_pontoJustificativas (jus_estabelecimento, jus_matricula, '+
+              'jus_justificativa, jus_data1, jus_data2,jus_tipo, jus_hora1, '+
+              'jus_hora2, jus_ocorrencia, jus_conteudo, jus_datahora, '+
+              'jus_usuario, jus_observacao, jus_omitebatidas, jus_diaGeradorFolga ) values ( '
+               +  #39 + estabelecimento + #39 + ', '
+        +  #39 + mat             + #39 + ', '
+        +  #39 + just            + #39 + ', '
+        +  funcDatas.strToSqlDate(data1)  + ', '
+        +  funcDatas.strToSqlDate(data2)  + ', '
+        +  #39 + tipo            + #39 + ', '
+        +  #39 + hora1           + #39 + ', '
+        +  #39 + hora2           + #39 + ', '
+        +  #39 + ocorr           + #39 + ', '
+        +  #39 + ''              +#39  + ', '
+        +  'GETDATE()'                 +', '
+        +  #39 + 'LJ: '+ LOJA  +#39  + ', '
+        +  #39 + obs          +#39  +', '
+        +   quotedstr('S')          +', '
+        +  funcDatas.strToSqlDate(diaGeradorFolga)
+        + ')' ;
+    result := funcSQL.executeSQL(comando, connection);
+end;
+
+procedure TDBClass.getTable(var tb: TADOTable; tbFields: string);
+begin
+   funcSQL.getTable( connection, tb, tbFields );
+end;
+
+function TDBClass.getNomeLojasPonto(mostraOpcTodas, mostraNenhum:boolean): Tstrings;
+var
+   qr:TADOQuery;
+   lst:TstringList;
+begin
+   lst := TStringList.Create();
+   funcSql.getQuery(  connection, qr, 'Select * from zcf_PontoLocalizacao (nolock) order by localizacao');
+
+   if (mostraOpcTodas= true) then
+      lst.Add('< Todas >');
+
+   if (mostraNenhum= true) then
+      lst.Add('< Nenhum >');
+
+   while (qr.Eof = false) do
+   begin
+      lst.Add(funcoes.preencheCampo(100,' ', 'd',qr.fieldByname('ds_uo').AsString) + qr.fieldByname('localizacao').AsString);
+      qr.Next();
+   end;
+   qr.Destroy();
+   result := lst;
+end;
+
+function TDBClass.getDadosFuncionarios(localizacao:String): Tstrings;
+var
+   aux:TstringList;
+   ds:TDataSet;
+begin
+   aux := TstringList.Create();
+   ds:= getCadastroDeEmpregados(localizacao);
+   ds.First;
+   while (ds.Eof = false) do
+   begin
+      aux.Add(
+      funcoes.preencheCampo(100, ' ', 'D', ds.fieldByName('nome').asString) +
+      '00' + ds.fieldByName('cartaoPonto').asString
+             );
+      ds.Next();
+   end;
+   ds.Destroy();
+   result := aux;
+end;
+
+procedure TDBClass.getQuery(var qr:TADOQuery; ComandoSQL:string);
+begin
+   funcsql.getQuery(connection, qr, ComandoSQL);
+end;
+
+function TDBClass.getJustificativas: TStrings;
+var
+   ds:TDataSet;
+   aux:TStringList;
+begin
+   aux := TStringList.Create();
+   ds :=  funcsql.getDataSetQ('select * from zcf_pontojusTipos where isAtivo= 1 order by opc_descricao', connection);
+   while ds.Eof = false do
+   begin
+      aux.add(
+             funcoes.preencheCampo(05,' ' ,'D', ds.fieldByName('opc_codigo').AsString) +' - '+
+             funcoes.preencheCampo(30,' ' ,'D', ds.fieldByName('opc_descricao').AsString)
+             );
+      ds.Next();
+   end;
+   ds.Destroy();
+   result := aux;
+end;
+
+function TDBClass.isDSTemplateClosed: boolean;
+begin
+    gravaLog('TDBClass.isDSTemplateClosed, valor: ' + BoolToStr(dsTemplates.Active, true ) );
+    result := not(dsTemplates.Active);
+end;
+
+function TDBClass.getLocalEmpregado(cartaoPonto:String): String;
+var
+  ds:TDataSet;
+begin
+   ds := getDadosEmpregado(cartaoPonto);
+   if ds = nil then
+      result := '0'
+   else
+      result := ds.fieldByName('localizacao').AsString;
+   ds.Destroy();
+end;
+
+function TDBClass.getNomeMatPorLocalizacao(localizacao: String): TdataSet;
+begin
+   if (localizacao <> '') then
+      result := funcsql.getDataSetQ('Select nome, matricula, cartaoPonto from zcf_PontoEmpregados where dataDemissao is null and  localizacao  = '+localizacao  +' order by nome', connection)
+   else
+      result := funcsql.getDataSetQ('Select nome, matricula, cartaoPonto from zcf_PontoEmpregados where dataDemissao is null order by nome', connection);
+end;
+
+function TDBClass.insereEmpregado(empresa,matricula,cartaoPonto, nome,funcao, dataAdmissao, isHoraFlexivel, horario, localizacao, dataDemissao:String):boolean;
+begin
+   if (dataDemissao = '') then
+     dataDemissao := 'null'
+   else
+     funcDatas.dateToSqlDate(strToDate(dataDemissao));
+
+   result :=
+   funcSql.execSQL( 'insert zcf_pontoempregados ' +
+                    '(empresa, matricula, cartaoPonto, nome, localizacao, funcao, isHoraFlexivel, horario_num, dataAdmissao, dataDemissao ) '+
+                    ' values ( ' + QuotedStr(empresa)   + ', ' +
+                                   QuotedStr(matricula) + ', ' +
+                                   QuotedStr(cartaoPonto) + ', ' +
+                                   QuotedStr(copy(nome,01,40)) + ', '+
+                                   QuotedStr(localizacao) + ', '+
+                                   QuotedStr(funcao) + ', '+
+                                   QuotedStr(isHoraFlexivel) + ', '+
+                                   QuotedStr(horario) + ', '+
+                                   funcDatas.dateToSqlDate(strToDate(dataAdmissao)) + ', '+
+                                   dataDemissao + ' )'
+                    , connection);
+end;
+
+function TDBClass.getDetalheEmpregado(cartaoPonto:String):TdataSet;
+var
+  cmd: String;
+begin
+   cmd := 'select e.*, L.ds_uo, H.descricao ' +
+          'from zcf_pontoEmpregados e (nolock) ' +
+          'left join  zcf_pontoLocalizacao L (nolock) on e.localizacao = L.localizacao ' +
+          'left join zcf_pontoHorarios H (nolock) on e.horario_num = H.num ' +
+          'where e.cartaoPonto = ' + cartaoPonto ;
+   result := funcsql.getDataSetQ(cmd, connection);
+end;
+
+
+function TDBClass.deletaEmpregado(cartaoPonto:String):boolean;
+begin
+   result := funcSQl.execSQL('delete from zcf_pontoEmpregados where cartaoPonto = ' + quotedStr(cartaoPonto), connection );
+end;
+
+function TDBClass.lerParametroBD(parametro:String):String;
+begin
+   result := funcsql.getParametro(parametro,'',connection);
+end;
+
+function TDBClass.setParamBD(parametro, uo, valor:String):boolean;
+begin
+   result := funcsql.setParamBD( parametro,uo, valor, connection);
+end;
+
+procedure TDBClass.organizarQuery(var query:TADOQuery;Coluna:Tcolumn);
+begin
+   funcsql.organizarQuery(query, coluna);
+end;
+
+
+procedure TDBClass.criaTbResumo(var Table:TADOTAble);
+var
+   cmd:String;
+begin
+   gravaLog('Criando tabela resumo');
+   cmd :=
+   ' Dia varchar(06), ' +
+   ' Ent varchar(08), ' +
+   ' Int_Sai varchar(08),  ' +
+   ' Int_ent varchar (08), ' +
+   ' Sai varchar(08), ' +
+   ' TotDia varchar(08), ' +
+   ' Sinal varchar(01), ' +
+   ' Dif varchar(08), ' +
+   ' Atraso varchar(08), ' +
+   ' AbonaAtraso varchar(01), ' +
+   ' Ocorrencia varchar(40), ' +
+   ' Justificativa varchar(40) , ' +
+   ' Observacao varchar(40) , ' +
+   ' ehFeriado varchar (01) , ' +
+   ' TPrevisto integer , ' +
+   ' Intervalo integer, ' +
+   ' LocalEnt varchar(03), ' +
+   ' LocalSai varchar(03), ' +
+   ' cartaoPonto varchar(08)' ;
+   funcSql.getTable(connection, Table, cmd);
+   Table.Connection := connection;
+end;
+
+
+procedure TDBClass.preencheListaDosDias(var tabela:TADOTable; dti,dtf:Tdate);
+const
+   BATIDA_VAZIA  = '  :  ';
+var
+   dataAux:Tdate;
+begin
+   gravaLog('preenchendo a lista dos dias.');
+   dataAux := dti;
+
+   if ( tabela.Active = false) then
+      tabela.Open();
+
+   while dataToInt(dataAux) <= dataToint( dtf ) do
+   begin
+      tabela.append;
+      tabela.FieldByName('dia').AsString := copy( dateTostr(dataAux),01,02)  + '/'+funcDatas.getDescricaoDia(dataAux, TRUE) ;
+      tabela.FieldByName('ent').AsString := BATIDA_VAZIA;
+      tabela.FieldByName('int_sai').AsString := BATIDA_VAZIA;
+      tabela.FieldByName('int_ent').AsString := BATIDA_VAZIA;
+      tabela.FieldByName('sai').AsString := BATIDA_VAZIA;
+      tabela.FieldByName('atraso').AsString := BATIDA_VAZIA;
+      tabela.FieldByName('totDia').AsString := BATIDA_VAZIA;
+      tabela.FieldByName('sai').AsString := BATIDA_VAZIA;
+      tabela.FieldByName('sinal').AsString := BATIDA_VAZIA;
+      tabela.FieldByName('dif').AsString := BATIDA_VAZIA;
+      tabela.post;
+      dataAux := dataAux +1;
+   end;
+   gravaLog('conclui o preenchimento da lista dos dias.');
+end;
+
+function TDBClass.isCadastroEmpOk(cartaoPonto:String):boolean;
+var
+   ds:TdataSet;
+begin
+   ds:= getDadosEmpregado(cartaoPonto);
+   result := ( (ds.FieldByName('horario_num').AsString <> '0') and (ds.FieldByName('localizacao').AsString <> '0') );
+   ds.Destroy();
+end;
+
+function TDBClass.isPontoCadastrado(cartaoPonto: String): boolean;
+begin
+   result := not(getDadosEmpregado(cartaoPonto).IsEmpty) ;
+end;
+
+function TDBClass.isConnected: boolean;
+begin
+   result := dsTemplates.Active;
+end;
+
+procedure TDBClass.Connection1WillExecute(Connection: TADOConnection;  var CommandText: WideString; var CursorType: TCursorType;  var LockType: TADOLockType; var CommandType: TCommandType;            var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;  const Command: _Command; const Recordset: _Recordset);
+begin
+   gravaLog(CommandText);
+   screen.cursor := -11;
+end;
+
+procedure TDBClass.connection1ExecuteComplete(Connection: TADOConnection;  RecordsAffected: Integer; const Error: Error;  var EventStatus: TEventStatus; const Command: _Command;  const Recordset: _Recordset);
+begin
+   screen.cursor := 0;
+end;
+
+
+function TDBClass.insereRegistroFerias(Tipo, matricula: String; dtI, dtF: TDate): boolean;
+var
+  cmd:String;
+begin
+   cmd := 'insert zcf_pontoAfastamentos values ( '+
+             quotedStr(matricula) + ', ' +
+             funcDATAS.dateToSqlDate(dtI) + ', ' +
+             funcDATAS.dateToSqlDate(dtf) + ', ' +
+             quotedStr(tipo) + ' )';
+   result := funcSQL.execSQL(cmd, connection)
+end;
+
+function TDBClass.desativaEmpregado(matricula:String; dataDemissao:Tdate):boolean;
+var
+   cmd:String;
+begin
+   cmd := 'if exists( select matricula from zcf_pontoEmpregados  where matricula = ' + quotedstr(matricula) + ' and  dataDemissao is null ) ' +
+          ' update zcf_pontoEmpregados set dataDemissao = ' + funcDATAS.dateToSqlDate(dataDemissao)+ ' where matricula = ' + quotedstr(matricula);
+   result := (funcSQL.executeSQLint(cmd, connection) > 0);
+end;
+
+function TDBClass.ativaEmpregado(matricula: String): boolean;
+var
+   cmd:String;
+begin
+    cmd := ' update zcf_pontoEmpregados set dataDemissao = null where matricula = ' + quotedstr(matricula);
+    result := (funcSQL.executeSQLint(cmd, connection) > 0);
+end;
+
+function TDBClass.isDigitalCadastrada(matricula, lado: String):boolean;
+var
+   cmd:String;
+begin
+   cmd := 'Select id from zcf_pontoCadDigitais where id = ' + (matricula) +' and lado = ' + QuotedStr(lado);
+   result := (funcSQL.openSQL(cmd, 'id', connection) <> '');
+end;
+
+
+function TDBClass.removeCadastroDigital(cartaoPonto, lado:String):boolean;
+begin
+   result := funcSQL.execSQL( 'delete from zcf_pontoCadDigitais where id = ' + (cartaoPonto) + ' and lado = ' + QuotedStr(lado),  connection) ;
+end;
+
+function TDBClass.isDiaBaseFolga(matricula:String; data:Tdate):boolean;
+var
+   cmd:String;
+begin
+   cmd := 'Select jus_diaGeradorFolga from zcf_Pontojustificativas '+
+          'where jus_matricula = '+ quotedstr(matricula) +
+          ' and  jus_diaGeradorFolga= ' + funcDatas.dateToSqlDate(data);
+   result := (funcSQl.openSQL( cmd, 'jus_diaGeradorFolga', connection) <> '');
+end;
+
+function TDBClass.isHaveBatida(dia:Tdate; cartao:String): boolean;
+begin
+   result := (getBatidas(dateToStr(dia), dateToStr(dia), cartao ).Count > 0 );
+end;
+
+end.

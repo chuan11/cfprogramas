@@ -1,0 +1,82 @@
+object fmParametros: TfmParametros
+  Left = 346
+  Top = 278
+  Width = 921
+  Height = 481
+  Caption = 'Par'#226'metros da do programa'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  OldCreateOrder = False
+  Position = poDefault
+  Visible = True
+  WindowState = wsMaximized
+  OnActivate = FormActivate
+  OnClose = FormClose
+  DesignSize = (
+    905
+    443)
+  PixelsPerInch = 96
+  TextHeight = 13
+  object gdParam: TSoftDBGrid
+    Left = 3
+    Top = 56
+    Width = 654
+    Height = 307
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Ctl3D = False
+    DataSource = DataSource1
+    ParentCtl3D = False
+    TabOrder = 0
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+    TitleFont.Style = []
+    AlternateColor = True
+    ColorLow = clInfoBk
+    ColorHigh = 15790322
+  end
+  object cbParametros: TadLabelComboBox
+    Left = 3
+    Top = 25
+    Width = 844
+    Height = 24
+    BevelInner = bvLowered
+    BevelKind = bkSoft
+    BevelOuter = bvNone
+    Style = csDropDownList
+    BiDiMode = bdRightToLeft
+    DropDownCount = 15
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ItemHeight = 16
+    ParentBiDiMode = False
+    ParentFont = False
+    TabOrder = 1
+    OnChange = cbParametrosChange
+    Items.Strings = (
+      '<Todos >')
+    LabelDefs.Width = 46
+    LabelDefs.Height = 13
+    LabelDefs.Caption = 'Filtrar por:'
+    Colors.WhenEnterFocus.BackColor = clInfoBk
+  end
+  object tbParam: TADOTable
+    Connection = fmMain.Conexao
+    Left = 56
+    Top = 96
+  end
+  object DataSource1: TDataSource
+    DataSet = tbParam
+    Left = 96
+    Top = 96
+  end
+end

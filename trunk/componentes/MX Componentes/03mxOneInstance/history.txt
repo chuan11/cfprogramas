@@ -1,0 +1,30 @@
+*******************************************************
+
+ TmxOneInstance for Delphi 5,6,7,2005
+ Copyright (c) 2002-2005 Bitvadász Kft.
+
+*******************************************************
+
+ [*] : Bug
+ [+] : New
+ [?] : Modified
+ [-] : Removed
+
+HISTORY:
+--------
+
+1.2:
+
+ [+] : Delphi 2005 package added
+
+1.10a:
+
+ [*] : Missing MAX.INC file added to setup kit.
+
+1.10: 
+ 
+ [+] : Delphi 7 compatible release
+
+1.00:
+
+ [+] : First Public Release

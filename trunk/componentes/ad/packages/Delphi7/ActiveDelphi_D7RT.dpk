@@ -1,0 +1,74 @@
+package ActiveDelphi_D7RT;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS OFF}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA OFF}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS OFF}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'ActiveDelphi Components (Windows Only) - Rumtime'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  designide,
+  dbrtl,
+  dsnap,
+  bdertl,
+  dbexpress,
+  vcldb,
+  VclSmp,
+  adortl,
+  ibxpress;
+
+contains
+  adLabelColorBox in '..\..\source\adLabelColorBox.pas',
+  adBoundLabel in '..\..\source\adBoundLabel.pas',
+  adLabelDBRichEdit in '..\..\source\adLabelDBRichEdit.pas',
+  adLabelDBEdit in '..\..\source\adLabelDBEdit.pas',
+  adLabelDBMemo in '..\..\source\adLabelDBMemo.pas',
+  adLabelDBImage in '..\..\source\adLabelDBImage.pas',
+  adLabelDBListBox in '..\..\source\adLabelDBListBox.pas',
+  adLabelDBComboBox in '..\..\source\adLabelDBComboBox.pas',
+  adLabelDBLookupListBox in '..\..\source\adLabelDBLookupListBox.pas',
+  adLabelDBLookupComboBox in '..\..\source\adLabelDBLookupComboBox.pas',
+  adLabelDBDateTimePicker in '..\..\source\adLabelDBDateTimePicker.pas',
+  adLabelEdit in '..\..\source\adLabelEdit.pas',
+  adLabelMemo in '..\..\source\adLabelMemo.pas',
+  adLabelListBox in '..\..\source\adLabelListBox.pas',
+  adLabelComboBox in '..\..\source\adLabelComboBox.pas',
+  adLabelMaskEdit in '..\..\source\adLabelMaskEdit.pas',
+  adLabelImage in '..\..\source\adLabelImage.pas',
+  adLabelCheckListBox in '..\..\source\adLabelCheckListBox.pas',
+  adLabelValueListEditor in '..\..\source\adLabelValueListEditor.pas',
+  adLinkedButton in '..\..\source\adLinkedButton.pas',
+  adLinkedLabel in '..\..\source\adLinkedLabel.pas',
+  adLabelImageEX in '..\..\source\adLabelImageEX.pas',
+  adLabelDBLookupDialog in '..\..\source\adLabelDBLookupDialog.pas',
+  adLabelDBLookupDialogForm in '..\..\source\adLabelDBLookupDialogForm.pas' {frm_LookupDialog},
+  adLabelNumericEdit in '..\..\source\adLabelNumericEdit.pas',
+  adLabelSpinEdit in '..\..\source\adLabelSpinEdit.pas',
+  adLabelDBNumericEdit in '..\..\source\adLabelDBNumericEdit.pas',
+  adLabelDBSpinEdit in '..\..\source\adLabelDBSpinEdit.pas',
+  adDBGridEX in '..\..\source\adDBGridEX.pas',
+  adClientConnection in '..\..\source\adClientConnection.pas',
+  adServerConnection in '..\..\source\adServerConnection.pas',
+  adUtils in '..\..\source\adUtils.pas';
+
+end.

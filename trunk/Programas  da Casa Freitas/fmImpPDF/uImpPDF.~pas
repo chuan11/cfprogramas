@@ -1,0 +1,48 @@
+unit uImpPDF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, OleCtrls, AcroPDFLib_TLB;
+
+type
+  TfmShowPDF = class(TForm)
+    pdf: TAcroPDF;
+    procedure CarregaPDF(arq:String);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmShowPDF: TfmShowPDF;
+
+implementation
+
+uses uMain;
+
+{$R *.dfm}
+
+{ TfmShowPDF }
+
+procedure TfmShowPDF.CarregaPDF(arq: String);
+begin
+   fmShowPDF.Width := 700;
+   fmShowPDF.Height := 600;
+   pdf.Width := 685;
+   pdf.Height := 585;
+
+   pdf.LoadFile(arq);
+end;
+
+procedure TfmShowPDF.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+   fmMain.MsgStatus('');
+   action := caFree;
+   fmShowPDF := nil;
+end;
+
+end.

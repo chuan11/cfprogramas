@@ -1,0 +1,53 @@
+Conversão ao Delphi 6: Unit Desaparecidas 'Proxies.pas'
+
+Questão:
+
+Se sua aplicação usa informação do designtime, você tem que repor:
+uses DsgnIntf;
+with
+uses DesignIntf, DesignEditors;
+
+Mas então você receberá uma mensagem de erro 'Cannot find unit Proxies.pas'
+
+Solução:
+
+A solução está em adcionar o DesignIde.dcp para sua lista de pacotes requerido.
+
+Você terá que se assegurar em tempo de execução que o pacote não requer o projeto-tempo pacote(s).
+Nota: Esta mudança no Delphi 6 força restrições de licença da Borland nos editores do
+designtime, que têm estados nos documentos de licença desde Delphi 3.
+
+
+***************
+Movendo componentes do Delphi 5 para Delphi 6. 
+Você já tentou compilar os seus componentes ou de terceiros que você tem no Delphi 5 para uso 
+no Delphi 6? 99% deles não irão compilar. Entretanto não se desespere. É apenas por que a 
+Borland efetuou algumas mudanças em seu último produto. Este arquivo cobre as maiores mudanças. 
+Em primeiro lugar você irá descobrir que a unidade Dsgnintf.pas está faltando. A Borland 
+mudou o nome para Designintf.pas, moveu o editor de propriedades para uma nova unidade 
+chamada de DesignEditors.pas, colocou as constantes usadas em DesignConsts.pas e os Menus
+dentro de DesignMenus.pas.Também as Variants foram retiradas de System.pas para a sua própria 
+unit chamada de Variants.pas. A Interface  IFormDesigner não está mais lá. Você deve usar o 
+IDesigner e fazer o typecast de suas variáveis ( esta mudança é provavelmente para acomodar a 
+CLX e não fui capaz de achar qualquer documentação da Borland ou no sistema de help on-line do 
+Delphi 6. Eu apenas achei que todo IFormDesigner foi trocado por IDesigner A Interface IDesignerSelection 
+também mudou. A mudança mais útil é a adição de uma função GET que retorna um TPersistente quando
+indicado o índice do seu membro. 
+Nas versões anteriores se você queria usar o TPersistent de um objeto você deveria escrever: 
+
+var p:TPersistant; 
+... 
+  P := Selections[i] as TPersistant; 
+
+Agora basta escrever: 
+
+var 
+  p:TPersistant; 
+... 
+  P := Selections.get[i]; 
+
+A Interface IComponentDesigner é uma nova Interface localizada em ComponentDesigner.pas como
+parte do pacote Designide.dcp e não é um arquivo de distribuição. Portanto você deve incluir 
+o DesignIde.dcp no pacote de Design para a compilação funcionar se este arquivo for requerido. 
+
+PS: Apenas lembre-se... você deve ter o código fonte para fazer isto. 

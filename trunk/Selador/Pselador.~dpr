@@ -1,0 +1,15 @@
+program Pselador;
+
+uses
+  Forms,
+  Uselador in 'Uselador.pas' {Form1},
+  CadstroFormuarios in 'CadstroFormuarios.pas' {Form2},
+  Unumeracao in 'Unumeracao.pas' {Fnumeracao};
+
+{$R *.RES}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TForm1, Form1);
+  Application.Run;
+end.
