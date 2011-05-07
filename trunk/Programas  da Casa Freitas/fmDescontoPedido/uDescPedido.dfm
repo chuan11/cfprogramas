@@ -363,7 +363,6 @@ object fmDescPed: TfmDescPed
       TitleFont.Height = -11
       TitleFont.Name = 'MS Sans Serif'
       TitleFont.Style = [fsBold]
-      OnColExit = gridAvariasColExit
       OnKeyDown = gridAvariasKeyDown
       AlternateColor = True
       ColorLow = clInfoBk
@@ -375,7 +374,7 @@ object fmDescPed: TfmDescPed
     Top = 373
     Width = 130
     Height = 21
-    Caption = 'Calcule o valor do desconto.'
+    Caption = 'Calcule o desconto.'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -11

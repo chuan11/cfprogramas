@@ -13,7 +13,7 @@ type
     SoftDBGrid1: TSoftDBGrid;
     tpDesconto: TRadioGroup;
     nmPed: TadLabelEdit;
-    FlatButton1: TFlatButton;
+    btConsultaPed: TFlatButton;
     gridParcelas: TSoftDBGrid;
     gridEntrada: TSoftDBGrid;
     DataSource2: TDataSource;
@@ -58,9 +58,9 @@ type
     FlatButton5: TFlatButton;
     procedure FormCreate(Sender: TObject);
     procedure tpDescontoClick(Sender: TObject);
-    procedure FlatButton1Click(Sender: TObject);
+    procedure btConsultaPedClick(Sender: TObject);
     procedure nmPedKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    function criticaErroDesconto(Sender:TObject; vDesconto:real):String;
+    function criticaErroDesconto(vDesconto:real):String;
     procedure calculaDesconto(Sender: Tobject; UsrAutorizador:string; vDesconto:real);
     procedure FormActivate(Sender: TObject);
     function getSomaDasParcelas():real;
@@ -77,14 +77,15 @@ type
     procedure carregaItensPedido();
     procedure gravaDescAvarias(pedido:String);
     procedure gridItensCellClick(Column: TColumn);
-    function criticaDescontoAvaria():String;
     procedure cbDescAvariasClick(Sender: TObject);
     procedure carregaDadosAvarias();
     procedure gridAvariasColExit(Sender: TObject);
-    procedure gridAvariasKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure gridAvariasKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tbAvariasBeforePost(DataSet: TDataSet);
     procedure FlatButton5Click(Sender: TObject);
+
+
+    function getvDescontoAvarias():Real;
 
   private
     { Private declarations }
@@ -145,7 +146,6 @@ begin
       gridEntrada.visible := false;
       tpdesconto.Enabled := false;
 
-//      cbDescAvarias.Checked := true;
    end;
 
    tbParc.TableName := funcSql.getNomeTableTemp();
@@ -194,7 +194,7 @@ begin
 end;
 
 
-procedure TfmDescPed.FlatButton1Click(Sender: TObject);
+procedure TfmDescPed.btConsultaPedClick(Sender: TObject);
 var
    cmd:String;
 begin
@@ -276,7 +276,7 @@ end;
 procedure TfmDescPed.nmPedKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
    if key = vk_return then
-      flatButton1Click(Sender);
+      btConsultaPedClick(Sender);
 end;
 
 function TfmDescPed.getSomaDasParcelas: real;
@@ -300,11 +300,20 @@ begin
 end;
 
 
-function TfmDescPed.criticaErroDesconto(Sender:TObject; vDesconto:real):String;
+function TfmDescPed.criticaErroDesconto(vDesconto:real):String;
 var
    erro:string;
+   vDescAvarias:real;
 begin
    erro:= '';
+
+   if (IS_TELA_RESTRITA = true ) then
+   begin
+      vDescAvarias := getvDescontoAvarias();
+      if (edValor.Value  > vDescAvarias + 0.10 ) then
+         erro := erro + ' - O  desconto máximo, é de: R$ ' +  floatToStr(edValor.value) + #13;
+   end;
+
    if edValor.Value < 0 then
       erro := erro + ' - O valor/percentual do desconto não pode ser menor que zero. ' + #13;
 
@@ -333,7 +342,7 @@ begin
       if FloatToStrF( getSomaDasParcelas() , ffNumber,18,02) <>
          FloatToStrF( query.fieldByName('Vl Produtos').AsFloat - vDesconto, ffNumber, 18,02)  then
       begin
-         gridEntradaExit(Sender);
+         gridEntradaExit(nil);
          erro := erro + ' - O valor das parcelas está diferente do valor do pedido ' +#13+
                         'Valor com desconto: '+ floattostrf(  query.fieldByName('Vl Produtos').AsFloat - vDesconto , ffNumber, 18, 2) +#13+
                         'Valor Parcelas: ' + floattostrf(  getSomaDasParcelas() , ffNumber, 18, 2) +#13 ;
@@ -388,7 +397,7 @@ begin
 //   if cbDescAvarias.Checked = true then
 //      gravaDescAvarias(query.fieldByname('Pedido').asString);
 
-   FlatButton1Click(Sender);
+   btConsultaPedClick(Sender);
 end;
 
 procedure TfmDescPed.FormActivate(Sender: TObject);
@@ -404,7 +413,7 @@ end;
 procedure TfmDescPed.AplicarDesconto(Sender: Tobject; vDesconto: Real;autorizador:string);
 begin
    if autorizador = '' then
-      autorizador := verificaSenhas.TelaAutorizacao2(fmMain.Conexao,' 13,6,8,111 ','');
+      autorizador := verificaSenhas.TelaAutorizacao2(fmMain.Conexao,' 13, 6, 8, 111 ','');
 
    if (query.IsEmpty = false) and ( autorizador <> '' ) then
    begin
@@ -415,7 +424,11 @@ begin
          end
          else
             calculaDesconto(Sender, autorizador, vDesconto );
-   end;
+   end
+   else
+   begin
+      btConsultaPed.Enabled := true;
+   end
 end;
 
 procedure TfmDescPed.gridEntradaExit(Sender: TObject);
@@ -423,27 +436,6 @@ begin
      lbParcelas.Caption :=  'Total das parcelas: ' + floattostrf(getSomaDasParcelas() , ffNumber,18,02);
      lbItens.Caption :=  'Total do pedido : ' +   floattostrf(query.fieldByName('Vl Produtos').AsFloat -  GetValorDesconto() , ffNumber,18,02);
 end;
-
-procedure TfmDescPed.FlatButton3Click(Sender: TObject);
-var
-   vDesconto:real;
-begin
-   vDesconto := GetValorDesconto();
-   if (criticaErroDesconto(Sender , vDesconto ) = '') and (criticaDescontoAvaria() = '') then
-   begin
-      funcoes.MsgTela('','Verificação confirmada. ', MB_ICONASTERISK + mb_ok);
-      AplicarDesconto(nil, vDesconto,'');
-
-      nmped.Text := '';
-      nmped.Enabled  := true;
-      FlatButton1.Enabled := true;
-      FlatButton4.Enabled := true;
-      FlatButton3.Enabled := false;
-      FlatButton2.Enabled := true;
-      btConfirmaCusto.Enabled:= false;
-   end;
-end;
-
 
 function TfmDescPed.existeitemSemCusto(Sender: Tobject): string;
 var
@@ -509,7 +501,7 @@ begin
       AplicarDesconto(sender,0,usAutorizador);
       nmPed.Enabled := true;
       btConfirmaCusto.Enabled := false;
-      FlatButton1.Enabled := true;
+      btConsultaPed.Enabled := true;
       FlatButton2.Enabled := true;
       FlatButton3.Enabled := false;
       FlatButton4.Enabled := true;
@@ -523,20 +515,21 @@ var
 begin
    gridEntradaExit(Sender);
    vDesconto := GetValorDesconto();
-   if criticaErroDesconto(Sender , vDesconto ) = ''  then
+   if criticaErroDesconto( vDesconto ) = ''  then
    begin
       nmPed.Enabled := false;
       FlatButton2.Enabled := false;
-      FlatButton1.Enabled := false;
+      btConsultaPed.Enabled := false;
       FlatButton4.Enabled := false;
       FlatButton3.Enabled := true;
+      edValor.Enabled := false; 
    end;
 end;
 
 procedure TfmDescPed.FlatButton2Click(Sender: TObject);
 begin
     if query.IsEmpty = false then
-       if criticaErroDesconto(nil, 0) = '' then
+       if criticaErroDesconto(0) = '' then
           if msgTEla('', ' ATENÇÃO   ' +#13+
                          ' Esse modo de desconto é exclusivo para faturamento  ' + #13+
                          ' a preço de custo( custo real ) para a loja Maracanau.   '+#13+
@@ -545,13 +538,13 @@ begin
              if (existeitemSemCusto(nil) = '') then
              begin
                 aplicaPrecoDeCusto(nil);
-                FlatButton1Click(Sender);
+                btConsultaPedClick(Sender);
                 if (tbParc.IsEmpty = false) or (tbEnt.IsEmpty = false  )then
                   showmessage('Ajuste os valores das parcelas do pedido e depois clique em  confirma preço de custo');
 
                 nmPed.Enabled := false;
                 btConfirmaCusto.Enabled := true;
-                FlatButton1.Enabled := false;
+                btConsultaPed.Enabled := false;
                 FlatButton2.Enabled := false;
                 FlatButton3.Enabled := false;
                 FlatButton4.Enabled := false;
@@ -594,25 +587,7 @@ begin
           'i.obsItem as [Observação], i.ref from zcf_avariasItens i inner join zcf_avarias a on i.numAvaria = a.numAvaria '+
           'inner join zcf_tbuo L on i.loja = L.is_uo ' +
           'where i.is_ref = ' + tbItens.fieldByname('is_ref').asString;
-
-//   funcSQl.getQuery( fmMain.Conexao, qrAvariaItem,  cmd);
-//
-//   fmMain.showGridCol( SoftDBGrid2, qrAvariaItem, 'ref',false);
-{}
 end;
-
-function TfmDescPed.criticaDescontoAvaria: String;
-var
-   erro:String;
-begin
-   erro := '';
-//   if (cbDescAvarias.Checked = true) and (qrAvariaItem.IsEmpty = true) then
-      erro := 'Se é desconto de avarias, você tem q selecionar um item do pedido.';
-   if erro <> '' then
-      MsgTela('', erro, MB_ICONERROR + MB_OK);
-   result := erro;
-end;
-
 
 procedure TfmDescPed.carregaDadosAvarias;
 begin //
@@ -663,10 +638,11 @@ begin
    end;
 end;
 
-procedure TfmDescPed.FlatButton5Click(Sender: TObject);
+function TfmDescPed.getvDescontoAvarias():real;
 var
   vDesc:real;
 begin
+   gridAvarias.Visible := false;
    vDesc:=0;
    tbItens.First();
    while (tbItens.Eof = false) do
@@ -674,8 +650,10 @@ begin
       tbAvarias.First();
       while (tbAvarias.Eof = false) do
       begin
-         if (tbItens.FieldByName('is_ref').asString = tbItens.FieldByName('is_ref').asString) and (tbAvarias.FieldByName('qtParaVenda').asString <> '0') and (tbAvarias.FieldByName('pcoSugerido').asString <> '0') then
-            vDesc := vDesc+ (tbItens.FieldByName('und').AsFloat - tbAvarias.FieldByName('pcoSugerido').AsFloat) * tbAvarias.FieldByName('qtParaVenda').AsFloat;
+         if (tbItens.FieldByName('is_ref').asString = tbAvarias.FieldByName('is_ref').asString) and
+            (tbAvarias.FieldByName('qtParaVenda').asString <> '0') and
+            (tbAvarias.FieldByName('pcoSugerido').asString <> '0') then
+             vDesc := vDesc+ (tbItens.FieldByName('und').AsFloat - tbAvarias.FieldByName('pcoSugerido').AsFloat) ; //* tbAvarias.FieldByName('qtParaVenda').AsFloat;
          tbAvarias.next();
       end;
       tbItens.Next();
@@ -683,7 +661,37 @@ begin
    tbAvarias.First();
    tbItens.First();
 
-   edValor.Value := vDesc;
+   gridAvarias.Visible := true;
+   result := vDesc;
+end;
+
+
+
+procedure TfmDescPed.FlatButton3Click(Sender: TObject);
+var
+   vDesconto:real;
+begin
+   vDesconto := GetValorDesconto();
+   if (criticaErroDesconto(vDesconto ) = '') then
+   begin
+      funcoes.MsgTela('','Verificação confirmada. ', MB_ICONASTERISK + mb_ok);
+      AplicarDesconto(nil, vDesconto,'');
+
+      nmped.Text := '';
+      nmped.Enabled  := true;
+      btConsultaPed.Enabled := true;
+      FlatButton4.Enabled := true;
+      FlatButton3.Enabled := false;
+      FlatButton2.Enabled := true;
+      btConfirmaCusto.Enabled:= false;
+   end;
+end;
+
+
+procedure TfmDescPed.FlatButton5Click(Sender: TObject);
+begin
+   if (tbAvarias.IsEmpty = false) then
+      edValor.Value:= getvDescontoAvarias();
 end;
 
 end.

@@ -10,10 +10,11 @@ uses
   shellapi, Windows, Messages, SysUtils, Menus, Classes,  Mask,Controls, Buttons,
   ComCtrls,Forms, Dialogs, ExtCtrls, StdCtrls, DBCtrls,mxOneInstance,
   AppEvnts, adLabelMaskEdit, IdComponent, IdTCPConnection,IdTCPClient,
-  IdFTP, ADODB,funcoes,IdBaseComponent, DB,  FileCtrl, clipbrd, OleCtrls,
+  ADODB, IdBaseComponent, DB,  FileCtrl, clipbrd, OleCtrls,
   GrFingerXLib_TLB,TFlatButtonUnit, TFlatEditUnit,
-  verificaSenhas, GrFinger  , uDBClass, funcsql, RpBase, RpSystem,
-  RpCon, RpConDS, RpDefine, RpRave, funcDatas, uUtil;
+  GrFinger, RpBase, RpSystem,
+  RpCon, RpConDS, RpDefine, RpRave;
+
 
 type
   TfmMain = class(TForm)
@@ -131,7 +132,8 @@ var
   IS_CAPTURA_INICIADA:BOOLEAN;
 implementation
 
-uses Justificativas, UOcorrencia, uImpFolhaPonto, uConsultarBatidas, Math, uCad;
+uses funcoes,  uUtil, Justificativas, uConsultarBatidas, uOcorrencia;
+//    ,  uImpFolhaPonto,  Math, uCad, uDBClass;
 
 {$R *.DFM}
 
@@ -146,7 +148,7 @@ end;
 
 function TfmMain.getDadosEmpregado(nCartao: String): boolean;
 begin
-   gravaLog('Pegando dados do empregado cartao:' + nCartao );
+   funcoes.gravaLog('Pegando dados do empregado cartao:' + nCartao );
    DS_EMP := uUtil.getDadosEmpregado(nCartao);
    result := not(DS_EMP.IsEmpty);
 end;
@@ -157,7 +159,7 @@ begin
    if (paramStr(1) = '-s') then
       result := '000'
    else
-      result :=  uUtil.getUserAutorizadorPonto(false);
+   result :=  uUtil.getUserAutorizadorPonto(false);
    timer2.Enabled := true;
 
    TIME_OUT_PROGRAM :=  VALOR_DEFAULT_TIME_OUT_PROGRAM
@@ -165,7 +167,7 @@ end;
 
 procedure TfmMain.ApplicationEvents1Exception(Sender: TObject; E: Exception);
 begin
-   gravaLog(' -  Erro: ' +  dateToStr(now)+ '  '+ timeToStr(now) + e.Message );
+   funcoes.gravaLog(' -  Erro: ' +  dateToStr(now)+ '  '+ timeToStr(now) + e.Message );
    application.MessageBox( pchar( 'Ocorreu o seguinte erro!!! Se ele persistir contate o suporte' +#13+
                 'O erro é: ' + e.Message), pchar(fmMain.caption), mb_iconerror+mb_OK );
 end;
@@ -175,7 +177,7 @@ function TfmMain.getCampoDia(data:String; ehSaida, isIntervalo:boolean):String;
 var
   strDia:String;
 begin
-   case dayOfWeek(strToData(data)) of
+   case dayOfWeek(funcoes.strToData(data)) of
       2:strDia := 'hSeg';
       3:strDia := 'hTer';
       4:strDia := 'hQua';
@@ -232,8 +234,8 @@ function TfmMain.calculaAtraso(cartaoPonto:String; data:Tdate;batida:String):int
 var
   aux:integer;
 begin
-   aux := horaToInt( batida ) - horaToInt( getHoraPrevista(cartaoPonto, getCampoDia(dateToStr(data), false, false ),DS_EMP));
-   gravaLog( 'Calculo de atraso do dia: '+  dateToStr(data) +' minutos:' + intTostr(aux) );
+   aux := funcoes.horaToInt( batida ) - funcoes.horaToInt( uUtil.getHoraPrevista(cartaoPonto, getCampoDia(dateToStr(data), false, false ),DS_EMP));
+   funcoes.gravaLog( 'Calculo de atraso do dia: '+  dateToStr(data) +' minutos:' + intTostr(aux) );
    if (aux > 0) then
       result := aux
    else
@@ -253,7 +255,7 @@ begin
    matricula := getMatricula(dadosEmp);
    dataAux := dataInicial;
 
-   gravaLog(#13+#13+'Calcular  Horas totais e ocorrencias');
+   funcoes.gravaLog(#13+#13+'Calcular  Horas totais e ocorrencias');
 
 //  verificar os feriados no periodo e calcular o tempo previsto
    dataAux := dataInicial;
@@ -262,12 +264,12 @@ begin
    while table.Eof = false do
    begin
       table.Edit;
-      if ( uUtil.isFeriado( dateToStr(dataAux), cartaoPonto) = true ) then
+      if ( util.isFeriado( dateToStr(dataAux), cartaoPonto) = true ) then
       begin
          table.FieldByName('ehFeriado').asString := 'S';
          table.FieldByName('tPrevisto').asInteger := 0;
          table.FieldByName('intervalo').asInteger := 0;
-      end
+      end;
       else
       begin
          prevEnt := horaToInt( HoraPrev(dateToStr(dataAux), cartaoPonto, false, false ) ) ;
@@ -289,7 +291,7 @@ begin
          end;
 
          // escrever no log os valores inteiros dos moinutos de entrada e saida
-         gravaLog('Dia : '+ dateToStr(dataAux) +#13+
+         funcoes.gravaLog('Dia : '+ dateToStr(dataAux) +#13+
                   ' Prev Entrada: ' +  intToStr(prevEnt) + #13+
                   ' Prev Saida: ' + intToStr(prevSai)+ #13+
                   ' Intevalo: ' + inttostr(intervalo) +' tprevisto '+ inttostr( PrevSai - (prevEnt + intervalo) )
@@ -304,7 +306,7 @@ begin
 
 
 // calcular  as batidas incompativeis
-   gravaLog('Calcular  as batidas incompativeis.');
+   funcoes.gravaLog('Calcular  as batidas incompativeis.');
 
    batInc := 0;
    batIncJ := 0;
@@ -316,7 +318,7 @@ begin
       table.edit;
       if ( ( (table.fieldByName('sai').asString = BATIDA_VAZIA) and (table.fieldByName('ent').asString <> BATIDA_VAZIA) ) or( (table.fieldByName('sai').asString <> BATIDA_VAZIA) and (table.fieldByName('ent').asString = BATIDA_VAZIA) )         ) and ( table.fieldByName('ehFeriado').asString = 'n'  ) then
       begin
-         gravaLog('Ocorrencia encontrada, batidas incompativeis, data: ' +  table.fieldByName('dia').asString );
+         funcoes.gravaLog('Ocorrencia encontrada, batidas incompativeis, data: ' +  table.fieldByName('dia').asString );
          if (uUtil.isAtivo( dateToStr(dataAux), matricula ) = true)  then
          begin
             table.fieldByName('Ocorrencia').asString := 'Bat incompativeis ';
@@ -340,8 +342,7 @@ begin
    end;
 
 // calcular os atrasos
-   gravaLog('Inicio calculo de atrasos.'+#13);
-
+   funcoes.gravaLog('Inicio calculo de atrasos.'+#13);
    dataAux := dataInicial;
    table.First;
    while (table.Eof = false) do
@@ -349,13 +350,13 @@ begin
       table.edit;
       if (table.fieldByName('ent').asString <> BATIDA_VAZIA)  and (table.fieldByName('ehFeriado').asString = 'N') then
       begin
-         table.fieldByName('atraso').asString :=  intToHora(  calculaAtraso(matricula, dataAux, table.fieldByName('ent').asString) ) ;
+         table.fieldByName('atraso').asString :=  funcoes.intToHora(  calculaAtraso(matricula, dataAux, table.fieldByName('ent').asString) ) ;
          if horaToInt(table.fieldByName('atraso').asString) > 0 then
             if horaToInt( table.fieldByName('atraso').asString ) > TOLERANCIA then
             begin
                if  ( uUtil.isAtivo( dateToStr(dataAux), matricula) = true ) and ( horaPrev(dateToStr(dataAux), cartaoPonto, false, false) <> '00:00' )  then
                begin
-                  gravaLog('Ocorrencia encontrada, atraso, dia  '+ dateToStr(dataAux)  ) ;
+                  funcoes.gravaLog('Ocorrencia encontrada, atraso, dia  '+ dateToStr(dataAux)  ) ;
                   table.fieldByName('ocorrencia').asString := 'Atraso';
 
                   codJust := uUtil.isJustificado(Matricula , 'A02', dataAux,  msgJust, msgObs, jusUsuario );
@@ -366,7 +367,7 @@ begin
                      table.fieldByName('observacao').asString := msgObs;
                      if  (uUtil.isJustAbonada(codJust) = true) then
                      begin
-                        gravaLog('Atraso justificado');
+                        funcoes.gravaLog('Atraso justificado');
                         table.fieldByName('AbonaAtraso').AsString := 'S' ;
                         tAtrasJus := tAtrasJus + horaToInt( table.fieldByName('atraso').asString );
                      end
@@ -392,7 +393,7 @@ begin
 
 
 /// calcular as faltas
-   gravaLog(#13+'Inicio calculo de Faltas.'+#13);
+   funcoes.gravaLog(#13+'Inicio calculo de Faltas.'+#13);
 
    falta:=0;
    faltaj:=0;
@@ -402,7 +403,7 @@ begin
    begin
       table.edit;
       if ( isFaltaNoDia( cartaoPonto, table.fieldByName('ent').asString, table.fieldByName('sai').asString, dateToStr(dataAux), table.fieldByName('ehFeriado').asString) = true  ) then
-//      if (table.fieldByName('sai').asString = BATIDA_VAZIA) and (table.fieldByName('ent').asString = BATIDA_VAZIA) and( HoraPrev(dateToStr(dataAux), cartaoPonto,false, false) <> '00:00' ) and ( table.fieldByName('ehFeriado').asString = 'N' ) then
+      if (table.fieldByName('sai').asString = BATIDA_VAZIA) and (table.fieldByName('ent').asString = BATIDA_VAZIA) and( HoraPrev(dateToStr(dataAux), cartaoPonto,false, false) <> '00:00' ) and ( table.fieldByName('ehFeriado').asString = 'N' ) then
       begin
          if ( uUtil.isAtivo( dateToStr(dataAux), matricula ) = true ) then
          begin
@@ -477,7 +478,7 @@ begin
 
    if batDia.Count = 1 then
    begin
-      if horaToInt(copy(BatDia[0],12,05)) <= horaToInt( fmMain.HoraPrev( copy(batDia[0],01,10), cartaoPonto, false, false )) + 240 then
+      if funcoes.horaToInt(copy(BatDia[0],12,05)) <= horaToInt( fmMain.HoraPrev( copy(batDia[0],01,10), cartaoPonto, false, false )) + 240 then
       begin
          aux.add( copy(BatDia[0],12,05) + copy(BatDia[0],30,03) );
          for i:=1 to 3 do aux.add(BATIDA_VAZIA);
@@ -516,7 +517,7 @@ var
   Bat,BatPeriodo:TstringList;
   i:integer;
 begin
-    GravaLog('Preenchendo Lista batidas :' + getCartaoPontoStr(dadosEmp)  );
+    funcoes.GravaLog('Preenchendo Lista batidas :' + getCartaoPontoStr(dadosEmp)  );
 
     Bat := Tstringlist.Create();
     BatPeriodo := Tstringlist.Create();
@@ -524,7 +525,7 @@ begin
     i:=0;
     table.First;
 
-    gravaLog('Colocando as batidas na tabela :' + getCartaoPontoStr(dadosEmp) );
+    funcoes.gravaLog('Colocando as batidas na tabela :' + getCartaoPontoStr(dadosEmp) );
     while table.Eof = false do
     begin
        bat := fmMain.selecionaBatidasDoDia( dateToStr(dti+i), dadosEmp, batPeriodo );
@@ -542,7 +543,7 @@ begin
        inc(i);
        table.Next;
     end;
-    GravaLog('Preenchendo Lista batidas na tabela, concluído :' + getCartaoPontoStr(dadosEmp) );
+    funcoes.GravaLog('Preenchendo Lista batidas na tabela, concluído :' + getCartaoPontoStr(dadosEmp) );
 end;
 
 
@@ -660,6 +661,7 @@ begin
      registraPontoWalter(data);
 
   timer2.Enabled := true;
+{}
 end;
 
 function tfmMain.ExisteBatida(cartao:String):boolean;
@@ -680,8 +682,8 @@ var
    HoraFeita,HoraPrevista,posi:integer;
    encontrou:boolean;
 begin
-   horaPrevista :=  HoraToInt( DS_EMP.fieldByName( getCampoDia( data,false, false) ).AsString);
-   horaFeita :=   HoraToInt(hora);
+   horaPrevista :=  funcoes.horaToInt( DS_EMP.fieldByName( getCampoDia( data,false, false) ).AsString);
+   horaFeita :=   funcoes.horaToInt(hora);
    aux :=  'Ok';
    if ( DS_EMP.FieldByName('isHoraFlexivel').asString = '1' ) then
    begin
@@ -716,7 +718,7 @@ begin
    Application.OnException := AppException;
    if  shortdateformat <> 'dd/MM/yyyy'  then
    begin
-      msgTela('', 'ATENÇÃO!!!!'+#13+'A data esta em formato diferente e não posso continuar.'+#13+'Consulte o suporte técnico',MB_OK+MB_ICONERROR);
+      funcoes.msgTela('', 'ATENÇÃO!!!!'+#13+'A data esta em formato diferente e não posso continuar.'+#13+'Consulte o suporte técnico',MB_OK+MB_ICONERROR);
       application.Terminate
    end;
    LongTimeFormat  :='HH:mm:ss';
@@ -743,45 +745,46 @@ begin
 
       PERFIL := funcoes.RParReg( CH_REG, 'capturaPonto');
 
-      ConfiguraMenus();
+     configuraMenus();
    end;
 end;
 
 
 procedure TfmMain.AppException(Sender: TObject; E: Exception);
 begin
-   gravaLog('Erro: - ' + DateToStr(now)+' - '+TimeToStr(now)+ ' - ' +  E.message +' Loja:'+ LOJA);
+   funcoes.gravaLog('Erro: - ' + DateToStr(now)+' - '+TimeToStr(now)+ ' - ' +  E.message +' Loja:'+ LOJA);
 end;
 
 procedure TfmMain.mxOneInstance1InstanceExists(Sender: TObject);
 begin
    if funcoes.ehParametroInicial('-One') = false then
    begin
-      msgTela('',#13+'   Já existe uma tela desse programa aberta     '+ #13+#13, mb_iconWarning + mb_ok);
+      funcoes.msgTela('',#13+'   Já existe uma tela desse programa aberta     '+ #13+#13, mb_iconWarning + mb_ok);
       application.terminate;
    end;
 end;
 
 procedure TfmMain.ativaReceberPontoBiometrico();
 begin
-   gravaLog('ação: ativaReceberPontoBiometrico');
+   funcoes.gravaLog('ação: ativaReceberPontoBiometrico');
    bevel2.Visible := true;
    ativarLabelsDataHora();
 
    lbData.caption := datetostr(now);
 
    fmMain.Caption := TITULO +  '    -  Iniciando Leitor.';
+
    if uUtil.InitializeGrFinger(GrFingerXCtrl1) < 0 then
       application.Terminate;
 
    fmMain.Caption := TITULO +  '    -  Abrindo conexão com o BD.';
    try
-      gravaLog('Abrir a tabela de templates');
+      funcoes.gravaLog('Abrir a tabela de templates');
       uUtil.AbrirCadastroDigitais();
    except
       on e:Exception do
       begin
-         msgTela('', '   Houve um erro ao se conectar ao BD, e o programa irá ser finalizado' +#13+
+         funcoes.msgTela('', '   Houve um erro ao se conectar ao BD, e o programa irá ser finalizado' +#13+
                  'se o problema persistir entre em contato com o suporte', MB_ICONERROR + MB_OK);
                  gravaLog('Erro:' + e.Message);
                  application.Terminate();
@@ -873,12 +876,12 @@ begin
    TIME_OUT_PROGRAM :=   TIME_OUT_PROGRAM - 1;
 
    if (TIME_OUT_PROGRAM <= 0) then
-      if (fmBatidas <> nil) or ( FmOcorrencia <> nil) or ( fmImpFolhaPonto<> nil) or ( Justificativa <> nil) then
+//      if (fmBatidas <> nil) or ( FmOcorrencia <> nil) or ( fmImpFolhaPonto<> nil) or ( Justificativa <> nil) then
          TIME_OUT_PROGRAM := VALOR_DEFAULT_TIME_OUT_PROGRAM
        else
        begin
-          gravaLog('Aplicativo encerrado por inatividade');
-          Application.Terminate();
+          funcoes.gravaLog('Aplicativo encerrado por inatividade');
+//          Application.Terminate();
        end;
 
    lbData.caption := DateToStr(now);
@@ -902,9 +905,11 @@ end;
 procedure TfmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
    if PERFIL = '1' then
-//     GrFingerXCtrl1.Finalize();
-   FinalizeGrFinger(GrFingerXCtrl1);
-// tenta atualizar o prelogio.exe
+     GrFingerXCtrl1.Finalize();
+
+   uUtil.FinalizeGrFinger(GrFingerXCtrl1);
+
+     // tenta atualizar o prelogio.exe
    verificaAtualizacaoDoLancador();
    application.terminate;
 end;
@@ -922,7 +927,7 @@ begin
 
       if verificacaoHorario = 'Nao permitido' then
       begin
-         msgTela('', '                    Erro.                                ' + #13 +
+         funcoes.msgTela('', '                    Erro.                                ' + #13 +
                  ' Você está fora do horário, e não é permitido            ' + #13 +
                  ' registrar o ponto fora do horário para esse funcionário.' + #13 , mb_iconError + mb_ok) ;
       end
@@ -931,11 +936,11 @@ begin
          codJustificativa :=   uUtil.getUserAutorizadorPonto(true);
          if codJustificativa <> '' then
          begin
-            justificar( fmMain.getMatricula(cartaoPonto), codJustificativa , lbData.Caption , lbData.Caption, '1', '0800', funcoes.SohNumeros(copy(lbHora.Caption,01,05)),'A02', copy(lbDadosCartao.caption,10,08), dateToStr(now) +' '+ timeToStr(now),'Gerado na Entrada', copy(lbDadosCartao.caption,41,01), copy(lbDadosCartao.caption,43,03), LOJA, '' );
+            uUtil.justificar( fmMain.getMatricula(cartaoPonto), codJustificativa , lbData.Caption , lbData.Caption, '1', '0800', funcoes.SohNumeros(copy(lbHora.Caption,01,05)),'A02', copy(lbDadosCartao.caption,10,08), dateToStr(now) +' '+ timeToStr(now),'Gerado na Entrada', copy(lbDadosCartao.caption,41,01), copy(lbDadosCartao.caption,43,03), LOJA, '' );
             RegistraPonto(lbData.caption,lbHora.caption, cartaoPonto );
          end
          else
-            msgTela('', '                          ATENÇÃO!!!!                            '+#13+
+            funcoes.msgTela('', '                          ATENÇÃO!!!!                            '+#13+
                     ' Essa batida foi ignorada, pois não informada uma justificativa. ' +#13+
                     ' A autorização não foi executada corretamente.                   ',MB_OK+MB_ICONERROR);
       end
@@ -948,12 +953,12 @@ end;
 
 procedure TfmMain.digitarPonto(cartaoPonto: String);
 begin
-   gravaLog('TfmMain.digitarPonto() ' + cartaoPonto);
+   funcoes.gravaLog('TfmMain.digitarPonto() ' + cartaoPonto);
 
    if ( getDadosEmpregado(cartaoPonto) = true ) then
       receberCartaoDePonto(cartaoPonto)
    else
-      MsgTela('', ' Não cadastrado. '+#13, mb_iconError + mb_Ok);
+      funcoes.MsgTela('', ' Não cadastrado. '+#13, mb_iconError + mb_Ok);
    Image1.Picture := nil;
 end;
 
@@ -977,7 +982,7 @@ begin
       uUtil.PrintBiometricDisplay(Image1, GrFingerXCtrl1, false, GR_DEFAULT_CONTEXT);
       uUtil.ExtractTemplate();
       uUtil.PrintBiometricDisplay(Image1, GrFingerXCtrl1, true, GR_MEDIUM_QUALITY);
-//      image1.reFresh;
+      image1.reFresh;
       sleep(300);
    end;
 
@@ -985,14 +990,14 @@ begin
    if  ( cartaoPonto <> '000000' ) then
       digitarPonto(cartaoPonto)
    else
-      msgTela('', ' Digital não cadastrada. '+#13, mb_iconError + mb_Ok);
+      funcoes.msgTela('', ' Digital não cadastrada. '+#13, mb_iconError + mb_Ok);
 
    timer2.Enabled := true;
 end;
 
 procedure TfmMain.Batidas1Click(Sender: TObject);
 begin
-   if ( verificarSenha() <> '' ) then
+  if ( verificarSenha() <> '' ) then
    begin
       Application.CreateForm( TfmBatidas, fmBatidas);
       fmBatidas.Show();
@@ -1018,21 +1023,22 @@ begin
    if (dataSet2 <> nil) then
       dsConn2.DataSet := dataSet2;
 
-   if (funcoes.ExisteParametro('-s') = true) then
+//   if (funcoes.ExisteParametro('-s') = true) then
       RvProject.ProjectFile := 'C:\ProgramasDiversos\relatoriosPCF.rav'
-   else
-      RvProject.ProjectFile := 'relatoriosPCF.rav';
-   RvProject.ExecuteReport(nomeRelatorio);
+//   else
+//      RvProject.ProjectFile := 'relatoriosPCF.rav';
+//   RvProject.ExecuteReport(nomeRelatorio);
 end;
 
 procedure TfmMain.FolhaPonto1Click(Sender: TObject);
 begin
-   if ( verificarSenha() <> '' ) then
+{   if ( verificarSenha() <> '' ) then
    begin
       Application.CreateForm(TfmImpFolhaPonto, fmImpFolhaPonto);
       fmImpFolhaPonto.Show;
       fmMain.Hide;
     end;
+}    
 end;
 
 function TfmMain.isAntecipacaoSaida(matricula, data, batida: String): integer;
@@ -1043,11 +1049,11 @@ begin
      result := 0
    else
    begin
-      prev := horaToInt( getHoraPrevista( matricula, getCampoDia(data, true, false), DS_EMP));
-      if  prev > horaToInt(batida) then
-        result := prev - horaToInt(batida)
-      else
-        result := 0;
+//      prev := horaToInt( getHoraPrevista( matricula, getCampoDia(data, true, false), DS_EMP));
+//      if  prev > horaToInt(batida) then
+//        result := prev - horaToInt(batida)
+//      else
+//        result := 0;
    end;
 end;
 
@@ -1104,10 +1110,10 @@ var
 begin
    if (FileExists(ExtractFilePath(ParamStr(0))+  'PRelogioNovo.exe') = true) then
    begin
-      gravaLog('Atualizacao do lancador------------------');
+//      gravaLog('Atualizacao do lancador------------------');
       deleteFile( ExtractFilePath(ParamStr(0))+  'PRelogio.exe');
       acao :=  RenameFile(ExtractFilePath(ParamStr(0))+  'PRelogioNovo.exe', ExtractFilePath(ParamStr(0))+'PRelogio.exe');
-      gravaLog('resultado da atualizacao: ' + BoolToStr(acao, true) );
+//      gravaLog('resultado da atualizacao: ' + BoolToStr(acao, true) );
    end;
 end;
 
@@ -1119,13 +1125,13 @@ begin
    if ( user <> '' ) then
    begin
       screen.Cursor := crHourGlass;
-      uUtil.FinalizeGrFinger(GrFingerXCtrl1);
+//      uUtil.FinalizeGrFinger(GrFingerXCtrl1);
       fmMain.Hide;
 
-      Application.CreateForm(TfmCad, fmCad);
-      screen.Cursor := crDefault;
-      fmCad.Show();
-      fmCad.setUser(user);
+//      Application.CreateForm(TfmCad, fmCad);
+//      screen.Cursor := crDefault;
+//      fmCad.Show();
+//      fmCad.setUser(user);
    end;
 end;
 

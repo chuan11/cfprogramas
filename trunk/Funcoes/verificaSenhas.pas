@@ -9,13 +9,13 @@ uses
 function telaAutorizacao( Conexao:TAdoConnection; Grupos,usuarios,MSG:String):Boolean;
 function telaAutorizacao2( Conexao:TAdoConnection; Grupos,cd_usu:String ):string;
 function telaAutPonto(lstJustificativas, lstUsers:TStrings ):string;
-function loginWell(var user:String; Conexao:TAdoConnection):String;
+function loginWell(lojas: TStringList; var user:String; Conexao:TAdoConnection):String;
 function FEncryptDecrypt(pTexto : String; pT : String) : String;
 function telaAutorizacaoSimples(senha,msg:String):String;
 
 implementation
 
-uses uMain;
+//uses uMain;
 
 function TelaAutorizacao( Conexao:TAdoConnection; Grupos,usuarios,MSG:String):Boolean;
 begin
@@ -30,14 +30,11 @@ begin
 end;
 
 
-function loginWell(var user:String; Conexao:TAdoConnection):String;
+function loginWell(lojas: TStringList; var user:String; Conexao:TAdoConnection):String;
 begin
    application.CreateForm(TFmSenha,FmSEnha);
-//   FmSenha.cbLoja.Items := fmMain. FuncSQL.GetNomeLojas(conexao,false,false,'','');
 
-   fmMain.getListaLojas(fmSenha.cbLoja, false, false, '');
-
-
+   fmSenha.cbLoja.items := lojas;
    fmSenha.Conexao.ConnectionString := funcoes.getDadosConexaoUDL('ConexaoAoWell.ini');
    FmSenha.cbJustificativa.Visible := false;
    FmSenha.ShowModal;
@@ -48,16 +45,16 @@ begin
      Result := '';
 end;
 
-function TelaAutorizacao2( Conexao:TAdoConnection; Grupos,cd_usu:string ):string;
+function TelaAutorizacao2( Conexao:TAdoConnection; Grupos, cd_usu:string ):string;
 begin
    application.CreateForm(TFmSenha,FmSEnha);
    FmSenha.cbUsuarios.Items := FuncSQL.getUsuariosWell(Conexao, Grupos,cd_usu);
-   FmSenha.desabilitajustificativa(nil);
+   FmSenha.desabilitajustificativa();
    fmSenha.Conexao.ConnectionString :=  funcoes.getDadosConexaoUDL(extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini');
    fmSenha.Conexao.OnWillExecute := Conexao.OnWillExecute;
    FmSenha.ShowModal;
 
-   if FmSEnha.ModalResult = MrOk then
+   if FmSenha.ModalResult = MrOk then
       Result := trim(copy(fmSenha.cbUsuarios.Items[fmSenha.cbUsuarios.Itemindex],100,10))
    else
      Result := '';
@@ -66,6 +63,7 @@ end;
 function telaAutPonto(lstJustificativas,lstUsers:TStrings ):string;
 begin
    screen.Cursor := crHourGlass;
+
    application.CreateForm(TFmSenha,FmSEnha);
 
    FmSenha.cbUsuarios.Items := lstUsers;
@@ -75,7 +73,7 @@ begin
       fmSenha.cbJustificativa.Items :=  lstJustificativas ;
    end
    else
-      fmSenha.desabilitajustificativa(nil);
+      fmSenha.desabilitajustificativa();
 
    FmSenha.Conexao.ConnectionString := funcoes.getDadosConexaoUDL(extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini');
 
@@ -84,9 +82,9 @@ begin
    if FmSEnha.ModalResult = MrOk then
    begin
       if (lstJustificativas.Count > 0) then
-         Result := trim(copy(fmSenha.cbJustificativa.Items[fmSenha.cbJustificativa.Itemindex],01,04))
+         Result := trim(copy(fmSenha.cbJustificativa.Items[fmSenha.cbJustificativa.Itemindex], 01, 04))
       else
-         Result := trim(copy(fmSenha.cbUsuarios.Items[fmSenha.cbUsuarios.Itemindex],100,10))
+         Result := trim(copy(fmSenha.cbUsuarios.Items[fmSenha.cbUsuarios.Itemindex], 100, 10))
    end
    else
       Result := '';

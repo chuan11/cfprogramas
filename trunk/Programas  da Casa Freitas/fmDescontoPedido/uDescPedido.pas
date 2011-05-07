@@ -77,9 +77,6 @@ type
     procedure carregaItensPedido();
     procedure gravaDescAvarias(pedido:String);
     procedure gridItensCellClick(Column: TColumn);
-    procedure cbDescAvariasClick(Sender: TObject);
-    procedure carregaDadosAvarias();
-    procedure gridAvariasColExit(Sender: TObject);
     procedure gridAvariasKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tbAvariasBeforePost(DataSet: TDataSet);
     procedure FlatButton5Click(Sender: TObject);
@@ -134,7 +131,7 @@ var
 begin
    tpDescontoClick(Sender);
 
-   IS_TELA_RESTRITA := (pos(fmMain.getParamBD('gruposRestritosTela',''), fmMain.getGrupoLogado()) = 0 );
+   IS_TELA_RESTRITA :=  (pos(fmMain.getParamBD('gruposRestritosTela',''), fmMain.getGrupoLogado() ) <> 0 );
 
    if (IS_TELA_RESTRITA = true )  then
    begin
@@ -161,7 +158,6 @@ procedure TfmDescPed.carregaItensPedido();
 var
    cmd:String;
    nTable:string;
-//   lista:TstringList;
 begin
    if tbItens.Active = true then
       tbItens.Close();
@@ -177,17 +173,11 @@ begin
           ' numPedido = ' + nmPed.Text;
 
    funcSql.execSQL(cmd , fmMain.Conexao);
-//   lista := TStringList.Create();
-//   lista.Add('Funcionario');
-//   lista.Add('Cliente');
-//   lista.Add('CD');
 
    tbItens.Open();
    dsItens.DataSet := tbItens;
 
-//   gridItens.columns[tbItens.FieldByname('Responsavel pela avaria').index].PickList := lista;
    gridItens.Refresh();
-
    gridItens.columns[tbItens.FieldByname('seq').index].visible := false;
    gridItens.columns[tbItens.FieldByname('is_ref').index].visible := false;
    gridItens.columns[tbItens.FieldByname('codLoja').index].visible := false;
@@ -394,8 +384,7 @@ begin
       end;
    end;
 
-//   if cbDescAvarias.Checked = true then
-//      gravaDescAvarias(query.fieldByname('Pedido').asString);
+   gravaDescAvarias(query.fieldByname('Pedido').asString);
 
    btConsultaPedClick(Sender);
 end;
@@ -411,9 +400,15 @@ begin
 end;
 
 procedure TfmDescPed.AplicarDesconto(Sender: Tobject; vDesconto: Real;autorizador:string);
+var
+ userLogado:String;
 begin
+   userLogado := '';
+   if (IS_TELA_RESTRITA = true) then
+     userLogado := fmMain.getUserLogado();
+
    if autorizador = '' then
-      autorizador := verificaSenhas.TelaAutorizacao2(fmMain.Conexao,' 13, 6, 8, 111 ','');
+      autorizador := verificaSenhas.TelaAutorizacao2(fmMain.Conexao,' 13, 08' , userlogado);
 
    if (query.IsEmpty = false) and ( autorizador <> '' ) then
    begin
@@ -426,9 +421,7 @@ begin
             calculaDesconto(Sender, autorizador, vDesconto );
    end
    else
-   begin
       btConsultaPed.Enabled := true;
-   end
 end;
 
 procedure TfmDescPed.gridEntradaExit(Sender: TObject);
@@ -565,17 +558,43 @@ procedure TfmDescPed.gravaDescAvarias(pedido:String);
 var
   pcDesconto:String;
   cmd:String;
+  isDescAvarias:boolean;
 begin
-   funcSQL.execSQL('delete from zcf_avariasDescontos where is_uo = ' +tbItens.fieldByName('codLoja').asString +' and pedido = ' + query.fieldByName('pedido').asString, fmMain.Conexao);
-   pcDesconto := funcsql.openSQL(' Select ((valorDesconto*100)/valorTotal)/100  as pcDesconto from pedidocliente (nolock) where numPedido= ' + pedido , 'pcDesconto', fmMain.Conexao);
-   pcDesconto := funcoes.ValorSql(pcDesconto);
-   cmd := 'insert zcf_avariasDescontos ' +
-          'select codLoja, getdate(), ' + query.fieldByName('pedido').asString  + ' , is_ref, qt, round( und - (und * '+ pcDesconto +'),2 ) , und, ' +
-          '(Select dbo.z_cf_funObterPrecoProduto_cf(5,is_ref,10033586,0)) from ' + tbItens.TableName ;
-   funcSql.execSQL(cmd, fmMain.Conexao);
+   isDescAvarias := false;
+   tbAvarias.First();
+   while (tbAvarias.Eof = false) do
+   begin
+      if (tbAvarias.FieldByName('qtParaVenda').AsInteger > 0) then
+      begin
+         isDescAvarias := true;
+         break
+      end;
+      break;
+   end;
 
-//   if (qrAvariaItem.IsEmpty = false) then
-//      cmd := ' update zcf_avariasItens set isVendido = 1  where ref  = ' + qrAvariaItem.fieldByName('ref').asString;
+   if (isDescAvarias = true) then
+   begin
+      funcSQL.execSQL('delete from zcf_avariasDescontos where is_uo = ' +tbItens.fieldByName('codLoja').asString +' and pedido = ' + query.fieldByName('pedido').asString, fmMain.Conexao);
+
+      pcDesconto := funcsql.openSQL(' Select ((valorDesconto*100)/valorTotal)/100  as pcDesconto from pedidocliente (nolock) where numPedido= ' + pedido , 'pcDesconto', fmMain.Conexao);
+      pcDesconto := funcoes.ValorSql(pcDesconto);
+      cmd := 'insert zcf_avariasDescontos ' +
+             'select codLoja, getdate(), ' + query.fieldByName('pedido').asString  + ' , is_ref, qt, round( und - (und * '+ pcDesconto +'),2 ) , und, ' +
+             '(Select dbo.z_cf_funObterPrecoProduto_cf(5, is_ref, '+ fmMain.getUoLogada() +', 0)) from ' + tbItens.TableName ;
+      funcSql.execSQL(cmd, fmMain.Conexao);
+   end;
+
+   tbAvarias.First();
+   while (tbAvarias.Eof = false) do
+   begin
+      if (tbAvarias.FieldByName('qtParaVenda').AsInteger > 0) then
+      begin
+         cmd := 'update zcf_avariasItens set qtVendido = qtVendido + ' + tbAvarias.FieldByName('qtParaVenda').asString +
+                'where  ref = ' + tbAvarias.FieldByName('ref').asString;
+         funcSql.execSQL(cmd, fmMain.Conexao);
+      end;
+      tbAvarias.next();
+   end;
    funcSql.execSQL(cmd, fmMain.Conexao);
 end;
 
@@ -587,29 +606,6 @@ begin
           'i.obsItem as [Observação], i.ref from zcf_avariasItens i inner join zcf_avarias a on i.numAvaria = a.numAvaria '+
           'inner join zcf_tbuo L on i.loja = L.is_uo ' +
           'where i.is_ref = ' + tbItens.fieldByname('is_ref').asString;
-end;
-
-procedure TfmDescPed.carregaDadosAvarias;
-begin //
-end;
-
-
-procedure TfmDescPed.cbDescAvariasClick(Sender: TObject);
-begin
-//   if (cbDescAvarias.Checked = true) and (query.IsEmpty = false)  then
-//      uCF.getProdAvariadosParaVenda(tbAvarias, gridAvarias, query.fieldByname('pedido').AsString);
-end;
-
-
-procedure TfmDescPed.gridAvariasColExit(Sender: TObject);
-begin
-   if ( gridAvarias.SelectedIndex =  tbAvarias.FieldByname('qtParaVenda').index ) and ( gridAvarias.SelectedField.AsString <> '' ) then
-   begin
-      showmessage( tbAvarias.fieldByName('qtParaVenda').asString);
-
-
-
-   end;
 end;
 
 procedure TfmDescPed.gridAvariasKeyDown(Sender: TObject; var Key: Word;

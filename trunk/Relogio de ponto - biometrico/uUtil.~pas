@@ -5,7 +5,7 @@ interface
 uses
   Classes, Controls, StdCtrls, ExtCtrls, CheckLst, SysUtils,  Forms,
   ADODB, Dialogs, Windows, Graphics, ActiveX, GrFingerXLib_TLB,
-  AXCtrls, uDBClass, funcoes, db, dbGrids,funcSQL;
+  AXCtrls, uDBClass, db, dbGrids ,  funcoes;
 
 type
   // Raw image data type.
@@ -65,6 +65,7 @@ function isJustificado(matricula, ocorrencia:String; data:Tdate ; var tpJust, ob
 function justificar( mat, just, data1, data2, tipo, hora1,hora2, ocorr,Cartao,DtLancamento,Obs,banco,Estabelecimento,loja, diaGeradorFolga:string):String;
 function obterDadosFuncionarios(localizacao:String): Tstrings;
 function isconnected():Boolean;
+function isHaveBatida(dia:Tdate; cartao:String): boolean;
 function lerParametroBD(parametro:String):String;
 function opendb():Boolean;
 function registraPonto(data,Hora,cartao,loja:string):boolean;
@@ -771,6 +772,12 @@ function isDiaBaseFolga(matricula:String; data:Tdate):boolean;
 begin
    result := db.isDiaBaseFolga(matricula, data);
 end;
+
+function isHaveBatida(dia:Tdate; cartao:String): boolean;
+begin
+   result := db.isHaveBatida(dia, cartao);
+end;
+
 
 end.
 

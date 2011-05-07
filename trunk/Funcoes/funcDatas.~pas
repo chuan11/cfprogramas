@@ -55,6 +55,7 @@ var
 begin
    m:= strToInt(copy(mesAno,01,02));
    a:= strToInt(copy(mesAno,04,04));
+
    if sinal = '-' then
       m:= m -1
    else
@@ -65,11 +66,13 @@ begin
       a := a +1;
       m := 01;
    end;
+
    if m < 1 then
    begin
       a:= a-1;
       m:= 12;
    end;
+
    mesAno := funcoes.preencheCampo(2,'0','e', intToStr(m) ) + '/' + intToStr(a);
    result := mesAno;
 end;

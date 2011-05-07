@@ -554,8 +554,8 @@ procedure TfmMain.Descontodepedido1Click(Sender: TObject);
 begin
    if fmPrecosAlterados = nil then
    begin
-      Application.CreateForm(TfmDescPedido, fmDescPedido);
-      fmDescPedido.show;
+      Application.CreateForm(TfmDescPed, fmDescPed);
+      fmDescPed.show;
    end;
 end;
 

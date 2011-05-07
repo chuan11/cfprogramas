@@ -5,7 +5,7 @@ interface
 uses
   Classes, Controls, StdCtrls, ExtCtrls, CheckLst, SysUtils,  Forms,
   ADODB, Dialogs, Windows, Graphics, ActiveX, GrFingerXLib_TLB,
-  AXCtrls, uDBClass, funcoes, db, dbGrids,funcSQL;
+  AXCtrls, uDBClass, db, dbGrids ,  funcoes;
 
 type
   // Raw image data type.

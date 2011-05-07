@@ -189,6 +189,7 @@ end;
 
 procedure TFmSenha.FormShow(Sender: TObject);
 begin
+   showMessage('');
    if  (FmSenha.cbUsuarios.Visible = true) then
       FmSenha.cbUsuarios.SetFocus;
 end;
