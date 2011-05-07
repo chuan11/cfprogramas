@@ -101,8 +101,10 @@ uses uMain, uCF, funcoes, funcsql;
 
 procedure TfmRelGeral.ajustaTelaParaAvarias;
 begin
-   fmRelGeral.Caption := 'Valores totais de avarias.';
-   cbDetAvaForn.Visible := true;
+   fmMain.getListaLojas( cbLojas, true, false, fmMain.getCdPesLogado() );
+   fmRelGeral.caption := 'Valores totais de avarias.';
+   cbDetAvaForn.visible := true;
+   cbCaixas.visible := false;
 end;
 
 function TfmRelGeral.getParametrosRelatorioAvarias: TstringList;

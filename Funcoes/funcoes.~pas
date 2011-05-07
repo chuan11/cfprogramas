@@ -94,7 +94,7 @@ uses printers,windows,dialogs,SysUtils,classes,MaskUtils,Registry,   unMsgTela2,
        function tiraEspaco(str:string):string;
        function tiraEspacoFim(str:string):string;
        function ultimoDisDoMes(DiaInicial:String):String;
-       function ValorSql(str:string):string;
+       function valorSql(str:string):string;
        procedure carregaCampos(form:Tform);
        procedure Criaparametro(arq,nome,valor:string; numParam:integer);
        procedure imprimeArquivoPorta(NomeArq:String; nomePorta:string);
@@ -274,7 +274,7 @@ begin
    lista.SaveToFile(arq);
 end;
 
-function ValorSql(str:string):string;
+function valorSql(str:string):string;
 var
    i:integer;
 begin

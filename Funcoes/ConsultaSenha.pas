@@ -27,7 +27,7 @@ type
     function verificaErros(Sender:Tobject):string;
     procedure FlatButton2Click(Sender: TObject);
     procedure cbLojaChange(Sender: TObject);
-    procedure desabilitajustificativa(Sender:Tobject);
+    procedure desabilitaJustificativa();
     procedure preparaSenhaSimples(Senha:String);
     procedure autorizacaoGeral();
     procedure autorizacaoSimples();
@@ -45,7 +45,7 @@ implementation
 
 {$R *.dfm}
 
-procedure TFmSenha.desabilitajustificativa(Sender: Tobject); 
+procedure TFmSenha.desabilitaJustificativa();
 begin
    cbLoja.Visible := false;
    cbUsuarios.Visible := true;

@@ -861,7 +861,7 @@ begin
 end;
 
 function PrecoSqlToStr(Str:String):string;
-begin //
+begin
    if pos('.',str) = 1 then
       str := '0'+str;
   insert(',',str, pos('.',str));

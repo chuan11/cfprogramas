@@ -3,9 +3,8 @@ unit uDBClass;
 interface
 
 uses
-  ADODB, DB, classes, SysUtils, GrFingerXLib_TLB, ActiveX, verificaSenhas, Controls,
-  dialogs, funcSQl, QForms,
-  funcoes, funcDatas, DBGrids;
+  ADODB, DB, classes, SysUtils, GrFingerXLib_TLB, ActiveX, verificaSenhas,  Controls,
+  dialogs, funcSQl, QForms,  funcoes, funcDatas, DBGrids;
 
 //const
   // the database we'll be connecting to
@@ -70,6 +69,7 @@ type
     function isDiaBaseFolga(matricula:String; data:Tdate):boolean;
     function isDSTemplateClosed():boolean;
     function isFeriado(data, cartaoPonto:String):boolean;
+    function isHaveBatida(dia:Tdate; cartao:String):boolean;
     function isJustAbonada(codJust:string):boolean;
     function isJustificado(matricula, ocorrencia:String; data:Tdate; var tpJust, obsJust, jusUsuario:String ):String;
     function isPontoCadastrado(cartaoPonto:String):boolean;
@@ -305,6 +305,9 @@ begin
    ds.close;
 end;
 
+
+
+
 function TDBClass.numRegistros: integer;
 begin
    result := dsTemplates.RecordCount;
@@ -316,7 +319,7 @@ var
    lstUser:Tstrings;
 begin
    users := funcSQl.getUsersList(connection, 'Select * from zcf_PontoAutorizadores');
-   result := verificaSenhas.TelaAutorizacao2(connection,'',users);
+//   result := verificaSenhas.TelaAutorizacao2(connection,'',users);
 end;
 
 function TDBClass.getUserAutorizadorPonto(listaJustificativas:boolean):String;
@@ -330,6 +333,7 @@ begin
 
    lstUsers := getAutorizadores();
    result := verificaSenhas.telaAutPonto(lstJus, lstUsers);
+
 end;
 
 function TDBClass.getDadosEmpregado(cartao: String):TDataSet;
@@ -697,8 +701,11 @@ begin
 end;
 
 function TDBClass.lerParametroBD(parametro:String):String;
+var
+   cmd, aux:String;
 begin
-   result := funcsql.getParametro(parametro,'',connection);
+   cmd := 'Select top 01 valor from zcf_paramgerais where nm_param = ' + quotedStr(parametro);
+   result := funcsql.openSQL(cmd, 'valor',connection);
 end;
 
 function TDBClass.setParamBD(parametro, uo, valor:String):boolean;
@@ -855,6 +862,11 @@ begin
           'where jus_matricula = '+ quotedstr(matricula) +
           ' and  jus_diaGeradorFolga= ' + funcDatas.dateToSqlDate(data);
    result := (funcSQl.openSQL( cmd, 'jus_diaGeradorFolga', connection) <> '');
+end;
+
+function TDBClass.isHaveBatida(dia:Tdate; cartao:String): boolean;
+begin
+   result := (getBatidas(dateToStr(dia), dateToStr(dia), cartao ).Count > 0 );
 end;
 
 end.

@@ -3,9 +3,8 @@ unit uDBClass;
 interface
 
 uses
-  ADODB, DB, classes, SysUtils, GrFingerXLib_TLB, ActiveX, verificaSenhas, Controls,
-  dialogs, funcSQl, QForms,
-  funcoes, funcDatas, DBGrids;
+  ADODB, DB, classes, SysUtils, GrFingerXLib_TLB, ActiveX, verificaSenhas,  Controls,
+  dialogs, funcSQl, QForms,  funcoes, funcDatas, DBGrids;
 
 //const
   // the database we'll be connecting to
@@ -334,6 +333,7 @@ begin
 
    lstUsers := getAutorizadores();
    result := verificaSenhas.telaAutPonto(lstJus, lstUsers);
+
 end;
 
 function TDBClass.getDadosEmpregado(cartao: String):TDataSet;
@@ -701,8 +701,11 @@ begin
 end;
 
 function TDBClass.lerParametroBD(parametro:String):String;
+var
+   cmd, aux:String;
 begin
-   result := funcsql.getParametro(parametro,'',connection);
+   cmd := 'Select top 01 valor from zcf_paramgerais where nm_param = ' + quotedStr(parametro);
+   result := funcsql.openSQL(cmd, 'valor',connection);
 end;
 
 function TDBClass.setParamBD(parametro, uo, valor:String):boolean;

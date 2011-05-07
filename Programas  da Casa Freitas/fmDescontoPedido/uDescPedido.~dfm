@@ -149,14 +149,14 @@ object fmDescPed: TfmDescPed
     TabOrder = 2
     OnKeyDown = nmPedKeyDown
   end
-  object FlatButton1: TFlatButton
+  object btConsultaPed: TFlatButton
     Left = 125
     Top = 16
     Width = 95
     Height = 19
     Caption = 'Consulta'
     TabOrder = 3
-    OnClick = FlatButton1Click
+    OnClick = btConsultaPedClick
   end
   object gridParcelas: TSoftDBGrid
     Left = 478
@@ -247,9 +247,9 @@ object fmDescPed: TfmDescPed
     end
     object FlatButton4: TFlatButton
       Left = 8
-      Top = 54
+      Top = 56
       Width = 130
-      Height = 21
+      Height = 19
       Caption = 'Confere valores'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -371,11 +371,11 @@ object fmDescPed: TfmDescPed
     end
   end
   object FlatButton5: TFlatButton
-    Left = 347
+    Left = 354
     Top = 373
     Width = 130
     Height = 21
-    Caption = 'Calcule o valor poss'#237'vel.'
+    Caption = 'Calcule o valor do desconto.'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
     Font.Height = -11
@@ -508,6 +508,6 @@ object fmDescPed: TfmDescPed
     Connection = fmMain.Conexao
     BeforePost = tbAvariasBeforePost
     Left = 375
-    Top = 427
+    Top = 422
   end
 end
