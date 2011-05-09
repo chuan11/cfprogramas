@@ -77,7 +77,6 @@ object fmLogin: TfmLogin
     ItemHeight = 13
     ParentBiDiMode = False
     TabOrder = 2
-    OnChange = cbUserEnter
     LabelDefs.Width = 20
     LabelDefs.Height = 13
     LabelDefs.Caption = 'Loja'
@@ -98,6 +97,7 @@ object fmLogin: TfmLogin
     ItemHeight = 13
     ParentBiDiMode = False
     TabOrder = 3
+    OnEnter = cbUserEnter
     LabelDefs.Width = 39
     LabelDefs.Height = 13
     LabelDefs.Caption = 'Usu'#225'rio:'

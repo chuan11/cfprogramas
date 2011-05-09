@@ -672,7 +672,7 @@ end;
 procedure TFmOcorrencia.BitBtn1Click(Sender: TObject);
 begin
    if memo1.Lines.Count -1 > 1 then
-      ImprimirOcorrencias(sender);
+      imprimirOcorrencias(sender);
 end;
 
 procedure TFmOcorrencia.Memo1Enter(Sender: TObject);

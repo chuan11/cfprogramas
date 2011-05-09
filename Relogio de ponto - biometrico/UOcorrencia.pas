@@ -255,7 +255,7 @@ begin
    begin
       if ( ( sg1.Cells[1,i] = BATIDA_VAZIA ) and ( sg1.Cells[2,i] = BATIDA_VAZIA )  )  and  (pos ('DOM', sg1.Cells[0,i]) = 0 ) and( EhFeriado( copy(sg1.Cells[0,i],01,10), cartaoPonto ) = false ) and ( fmMain.HoraPrev(copy(sg1.Cells[0,i],01,10), cbEmp.Items[cbEmp.itemIndex], false, false ) <> BATIDA_VAZIA ) then
       begin
-         if EstaAtivo(matricula, copy(sg1.Cells[0,i],01,10) ) = true  then
+         if EstaAtivo( matricula, copy(sg1.Cells[0,i],01,10) ) = true  then
          begin
             if ehJustificado( matricula, copy(sg1.Cells[0,i],01,10), 'A01',0) = false  then
             begin

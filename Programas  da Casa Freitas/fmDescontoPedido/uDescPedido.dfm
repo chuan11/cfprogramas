@@ -1,9 +1,8 @@
 object fmDescPed: TfmDescPed
-  Left = 554
-  Top = 196
+  Left = 341
+  Top = 107
   Width = 759
   Height = 590
-  Caption = '(04) Inserir desconto em Pedido'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -198,7 +197,7 @@ object fmDescPed: TfmDescPed
   end
   object gridItens: TSoftDBGrid
     Left = 5
-    Top = 131
+    Top = 133
     Width = 633
     Height = 119
     Anchors = [akLeft, akTop, akRight]

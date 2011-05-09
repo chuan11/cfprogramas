@@ -33,6 +33,9 @@ type
     procedure SpinButton1DownClick(Sender: TObject);
     procedure SpinButton1UpClick(Sender: TObject);
     procedure getDadosDias();
+    procedure setPerfil(p:integer);
+    procedure imprimeFolhaPonto();
+    procedure imprimeResumoBatidas();
 
 
   private
@@ -43,7 +46,7 @@ type
 
 var
   fmImpFolhaPonto: TfmImpFolhaPonto;
-
+  PERFIL:integer;
 implementation
 
 uses RelogioPonto;
@@ -89,7 +92,18 @@ begin
    cbEmp.ItemIndex := fmMain.buscaEmComboBox(cbEmp.Items, edEmp.Text);
 end;
 
+
 procedure TfmImpFolhaPonto.BitBtn1Click(Sender: TObject);
+begin
+    case perfil of
+       1:imprimeFolhaPonto();
+//       2:
+    end;
+
+
+end;
+
+procedure TfmImpFolhaPonto.imprimeFolhaPonto;
 var
    cmd:String;
    paramRel:Tstringlist;
@@ -158,6 +172,19 @@ begin
       tbDias.AppendRecord([ copy(aux,01,05),  getDescricaoDia(datai,false)]);
       datai := dataI+1
    end;
+end;
+
+procedure TfmImpFolhaPonto.setPerfil(p: integer);
+begin
+   PERFIL := p;
+
+end;
+
+procedure TfmImpFolhaPonto.imprimeResumoBatidas;
+var
+   tbAux, tbEmp:TADOTable;
+begin
+
 end;
 
 end.

@@ -1,6 +1,6 @@
 object fmRelGeral: TfmRelGeral
-  Left = 551
-  Top = 137
+  Left = 343
+  Top = 263
   Width = 792
   Height = 337
   Color = clBtnFace
@@ -128,6 +128,19 @@ object fmRelGeral: TfmRelGeral
     LabelDefs.Height = 13
     LabelDefs.Caption = 'Caixa'
     Colors.WhenEnterFocus.BackColor = clInfoBk
+  end
+  object DBGrid1: TDBGrid
+    Left = 144
+    Top = 136
+    Width = 625
+    Height = 153
+    DataSource = DataSource1
+    TabOrder = 5
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+    TitleFont.Style = []
   end
   object qr: TADOQuery
     Connection = fmMain.Conexao
@@ -297,47 +310,18 @@ object fmRelGeral: TfmRelGeral
       Size = 30
     end
   end
+  object DataSource1: TDataSource
+    Left = 192
+    Top = 192
+  end
+  object ADODataSet1: TADODataSet
+    Parameters = <>
+    Left = 88
+    Top = 104
+  end
   object tb: TADOTable
     Connection = fmMain.Conexao
-    Left = 72
-    Top = 80
-    object tbcodLoja: TIntegerField
-      FieldName = 'codLoja'
-    end
-    object tbdescEstacao: TStringField
-      FieldName = 'descEstacao'
-    end
-    object tbcd_mve: TIntegerField
-      FieldName = 'cd_mve'
-    end
-    object tbds_mve: TStringField
-      FieldName = 'ds_mve'
-      Size = 50
-    end
-    object tbdataSessaoCaixa: TDateTimeField
-      FieldName = 'dataSessaoCaixa'
-    end
-    object tbseqtransacaocaixa: TIntegerField
-      FieldName = 'seqtransacaocaixa'
-    end
-    object tbSeqModPagtoPorTransCaixa: TIntegerField
-      FieldName = 'SeqModPagtoPorTransCaixa'
-    end
-    object tbvalor: TBCDField
-      FieldName = 'valor'
-      DisplayFormat = '#,###,###0.00'
-      Precision = 19
-    end
-    object tbnumParcelas: TStringField
-      FieldName = 'numParcelas'
-      Size = 3
-    end
-    object tbtefMagnetico: TStringField
-      FieldName = 'tefMagnetico'
-      Size = 1
-    end
-    object tbseqTefTransCaixa: TIntegerField
-      FieldName = 'seqTefTransCaixa'
-    end
+    Left = 24
+    Top = 128
   end
 end

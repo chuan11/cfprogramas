@@ -76,7 +76,7 @@ begin
 
    fmMain.getParametrosForm(fmFaturamento);
 
-   fmMain.getListaLojas(cbLojas, true, false, fmMain.getCDPESUsuario() );
+   fmMain.getListaLojas(cbLojas, true, false, fmMain.getCdPesLogado() );
 end;
 
 procedure TfmFaturamento.CriarTabela(Sender: Tobject);
@@ -282,7 +282,7 @@ begin
    end;
 
  //verificar se for do grupo de gerentes ele nao mostrara algumas colunas
-   if funcsql.isGrupoComRestricao( fmMain.lbGrupo.caption, fmMain.AnaliseVLC1.Tag, fmMain.Conexao ) = true then
+   if funcsql.isGrupoComRestricao( fmMain.getGrupoLogado(), fmMain.AnaliseVLC1.Tag, fmMain.Conexao ) = true then
    begin
       btImprime.Visible := false;
       tb.First;

@@ -11,8 +11,8 @@ uses
   IdTCPConnection, Sockets, ScktComp, DBCtrls,
   AppEvnts, RpRender, RpRenderPDF, RpRenderCanvas, RpRenderPrinter,
   OleCtrls, AcroPDFLib_TLB, shellAPI, adLabelCheckListBox, IdBaseComponent,
-  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox, xmldom, XMLIntf,
-  msxmldom, XMLDoc, oxmldom, CHILKATXMLLib_TLB ;
+  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox{, xmldom, XMLIntf,
+  msxmldom, XMLDoc, oxmldom {, CHILKATXMLLib_TLB} ;
 
 
 type
@@ -198,7 +198,7 @@ type
   end;
 CONST
    VERSAO = '11.05.01';
-   SUB_VERSAO = ' B';
+   SUB_VERSAO = ' E';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -1305,15 +1305,16 @@ end;
 
 
 procedure TfmMain.Button1Click(Sender: TObject);
-var
-  xmlnFE: CHILKATXMLLib_TLB.IChilkatXml;
+{var
+{  xmlnFE: CHILKATXMLLib_TLB.IChilkatXml;
   xNode0: CHILKATXMLLib_TLB.IChilkatXml;
   xChild: CHILKATXMLLib_TLB.IChilkatXml;
   no2, noinicial: IChilkatXml;
 
   noAutorizacao: CHILKATXMLLib_TLB.IChilkatXml;
-
+}
 begin
+{
 //    xml := TChilkatXml.Create(Self).ControlInterface;
 //    xml.LoadXml( funcoes.DialogAbrArq('xml','c:\') );
 //    xnode0 := TChilkatXml.Create(Self).ControlInterface;
@@ -1325,6 +1326,7 @@ begin
  //   noAutorizacao.AddChildTree(xmlnFE);
 
 //    noAutorizacao.SaveXml('c:\teste.txt');
+}
 end;
 
 procedure TfmMain.RegistroSCAN1Click(Sender: TObject);
