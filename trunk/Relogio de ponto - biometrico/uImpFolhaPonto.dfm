@@ -92,8 +92,9 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
         ParentFont = False
         TabOrder = 0
         OnChange = cbLojasChange
-        LabelDefs.Width = 3
+        LabelDefs.Width = 37
         LabelDefs.Height = 13
+        LabelDefs.Caption = 'cbLojas'
         Colors.WhenEnterFocus.BackColor = clInfoBk
       end
     end

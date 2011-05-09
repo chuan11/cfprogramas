@@ -63,7 +63,7 @@ begin
    cod := uCF.getFmDadosPessoa('F');
    if ( cod <> '') then
    begin
-      ds := uCF.getDadosPessoa(cod,'');
+      ds := uCF.getDadosFornecedor(cod,'');
       tb.AppendRecord([ds.FieldByName('is_cred').asString,
                        ds.FieldByName('codigo').asString,
                        ds.FieldByName('fornecedor').asString

@@ -90,6 +90,9 @@ type
     { Public declarations }
   end;
 
+const
+   TITULO  = '- Inserir desconto em Pedido';
+
 var
   fmDescPed: TfmDescPed;
   nmpedido :string;
@@ -131,7 +134,11 @@ var
 begin
    tpDescontoClick(Sender);
 
-   IS_TELA_RESTRITA :=  (pos(fmMain.getParamBD('gruposRestritosTela',''), fmMain.getGrupoLogado() ) <> 0 );
+   IS_TELA_RESTRITA :=  uCF.isGrupoPermitido('gruposRestritosTela');
+    fmDescPed.Caption := TITULO;
+
+   if (IS_TELA_RESTRITA = true) then
+    fmDescPed.Caption := TITULO + ' - Desconto de avarias.';
 
    if (IS_TELA_RESTRITA = true )  then
    begin
@@ -301,7 +308,7 @@ begin
    begin
       vDescAvarias := getvDescontoAvarias();
       if (edValor.Value  > vDescAvarias + 0.10 ) then
-         erro := erro + ' - O  desconto máximo, é de: R$ ' +  floatToStr(edValor.value) + #13;
+         erro := erro + ' - O  desconto máximo, é de: R$ ' +  funcoes.floatToDinheiro(vDescAvarias) + #13;
    end;
 
    if edValor.Value < 0 then

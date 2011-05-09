@@ -116,6 +116,7 @@ object fmLogin: TfmLogin
     ParentCtl3D = False
     PasswordChar = '*'
     Color = clInfoBk
+    MaxLength = 6
     TabOrder = 4
   end
 end

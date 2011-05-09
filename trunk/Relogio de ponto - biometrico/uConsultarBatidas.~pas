@@ -52,7 +52,6 @@ type
     procedure PopupMenuPopup(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Visualizarbatidasdestedia1Click(Sender: TObject);
-    procedure ajustaColunasGrid();
     procedure BitBtn1Click(Sender: TObject);
     procedure cbEmpClick(Sender: TObject);
   private
@@ -148,8 +147,6 @@ begin
    else
       CarregaRegistroBatidas(fmMain.getCartaoPonto(cbEmp));
 
-//   table.Close();
-//   table.Open();
    grid.Visible := true;
    screen.cursor := crDefault;
 end;
@@ -180,15 +177,8 @@ procedure TfmBatidas.Visualizarbatidasdestedia1Click(Sender: TObject);
 begin
    Application.CreateForm(TfmVisbatidas, fmVisbatidas);
    fmVisbatidas.Show;
-   fmVisbatidas.Label1.Caption := copy(cbEmp.Items[cbEmp.itemIndex],35,08);
-end;
-
-procedure TfmBatidas.ajustaColunasGrid;
-begin
-//   grid.Columns[ table.FieldByName('ehFeriado').index].Visible := false;
-//   grid.Columns[ table.FieldByName('Intervalo').index].Visible := false;
-//   grid.Columns[ table.FieldByName('TPrevisto').index].Visible := false;
-//   grid.Columns[ table.FieldByName('cartaoPonto').index].Visible := false;
+   fmVisbatidas.Label1.Caption := fmMain.getCartaoPonto(cbEmp); //copy(cbEmp.Items[cbEmp.itemIndex],35,08);
+   fmVisbatidas.dti.Date := fmBatidas.dti.Date;
 end;
 
 procedure TfmBatidas.BitBtn1Click(Sender: TObject);

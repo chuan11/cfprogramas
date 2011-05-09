@@ -228,6 +228,8 @@ begin
 
    if (IS_GRUPO_PERMITIDO_CARTAO = false) then
       dti.MinDate :=  funcSQL.getDateBd( fmMain.Conexao)-2;
+
+   dti.Date := funcSQL.getDateBd( fmMain.Conexao);
    getDescCaixas();
 end;
 

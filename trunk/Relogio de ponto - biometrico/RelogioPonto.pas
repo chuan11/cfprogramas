@@ -12,7 +12,7 @@ uses
   AppEvnts, adLabelMaskEdit, IdComponent, IdTCPConnection,IdTCPClient,
   ADODB, IdBaseComponent, DB,  FileCtrl, clipbrd, OleCtrls,
   GrFingerXLib_TLB,TFlatButtonUnit, TFlatEditUnit,
-  GrFinger, RpBase, RpSystem,
+  GrFinger, RpBase, RpSystem, Math,
   RpCon, RpConDS, RpDefine, RpRave;
 
 
@@ -59,7 +59,6 @@ type
     function  getCodLocalizacaoLoja(cb: TCustomComboBox): String;
     function  HoraPrev(data, cartaoPonto: string; isSaida, isIntervalo:boolean): string;
     function  r1(n:string):string;
-    function  r2(m:string):string;
     function  VerificaHorario( data, hora, cartaoPonto:String): String;
     function  verificarSenha():string;
     function calculaAtraso(cartaoPonto:String; data:Tdate;batida:String):integer;
@@ -132,8 +131,8 @@ var
   IS_CAPTURA_INICIADA:BOOLEAN;
 implementation
 
-uses funcoes,  uUtil, Justificativas, uConsultarBatidas, uOcorrencia;
-//    ,  uImpFolhaPonto,  Math, uCad, uDBClass;
+uses funcoes,  uUtil, Justificativas, uConsultarBatidas, uOcorrencia,
+  uImpFolhaPonto, uCad, uDBClass;
 
 {$R *.DFM}
 
@@ -264,12 +263,12 @@ begin
    while table.Eof = false do
    begin
       table.Edit;
-      if ( util.isFeriado( dateToStr(dataAux), cartaoPonto) = true ) then
+      if ( uUtil.isFeriado( dateToStr(dataAux), cartaoPonto) = true ) then
       begin
          table.FieldByName('ehFeriado').asString := 'S';
          table.FieldByName('tPrevisto').asInteger := 0;
          table.FieldByName('intervalo').asInteger := 0;
-      end;
+      end
       else
       begin
          prevEnt := horaToInt( HoraPrev(dateToStr(dataAux), cartaoPonto, false, false ) ) ;
@@ -354,7 +353,7 @@ begin
          if horaToInt(table.fieldByName('atraso').asString) > 0 then
             if horaToInt( table.fieldByName('atraso').asString ) > TOLERANCIA then
             begin
-               if  ( uUtil.isAtivo( dateToStr(dataAux), matricula) = true ) and ( horaPrev(dateToStr(dataAux), cartaoPonto, false, false) <> '00:00' )  then
+               if ( uUtil.isAtivo( dateToStr(dataAux), matricula) = true ) and ( horaPrev(dateToStr(dataAux), cartaoPonto, false, false) <> '00:00' )  then
                begin
                   funcoes.gravaLog('Ocorrencia encontrada, atraso, dia  '+ dateToStr(dataAux)  ) ;
                   table.fieldByName('ocorrencia').asString := 'Atraso';
@@ -617,20 +616,6 @@ begin
    r1:=aux;
 end;
 
-function TfmMain.r2(m:string):string; // tambem para inverter string
-var
-   aux:string;
-begin
-   aux:= copy(m,7,4);
-   aux:= aux + copy(m,4,2);
-   aux:= aux + copy(m,1,2);
-   aux:= aux + copy(m,12,2);
-   aux:= aux + copy(m,15,2);
-   aux:= aux + copy(m,18,2);
-   aux:= aux + copy(m,21,8);
-   r2:=aux;
-end;
-
 procedure TfmMain.registraPontoWalter(data:string);
 var
   hora:integer;
@@ -876,12 +861,12 @@ begin
    TIME_OUT_PROGRAM :=   TIME_OUT_PROGRAM - 1;
 
    if (TIME_OUT_PROGRAM <= 0) then
-//      if (fmBatidas <> nil) or ( FmOcorrencia <> nil) or ( fmImpFolhaPonto<> nil) or ( Justificativa <> nil) then
+      if (fmBatidas <> nil) or ( FmOcorrencia <> nil) or ( fmImpFolhaPonto <> nil) or ( Justificativa <> nil) then
          TIME_OUT_PROGRAM := VALOR_DEFAULT_TIME_OUT_PROGRAM
        else
        begin
           funcoes.gravaLog('Aplicativo encerrado por inatividade');
-//          Application.Terminate();
+          Application.Terminate();
        end;
 
    lbData.caption := DateToStr(now);
@@ -1023,22 +1008,21 @@ begin
    if (dataSet2 <> nil) then
       dsConn2.DataSet := dataSet2;
 
-//   if (funcoes.ExisteParametro('-s') = true) then
+   if (funcoes.ExisteParametro('-s') = true) then
       RvProject.ProjectFile := 'C:\ProgramasDiversos\relatoriosPCF.rav'
-//   else
-//      RvProject.ProjectFile := 'relatoriosPCF.rav';
-//   RvProject.ExecuteReport(nomeRelatorio);
+   else
+      RvProject.ProjectFile := 'relatoriosPCF.rav';
+   RvProject.ExecuteReport(nomeRelatorio);
 end;
 
 procedure TfmMain.FolhaPonto1Click(Sender: TObject);
 begin
-{   if ( verificarSenha() <> '' ) then
+   if ( verificarSenha() <> '' ) then
    begin
       Application.CreateForm(TfmImpFolhaPonto, fmImpFolhaPonto);
       fmImpFolhaPonto.Show;
       fmMain.Hide;
     end;
-}    
 end;
 
 function TfmMain.isAntecipacaoSaida(matricula, data, batida: String): integer;
@@ -1049,11 +1033,11 @@ begin
      result := 0
    else
    begin
-//      prev := horaToInt( getHoraPrevista( matricula, getCampoDia(data, true, false), DS_EMP));
-//      if  prev > horaToInt(batida) then
-//        result := prev - horaToInt(batida)
-//      else
-//        result := 0;
+      prev := horaToInt( getHoraPrevista( matricula, getCampoDia(data, true, false), DS_EMP));
+      if  prev > horaToInt(batida) then
+        result := prev - horaToInt(batida)
+      else
+        result := 0;
    end;
 end;
 
@@ -1110,10 +1094,10 @@ var
 begin
    if (FileExists(ExtractFilePath(ParamStr(0))+  'PRelogioNovo.exe') = true) then
    begin
-//      gravaLog('Atualizacao do lancador------------------');
+      gravaLog('Atualizacao do lancador------------------');
       deleteFile( ExtractFilePath(ParamStr(0))+  'PRelogio.exe');
       acao :=  RenameFile(ExtractFilePath(ParamStr(0))+  'PRelogioNovo.exe', ExtractFilePath(ParamStr(0))+'PRelogio.exe');
-//      gravaLog('resultado da atualizacao: ' + BoolToStr(acao, true) );
+      gravaLog('resultado da atualizacao: ' + BoolToStr(acao, true) );
    end;
 end;
 
@@ -1125,13 +1109,13 @@ begin
    if ( user <> '' ) then
    begin
       screen.Cursor := crHourGlass;
-//      uUtil.FinalizeGrFinger(GrFingerXCtrl1);
+      uUtil.FinalizeGrFinger(GrFingerXCtrl1);
       fmMain.Hide;
 
-//      Application.CreateForm(TfmCad, fmCad);
-//      screen.Cursor := crDefault;
-//      fmCad.Show();
-//      fmCad.setUser(user);
+      Application.CreateForm(TfmCad, fmCad);
+      screen.Cursor := crDefault;
+      fmCad.Show();
+      fmCad.setUser(user);
    end;
 end;
 
