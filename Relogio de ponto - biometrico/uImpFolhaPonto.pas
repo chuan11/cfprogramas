@@ -38,6 +38,7 @@ type
     procedure imprimeResumoBatidas();
 
 
+
   private
     { Private declarations }
   public
@@ -90,17 +91,6 @@ end;
 procedure TfmImpFolhaPonto.edEmpChange(Sender: TObject);
 begin
    cbEmp.ItemIndex := fmMain.buscaEmComboBox(cbEmp.Items, edEmp.Text);
-end;
-
-
-procedure TfmImpFolhaPonto.BitBtn1Click(Sender: TObject);
-begin
-    case perfil of
-       1:imprimeFolhaPonto();
-//       2:
-    end;
-
-
 end;
 
 procedure TfmImpFolhaPonto.imprimeFolhaPonto;
@@ -177,14 +167,35 @@ end;
 procedure TfmImpFolhaPonto.setPerfil(p: integer);
 begin
    PERFIL := p;
-
 end;
 
 procedure TfmImpFolhaPonto.imprimeResumoBatidas;
 var
    tbAux, tbEmp:TADOTable;
+   cmd:String;
+   ds:TdataSet;
 begin
+   cmd := ' cartao varchar(10), matricula varchar(10), nome varchar(10), horasPrevistas varchar(07), horasTrabalhadas varchar(07), ' +
+          ' atrasoJustificado varchar(07), atrasoAutorizado, varchar(07), batIncomp varchar(07), batIncJustificada varchar(07), ' +
+          ' faltas varchar(07), faltaJust varchar(07)';
+
+    uUtil.getTable(tbEmp, cmd);
+
+    tbEmp.close();
+
+    cmd := ' insert';
 
 end;
+
+procedure TfmImpFolhaPonto.BitBtn1Click(Sender: TObject);
+begin
+    case perfil of
+       1:imprimeFolhaPonto();
+       2:
+    end;
+
+
+end;
+
 
 end.

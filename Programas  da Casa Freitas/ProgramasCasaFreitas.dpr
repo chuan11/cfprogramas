@@ -81,6 +81,7 @@ begin
       Application.Initialize;
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
+  Application.CreateForm(TfmSelecionaUo, fmSelecionaUo);
   Application.Run;
    end;
 end.

@@ -986,7 +986,10 @@ begin
    begin
       Application.CreateForm( TfmBatidas, fmBatidas);
       fmBatidas.Show();
+      
+
       fmMain.Hide();
+
     end;
 end;
 
@@ -1021,6 +1024,7 @@ begin
    begin
       Application.CreateForm(TfmImpFolhaPonto, fmImpFolhaPonto);
       fmImpFolhaPonto.Show;
+      fmImpFolhaPonto.setPerfil(1);
       fmMain.Hide;
     end;
 end;

@@ -353,7 +353,7 @@ begin
          if horaToInt(table.fieldByName('atraso').asString) > 0 then
             if horaToInt( table.fieldByName('atraso').asString ) > TOLERANCIA then
             begin
-               if **** ( uUtil.isAtivo( dateToStr(dataAux), matricula) = true ) and ( horaPrev(dateToStr(dataAux), cartaoPonto, false, false) <> '00:00' )  then
+               if ( uUtil.isAtivo( dateToStr(dataAux), matricula) = true ) and ( horaPrev(dateToStr(dataAux), cartaoPonto, false, false) <> '00:00' )  then
                begin
                   funcoes.gravaLog('Ocorrencia encontrada, atraso, dia  '+ dateToStr(dataAux)  ) ;
                   table.fieldByName('ocorrencia').asString := 'Atraso';
