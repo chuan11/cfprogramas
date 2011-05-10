@@ -2,7 +2,7 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
   Left = 320
   Top = 79
   Width = 647
-  Height = 215
+  Height = 446
   BorderIcons = [biSystemMenu]
   Caption = 'Impress'#227'o de folhas de ponto em branco'
   Color = clBtnFace
@@ -165,11 +165,11 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
   end
   object qrEmp: TADOQuery
     Parameters = <>
-    Left = 158
-    Top = 111
+    Left = 43
+    Top = 112
   end
   object tbDias: TADOTable
-    Left = 120
+    Left = 8
     Top = 112
   end
 end

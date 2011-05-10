@@ -289,9 +289,12 @@ begin
          cmd := ' Update dnota set ' +
                 ' nr_docf =' + edNumero.Text + ' , ' +
                 ' sr_docf =' + quotedstr(edSerie.Text) + ' , ' +
-                ' cd_cfo = ' + edCFO.Text + ' , ' +
-                ' cd_pes = ' + lbCodPes.Caption + ' , ' +
-                ' VL_DSPEXTRA = '  +  funcoes.ValorSql( floatToStr(edVlDEspExtra.value) ) + ' , ' +
+                ' cd_cfo = ' + edCFO.Text + ' , ';
+
+         if (btEmisDest.Enabled = true) then
+            cmd :=   cmd + ' cd_pes = ' + lbCodPes.Caption + ' , ';
+
+         cmd :=   cmd + ' VL_DSPEXTRA = '  +  funcoes.ValorSql( floatToStr(edVlDEspExtra.value) ) + ' , ' +
                 ' dt_emis = ' + funcoes.DateTimeToSqlDateTime(dtEmiss.Date,'') +', '+
                 ' st_nf = ' + quotedStr(strStNota) +', '+
                 ' observacao = ' + quotedStr(edObservacao.Text) +

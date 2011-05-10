@@ -1,16 +1,12 @@
 unit ucf;
 
 interface
-<<<<<<< .mine
+
    uses ADODB, Classes, sysutils, Dialogs, forms, DBGrids,
         ComCTRLs, mxExport, adLabelComboBox, windows, QStdCtrls, DB, DBCtrls, Controls, messages, adLabelCheckListBox,
         IdBaseComponent, IdComponent, IdRawBase, IdRawClient, IdIcmpClient, IdTelnet, SoftDBGrid,
         uMain, funcsql, uListaFornecedores, funcDatas, funcoes, uSelecionaUo
        ;
-=======
->>>>>>> .r6
-
-<<<<<<< .mine
 
    function ajustaCodigoNCM(isRef, ncm_sh:String):boolean;
    function alterarModPagamento(uo, seqtransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String):boolean;
@@ -55,13 +51,7 @@ interface
    procedure getProdAvariadosPAraVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
 
 
-
-=======
->>>>>>> .r6
 implementation
-
-<<<<<<< .mine
-
 
 procedure carregaListarUosPorPreco(var clb: TadLabelCheckListBox; TpPreco:String);
 var
@@ -408,9 +398,9 @@ var
    cmd:String;
 begin
    if (cd_pes = '') then
-      cmd := 'Select top 100 is_cred, cd_pes as codigo, nm_razsoc as nome from dscre where  nm_razsoc like ' + quotedstr( nm_pes +'%') + ' order by fornecedor'
+      cmd := 'Select top 100 is_cred, cd_pes as codigo, nm_razsoc as nome from dscre where  nm_razsoc like ' + quotedstr( nm_pes +'%') + ' order by nome'
    else
-      cmd := 'Select top 100 is_cred, cd_pes as codigo, nm_razsoc as nome from dscre where  is_cred = ' +  cd_pes + ' or cd_pes = ' + cd_pes + ' order by fornecedor';
+      cmd := 'Select top 100 is_cred, cd_pes as codigo, nm_razsoc as nome from dscre where  is_cred = ' +  cd_pes + ' or cd_pes = ' + cd_pes + ' order by nome';
    result := funcSQL.getDataSetQ(CMD, fmMain.Conexao);
 end;
 
@@ -842,19 +832,21 @@ begin
    result := funcSQL.execSQL(cmd, fmMain.conexao);
 end;
 
-
 function getNomeImpressoraNFe():String;
 var
    aux:String;
 begin
-{    aux :='';
+    aux :='';
+
     Application.CreateForm(TfmSelecionaUo, fmSelecionaUo);
+    fmMain.getListaLojas( fmSelecionaUo.cbLojas, false, false, '');
+    fmSelecionaUo.cbLojas.Items.add(funcoes.preencheCampo(50,' ','D','Escritorio'));
     fmSelecionaUo.showModal();
     if (fmSelecionaUo.modalResult = mrOk) then
        aux := getParamBD('comum.impNFe',funcoes.getCodUO(fmSelecionaUo.cbLojas), fmMain.conexao);
+
     fmSelecionaUo := nil;
     result :=  aux;
-}
 end;
 
 function getPcProd(uo, codigo, preco:String):String;
@@ -910,10 +902,5 @@ begin
 
    grid.columns[0].readonly := false;
 end;
-
-=======
->>>>>>> .r6
-
-
 
 end.

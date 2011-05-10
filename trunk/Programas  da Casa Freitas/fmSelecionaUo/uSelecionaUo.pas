@@ -1,14 +1,5 @@
 unit uSelecionaUo;
 
-
-interface
-
-implementation
-
-end.
-
-
-{
 interface
 
 uses
@@ -19,23 +10,19 @@ type
   TfmSelecionaUo = class(TForm)
     cbLojas: TadLabelComboBox;
     btIncluiXML: TfsBitBtn;
-    procedure FormCreate(Sender: TObject);
   private
+    { Private declarations }
   public
+    { Public declarations }
   end;
 
 var
   fmSelecionaUo: TfmSelecionaUo;
 
 implementation
-//uses umain, funcSQL, funcoes;
 
-// {$R *.dfm
+uses uCF;
 
-procedure TfmSelecionaUo.FormCreate(Sender: TObject);
-begin
-//   fmMain.getListaLojas(cbLojas, false, false, '');
-//   cbLojas.Items.add(funcoes.preencheCampo(50,' ','D','Escritorio'));
-end;
+{$R *.dfm}
 
 end.

@@ -21,7 +21,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure listarFornecedor();
     procedure listarCliente();
-    procedure setPerfil(codPerfil:char);
+    procedure setPerfil(codPerfil:String);
     procedure ajustBuscaDefornecedor();
     procedure ajustBuscaDeCliente();
 
@@ -34,7 +34,7 @@ type
 
 var
   fmListaFornecedores: TfmListaFornecedores;
-  PERFIL:char;
+  PERFIL:String;
 implementation
 
 uses funcoes , uCF, uMain, funcSQL;
@@ -103,18 +103,18 @@ end;
 
 procedure TfmListaFornecedores.btBuscaClick(Sender: TObject);
 begin
-  if ( Perfil = 'F') then
+  if ( Perfil = 'Fornecedor') then
       listarFornecedor();
-  if ( Perfil = 'C') then
+  if ( Perfil = 'Cliente') then
       listarCliente();
 end;
 
-procedure TfmListaFornecedores.setPerfil(codPerfil: char);
+procedure TfmListaFornecedores.setPerfil(codPerfil: String);
 begin
-   if ( codPerfil = 'F') then
+   if ( codPerfil = 'Fornecedor') then
       ajustBuscaDefornecedor();
 
-   if ( codPerfil = 'C') then
+   if ( codPerfil = 'Cliente') then
       ajustBuscaDeCliente();
    PERFIL := codPerfil;
 end;

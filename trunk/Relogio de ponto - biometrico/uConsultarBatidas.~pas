@@ -117,6 +117,7 @@ begin
       if (table.Active = true ) then
          table.Close();
       uUtil.criaTbResumo(table);
+
       fmMain.getDadosEmpregado( cartaoPonto );
       uUtil.PreencheListaDosDias(table, dti.Date, dtf.Date);
       fmMain.PreencherListaBatidas( table,dti.Date, dtf.Date, cbEmp.Items[cbEmp.itemIndex]);

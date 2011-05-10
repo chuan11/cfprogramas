@@ -89,6 +89,8 @@ function isCadastroEmpOk(cartaoPonto:String):boolean;
 function isPontoCadastrado(cartaoPonto: String): boolean;
 procedure WriteLog(str:String);
 
+//procedure
+
 
 Var
   // The last acquired image.
@@ -777,6 +779,7 @@ function isHaveBatida(dia:Tdate; cartao:String): boolean;
 begin
    result := db.isHaveBatida(dia, cartao);
 end;
+
 
 
 end.
