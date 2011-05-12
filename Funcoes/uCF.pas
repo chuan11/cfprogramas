@@ -30,7 +30,7 @@ interface
    function getTotalCartaoPorModo(tb:TADOTable):TStringlist;
    function insereModPagamento (uo, seqTransacao, codNovaModalidade, valor, numParcelas,  dataTrans:String):boolean;
    function insereRegistroTEF(uo, seqTransacao, seqModalidade, tp_mve, valor, numParcelas, dataTrans:String):boolean;
-   function isGrupoPermitido(nmParametro:String):boolean;
+   function isGrupoRestrito(nmParametro:String):boolean;
    function recalcularCmuItem(is_ref:String):String;
    function removeModPagamento(seqModalidade, seqTEFTransCaixa:String):boolean;
    function removeRegistroTef(seqTEFTransCaixa:String):boolean;
@@ -648,8 +648,9 @@ begin
    screen.cursor:= crDefault;
 end;
 
-function isGrupoPermitido(nmParametro:String):boolean;
+function isGrupoRestrito(nmParametro:String):boolean;
 begin
+   funcoes.gravaLog('grupo para verificar ' + fmMain.getGrupoLogado() );
    result := ( pos( fmMain.getGrupoLogado(), fmMain.getParamBD(nmParametro,'0')) >0 );
 end;
 

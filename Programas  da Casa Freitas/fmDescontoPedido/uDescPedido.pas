@@ -134,11 +134,16 @@ var
 begin
    tpDescontoClick(Sender);
 
-   IS_TELA_RESTRITA :=  uCF.isGrupoPermitido('gruposRestritosTela');
-    fmDescPed.Caption := TITULO;
+   IS_TELA_RESTRITA :=  uCF.isGrupoRestrito('gruposRestritosTela') ;
+
+   fmDescPed.Caption := TITULO;
 
    if (IS_TELA_RESTRITA = true) then
-    fmDescPed.Caption := TITULO + ' - Desconto de avarias.';
+      fmDescPed.Caption := TITULO + ' - Modo de Desconto de avarias.'
+   else
+      fmDescPed.Caption := TITULO + ' - Modo Normal.';
+
+
 
    if (IS_TELA_RESTRITA = true )  then
    begin

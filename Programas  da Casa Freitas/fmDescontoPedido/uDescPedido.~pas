@@ -134,8 +134,7 @@ var
 begin
    tpDescontoClick(Sender);
 
-   IS_TELA_RESTRITA :=  (pos(fmMain.getGrupoLogado(), fmMain.getParamBD('gruposRestritosTela','') ) <> 0 );
-
+   IS_TELA_RESTRITA :=  uCF.isGrupoPermitido('gruposRestritosTela');
     fmDescPed.Caption := TITULO;
 
    if (IS_TELA_RESTRITA = true) then

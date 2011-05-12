@@ -329,7 +329,7 @@ begin
                        fmMain.getCdPesLogado() + ', ' +
                        funcoes.ValorSql(precos[2]) +', ' +
                        funcoes.ValorSql(edPcSugerido.Text)
-                        +', null, 0 )'
+                        +', null, 0, ' + lbUo.Caption +' )'
                        ,'@@error',fmMain.Conexao );
 
          CarregaItensAvarias(Sender,lbnumAvaria.Caption, lbUo.Caption);
