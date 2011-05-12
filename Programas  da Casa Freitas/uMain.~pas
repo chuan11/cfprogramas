@@ -102,7 +102,8 @@ type
     function getUoLogada():String;
     function getUserLogado:String;
     function getParamBD(nParametro, loja: String):String;
-    function getTelasPermDoGrupo(grupo:String):Tstrings;
+    function getTelasPermDoGrupo(grupo:String):TstringList;
+    function isGrupoPermitido(codTela: integer):boolean;
     function setParamBD(nParametro, loja, valor: String):boolean;
     function telaAutWell(Grupos,cd_usu:string ):String;
     procedure abeladePreos2Click(Sender: TObject);
@@ -186,19 +187,18 @@ type
     procedure Button1Click(Sender: TObject);
     procedure RegistroSCAN1Click(Sender: TObject);
 
-
   private
     { Private declarations }
   public
      is_logado:boolean;
 
-     PARAMS: TStringList;
+     TELAS_PERMITIDAS, PARAMS_APLICACAO: TStringList;
 
     { Public declarations }
   end;
 CONST
    VERSAO = '11.05.01';
-   SUB_VERSAO = ' F';
+   SUB_VERSAO = ' H';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -225,10 +225,29 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
 {$R *.dfm}
 
 
-
-function TfmMain.getTelasPermDoGrupo(grupo:String):Tstrings;
+function TfmMain.isGrupoPermitido(codTela: integer): boolean;
 begin
-   result :=  funcsql.getListagem('Select codTela from zcf_telasPermitidas where grupo = ' + grupo + ' order by codTela' , conexao);
+   funcoes.gravaLog('Testando restricao da tela '+ intToStr(codTela)  +' result ' + boolToStr( (TELAS_PERMITIDAS.Values[intToStr(codTela)] = '0')));
+   result := (TELAS_PERMITIDAS.Values[intToStr(codTela)] = '0')
+end;
+
+function TfmMain.getTelasPermDoGrupo(grupo:String):TstringList;
+var
+   ds:TdataSet;
+   aux:TStringlist;
+begin
+   ds:= funcSQl.getDataSetQ('Select codTela, isAcessoRestrito from zcf_telasPermitidas where grupo = ' + grupo + ' order by codTela' , conexao);
+   aux := TStringlist.Create();
+
+   ds.First();
+   while (ds.Eof = false) do
+   begin
+      aux.Add(ds.fieldByName('codTela').AsString);
+      aux.Values[ds.fieldByName('codTela').AsString] := ds.fieldByName('isAcessoRestrito').AsString;
+      ds.Next();
+   end;
+   ds.Free();
+   result := aux;
 end;
 
 procedure TfmMain.FormActivate(Sender: TObject);
@@ -375,7 +394,7 @@ begin
    StatusBar1.Panels[2].Text := conexao.DefaultDatabase + ' ' + funcoes.lerParam( extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini', 3  );
    deleteFile( ExtractFilePath(paramStr(0)) +'logs\' + ExtractFilename(ParamStr(0))  + '_log.txt'  );
    TIME_OUT_PROGRAMA := 60;
-   PARAMS := TStringlist.Create();
+   PARAMS_APLICACAO := TStringlist.Create();
 end;
 
 function TfmMain.ehTelaPermitida(tag:string;  Telas:Tstrings): Boolean;
@@ -416,32 +435,33 @@ end;
 procedure TfmMain.montarMenu(loja,usuario,is_uo,is_usu:string);
 var
   i:integer;
-  telas:Tstrings;
+//  telas:Tstrings;
 begin
    fmMain.Menu := menuPrincipal;
 
 // obter a lista de telas que o usuário acessa
-   telas := TStringList.Create();
+   TELAS_PERMITIDAS := TStringList.Create();
    if loja <> '-1' then
    begin
-      PARAMS.Values['IS_UO'] := is_uo;
-      PARAMS.Values['CD_USU'] := is_usu;
+      PARAMS_APLICACAO.Values['IS_UO'] := is_uo;
+      PARAMS_APLICACAO.Values['CD_USU'] := is_usu;
       StatusBar1.Panels[0].Text := loja;
       StatusBar1.Panels[1].Text := usuario;
 
-      PARAMS.Values['cd_pes'] := funcSQl.GetValorWell( 'O','select cd_pes from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_pes', Conexao);
-      PARAMS.Values['CD_GRUSU'] :=  funcSQl.GetValorWell( 'O','select cd_grusu from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_grusu', Conexao);
+      PARAMS_APLICACAO.Values['cd_pes'] := funcSQl.GetValorWell( 'O','select cd_pes from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_pes', Conexao);
+      PARAMS_APLICACAO.Values['CD_GRUSU'] :=  funcSQl.GetValorWell( 'O','select cd_grusu from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_grusu', Conexao);
 
-      telas :=  getTelasPermDoGrupo(getGrupoLogado() );
+      TELAS_PERMITIDAS :=  getTelasPermDoGrupo(getGrupoLogado() );
     end
     else
     begin
-       telas.Clear();
-       telas.Add('-1');
+       TELAS_PERMITIDAS.Clear();
+       TELAS_PERMITIDAS.Add('-1');
+       TELAS_PERMITIDAS.Values['-1'] := '-1';
     end;
 
    for i:=0 to fmMain.Menu.Items.Count -1 {  menuPrincipal.Items.Count -1 } do
-      verificaPermissao(fmMain.Menu.Items[i],telas);
+      verificaPermissao(fmMain.Menu.Items[i], TELAS_PERMITIDAS);
 end;
 
 procedure TfmMain.msgStatus(msg: String);
@@ -786,7 +806,7 @@ end;
 
 function TfmMain.getUserLogado(): String;
 begin
-   result := PARAMS.Values['CD_USU'];
+   result := PARAMS_APLICACAO.Values['CD_USU'];
 end;
 
 
@@ -833,7 +853,7 @@ end;
 
 function TfmMain.getUoLogada(): String;
 begin
-   result := PARAMS.Values['IS_UO'];
+   result := PARAMS_APLICACAO.Values['IS_UO'];
 end;
 
 
@@ -875,7 +895,7 @@ end;
 
 function TfmMain.getCdPesLogado(): String;
 begin
-   result := PARAMS.Values['CD_PES'];
+   result := PARAMS_APLICACAO.Values['CD_PES'];
 end;
 
 function TfmMain.ehCampoPermitido(nParam:String): Boolean;
@@ -977,7 +997,7 @@ end;
 
 function TfmMain.getGrupoLogado: String;
 begin
-   result := PARAMS.Values['CD_GRUSU'];
+   result := PARAMS_APLICACAO.Values['CD_GRUSU'];
 end;
 
 procedure TfmMain.CompromissosDeFornecedoresPorData1Click(Sender: TObject);
@@ -1369,6 +1389,7 @@ begin
    end;
    screen.Cursor := crDefault;
 end;
+
 
 end.
 

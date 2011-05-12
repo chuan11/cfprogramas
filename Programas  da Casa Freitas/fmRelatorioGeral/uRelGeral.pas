@@ -47,10 +47,7 @@ type
     tbValoresAvariasFornecedor: TStringField;
     tbValoresAvarias_Totalfornecedor: TStringField;
     cbCaixas: TadLabelComboBox;
-    DBGrid1: TDBGrid;
-    DataSource1: TDataSource;
-    ADODataSet1: TADODataSet;
-    tb: TADOTable;
+    tbVendasCartao: TADOTable;
 
     procedure btOkClick(Sender: TObject);
     procedure setPerfil(p:integer);
@@ -216,7 +213,7 @@ begin
    cbDetAvaForn.Visible := false;
    GroupBox1.Width := dti.Width + 50;
 
-   IS_GRUPO_PERMITIDO_CARTAO := not(uCF.isGrupoRestrito('relPagCartao.grSemRestricao'));
+   IS_GRUPO_PERMITIDO_CARTAO :=  fmMain.isGrupoPermitido(fmMain.CargaDeDadosParaConciliao1.Tag);
 
    if (IS_GRUPO_PERMITIDO_CARTAO = false) then
       dti.MinDate :=  funcSQL.getDateBd(fmMain.Conexao)-2;
@@ -247,7 +244,7 @@ end;
 procedure TfmRelGeral.cargaDadosConciliacao;
 begin
    msgTela('',' Se já houver alguma carga já feita ela será excluída.',0);
-   uCF.cargaDadosConciliacao(tb, dti);
+   uCF.cargaDadosConciliacao(tbVendasCartao, dti);
 end;
 
 procedure TfmRelGeral.listaVendasEmCartao;
@@ -256,8 +253,8 @@ var
    ds:TdataSet;
    i:integer;
 begin
-   uCF.listaRecebimentosCaixa( tb, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, true, true );
-   if (tb.IsEmpty = false) then
+   uCF.listaRecebimentosCaixa( tbVendasCartao, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, true, true );
+   if (tbVendasCartao.IsEmpty = false) then
    begin
       ds:= uCF.getOperadoresPorCaixa(qr, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti );
 
@@ -267,11 +264,11 @@ begin
       param.add( dateToStr(dti.date));
       param.add( fmMain.getNomeUsuario() );
 
-      totais := uCF.getTotalCartaoPorModo(tb);
+      totais := uCF.getTotalCartaoPorModo(tbVendasCartao);
       for i:=0 to Totais.Count-1 do
          param.Add(totais[i]);
 
-      fmMain.impressaoRaveQr2( tb, ds, 'rpVendasEmCartao',param);
+      fmMain.impressaoRaveQr2( tbVendasCartao, ds, 'rpVendasEmCartao',param);
       ds.Free;
       totais.Free();
       param.Free();
@@ -317,6 +314,7 @@ end;
 procedure TfmRelGeral.setPerfil(P: integer);
 begin
    perfil := P;
+   fmRelGeral.Tag := fmMain.Cargadedadosparaconciliao1.Tag;
    case perfil of
       2:ajustaTelaParaAvarias();
       3:ajustaTelaParaRelCartoes();

@@ -20,6 +20,7 @@ interface
    function getDadosProd(uo, codigo, preco:String):TdataSet;
    function getFileFromACBR(server, dirRemoto, dirLocal, arquivo: String): boolean;
    function getFmDadosPessoa(codPerfil: String):String;
+   function getIsUo(mostraEscritorio:boolean):String;   
    function getItensDeUmaNota(isNota:String):TDataSet;
    function getItensParaCadastroNCM(var tabela:TADOTable; isNota:String):boolean;
    function getNomeImpressoraNFe():String;
@@ -30,7 +31,6 @@ interface
    function getTotalCartaoPorModo(tb:TADOTable):TStringlist;
    function insereModPagamento (uo, seqTransacao, codNovaModalidade, valor, numParcelas,  dataTrans:String):boolean;
    function insereRegistroTEF(uo, seqTransacao, seqModalidade, tp_mve, valor, numParcelas, dataTrans:String):boolean;
-   function isGrupoRestrito(nmParametro:String):boolean;
    function recalcularCmuItem(is_ref:String):String;
    function removeModPagamento(seqModalidade, seqTEFTransCaixa:String):boolean;
    function removeRegistroTef(seqTEFTransCaixa:String):boolean;
@@ -648,12 +648,6 @@ begin
    screen.cursor:= crDefault;
 end;
 
-function isGrupoRestrito(nmParametro:String):boolean;
-begin
-   funcoes.gravaLog('grupo para verificar ' + fmMain.getGrupoLogado() );
-   result := ( pos( fmMain.getGrupoLogado(), fmMain.getParamBD(nmParametro,'0')) >0 );
-end;
-
 
 function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao:boolean):TDataSet;
 var
@@ -833,22 +827,6 @@ begin
    result := funcSQL.execSQL(cmd, fmMain.conexao);
 end;
 
-function getNomeImpressoraNFe():String;
-var
-   aux:String;
-begin
-    aux :='';
-
-    Application.CreateForm(TfmSelecionaUo, fmSelecionaUo);
-    fmMain.getListaLojas( fmSelecionaUo.cbLojas, false, false, '');
-    fmSelecionaUo.cbLojas.Items.add(funcoes.preencheCampo(50,' ','D','Escritorio'));
-    fmSelecionaUo.showModal();
-    if (fmSelecionaUo.modalResult = mrOk) then
-       aux := getParamBD('comum.impNFe',funcoes.getCodUO(fmSelecionaUo.cbLojas), fmMain.conexao);
-
-    fmSelecionaUo := nil;
-    result :=  aux;
-end;
 
 function getPcProd(uo, codigo, preco:String):String;
 var
@@ -879,9 +857,9 @@ begin
    cmd := ' insert ' + tb.tableName + #13+
           ' select  0 as qtParaVenda, C.cd_ref, C.ds_ref, (i.quant-i.qtVendido) as qtDisponivel, i.pcoSugerido, i.is_ref, i.ref, '''' as is_alterado '+#13+
           ' from zcf_avariasItens I with(nolock) ' +
-          ' inner join zcf_avarias A with(nolock) on (i.numAvaria = A.numAvaria) and I.loja = a.Loja and A.ehAprovada = 1  and a.tipoAvaria = 0 ' +
-          ' inner join crefe C with(nolock) on i.is_ref = c.is_ref '+
-          ' inner join itensPedidocliente P with(nolock) on i.is_ref = P.seqProduto and I.loja = P.codLoja and   P.numPedido =' + numPedido +
+          ' inner join zcf_avarias A with(nolock) on (i.numAvaria = A.numAvaria) and I.codLojaDesconto = a.codLojaDesconto and A.ehAprovada = 1  and a.tipoAvaria = 0 ' + #13+
+          ' inner join crefe C with(nolock) on i.is_ref = c.is_ref '+ #13+
+          ' inner join itensPedidocliente P with(nolock) on i.is_ref = P.seqProduto and I.codLojaDesconto = P.codLoja and   P.numPedido =' + numPedido + #13+
           ' where ' +
           ' i.qtVendido < i.quant order by i.is_ref ';
     funcSQL.execSQL(cmd, fmMain.conexao);
@@ -903,5 +881,30 @@ begin
 
    grid.columns[0].readonly := false;
 end;
+
+
+function getIsUo(mostraEscritorio:boolean):String;
+var
+   aux:String;
+begin
+  aux := '';
+  Application.CreateForm(TfmSelecionaUo, fmSelecionaUo);
+  fmMain.getListaLojas( fmSelecionaUo.cbLojas, false, false, '');
+
+  if (mostraEscritorio = true) then
+     fmSelecionaUo.cbLojas.Items.add(funcoes.preencheCampo(50,' ','D','Escritorio'));
+
+  fmSelecionaUo.showModal();
+  if (fmSelecionaUo.modalResult = mrOk) then
+     aux:= funcoes.getCodUO(fmSelecionaUo.cbLojas);
+  fmSelecionaUo := nil;
+  result := aux;
+end;
+
+function getNomeImpressoraNFe():String;
+begin
+   result := getParamBD('comum.impNFe', getIsUo(true), fmMain.conexao);
+end;
+
 
 end.

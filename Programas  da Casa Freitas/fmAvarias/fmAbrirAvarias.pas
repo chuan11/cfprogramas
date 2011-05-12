@@ -47,6 +47,7 @@ type
     procedure deletarAvaria(Sender:Tobject);
     procedure deletarMapa(Sender:Tobject);
     procedure preparaimpressaoAvarias();
+    procedure transfereAvaria();
   private
     { Private declarations }
   public
@@ -57,7 +58,7 @@ var
   fmAbrirAvaria: TfmAbrirAvaria;
   tipoConsulta:smallInt;
 implementation
-uses uAvarias, umain, uMapa;
+uses uAvarias, umain, uMapa, uCF;
 {$R *.dfm}
 
 procedure TfmAbrirAvaria.FormCreate(Sender: TObject);
@@ -123,7 +124,7 @@ begin
       df := strToDate('01/01/2050');
    end;
    case fmAbrirAvaria.Tag of
-      1,2:pesquisaAvarias(nil, di,df);
+      1,2,4:pesquisaAvarias(nil, di,df);
       3: pesquisaMapa(nil,di,df);
    end;
 end;
@@ -272,6 +273,7 @@ begin
           1:AbrirAvaria(nil);
           2:imprimirAvaria(nil);
           3:abrirMapa(nil);
+          4:transfereAvaria();
       end;
    btFecharClick(nil);
    Screen.cursor := Crdefault;
@@ -281,6 +283,27 @@ end;
 procedure TfmAbrirAvaria.preparaimpressaoAvarias;
 begin
    cbTipoImpresao.Visible := true;
+end;
+
+procedure TfmAbrirAvaria.transfereAvaria;
+var
+   cmd, uo:String;
+begin
+   uo := uCF.getIsUo(false);
+   if (uo <> '') then
+      if (qrBusca.fieldByName('dataAprovacao').AsString <> '') then
+      begin
+         if (msgTela('','Deseja setar a loja para desconto dessa a varia ?', MB_ICONQUESTION + MB_YESNO ) = mrYes) then
+         begin
+            cmd := ' update zcf_avarias set codLojaDesconto = ' + uo  +
+                   ' where numAvaria= ' + qrBusca.fieldByName('numero').AsString + ' and  loja = '+ qrBusca.fieldByName('uo').AsString;
+            funcSQL.execSQL(cmd, fmMain.Conexao);
+            cmd := ' update zcf_avariasItens set codLojaDesconto = ' + uo  +
+                   ' where numAvaria= ' + qrBusca.fieldByName('numero').AsString +  ' and  loja = '+ qrBusca.fieldByName('uo').AsString ;
+            funcSQL.execSQL(cmd, fmMain.Conexao);
+            funcoes.msgTela('',' Ajuste efetuado com sucesso.', mb_ok + MB_ICONEXCLAMATION );
+         end
+      end;
 end;
 
 end.
