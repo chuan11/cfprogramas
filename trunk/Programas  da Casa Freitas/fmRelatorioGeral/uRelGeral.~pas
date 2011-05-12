@@ -47,18 +47,10 @@ type
     tbValoresAvariasFornecedor: TStringField;
     tbValoresAvarias_Totalfornecedor: TStringField;
     cbCaixas: TadLabelComboBox;
+    DBGrid1: TDBGrid;
+    DataSource1: TDataSource;
+    ADODataSet1: TADODataSet;
     tb: TADOTable;
-    tbcodLoja: TIntegerField;
-    tbcd_mve: TIntegerField;
-    tbds_mve: TStringField;
-    tbdataSessaoCaixa: TDateTimeField;
-    tbseqtransacaocaixa: TIntegerField;
-    tbSeqModPagtoPorTransCaixa: TIntegerField;
-    tbvalor: TBCDField;
-    tbnumParcelas: TStringField;
-    tbtefMagnetico: TStringField;
-    tbdescEstacao: TStringField;
-    tbseqTefTransCaixa: TIntegerField;
 
     procedure btOkClick(Sender: TObject);
     procedure setPerfil(p:integer);
@@ -227,9 +219,10 @@ begin
    IS_GRUPO_PERMITIDO_CARTAO := uCF.isGrupoPermitido('relPagCartao.grSemRestricao');
 
    if (IS_GRUPO_PERMITIDO_CARTAO = false) then
-      dti.MinDate :=  funcSQL.getDateBd( fmMain.Conexao)-2;
+      dti.MinDate :=  funcSQL.getDateBd(fmMain.Conexao)-2;
 
    dti.Date := funcSQL.getDateBd( fmMain.Conexao);
+   dtf.Date := dti.Date;
    getDescCaixas();
 end;
 
@@ -264,7 +257,6 @@ var
    i:integer;
 begin
    uCF.listaRecebimentosCaixa( tb, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, true, true );
-
    if (tb.IsEmpty = false) then
    begin
       ds:= uCF.getOperadoresPorCaixa(qr, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti );
