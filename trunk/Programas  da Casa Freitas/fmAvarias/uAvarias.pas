@@ -62,6 +62,7 @@ type
     Relatrios1: TMenuItem;
     Imprimirrelaodeavaria1: TMenuItem;
     Vendadeprodutosavariados1: TMenuItem;
+    ransferirAvaria1: TMenuItem;
 
     function  itemJaExiste():boolean;
     procedure AbreFmPesqLista(tag:integer);
@@ -91,6 +92,8 @@ type
     procedure Vendadeprodutosavariados1Click(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure GridTitleClick(Column: TColumn);
+    procedure ransferirAvaria1Click(Sender: TObject);
+    
   private
     { Private declarations }
   public
@@ -120,7 +123,6 @@ begin
    qrItens.First;
    grid.visible := TRUE;
 end;
-
 procedure TfmCadAvarias.AbreFmPesqLista(tag:integer);
 begin
    DesabilitaItens();
@@ -329,7 +331,7 @@ begin
                        fmMain.getCdPesLogado() + ', ' +
                        funcoes.ValorSql(precos[2]) +', ' +
                        funcoes.ValorSql(edPcSugerido.Text)
-                        +', null, 0, ' + lbUo.Caption +' )'
+                        +', null, 0,' + lbUo.Caption +' )'
                        ,'@@error',fmMain.Conexao );
 
          CarregaItensAvarias(Sender,lbnumAvaria.Caption, lbUo.Caption);
@@ -513,6 +515,13 @@ begin
    edCodigo.setFocus;
 end;
 
+
+procedure TfmCadAvarias.ransferirAvaria1Click(Sender: TObject);
+begin
+   if (QrItens.IsEmpty = false) then
+      DesabilitaItens();
+   AbreFmPesqLista(4);
+end;
 
 end.
 

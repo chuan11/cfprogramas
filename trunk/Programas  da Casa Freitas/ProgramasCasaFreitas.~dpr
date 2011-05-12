@@ -74,14 +74,10 @@ begin
       winExec(pchar('cmd /c Upgrade.exe *** '+ ParamStr(0) ), sw_hide);
       application.terminate;
    end
-
-
-   
    else begin
       Application.Initialize;
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
-  Application.CreateForm(TfmSelecionaUo, fmSelecionaUo);
-  Application.Run;
+      Application.Run;
    end;
 end.

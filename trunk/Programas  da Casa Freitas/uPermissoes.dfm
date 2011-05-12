@@ -52,8 +52,8 @@ object fmPermissoes: TfmPermissoes
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = []
+    OnCellClick = gridCellClick
     OnDrawColumnCell = gridDrawColumnCell
-    OnDblClick = gridDblClick
     AlternateColor = False
     ColorLow = 14936544
     ColorHigh = 15790322
@@ -136,7 +136,6 @@ object fmPermissoes: TfmPermissoes
       TitleFont.Name = 'MS Sans Serif'
       TitleFont.Style = []
       OnDrawColumnCell = gridDrawColumnCell
-      OnDblClick = gridDblClick
       AlternateColor = True
       ColorLow = clInfoBk
       ColorHigh = 15790322
@@ -144,13 +143,13 @@ object fmPermissoes: TfmPermissoes
   end
   object tb: TADOTable
     Connection = fmMain.Conexao
-    Left = 112
-    Top = 72
+    Left = 368
+    Top = 104
   end
   object DataSource1: TDataSource
     DataSet = tb
-    Left = 152
-    Top = 72
+    Left = 400
+    Top = 96
   end
   object dsuser: TDataSource
     Left = 215

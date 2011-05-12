@@ -453,7 +453,7 @@ object fmCadAvarias: TfmCadAvarias
       ParentFont = False
     end
     object lbuo: TLabel
-      Left = 702
+      Left = 128
       Top = 20
       Width = 20
       Height = 13
@@ -627,6 +627,11 @@ object fmCadAvarias: TfmCadAvarias
       Tag = 103105
       Caption = 'Exportar'
       OnClick = Exportar1Click
+    end
+    object ransferirAvaria1: TMenuItem
+      Tag = 103106
+      Caption = 'Ajuste a loja do desconto '
+      OnClick = ransferirAvaria1Click
     end
   end
   object QrItens: TADOQuery

@@ -129,19 +129,6 @@ object fmRelGeral: TfmRelGeral
     LabelDefs.Caption = 'Caixa'
     Colors.WhenEnterFocus.BackColor = clInfoBk
   end
-  object DBGrid1: TDBGrid
-    Left = 144
-    Top = 136
-    Width = 625
-    Height = 153
-    DataSource = DataSource1
-    TabOrder = 5
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'MS Sans Serif'
-    TitleFont.Style = []
-  end
   object qr: TADOQuery
     Connection = fmMain.Conexao
     CursorType = ctStatic
@@ -249,7 +236,7 @@ object fmRelGeral: TfmRelGeral
   object tbValoresAvarias: TADOTable
     Connection = fmMain.Conexao
     Left = 16
-    Top = 152
+    Top = 151
     object tbValoresAvariasis_uo: TStringField
       FieldName = 'is_uo'
       Size = 8
@@ -310,18 +297,9 @@ object fmRelGeral: TfmRelGeral
       Size = 30
     end
   end
-  object DataSource1: TDataSource
-    Left = 192
-    Top = 192
-  end
-  object ADODataSet1: TADODataSet
-    Parameters = <>
-    Left = 88
-    Top = 104
-  end
-  object tb: TADOTable
+  object tbVendasCartao: TADOTable
     Connection = fmMain.Conexao
-    Left = 24
-    Top = 128
+    Left = 16
+    Top = 112
   end
 end

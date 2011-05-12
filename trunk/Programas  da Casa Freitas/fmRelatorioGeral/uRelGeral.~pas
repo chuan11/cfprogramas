@@ -216,7 +216,7 @@ begin
    cbDetAvaForn.Visible := false;
    GroupBox1.Width := dti.Width + 50;
 
-   IS_GRUPO_PERMITIDO_CARTAO := uCF.isGrupoPermitido('relPagCartao.grSemRestricao');
+   IS_GRUPO_PERMITIDO_CARTAO := not(uCF.isGrupoRestrito('relPagCartao.grSemRestricao'));
 
    if (IS_GRUPO_PERMITIDO_CARTAO = false) then
       dti.MinDate :=  funcSQL.getDateBd(fmMain.Conexao)-2;

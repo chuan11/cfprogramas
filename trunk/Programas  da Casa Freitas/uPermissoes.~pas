@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, adLabelComboBox, Menus,  Grids, DBGrids,
-  SoftDBGrid, funcoes, funcsql, DB, ADODB, TFlatButtonUnit, ComCtrls;
+  SoftDBGrid, funcoes, funcsql, DB, ADODB, TFlatButtonUnit, ComCtrls,
+  adLabelListBox, adLabelEdit, Buttons, fCtrls;
 
 type
   TfmPermissoes = class(TForm)
@@ -15,6 +16,11 @@ type
     Tree: TTreeView;
     Label1: TLabel;
     Label2: TLabel;
+    GroupBox1: TGroupBox;
+    edUser: TadLabelEdit;
+    btIncluiXML: TfsBitBtn;
+    SoftDBGrid1: TSoftDBGrid;
+    dsuser: TDataSource;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ListarMenus(Sender: TObject;  item:TmenuItem);
     procedure gridDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
@@ -28,6 +34,7 @@ type
     procedure criarTabela();
     procedure inserirGruposNaTabela();
     procedure mostraPermissoes(cod:String);
+    procedure btIncluiXMLClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -237,5 +244,10 @@ begin
 end;
 
 
+
+procedure TfmPermissoes.btIncluiXMLClick(Sender: TObject);
+begin
+   dsuser.DataSet := funcSql.getDataSetQ('select top 10  * from crefe', fmMain.Conexao);
+end;
 
 end.

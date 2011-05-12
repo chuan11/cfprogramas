@@ -62,7 +62,6 @@ type
     procedure nmPedKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     function criticaErroDesconto(vDesconto:real):String;
     procedure calculaDesconto(Sender: Tobject; UsrAutorizador:string; vDesconto:real);
-    procedure FormActivate(Sender: TObject);
     function getSomaDasParcelas():real;
     function GetValorDesconto():real;
     procedure gridEntradaExit(Sender: TObject);
@@ -134,7 +133,7 @@ var
 begin
    tpDescontoClick(Sender);
 
-   IS_TELA_RESTRITA :=  uCF.isGrupoRestrito('gruposRestritosTela') ;
+   IS_TELA_RESTRITA :=  not(fmMain.isGrupoPermitido(fmMain.Descontodepedido1.Tag));
 
    fmDescPed.Caption := TITULO;
 
@@ -263,16 +262,14 @@ begin
 
    carregaItensPedido();
 
-   if (IS_TELA_RESTRITA = true) then
-      uCF.getProdAvariadosParaVenda(tbAvarias, gridAvarias, query.fieldByname('pedido').AsString);
+//   if (IS_TELA_RESTRITA = true) then
+   uCF.getProdAvariadosParaVenda(tbAvarias, gridAvarias, query.fieldByname('pedido').AsString);
 
    if query.IsEmpty then
    begin
       msgTela('', 'Não achei esse pedido.', mb_iconError + mb_ok);
       query.Close;
    end
-   else
-      edValor.SetFocus;
 end;
 
 procedure TfmDescPed.nmPedKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -398,17 +395,9 @@ begin
 
    gravaDescAvarias(query.fieldByname('Pedido').asString);
 
+   nmPed.Enabled := true;
+   btConsultaPed.Enabled := true;
    btConsultaPedClick(Sender);
-end;
-
-procedure TfmDescPed.FormActivate(Sender: TObject);
-begin
-   nmPed.setfocus;
-
-   
-
-
-
 end;
 
 procedure TfmDescPed.AplicarDesconto(Sender: Tobject; vDesconto: Real;autorizador:string);
@@ -432,8 +421,8 @@ begin
          else
             calculaDesconto(Sender, autorizador, vDesconto );
    end
-   else
-      btConsultaPed.Enabled := true;
+//   else
+//      btConsultaPed.Enabled := true;
 end;
 
 procedure TfmDescPed.gridEntradaExit(Sender: TObject);

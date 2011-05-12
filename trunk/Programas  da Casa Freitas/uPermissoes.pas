@@ -24,7 +24,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ListarMenus(Sender: TObject;  item:TmenuItem);
     procedure gridDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
-    procedure gridDblClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     function liberaMenu(lst:Tstringlist; tag:string):boolean;
     procedure CarregaMenu(menu:TMenu);
@@ -35,6 +34,7 @@ type
     procedure inserirGruposNaTabela();
     procedure mostraPermissoes(cod:String);
     procedure btIncluiXMLClick(Sender: TObject);
+    procedure gridCellClick(Column: TColumn);
   private
     { Private declarations }
   public
@@ -43,7 +43,7 @@ type
 
 var
   fmPermissoes: TfmPermissoes;
-  flagAlteracoes:Boolean;
+//  flagAlteracoes:Boolean;
   lista:TStringList;
   menuSelecionado:String;
 implementation
@@ -83,49 +83,17 @@ begin
           tb.InsertRecord(['','x','',item.Caption, inttostr(item.Tag)]);
     end;
 end;
-{
-procedure TfmPermissoes.chamaListaMenus(sender: TObject);
-var
-   i:integer;
-begin
-   grid.Visible := false;
-   for i:=0 to fmMain.menuP.Items.Count -1 do
-      ListarMenus(nil, fmMain.menuP.Items[i]);
-   grid.Visible := true;
-end;
-}
 
 procedure TfmPermissoes.gridDrawColumnCell(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
    if Column.Field.FieldName = 'Menu' then
       column.Font.Style := [fsbold];
 
-   if Column.Field.FieldName = 'Acessa' then
+   if (Column.Field.FieldName = 'Acessa')  or  (Column.Field.FieldName = 'isAcessoRestrito') then
    begin
       column.Font.Style := [fsbold];
       Column.Font.Color := clred;
    end;
-end;
-
-procedure TfmPermissoes.gridDblClick(Sender: TObject);
-begin
-   if (tb.IsEmpty = false) then
-   begin
-      tb.Edit;
-      if tb.FieldByName('Acessa').asString = 'X' then
-         tb.FieldByName('Acessa').asString := ''
-       else
-          tb.FieldByName('Acessa').asString := 'X';
-       tb.Post();
-
-       flagAlteracoes := true;
-
-       if ( tb.FieldByName('acessa').AsString = '' ) then
-          funcsql.execSQL( 'Delete from zcf_telasPermitidas where codTela  =  ' +  menuSelecionado +' and grupo = ' + tb.FieldByName('codGrupo').AsString, fmMain.Conexao)
-       else
-          funcsql.execSQL( ' if not exists( select * from zcf_telasPermitidas where grupo = ' + tb.fieldByname('codGrupo').asString + ' and codTEla = ' + menuSelecionado  +')'+
-                           ' insert zcf_telasPermitidas (codTela, grupo) values ( ' + menuSelecionado + ' , ' + tb.fieldByname('codGrupo').asString + ')', fmMain.Conexao  );
-   end;                           
 end;
 
 function TfmPermissoes.liberaMenu(lst: Tstringlist; tag: string): boolean;
@@ -177,20 +145,37 @@ begin
 end;
 
 procedure TfmPermissoes.mostraPermissoes(cod: String);
+var
+  ds:TdataSet;
 begin
+   ds:= funcsql.getDataSetQ( 'Select grupo, isAcessoRestrito, codTela from zcf_telasPermitidas where codTela = ' + cod,  fmMain.Conexao );
    grid.Visible := false;
    tb.First;
-   while tb.Eof = false do
+   while (tb.Eof = false) do
    begin
+      ds.First();
       tb.Edit;
-      if funcSQl.openSQL('Select grupo from zcf_telasPermitidas where codTela = ' + cod + ' and grupo = ' + tb.fieldByname('codGrupo').asString, 'grupo', fmMain.Conexao )<> '' then
-        tb.FieldByName('Acessa').asString := 'X'
-      else
-        tb.FieldByName('Acessa').asString := '';
-      tb.Post;
+      tb.FieldByName('Acessa').asString := '';
+      tb.FieldByName('isAcessoRestrito').asString := '';
+      tb.post;
+
+      while (ds.Eof = false) do
+      begin
+         if tb.FieldByName('codGrupo').asinteger = ds.FieldByName('grupo').AsInteger then
+         begin
+            tb.Edit;
+            tb.FieldByName('Acessa').asString := 'X';
+            if (ds.FieldByName('isAcessoRestrito').asInteger <> 0) then
+               tb.FieldByName('isAcessoRestrito').asString := 'X';
+            tb.post;
+            break;
+         end;
+         ds.Next();
+      end;
       tb.Next();
-   end;
-   grid.Visible := true;
+  end;
+  ds.Free();
+  grid.Visible := true;
 end;
 
 
@@ -207,7 +192,7 @@ procedure TfmPermissoes.criarTabela();
 var
    cmd:String;
 begin
-   cmd := ' seq int primary key identity, Acessa varchar(02), Grupo varchar(50), codGrupo int ';
+   cmd := ' seq int primary key identity, Acessa varchar(02), Grupo varchar(50), codGrupo int, isAcessoRestrito varchar(02)';
    funcsql.getTable( fmMain.Conexao, tb, cmd );
    DataSource1.DataSet := tb;
 end;
@@ -216,7 +201,7 @@ procedure TfmPermissoes.inserirGruposNaTabela();
 var
    cmd : String;
 begin
-   cmd := 'insert ' + tb.TableName + ' Select '''', nm_grusu, cd_grusu from dsgrusu order by nm_grusu';
+   cmd := 'insert ' + tb.TableName + ' Select '''', nm_grusu, cd_grusu, ''''  from dsgrusu order by nm_grusu';
    funcsql.execSQL(cmd,fmMain.Conexao);
    tb.Close();
    tb.open();
@@ -248,6 +233,32 @@ end;
 procedure TfmPermissoes.btIncluiXMLClick(Sender: TObject);
 begin
    dsuser.DataSet := funcSql.getDataSetQ('select top 10  * from crefe', fmMain.Conexao);
+end;
+
+procedure TfmPermissoes.gridCellClick(Column: TColumn);
+var
+   cmd:String;
+begin
+   if (tb.IsEmpty = false) then
+   begin
+      tb.Edit;
+      if (Column.FieldName = 'Acessa') or  (Column.FieldName = 'isAcessoRestrito') then
+      begin
+         if tb.FieldByName(Column.FieldName).asString = 'X' then
+            tb.FieldByName(Column.FieldName).asString := ''
+          else
+             tb.FieldByName(Column.FieldName).asString := 'X';
+          tb.Post();
+      end;
+
+      funcsql.execSQL( 'Delete from zcf_telasPermitidas where codTela  =  ' +  menuSelecionado +' and grupo = ' + tb.FieldByName('codGrupo').AsString, fmMain.Conexao);
+
+      funcsql.execSQL( ' if not exists( select * from zcf_telasPermitidas where grupo = ' + tb.fieldByname('codGrupo').asString + ' and codTela = ' + menuSelecionado  +')'
+                               +#13+ ' insert zcf_telasPermitidas (codTela, grupo, isAcessoRestrito) values ( ' + menuSelecionado + ' , ' +
+                              tb.fieldByname('codGrupo').asString + ' , ' +
+                               BoolToStr( (tb.fieldByname('isAcessoRestrito').asString <> '')) + ')', fmMain.Conexao  );
+   end;
+
 end;
 
 end.

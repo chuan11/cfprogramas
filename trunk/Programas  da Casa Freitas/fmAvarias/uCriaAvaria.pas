@@ -46,7 +46,7 @@ var
 begin
    nAvaria := getValorWell( 'O', ' Select isNull(max(numAvaria)+1,1) as nAvaria from zcf_avarias with(nolock) where loja = ' + fmMain.getUoLogada() , 'nAvaria', fmMain.Conexao) ;
    GetValorWell( 'E', ' Insert zcf_avarias Values('+ nAvaria +' , '+ fmMain.getUoLogada() +
-   ' , GetDate(), 0, null , ' + intToStr(cbTipo.ItemIndex)  + ' , '+  quotedStr(funcoes.getNomeDaEstacao() + ' User:' + fmMain.getNomeUsuario()  )   +'  , '''',0, 1 )'  , '@@error', fmMain.Conexao);
+   ' , GetDate(), 0, null,  ' + intToStr(cbTipo.ItemIndex)  + ' , '+  quotedStr(funcoes.getNomeDaEstacao() + ' User:' + fmMain.getNomeUsuario()  )   +'  , '''',0, 1, ' + fmMain.getUoLogada()+ ' )'  , '@@error', fmMain.Conexao);
    aux :=  funcoes.preencheCampo(05,'0','e', nAvaria);
    fmCadAvarias.lbNumAvaria.Caption := aux ;
    fmCadAvarias.CarregarCabecalhoAvarias(sender, aux,  fmMain.getUoLogada()  );
