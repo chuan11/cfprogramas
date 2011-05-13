@@ -15,7 +15,6 @@ object fmDescPed: TfmDescPed
   Position = poDefault
   Visible = True
   WindowState = wsMaximized
-  OnActivate = FormActivate
   OnClose = FormClose
   OnCreate = FormCreate
   DesignSize = (

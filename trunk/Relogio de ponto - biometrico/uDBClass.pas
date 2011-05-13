@@ -95,6 +95,8 @@ type
     procedure connection1ExecuteComplete(Connection: TADOConnection;  RecordsAffected: Integer; const Error: Error;  var EventStatus: TEventStatus; const Command: _Command;  const Recordset: _Recordset);
     function isDigitalCadastrada(matricula, lado:String):boolean;
 
+    function getDataSetQ(ComandoSQL:string):TdataSet;
+
 end;
 
 implementation
@@ -613,6 +615,12 @@ procedure TDBClass.getQuery(var qr:TADOQuery; ComandoSQL:string);
 begin
    funcsql.getQuery(connection, qr, ComandoSQL);
 end;
+
+function TDBClass.getDataSetQ(ComandoSQL:string):TdataSet;
+begin
+   result :=  funcsql.getDataSetQ(ComandoSQL, connection);
+end;
+
 
 function TDBClass.getJustificativas: TStrings;
 var

@@ -87,6 +87,7 @@ type
     procedure criaTbResumo(var Table:TADOTAble);
     procedure deletajustificativa(numJustificativa:String);
     procedure getQuery(var qr:TADOQuery; ComandoSQL:string);
+   
     procedure getTable(var tb:TADOTable; tbFields:string);
     procedure getTemplates();
     procedure organizarQuery(var query:TADOQuery;Coluna:Tcolumn);
@@ -319,7 +320,7 @@ var
    lstUser:Tstrings;
 begin
    users := funcSQl.getUsersList(connection, 'Select * from zcf_PontoAutorizadores');
-//   result := verificaSenhas.TelaAutorizacao2(connection,'',users);
+   result := verificaSenhas.TelaAutorizacao2(connection,'',users);
 end;
 
 function TDBClass.getUserAutorizadorPonto(listaJustificativas:boolean):String;
@@ -613,6 +614,13 @@ procedure TDBClass.getQuery(var qr:TADOQuery; ComandoSQL:string);
 begin
    funcsql.getQuery(connection, qr, ComandoSQL);
 end;
+
+function TDBClass.getQuery(var qr:TADOQuery; ComandoSQL:string):TdataSet;
+begin
+   result :=  funcsql.getDataSetQ(CmdLine, connection);
+end;
+
+
 
 function TDBClass.getJustificativas: TStrings;
 var

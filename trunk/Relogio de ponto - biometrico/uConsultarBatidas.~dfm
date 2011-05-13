@@ -1,6 +1,6 @@
 object fmBatidas: TfmBatidas
-  Left = 382
-  Top = 119
+  Left = 453
+  Top = 226
   Width = 780
   Height = 590
   Color = clBtnFace

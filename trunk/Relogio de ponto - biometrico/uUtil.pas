@@ -5,7 +5,7 @@ interface
 uses
   Classes, Controls, StdCtrls, ExtCtrls, CheckLst, SysUtils,  Forms,
   ADODB, Dialogs, Windows, Graphics, ActiveX, GrFingerXLib_TLB,
-  AXCtrls, uDBClass, db, dbGrids ,  funcoes;
+  AXCtrls, uDBClass, db, dbGrids ,  funcoes, funcDatas;
 
 type
   // Raw image data type.
@@ -89,8 +89,8 @@ function isCadastroEmpOk(cartaoPonto:String):boolean;
 function isPontoCadastrado(cartaoPonto: String): boolean;
 procedure WriteLog(str:String);
 
-//procedure
-
+function getDataSetQ(comandoSQL:string):TdataSet;
+procedure getEmpParaRelatorioBatidas(tb:TADOTable; localizacao, mes:String);
 
 Var
   // The last acquired image.
@@ -642,6 +642,14 @@ begin
    db.getQuery(qr, ComandoSQL);
 end;
 
+function getDataSetQ(comandoSQL:string):TdataSet;
+begin
+   if (connectionIsClosed() = true) then
+     opendb();
+   result := db.getDataSetQ(comandoSQL);
+end;
+
+
 function getJustificativas(): Tstrings;
 begin
    result := db.getJustificativas();
@@ -778,6 +786,55 @@ end;
 function isHaveBatida(dia:Tdate; cartao:String): boolean;
 begin
    result := db.isHaveBatida(dia, cartao);
+end;
+
+
+procedure getEmpParaRelatorioBatidas(tb:TADOTable; localizacao, mes:String);
+var
+  ds:TdataSet;
+  cmd:String;
+  tbAux:TADOTable;
+  dti, dtf:Tdate;
+begin
+   dti := strToDate('01/'+ mes);
+   dtf := strToDate(funcDatas.getUltimoDiaMes(dti));
+
+// criar a tabela com os dados dos funcionarios
+   if (tb.TableName <> '') then
+       tb.Close();
+
+   cmd :=
+   'nome varchar(60), cartaoPonto varchar(10), matricula varchar(10), hTrabalhada varchar(08), '+
+   'hPrevista varchar(08), atrasosJustificado varchar(08), atrasoAutorizado varchar(08), batIncompativel varchar(08), '+
+   'batIncompativelJust varchar(08), falta varchar(08), faltaJust varchar(08)';
+   uUtil.getTable(tb, cmd);
+
+   ds:= getCadastroDeEmpregados(localizacao);
+   ds.first();
+   while( ds.Eof = false ) do
+   begin
+       tb.AppendRecord([ ds.FieldByName('nome').AsString,
+                         ds.FieldByName('cartaoPonto').AsString,
+                         ds.FieldByName('matricula').AsString,
+                         '', '', '', '', '', '', '', ''
+       ]);
+       ds.Next;
+   end;
+   ds.Free();
+
+
+   tb.First();
+   while tb.Eof = false do
+   begin
+      if (tbAux.TableName <> '') then
+         tbAux.close();
+
+      criaTbResumo(tbAux);
+      preencheListaDosDias(tbAux, dti, dtf);
+      fmMain.calcHorasTotais(tb, 
+
+
+   end;
 end;
 
 

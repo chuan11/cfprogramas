@@ -198,7 +198,7 @@ type
   end;
 CONST
    VERSAO = '11.05.02';
-   SUB_VERSAO = '';
+   SUB_VERSAO = ' B';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;

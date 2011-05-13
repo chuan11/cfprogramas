@@ -1,6 +1,6 @@
 object fmImpFolhaPonto: TfmImpFolhaPonto
-  Left = 320
-  Top = 79
+  Left = 446
+  Top = 219
   Width = 647
   Height = 446
   BorderIcons = [biSystemMenu]
@@ -163,6 +163,19 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
     TabOrder = 1
     OnClick = BitBtn1Click
   end
+  object DBGrid1: TDBGrid
+    Left = 152
+    Top = 168
+    Width = 385
+    Height = 225
+    DataSource = DataSource1
+    TabOrder = 2
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+    TitleFont.Style = []
+  end
   object qrEmp: TADOQuery
     Parameters = <>
     Left = 43
@@ -171,5 +184,14 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
   object tbDias: TADOTable
     Left = 8
     Top = 112
+  end
+  object tbBatidas: TADOTable
+    Left = 8
+    Top = 160
+  end
+  object DataSource1: TDataSource
+    DataSet = tbBatidas
+    Left = 184
+    Top = 280
   end
 end

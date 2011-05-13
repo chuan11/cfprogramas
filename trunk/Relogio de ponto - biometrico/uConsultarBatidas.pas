@@ -116,6 +116,7 @@ begin
       gravaLog('Inicio');
       if (table.Active = true ) then
          table.Close();
+
       uUtil.criaTbResumo(table);
 
       fmMain.getDadosEmpregado( cartaoPonto );
