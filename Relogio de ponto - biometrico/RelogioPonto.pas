@@ -131,7 +131,7 @@ var
   IS_CAPTURA_INICIADA:BOOLEAN;
 implementation
 
-uses funcoes,  uUtil, Justificativas, uConsultarBatidas, uOcorrencia,
+uses funcoes, uUtil, Justificativas, uConsultarBatidas, uOcorrencia,
   uImpFolhaPonto, uCad, uDBClass;
 
 {$R *.DFM}

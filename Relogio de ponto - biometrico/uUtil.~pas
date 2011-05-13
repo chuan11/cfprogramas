@@ -89,6 +89,8 @@ function isCadastroEmpOk(cartaoPonto:String):boolean;
 function isPontoCadastrado(cartaoPonto: String): boolean;
 procedure WriteLog(str:String);
 
+function getDataSetQ(comandoSQL:string):TdataSet;
+procedure getEmpParaRelatorioBatidas(tb:TADOTable; localizacao:String);
 
 Var
   // The last acquired image.
@@ -640,6 +642,14 @@ begin
    db.getQuery(qr, ComandoSQL);
 end;
 
+function getDataSetQ(comandoSQL:string):TdataSet;
+begin
+   if (connectionIsClosed() = true) then
+     opendb();
+   result := db.getDataSetQ(comandoSQL);
+end;
+
+
 function getJustificativas(): Tstrings;
 begin
    result := db.getJustificativas();
@@ -777,6 +787,36 @@ function isHaveBatida(dia:Tdate; cartao:String): boolean;
 begin
    result := db.isHaveBatida(dia, cartao);
 end;
+
+
+procedure getEmpParaRelatorioBatidas(tb:TADOTable; localizacao:String);
+var
+  ds:TdataSet;
+  cmd:String;
+begin
+// criar a tabela com os dados dos funcionarios
+   if (tb.TableName <> '') then
+       tb.Close();
+
+   cmd :=
+   'nome varchar(60), cartaoPonto varchar(10), matricula varchar(10), hTrabalhada varchar(08), '+
+   'hPrevista varchar(08), atrasosJustificado varchar(08), atrasoAutorizado varchar(08), batIncompativel varchar(08), '+
+   'batIncompativelJust varchar(08), falta varchar(08), faltaJust varchar(08)';
+   uUtil.getTable(tb, cmd);
+
+   ds:= getCadastroDeEmpregados(localizacao);
+   ds.first();
+   while( ds.Eof = false ) do
+   begin
+       tb.AppendRecord([ ds.FieldByName('nome').AsString,
+                         ds.FieldByName('cartaoPonto').AsString,
+                         ds.FieldByName('matricula').AsString,
+                         '', '', '', '', '', '', '', ''
+       ]);
+       ds.Next;
+   end;
+end;
+
 
 
 end.

@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, fCtrls, ExtCtrls, Buttons, funcoes, funcsql,funcDatas,
   adLabelComboBox, DB, ADODB, RpCon, RpConDS, RpBase, RpSystem, RpDefine,
-  RpRave, Spin, Mask, uUtil;
+  RpRave, Spin, Mask, uUtil, Grids, DBGrids;
 
 type
   TfmImpFolhaPonto = class(TForm)
@@ -22,6 +22,9 @@ type
     edMesAno: TMaskEdit;
     SpinButton1: TSpinButton;
     tbDias: TADOTable;
+    tbBatidas: TADOTable;
+    DBGrid1: TDBGrid;
+    DataSource1: TDataSource;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure cbLojasClick(Sender: TObject);
@@ -97,6 +100,7 @@ procedure TfmImpFolhaPonto.imprimeFolhaPonto;
 var
    cmd:String;
    paramRel:Tstringlist;
+   ds:TdataSet;
 begin
    cmd := '';
    if (cbEmp.itemIndex > -1) then
@@ -116,13 +120,14 @@ begin
              ' inner join zcf_pontoHorarios h on h.num = e.horario_num  ' +
              ' where ' + cmd;
 
-      uUtil.getQuery(qrEmp, cmd);
+      ds :=  uUtil.getDataSetQ(cmd);
+
 
       getDadosDias();
 
       paramRel := TStringList.Create();
       paramRel.Add('01/' + edMesAno.Text + ' a ' +  funcDatas.getUltimoDiaMes( strToDate('01/'+edMesAno.Text))   );
-      fmMain.impressaoRave( qrEmp, tbDias, 'rpPontoFolha', paramRel);
+      fmMain.impressaoRave(ds, tbDias, 'rpPontoFolha', paramRel);
    end
    else
       msgTela('', 'Escolha loja ou empregado', MB_OK);
@@ -175,26 +180,17 @@ var
    cmd:String;
    ds:TdataSet;
 begin
-   cmd := ' cartao varchar(10), matricula varchar(10), nome varchar(10), horasPrevistas varchar(07), horasTrabalhadas varchar(07), ' +
-          ' atrasoJustificado varchar(07), atrasoAutorizado, varchar(07), batIncomp varchar(07), batIncJustificada varchar(07), ' +
-          ' faltas varchar(07), faltaJust varchar(07)';
-
-    uUtil.getTable(tbEmp, cmd);
-
-    tbEmp.close();
-
-    cmd := ' insert';
-
+   uUtil.getEmpParaRelatorioBatidas(tbBatidas, fmMain.getCodLocalizacaoLoja(cbLojas));
 end;
 
 procedure TfmImpFolhaPonto.BitBtn1Click(Sender: TObject);
 begin
-    case perfil of
+{    case perfil of
        1:imprimeFolhaPonto();
-       2:
+       2:imprimeResumoBatidas();
     end;
-
-
+}
+imprimeResumoBatidas();
 end;
 
 

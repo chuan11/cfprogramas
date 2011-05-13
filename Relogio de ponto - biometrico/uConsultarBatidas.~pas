@@ -91,7 +91,7 @@ var
    batInc,batIncJ, falta, faltaJ :smallint;
 begin
    emp := cbEmp.Items[cbEmp.itemIndex];
-   fmMain.calcHorastotais( table,  hprevistas, hTrabalho, aJust, asJust,diferencas,  batInc  , batIncJ   , falta, faltaJ, emp , dti.Date );
+   fmMain.calcHorastotais( table,  hprevistas, hTrabalho, aJust, asJust,diferencas,  batInc, batIncJ, falta, faltaJ, emp, dti.Date );
    lbHTrabalhadas.Caption :=  intToHora(hTrabalho);
    lbDiferencas.caption  := intToHora(diferencas);
    lbAtrasoAut.Caption :=  intToHora(asJust);
