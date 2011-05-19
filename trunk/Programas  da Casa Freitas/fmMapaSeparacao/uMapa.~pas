@@ -252,7 +252,7 @@ begin
 
 
 
-   if (fmMain.lbUser.Caption = fmMain.GetParamBD('mapa.usAutEdicao','') ) or( fmMain.lbGrupo.Caption <> '')  then
+   if (fmMain.getUserLogado() = fmMain.GetParamBD('mapa.usAutEdicao','') ) or( fmMain.getGrupoLogado() <> '')  then
    begin
       PERMITE_EDITAR := true;
       Inserir1.Enabled := true;
@@ -608,7 +608,7 @@ end;
 
 procedure TfmMapa.Vendasnoperiodo1Click(Sender: TObject);
 begin
-   fmMain.obterDetalhesSaida( nil, tb.fieldByName('is_ref').asString , fmMain.lbLoja.Caption);
+   fmMain.obterDetalhesSaida( nil, tb.fieldByName('is_ref').asString , fmMain.getUoLogada() );
 end;
 
 procedure TfmMapa.Imprimir1Click(Sender: TObject);

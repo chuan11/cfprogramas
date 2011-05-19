@@ -968,6 +968,7 @@ begin
    if length(h) < 2 then insert('0',h,1);
    if length(m) < 2 then insert('0',m,1);
    aux := h +':'+ m;
+
    if aux = '00:00' then
       aux := '  :  ';
 
@@ -1427,8 +1428,6 @@ begin
     else
        result := true;
 end;
-
-
 
 
 

@@ -70,9 +70,8 @@ procedure TfmImpFolhaPonto.FormCreate(Sender: TObject);
 begin
    cbLojas.items := uUtil.getNomeLojasPonto(false, false);
    cbEmp.items := uUtil.obterDadosFuncionarios('');
-   if funcoes.SohNumeros(edMesAno.Text) = '' then
-   if pos(' ',edMesAno.text) > 0 then
-      edMesAno.text:= '08/2010';
+
+   edMesAno.text := copy( dateToStr(now), 04, 07);
 end;
 
 procedure TfmImpFolhaPonto.cbLojasClick(Sender: TObject);
@@ -175,12 +174,11 @@ begin
 end;
 
 procedure TfmImpFolhaPonto.imprimeResumoBatidas;
-var
-   tbAux, tbEmp:TADOTable;
-   cmd:String;
-   ds:TdataSet;
 begin
-   uUtil.getEmpParaRelatorioBatidas(tbBatidas, fmMain.getCodLocalizacaoLoja(cbLojas));
+   uUtil.getEmpParaRelatorioBatidas(tbBatidas, fmMain.getCodLocalizacaoLoja(cbLojas), edMesAno.Text);
+
+   fmMain.impressaoRave(tbBatidas, nil, 'rpPontoBatidasPeriodoGrupo', nil );
+
 end;
 
 procedure TfmImpFolhaPonto.BitBtn1Click(Sender: TObject);

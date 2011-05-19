@@ -11,8 +11,8 @@ uses
   IdTCPConnection, Sockets, ScktComp, DBCtrls,
   AppEvnts, RpRender, RpRenderPDF, RpRenderCanvas, RpRenderPrinter,
   OleCtrls, AcroPDFLib_TLB, shellAPI, adLabelCheckListBox, IdBaseComponent,
-  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox{, xmldom, XMLIntf,
-  msxmldom, XMLDoc, oxmldom {, CHILKATXMLLib_TLB} ;
+  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox , xmldom, XMLIntf,
+  msxmldom, XMLDoc, oxmldom, CHILKATXMLLib_TLB ;
 
 
 type
@@ -87,6 +87,7 @@ type
     ImprimirDANFE1: TMenuItem;
     Button1: TButton;
     RegistroSCAN1: TMenuItem;
+    xml: TChilkatXml;
 
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
@@ -184,8 +185,8 @@ type
     procedure pagamentosEmCartao1Click(Sender: TObject);
     procedure cargadedadosparaconciliao1Click(Sender: TObject);
     procedure deletarRegistrodecartoTEF1Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure RegistroSCAN1Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -198,7 +199,7 @@ type
   end;
 CONST
    VERSAO = '11.05.02';
-   SUB_VERSAO = ' B';
+   SUB_VERSAO = ' E';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -262,6 +263,8 @@ begin
       fmMain.WindowState := wsNormal;
       is_logado := true;
       montarMenu('Matriz', 'walter', '10033589','10000592');
+//        montarMenu('Matriz', 'walter', '10001008','10001593');
+
       fmMain.Width := 900;
       fmMain.Height := 700;
       fmMain.Left := 100;
@@ -1324,33 +1327,6 @@ end;
 
 
 
-procedure TfmMain.Button1Click(Sender: TObject);
-{var
-{  xmlnFE: CHILKATXMLLib_TLB.IChilkatXml;
-  xNode0: CHILKATXMLLib_TLB.IChilkatXml;
-  xChild: CHILKATXMLLib_TLB.IChilkatXml;
-  no2, noinicial: IChilkatXml;
-
-  noAutorizacao: CHILKATXMLLib_TLB.IChilkatXml;
-}
-begin
-{
-//    xml := TChilkatXml.Create(Self).ControlInterface;
-//    xml.LoadXml( funcoes.DialogAbrArq('xml','c:\') );
-//    xnode0 := TChilkatXml.Create(Self).ControlInterface;
-    noAutorizacao := TChilkatXml.Create(Self).ControlInterface;
-    xmlnFE := TChilkatXml.Create(Self).ControlInterface;
-    xmlnFE.LoadXmlFile('c:\NaoAutorizada.xml');
-    xmlnFE.SaveXml('c:\NaoAutorizada-nfe.xml');
-//    noAutorizacao.Tag :='tag mais externa';
- //   noAutorizacao.AddChildTree(xmlnFE);
-
-//    noAutorizacao.SaveXml('c:\teste.txt');
-}
-   
-
-end;
-
 procedure TfmMain.RegistroSCAN1Click(Sender: TObject);
 var
    posTags, j,i:integer;
@@ -1390,6 +1366,12 @@ begin
    screen.Cursor := crDefault;
 end;
 
+
+procedure TfmMain.Button1Click(Sender: TObject);
+begin
+   xml.LoadXml('C:\ProgramasDiversos\Logs\23110207221377000110550010000000100000018240-NFE.XML');
+   xml.SaveXml('C:\ProgramasDiversos\Logs\2.xml');
+end;
 
 end.
 

@@ -1,8 +1,8 @@
 object fmImpFolhaPonto: TfmImpFolhaPonto
   Left = 446
   Top = 219
-  Width = 647
-  Height = 446
+  Width = 989
+  Height = 550
   BorderIcons = [biSystemMenu]
   Caption = 'Impress'#227'o de folhas de ponto em branco'
   Color = clBtnFace
@@ -92,9 +92,8 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
         ParentFont = False
         TabOrder = 0
         OnChange = cbLojasChange
-        LabelDefs.Width = 37
+        LabelDefs.Width = 3
         LabelDefs.Height = 13
-        LabelDefs.Caption = 'cbLojas'
         Colors.WhenEnterFocus.BackColor = clInfoBk
       end
     end
@@ -155,8 +154,8 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
     end
   end
   object BitBtn1: TBitBtn
-    Left = 527
-    Top = 108
+    Left = 647
+    Top = 28
     Width = 86
     Height = 35
     Caption = 'Imprimir'
@@ -164,10 +163,10 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
     OnClick = BitBtn1Click
   end
   object DBGrid1: TDBGrid
-    Left = 152
-    Top = 168
-    Width = 385
-    Height = 225
+    Left = 8
+    Top = 152
+    Width = 961
+    Height = 345
     DataSource = DataSource1
     TabOrder = 2
     TitleFont.Charset = DEFAULT_CHARSET
@@ -186,12 +185,12 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
     Top = 112
   end
   object tbBatidas: TADOTable
-    Left = 8
-    Top = 160
+    Left = 48
+    Top = 216
   end
   object DataSource1: TDataSource
     DataSet = tbBatidas
-    Left = 184
-    Top = 280
+    Left = 136
+    Top = 216
   end
 end

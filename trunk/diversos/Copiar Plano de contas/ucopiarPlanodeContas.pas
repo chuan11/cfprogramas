@@ -53,12 +53,12 @@ begin
    memo.lines.Add('Copiar o plano de contas da FL para PFM' );
    QUERY.SQL.Clear;
    QUERY.SQL.add( ' INSERT DSCON (CATEGORIA,COD_EMP,CON_ALTER,CON_CAD,CON_GP_CMI,CON_SIMP,CONTR_SAL,DIG_CAD,EXIBE_REL,INT_CAD,MAINT,QTD_NIVEIS, '+
-                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA, CON_ALTER) ' +
+                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA) ' +
                   ' SELECT CATEGORIA, ' + quotedStr('PM') + ' AS COD_EMP ,CON_ALTER,CON_CAD,CON_GP_CMI,CON_SIMP,CONTR_SAL,DIG_CAD,EXIBE_REL,INT_CAD,MAINT,QTD_NIVEIS, ' +
-                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA, CON_ALTER FROM DSCON WHERE COD_EMP = ' + quotedStr('FL')
+                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA FROM DSCON WHERE COD_EMP = ' + quotedStr('FL')
                 );
+   query.sql.SaveToFile('c:\teste.txt');                
    query.ExecSQL;
-
 
    memo.lines.Add('Pepara para copiar o Plano de contas da CF' );
    QUERY.SQL.Clear;
@@ -68,9 +68,9 @@ begin
    memo.lines.Add('Copiar o plano de contas da FL para CF' );
    QUERY.SQL.Clear;
    QUERY.SQL.add( ' INSERT DSCON (CATEGORIA,COD_EMP,CON_ALTER,CON_CAD,CON_GP_CMI,CON_SIMP,CONTR_SAL,DIG_CAD,EXIBE_REL,INT_CAD,MAINT,QTD_NIVEIS, '+
-                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA, CON_ALTER) ' +
+                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA) ' +
                   ' SELECT CATEGORIA, ' + quotedStr('CF') + ' AS COD_EMP ,CON_ALTER,CON_CAD,CON_GP_CMI,CON_SIMP,CONTR_SAL,DIG_CAD,EXIBE_REL,INT_CAD,MAINT,QTD_NIVEIS, ' +
-                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA, CON_ALTER FROM DSCON WHERE COD_EMP = ' + quotedStr('FL')
+                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA FROM DSCON WHERE COD_EMP = ' + quotedStr('FL')
                 );
    query.ExecSQL;
    memo.lines.Add('');
@@ -82,9 +82,9 @@ begin
    memo.lines.Add('Copiar o plano de contas da FL para PF' );
    QUERY.SQL.Clear;
    QUERY.SQL.add( ' INSERT DSCON (CATEGORIA,COD_EMP,CON_ALTER,CON_CAD,CON_GP_CMI,CON_SIMP,CONTR_SAL,DIG_CAD,EXIBE_REL,INT_CAD,MAINT,QTD_NIVEIS, '+
-                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA, CON_ALTER) ' +
+                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA) ' +
                   ' SELECT CATEGORIA, ' + quotedStr('PF') + ' AS COD_EMP ,CON_ALTER,CON_CAD,CON_GP_CMI,CON_SIMP,CONTR_SAL,DIG_CAD,EXIBE_REL,INT_CAD,MAINT,QTD_NIVEIS, ' +
-                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA, CON_ALTER FROM DSCON WHERE COD_EMP = ' + quotedStr('FL')
+                  ' RATEIO,STA_CONTA,TIPO_CMI,TIT_CONTA,DATA_BLOQ,EXIBE_PLAN_CONTA FROM DSCON WHERE COD_EMP = ' + quotedStr('FL')
                 );
    query.ExecSQL;
    memo.lines.Add('');
@@ -101,7 +101,7 @@ end;
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
-   Application.Terminate();
+//   Application.Terminate();
 end;
 
 end.

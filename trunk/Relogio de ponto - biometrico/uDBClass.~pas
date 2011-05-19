@@ -87,7 +87,6 @@ type
     procedure criaTbResumo(var Table:TADOTAble);
     procedure deletajustificativa(numJustificativa:String);
     procedure getQuery(var qr:TADOQuery; ComandoSQL:string);
-   
     procedure getTable(var tb:TADOTable; tbFields:string);
     procedure getTemplates();
     procedure organizarQuery(var query:TADOQuery;Coluna:Tcolumn);
@@ -95,6 +94,8 @@ type
     procedure Connection1WillExecute(Connection: TADOConnection;  var CommandText: WideString; var CursorType: TCursorType;  var LockType: TADOLockType; var CommandType: TCommandType; var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;  const Command: _Command; const Recordset: _Recordset);
     procedure connection1ExecuteComplete(Connection: TADOConnection;  RecordsAffected: Integer; const Error: Error;  var EventStatus: TEventStatus; const Command: _Command;  const Recordset: _Recordset);
     function isDigitalCadastrada(matricula, lado:String):boolean;
+
+    function getDataSetQ(ComandoSQL:string):TdataSet;
 
 end;
 
@@ -399,7 +400,7 @@ begin
    if (localizacao = '') then
       ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null order by nome', connection)
    else
-      ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null and localizacao = ' + localizacao + ' order by nome', connection);
+      ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null and cartaoPonto = ''010830'' and  localizacao = ' + localizacao + ' order by nome', connection);
    result := ds;
 end;
 
@@ -615,11 +616,10 @@ begin
    funcsql.getQuery(connection, qr, ComandoSQL);
 end;
 
-function TDBClass.getQuery(var qr:TADOQuery; ComandoSQL:string):TdataSet;
+function TDBClass.getDataSetQ(ComandoSQL:string):TdataSet;
 begin
-   result :=  funcsql.getDataSetQ(CmdLine, connection);
+   result :=  funcsql.getDataSetQ(ComandoSQL, connection);
 end;
-
 
 
 function TDBClass.getJustificativas: TStrings;
@@ -765,6 +765,9 @@ var
 begin
    gravaLog('preenchendo a lista dos dias.');
    dataAux := dti;
+
+   if (dtf > now) then
+      dtf := now-1;
 
    if ( tabela.Active = false) then
       tabela.Open();

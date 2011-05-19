@@ -97,9 +97,9 @@ object fmCriarMapa: TfmCriarMapa
     Colors.WhenEnterFocus.BackColor = clInfoBk
   end
   object edCod: TadLabelEdit
-    Left = 149
+    Left = 152
     Top = 22
-    Width = 145
+    Width = 115
     Height = 22
     LabelDefs.Width = 88
     LabelDefs.Height = 13
@@ -116,9 +116,9 @@ object fmCriarMapa: TfmCriarMapa
     TabOrder = 3
   end
   object edSerie: TadLabelEdit
-    Left = 299
-    Top = 22
-    Width = 52
+    Left = 271
+    Top = 21
+    Width = 32
     Height = 22
     LabelDefs.Width = 27
     LabelDefs.Height = 13
