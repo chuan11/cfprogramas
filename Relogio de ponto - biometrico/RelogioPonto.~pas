@@ -61,7 +61,7 @@ type
     function  r1(n:string):string;
     function  VerificaHorario( data, hora, cartaoPonto:String): String;
     function  verificarSenha():string;
-    function calculaAtraso(cartaoPonto:String; data:Tdate;batida:String):integer;
+    function calculaAtraso(cartao:String; data:Tdate;batida:String):integer;
     function ExisteBatida(cartao:String):boolean;
     function existsFormOpen(Dender:Tobject):boolean;
     function getCampoDia(data:String; ehSaida, isIntervalo:boolean):String;
@@ -70,7 +70,7 @@ type
     function getMatricula(DadosEmp:String):String;
     function getNome(DadosEmp:String):String;
     function getNomeCB(cb:TCustomComboBox):String;
-    function isAntecipacaoSaida(matricula, data, batida:String):integer;
+    function isAntecipacaoSaida(cartao, data, batida:String):integer;
     function isFaltaNoDia(cartaoPonto, batEnt, batSai, data, isFeriado:String):boolean;
     function selecionaBatidasDoDia(dia, cartaoPonto:String; Batidas: TStringList):TStringlist;
     procedure ajustarItensNaTela(Sender:Tobject);
@@ -81,7 +81,7 @@ type
     procedure ativarLabelsDataHora();
     procedure Batidas1Click(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
-    procedure calcHorasTotais(var table: TADOTable; var tHorasPrev, tHorasTrab , tAtrasJus, tAtrasAut, tHorasDif, batIncJ, batInc , falta, faltaJ:smallint; dadosEmp:string; dataInicial:Tdate);
+    procedure calcHorasTotais(var table: TADOTable; var tHorasPrev, tHorasTrab , tAtrasJus, tAtrasAut, tHorasDif, batIncJ, batInc , falta, faltaJ:smallint; matricula, cartao:string; dataInicial:Tdate);
     procedure closeDataSet();
     procedure ConfiguraMenus();
     procedure connWellWillExecute(Connection: TADOConnection;   var CommandText: WideString; var CursorType: TCursorType;      var LockType: TADOLockType; var CommandType: TCommandType;      var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus; const Command: _Command; const Recordset: _Recordset);
@@ -102,7 +102,7 @@ type
     procedure mxOneInstance1InstanceExists(Sender: TObject);
     procedure Ocorrncias1Click(Sender: TObject);
     procedure posicionarTela(form:Tform);
-    procedure PreencherListaBatidas(var table:TadoTable; dti,dtf:Tdate ; dadosEmp:String);
+    procedure preencherListaBatidas(var table:TadoTable; dti,dtf:Tdate; cartao:String);
     procedure ReceberCartaoDePonto(cartaoPonto:String);
     procedure RegistraPonto(data,hora,cartaoPonto:string);
     procedure registraPontoWalter(data:string);
@@ -131,7 +131,7 @@ var
   IS_CAPTURA_INICIADA:BOOLEAN;
 implementation
 
-uses funcoes,  uUtil, Justificativas, uConsultarBatidas, uOcorrencia,
+uses funcoes, uUtil, Justificativas, uConsultarBatidas, uOcorrencia,
   uImpFolhaPonto, uCad, uDBClass;
 
 {$R *.DFM}
@@ -222,18 +222,17 @@ begin
 end;
 
 
-
 function TfmMain.HoraPrev(data, cartaoPonto: string; isSaida, isIntervalo:boolean ): string;
 begin
    result := uUtil.getHoraPrevista(cartaoPonto, getCampoDia(data, isSaida, isIntervalo), DS_EMP );
 end;
 
 
-function TfmMain.calculaAtraso(cartaoPonto:String; data:Tdate;batida:String):integer;
+function TfmMain.calculaAtraso(cartao:String; data:Tdate;batida:String):integer;
 var
   aux:integer;
 begin
-   aux := funcoes.horaToInt( batida ) - funcoes.horaToInt( uUtil.getHoraPrevista(cartaoPonto, getCampoDia(dateToStr(data), false, false ),DS_EMP));
+   aux := funcoes.horaToInt( batida ) - funcoes.horaToInt( uUtil.getHoraPrevista(cartao, getCampoDia(dateToStr(data), false, false ),DS_EMP));
    funcoes.gravaLog( 'Calculo de atraso do dia: '+  dateToStr(data) +' minutos:' + intTostr(aux) );
    if (aux > 0) then
       result := aux
@@ -241,17 +240,16 @@ begin
       result := 0;
 end;
 
-procedure TfmMain.calcHorasTotais(var table: TADOTable; var tHorasPrev, tHorasTrab , tAtrasJus, tAtrasAut, tHorasDif, batIncJ, batInc , falta, faltaJ:smallint; dadosEmp:string; dataInicial: Tdate);
+procedure TfmMain.calcHorasTotais(var table: TADOTable; var tHorasPrev, tHorasTrab , tAtrasJus, tAtrasAut, tHorasDif, batIncJ, batInc , falta, faltaJ:smallint; matricula, cartao:string; dataInicial: Tdate);
 var
    intervalo,horasDia,difDia:integer;
    dataAux:Tdate;
    msgJust,msgObs,codJust, jusUsuario:String;
    PrevEnt,PrevSai:integer;
-   matricula, cartaoPonto:string;
    strEstaAtivo:String;
 begin
-   cartaoPonto := getCartaoPontoStr(dadosEmp);
-   matricula := getMatricula(dadosEmp);
+   funcoes.gravaLog('procedure calcHorasTotais');
+
    dataAux := dataInicial;
 
    funcoes.gravaLog(#13+#13+'Calcular  Horas totais e ocorrencias');
@@ -263,7 +261,7 @@ begin
    while table.Eof = false do
    begin
       table.Edit;
-      if ( uUtil.isFeriado( dateToStr(dataAux), cartaoPonto) = true ) then
+      if ( uUtil.isFeriado( dateToStr(dataAux), cartao) = true ) then
       begin
          table.FieldByName('ehFeriado').asString := 'S';
          table.FieldByName('tPrevisto').asInteger := 0;
@@ -271,12 +269,12 @@ begin
       end
       else
       begin
-         prevEnt := horaToInt( HoraPrev(dateToStr(dataAux), cartaoPonto, false, false ) ) ;
-         PrevSai := horaToInt( HoraPrev(dateToStr(dataAux), cartaoPonto, true, false ) ) ;
+         prevEnt := horaToInt( HoraPrev(dateToStr(dataAux), cartao, false, false ) ) ;
+         PrevSai := horaToInt( HoraPrev(dateToStr(dataAux), cartao, true, false ) ) ;
 
          table.FieldByName('ehFeriado').asString := 'N';
 
-         intervalo :=  horaToInt( horaPrev( dateToStr(dataAux), cartaoPonto, true, true ) ) - horaToInt( horaPrev( dateToStr(dataAux), cartaoPonto, false, true ) );
+         intervalo :=  horaToInt( horaPrev( dateToStr(dataAux), cartao, true, true ) ) - horaToInt( horaPrev( dateToStr(dataAux), cartao, false, true ) );
 
          if (prevEnt <> 0) and (prevSai <> 0 ) then
          begin
@@ -349,11 +347,11 @@ begin
       table.edit;
       if (table.fieldByName('ent').asString <> BATIDA_VAZIA)  and (table.fieldByName('ehFeriado').asString = 'N') then
       begin
-         table.fieldByName('atraso').asString :=  funcoes.intToHora(  calculaAtraso(matricula, dataAux, table.fieldByName('ent').asString) ) ;
+         table.fieldByName('atraso').asString :=  funcoes.intToHora(  calculaAtraso(cartao, dataAux, table.fieldByName('ent').asString) ) ;
          if horaToInt(table.fieldByName('atraso').asString) > 0 then
             if horaToInt( table.fieldByName('atraso').asString ) > TOLERANCIA then
             begin
-               if ( uUtil.isAtivo( dateToStr(dataAux), matricula) = true ) and ( horaPrev(dateToStr(dataAux), cartaoPonto, false, false) <> '00:00' )  then
+               if ( uUtil.isAtivo( dateToStr(dataAux), matricula) = true ) and ( horaPrev(dateToStr(dataAux), cartao, false, false) <> '00:00' )  then
                begin
                   funcoes.gravaLog('Ocorrencia encontrada, atraso, dia  '+ dateToStr(dataAux)  ) ;
                   table.fieldByName('ocorrencia').asString := 'Atraso';
@@ -377,10 +375,14 @@ begin
                      end;
                   end
                   else
+                  begin
                      tAtrasAut := tAtrasAut + horaToInt( table.fieldByName('atraso').asString );
+                  end
                end
                else
+               begin
                   table.fieldByName('justificativa').asString :=  strEstaAtivo;
+               end
             end
             else
                tAtrasAut := tAtrasAut + horaToInt( table.fieldByName('atraso').asString );
@@ -401,8 +403,8 @@ begin
    while table.Eof = false do
    begin
       table.edit;
-      if ( isFaltaNoDia( cartaoPonto, table.fieldByName('ent').asString, table.fieldByName('sai').asString, dateToStr(dataAux), table.fieldByName('ehFeriado').asString) = true  ) then
-      if (table.fieldByName('sai').asString = BATIDA_VAZIA) and (table.fieldByName('ent').asString = BATIDA_VAZIA) and( HoraPrev(dateToStr(dataAux), cartaoPonto,false, false) <> '00:00' ) and ( table.fieldByName('ehFeriado').asString = 'N' ) then
+      if ( isFaltaNoDia( cartao, table.fieldByName('ent').asString, table.fieldByName('sai').asString, dateToStr(dataAux), table.fieldByName('ehFeriado').asString) = true  ) then
+      if (table.fieldByName('sai').asString = BATIDA_VAZIA) and (table.fieldByName('ent').asString = BATIDA_VAZIA) and( HoraPrev(dateToStr(dataAux), cartao,false, false) <> '00:00' ) and ( table.fieldByName('ehFeriado').asString = 'N' ) then
       begin
          if ( uUtil.isAtivo( dateToStr(dataAux), matricula ) = true ) then
          begin
@@ -432,7 +434,7 @@ begin
 // calcular horas trabalhadas diferenca
    tHorasTrab :=0;
    tHorasPrev := 0;
-   intervalo := 0;
+   tHorasDif := 0;
    dataAux := dataInicial;
    table.First;
    while table.Eof = false do
@@ -444,24 +446,24 @@ begin
          horasDia := horaToInt(table.fieldByName('sai').AsString)  - ( horaToInt(table.fieldByName('ent').AsString) +  table.fieldByName('intervalo').Asinteger ) ;
          table.fieldByName('totDia').AsString :=   intToHora(horasDia);
 
-         if  horasDia > table.fieldByName('tprevisto').Asinteger then
+         if  (horasDia > table.fieldByName('tprevisto').Asinteger) then
          begin
-            intervalo := intervalo + horasDia - table.fieldByName('tprevisto').Asinteger;
+            tHorasDif := tHorasDif + horasDia - table.fieldByName('tprevisto').Asinteger;
             table.fieldByName('sinal').AsString := '+';
             table.fieldByName('dif').AsString :=  intToHora( horasDia - table.fieldByName('tprevisto').Asinteger);
          end
          else
          begin
-            intervalo := intervalo - ( table.fieldByName('tprevisto').Asinteger - horasDia );
+            tHorasDif := tHorasDif - ( table.fieldByName('tprevisto').Asinteger - horasDia );
             table.fieldByName('sinal').AsString := '-';
             table.fieldByName('dif').AsString :=  intToHora( table.fieldByName('tprevisto').Asinteger - horasDia );
          end;
-         tHorasDif :=  intervalo;
          tHorasTrab := tHorasTrab + horasDia;
       end;
       table.post;
       table.next;
     end;
+    funcoes.gravaLog(' ' + IntToStr(tAtrasAut));
 end;
 
 function tfmMain.selecionaBatidasDoDia(dia, cartaoPonto:String; batidas: TStringList):TStringlist;
@@ -471,6 +473,7 @@ var
 begin
    batDia := Tstringlist.Create();
    aux:= Tstringlist.Create();
+
    for i:= 0 to batidas.count-1 do
      if (copy(batidas[i],01,10) = dia) then
         BatDia.Add(batidas[i]);
@@ -480,11 +483,13 @@ begin
       if funcoes.horaToInt(copy(BatDia[0],12,05)) <= horaToInt( fmMain.HoraPrev( copy(batDia[0],01,10), cartaoPonto, false, false )) + 240 then
       begin
          aux.add( copy(BatDia[0],12,05) + copy(BatDia[0],30,03) );
-         for i:=1 to 3 do aux.add(BATIDA_VAZIA);
+         for i:=1 to 3 do
+            aux.add(BATIDA_VAZIA);
       end
       else
       begin
-         for i:=1 to 3 do aux.add(BATIDA_VAZIA);
+         for i:=1 to 3 do
+            aux.add(BATIDA_VAZIA);
          aux.add( copy(BatDia[0],12,05)  + copy(BatDia[0],30,03) );
       end
    end;
@@ -492,9 +497,9 @@ begin
    if batDia.Count = 2 then
    begin
       aux.add( copy(BatDia[0],12,05) + copy(BatDia[0],30,03) );
-      aux.add(BATIDA_VAZIA );
-      aux.add(BATIDA_VAZIA );
-      aux.add( copy(BatDia[1],12,05)  + copy(BatDia[1],30,03) );
+      aux.add(BATIDA_VAZIA);
+      aux.add(BATIDA_VAZIA);
+      aux.add( copy(BatDia[1],12,05) + copy(BatDia[1],30,03) );
    end;
 
    if batDia.Count > 2 then
@@ -504,45 +509,44 @@ begin
       aux.add( copy(BatDia[2],12,05) +  copy(BatDia[2],30,03) );
       aux.add( copy(BatDia[BatDia.count-1],12,05) + copy(BatDia[BatDia.count-1],30,03) );
    end;
-
    result := aux;
-
    BatDia.Destroy();
 end;
 
 
-procedure TfmMain.PreencherListaBatidas(var table:TadoTable; dti,dtf:Tdate ; dadosEmp:String);
+procedure TfmMain.preencherListaBatidas(var table:TadoTable; dti,dtf:Tdate; cartao:String);
 var
-  Bat,BatPeriodo:TstringList;
+  BatDoDia, BatPeriodo:TstringList;
   i:integer;
 begin
-    funcoes.GravaLog('Preenchendo Lista batidas :' + getCartaoPontoStr(dadosEmp)  );
+    funcoes.GravaLog('Preenchendo Lista batidas :' + cartao );
 
     Bat := Tstringlist.Create();
+
     BatPeriodo := Tstringlist.Create();
-    batPeriodo := uUtil.getBatidas( dateToStr(dti), dateToStr(dtf), getCartaoPontoStr(dadosEmp) );
+    batPeriodo := uUtil.getBatidas( dateToStr(dti), dateToStr(dtf), cartao );
     i:=0;
     table.First;
 
-    funcoes.gravaLog('Colocando as batidas na tabela :' + getCartaoPontoStr(dadosEmp) );
+    funcoes.gravaLog('Colocando as batidas na tabela :' + cartao );
     while table.Eof = false do
     begin
-       bat := fmMain.selecionaBatidasDoDia( dateToStr(dti+i), dadosEmp, batPeriodo );
+       BatDoDia := fmMain.selecionaBatidasDoDia( dateToStr(dti+i), cartao, batPeriodo );
        if bat.Count > 0 then
        begin
           table.Edit;
-          table.FieldByName('ent').asString := copy(bat[0],01,05);
-          table.FieldByName('int_sai').asString := copy(bat[1],01,05);
-          table.FieldByName('int_ent').asString := copy(bat[2],01,05);
-          table.FieldByName('sai').asString := copy(bat[3],01,05);
-          table.FieldByName('localEnt').asString := copy(bat[0],06,03);
-          table.FieldByName('LocalSai').asString := copy(bat[3],06,03);
+          table.FieldByName('ent').asString := copy(BatDoDia[0],01,05);
+          table.FieldByName('int_sai').asString := copy(BatDoDia[1],01,05);
+          table.FieldByName('int_ent').asString := copy(BatDoDia[2],01,05);
+          table.FieldByName('sai').asString := copy(BatDoDia[3],01,05);
+          table.FieldByName('localEnt').asString := copy(BatDoDia[0],06,03);
+          table.FieldByName('LocalSai').asString := copy(BatDoDia[3],06,03);
           table.post;
        end;
        inc(i);
        table.Next;
     end;
-    funcoes.GravaLog('Preenchendo Lista batidas na tabela, concluído :' + getCartaoPontoStr(dadosEmp) );
+    funcoes.GravaLog('Preenchendo Lista batidas na tabela, concluído :' + cartao );
 end;
 
 
@@ -1029,7 +1033,7 @@ begin
     end;
 end;
 
-function TfmMain.isAntecipacaoSaida(matricula, data, batida: String): integer;
+function TfmMain.isAntecipacaoSaida(cartao, data, batida: String): integer;
 var
   prev:integer;
 begin
@@ -1037,7 +1041,7 @@ begin
      result := 0
    else
    begin
-      prev := horaToInt( getHoraPrevista( matricula, getCampoDia(data, true, false), DS_EMP));
+      prev := horaToInt( getHoraPrevista( cartao, getCampoDia(data, true, false), DS_EMP));
       if  prev > horaToInt(batida) then
         result := prev - horaToInt(batida)
       else
@@ -1060,7 +1064,7 @@ begin
   begin
      timer2.Enabled := false;
      TIME_OUT_PROGRAM := VALOR_DEFAULT_TIME_OUT_PROGRAM;
-     digitarPonto( copy(edPontodig.text,03,06));
+     digitarPonto( copy(edPontodig.text, 03, 06));
      edPontodig.Text := '';
   end;
 end;

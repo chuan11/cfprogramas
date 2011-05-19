@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 319
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = '(02) - Copiar plano de contas FL para PFM e CF'
+  Caption = '(04) - Copiar plano de contas FL para PFM e CF'
   ClientHeight = 197
   ClientWidth = 415
   Color = clBtnFace

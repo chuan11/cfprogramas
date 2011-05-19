@@ -37,7 +37,7 @@ function getCadastroDeEmpregados(localizacao:String):TdataSet;
 function getCartaoPontoStr(str: String): String;
 function getDadosEmpregado(cartao:String):TdataSet;
 function getDetalheEmpregado(cartaoPonto:String):TdataSet;
-function getHoraPrevista(matricula, campo:String; ds:TDataSet):String;
+function getHoraPrevista(cartao, campo:String; ds:TDataSet):String;
 function getJustificativas(): Tstrings;
 function getLocalEmpregado(cartaoPonto:String): String;
 function getMatricula(cartaoPonto: String; DS: TdataSet): String;
@@ -114,9 +114,9 @@ begin
   result := db.getTempoAposUltBatida(cartao);
 end;
 
-function getHoraPrevista(matricula, campo:String; ds:TDataSet):String;
+function getHoraPrevista(cartao, campo:String; ds:TDataSet):String;
 begin
-   result := db.getHoraPrevista(matricula, campo, ds);
+   result := db.getHoraPrevista(cartao, campo, ds);
 end;
 
 // Write and describe an error.
@@ -501,9 +501,7 @@ begin
     result := fmMain.GrFingerXCtrl1.GetGrFingerVersion(majorVersion, minorVersion);
     If result = GRFINGER_FULL Then vStr := 'FULL';
     If result = GRFINGER_LIGHT Then vStr := 'LIGHT';
-    Application.MessageBox(PChar('The GrFinger DLL version is ' + IntToStr(majorVersion) +
-            '.' + IntToStr(minorVersion) + '.' + #13#10 +
-            'The license type is ''' + vStr + '''.'), PChar('GrFinger Version'), MB_OK);
+//    Application.MessageBox(PChar('The GrFinger DLL version is ' + IntToStr(majorVersion) + '.' + IntToStr(minorVersion) + '.' + #13#10 + 'The license type is ''' + vStr + '''.'), PChar('GrFinger Version'), MB_OK);
 end;
 
 procedure AbrirCadastroDigitais();
@@ -684,7 +682,7 @@ end;
 
 function getCartaoPontoStr(str: String): String;
 begin
-   result := copy(str,103,06);
+   result := copy(str, 103, 06);
 end;
 
 function getNumLocalEmpresa(cb: TcustomComboBox):String;
@@ -726,7 +724,7 @@ end;
 
 procedure preencheListaDosDias(var tabela:TADOTable; dti,dtf:Tdate);
 begin
-    db.preencheListaDosDias(tabela,dti,dtf);
+    db.preencheListaDosDias(tabela, dti, dtf);
 end;
 
 function isCadastroEmpOk(cartaoPonto:String):boolean;
@@ -760,7 +758,7 @@ end;
 
 function ativaEmpregado(matricula: String): boolean;
 begin
-   db.ativaEmpregado(matricula);
+   result :=  db.ativaEmpregado(matricula);
 end;
 
 procedure WriteLog(str:String);
@@ -793,47 +791,77 @@ procedure getEmpParaRelatorioBatidas(tb:TADOTable; localizacao, mes:String);
 var
   ds:TdataSet;
   cmd:String;
+  tHorasPrev, tHorasTrab, tAtrasJus, tAtrasAut, tHorasDif,  batIncJ, batInc, falta, faltaJ :smallInt;
   tbAux:TADOTable;
   dti, dtf:Tdate;
 begin
+   tbAux := TADOTAble.Create(nil);
+
    dti := strToDate('01/'+ mes);
    dtf := strToDate(funcDatas.getUltimoDiaMes(dti));
 
-// criar a tabela com os dados dos funcionarios
    if (tb.TableName <> '') then
        tb.Close();
-
    cmd :=
-   'nome varchar(60), cartaoPonto varchar(10), matricula varchar(10), hTrabalhada varchar(08), '+
-   'hPrevista varchar(08), atrasosJustificado varchar(08), atrasoAutorizado varchar(08), batIncompativel varchar(08), '+
-   'batIncompativelJust varchar(08), falta varchar(08), faltaJust varchar(08)';
+   'nome varchar(60), cartaoPonto varchar(10), matricula varchar(10), hTrabalhada varchar(10), hPrevista varchar(10), sinal varchar(10), dif varchar(10),  atrasJust varchar(10), atrasAutoriz ' +
+   'varchar(10), batIncomp varchar(10), batIncompJust varchar(10), falta varchar(10), faltaJust varchar(10)';
+
    uUtil.getTable(tb, cmd);
 
    ds:= getCadastroDeEmpregados(localizacao);
    ds.first();
    while( ds.Eof = false ) do
    begin
-       tb.AppendRecord([ ds.FieldByName('nome').AsString,
-                         ds.FieldByName('cartaoPonto').AsString,
-                         ds.FieldByName('matricula').AsString,
-                         '', '', '', '', '', '', '', ''
-       ]);
+       tb.AppendRecord([ ds.FieldByName('nome').AsString, ds.FieldByName('cartaoPonto').AsString, ds.FieldByName('matricula').AsString, '', '', '', '', '', '', '', '' ]);
        ds.Next;
    end;
    ds.Free();
 
-
+   funcoes.gravaLog('Calcular as batidas de cada funcionario...');
    tb.First();
    while tb.Eof = false do
    begin
+      tHorasPrev := 0;
+      tHorasTrab := 0;
+      tAtrasJus := 0;
+      tHorasDif := 0;
+      tAtrasJus := 0;
+      tAtrasAut := 0;
+      batIncJ := 0;
+      batInc := 0;
+      falta := 0;
+      faltaJ := 0;
+
+      funcoes.gravaLog('criando tabela temporaria para pegar os dados de cada empregado.');
       if (tbAux.TableName <> '') then
          tbAux.close();
 
-      criaTbResumo(tbAux);
-      preencheListaDosDias(tbAux, dti, dtf);
-      fmMain.calcHorasTotais(tb, 
+      uUtil.criaTbResumo(tbAux);
+      uUtil.preencheListaDosDias(tbAux, dti, dtf);
 
+      fmMain.PreencherListaBatidas(tbAux, dti, dtf, tb.FieldByName('cartaoPonto').AsString );
 
+      gravaLog('calcular totais de horas - ' + tb.FieldByName('nome').AsString);
+
+      fmMain.calcHorasTotais( tbAux, tHorasPrev, tHorasTrab, tAtrasJus, tAtrasAut, tHorasDif,  batIncJ, batInc, falta, faltaJ, tb.FieldByName('matricula').AsString, tb.FieldByName('cartaoPonto').AsString, dti);
+
+      tb.edit;
+      tb.FieldByName('hPrevista').AsString :=  funcoes.intToHora(tHorasPrev);
+      tb.FieldByName('hTrabalhada').AsString :=  funcoes.intToHora(tHorasTrab);
+      tb.FieldByName('atrasJust').AsString :=  funcoes.intToHora(tAtrasJus);
+
+      tb.FieldByName('atrasAutoriz').AsString := funcoes.intToHora(tAtrasAut);
+
+      tb.FieldByName('batIncomp').AsString :=  intToStr(batInc);
+      tb.FieldByName('batIncompJust').AsString :=  intToStr(batIncJ);
+      tb.FieldByName('falta').AsString :=  intToStr(falta);
+      tb.FieldByName('faltaJust').AsString :=  intToStr(faltaJ);
+
+      tb.FieldByName('dif').AsString :=  funcoes.intToHora(tHorasDif) ;
+
+      tb.Post();
+
+      tb.Next();
    end;
 end;
 

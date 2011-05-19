@@ -400,7 +400,7 @@ begin
    if (localizacao = '') then
       ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null order by nome', connection)
    else
-      ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null and localizacao = ' + localizacao + ' order by nome', connection);
+      ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null and cartaoPonto = ''180007'' and localizacao = ' + localizacao + ' order by nome', connection);
    result := ds;
 end;
 
@@ -765,6 +765,9 @@ var
 begin
    gravaLog('preenchendo a lista dos dias.');
    dataAux := dti;
+
+   if (dtf > now) then
+      dtf := now-1;
 
    if ( tabela.Active = false) then
       tabela.Open();

@@ -39,9 +39,9 @@ object fmMapa: TfmMapa
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = []
+    OnCellClick = gridCellClick
     OnColEnter = gridColEnter
     OnColExit = gridColExit
-    OnDblClick = gridDblClick
     OnKeyDown = gridKeyDown
     OnTitleClick = gridTitleClick
     AlternateColor = True

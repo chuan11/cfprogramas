@@ -91,7 +91,8 @@ var
    batInc,batIncJ, falta, faltaJ :smallint;
 begin
    emp := cbEmp.Items[cbEmp.itemIndex];
-   fmMain.calcHorastotais( table,  hprevistas, hTrabalho, aJust, asJust,diferencas,  batInc, batIncJ, falta, faltaJ, emp, dti.Date );
+
+   fmMain.calcHorastotais( table,  hprevistas, hTrabalho, aJust, asJust,diferencas,  batInc, batIncJ, falta, faltaJ, fmMain.getMatricula(emp), fmMain.getCartaoPontoStr(emp), dti.Date );
    lbHTrabalhadas.Caption :=  intToHora(hTrabalho);
    lbDiferencas.caption  := intToHora(diferencas);
    lbAtrasoAut.Caption :=  intToHora(asJust);
@@ -116,6 +117,7 @@ begin
       gravaLog('Inicio');
       if (table.Active = true ) then
          table.Close();
+
       uUtil.criaTbResumo(table);
 
       fmMain.getDadosEmpregado( cartaoPonto );

@@ -1,8 +1,8 @@
 object fmImpFolhaPonto: TfmImpFolhaPonto
-  Left = 320
-  Top = 79
+  Left = 446
+  Top = 219
   Width = 647
-  Height = 446
+  Height = 242
   BorderIcons = [biSystemMenu]
   Caption = 'Impress'#227'o de folhas de ponto em branco'
   Color = clBtnFace
@@ -92,9 +92,8 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
         ParentFont = False
         TabOrder = 0
         OnChange = cbLojasChange
-        LabelDefs.Width = 37
+        LabelDefs.Width = 3
         LabelDefs.Height = 13
-        LabelDefs.Caption = 'cbLojas'
         Colors.WhenEnterFocus.BackColor = clInfoBk
       end
     end
@@ -171,5 +170,9 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
   object tbDias: TADOTable
     Left = 8
     Top = 112
+  end
+  object tbBatidas: TADOTable
+    Left = 8
+    Top = 160
   end
 end

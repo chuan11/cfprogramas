@@ -48,6 +48,17 @@ type
     tbValoresAvarias_Totalfornecedor: TStringField;
     cbCaixas: TadLabelComboBox;
     tbVendasCartao: TADOTable;
+    tbVendasCartaocodLoja: TIntegerField;
+    tbVendasCartaodescEstacao: TStringField;
+    tbVendasCartaocd_mve: TIntegerField;
+    tbVendasCartaods_mve: TStringField;
+    tbVendasCartaodataSessaoCaixa: TDateTimeField;
+    tbVendasCartaoseqtransacaoCaixa: TIntegerField;
+    tbVendasCartaoseqModPagtoPorTransCaixa: TIntegerField;
+    tbVendasCartaoValor: TBCDField;
+    tbVendasCartaonumParcelas: TStringField;
+    tbVendasCartaotefMagnetico: TStringField;
+    tbVendasCartaoseqTefTransCaixa: TIntegerField;
 
     procedure btOkClick(Sender: TObject);
     procedure setPerfil(p:integer);

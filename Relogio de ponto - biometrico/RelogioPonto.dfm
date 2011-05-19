@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 383
-  Top = 225
+  Left = 612
+  Top = 211
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'cur'

@@ -1,8 +1,9 @@
 object fmMain: TfmMain
-  Left = 324
-  Top = 137
+  Left = 425
+  Top = 180
   Width = 911
   Height = 561
+  Caption = 'cf2'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -46,7 +47,6 @@ object fmMain: TfmMain
     Caption = 'Button1'
     TabOrder = 1
     Visible = False
-    OnClick = Button1Click
   end
   object menuPrincipal: TMainMenu
     Left = 49

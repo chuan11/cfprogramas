@@ -179,7 +179,7 @@ begin
       begin
           cmd := ' Insert zcf_mapaSeparacaoI( num, is_ref, estI, saldo, pco, caixa ) '+
                  ' Select '+ nAvaria+ ' , dmovi.is_ref, dmovi.qt_mov, dmovi.qt_mov,  '+
-                 ' dbo.z_cf_funObterPrecoProduto_CF( '+ funcSql.getCodPreco(cbPreco)  +   ' , crefe.is_Ref, 10033674, 0), crefe.qt_emb '+
+                 ' dbo.z_cf_funObterPrecoProduto_CF( '+ fmMain .getCodPreco(cbPreco)  +   ' , crefe.is_Ref, 10033674, 0), crefe.qt_emb '+
                  ' from dmovi inner join crefe (nolock) on dmovi.is_ref = crefe.is_ref ' +
                  ' where dmovi.is_nota in ( Select is_nota from dnota where is_estoque = ' + funcoes.getNumUO(cbLoja) + ' and     sr_docf = '+ quotedStr(edSerie.text) + ' and nr_docf = ' +  edCod.Text + ' and cd_pes = ' + lbForn.Caption + ')'  ;
       end

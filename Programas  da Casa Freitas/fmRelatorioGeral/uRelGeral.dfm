@@ -301,5 +301,43 @@ object fmRelGeral: TfmRelGeral
     Connection = fmMain.Conexao
     Left = 16
     Top = 112
+    object tbVendasCartaocodLoja: TIntegerField
+      FieldName = 'codLoja'
+    end
+    object tbVendasCartaodescEstacao: TStringField
+      FieldName = 'descEstacao'
+    end
+    object tbVendasCartaocd_mve: TIntegerField
+      FieldName = 'cd_mve'
+    end
+    object tbVendasCartaods_mve: TStringField
+      FieldName = 'ds_mve'
+      Size = 30
+    end
+    object tbVendasCartaodataSessaoCaixa: TDateTimeField
+      FieldName = 'dataSessaoCaixa'
+    end
+    object tbVendasCartaoseqtransacaoCaixa: TIntegerField
+      FieldName = 'seqtransacaoCaixa'
+    end
+    object tbVendasCartaoseqModPagtoPorTransCaixa: TIntegerField
+      FieldName = 'seqModPagtoPorTransCaixa'
+    end
+    object tbVendasCartaoValor: TBCDField
+      FieldName = 'Valor'
+      DisplayFormat = '#,###,###0.00'
+      Precision = 19
+    end
+    object tbVendasCartaonumParcelas: TStringField
+      FieldName = 'numParcelas'
+      Size = 3
+    end
+    object tbVendasCartaotefMagnetico: TStringField
+      FieldName = 'tefMagnetico'
+      Size = 1
+    end
+    object tbVendasCartaoseqTefTransCaixa: TIntegerField
+      FieldName = 'seqTefTransCaixa'
+    end
   end
 end

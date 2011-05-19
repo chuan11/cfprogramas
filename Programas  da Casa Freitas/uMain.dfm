@@ -1,8 +1,9 @@
 object fmMain: TfmMain
-  Left = 324
-  Top = 137
+  Left = 425
+  Top = 180
   Width = 911
   Height = 561
+  Caption = 'cf2'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -45,8 +46,14 @@ object fmMain: TfmMain
     Height = 25
     Caption = 'Button1'
     TabOrder = 1
-    Visible = False
     OnClick = Button1Click
+  end
+  object xml: TChilkatXml
+    Left = 240
+    Top = 88
+    Width = 192
+    Height = 192
+    ControlData = {00030000D8130000D8130000}
   end
   object menuPrincipal: TMainMenu
     Left = 49
