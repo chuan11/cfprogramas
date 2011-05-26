@@ -72,12 +72,8 @@ uses uMain, funcoes, funcSQL, uCF, uAlteraModalidadePagto;
 
 procedure TfmRemRegTEF.FormCreate(Sender: TObject);
 begin
-//   cbLojas.Items := funcSql.GetNomeLojas( fmMain.Conexao, false, false, fmMain.getCDPESUsuario(), '');
-//   cbLojas.ItemIndex := 0;
    dt.Date := now;
-
    funcoes.carregaCampos(fmRemRegTEF);
-
    fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
 end;
 
@@ -312,6 +308,7 @@ end;
 procedure TfmRemRegTEF.chamaRemoveregistrodeTEF1Click(Sender: TObject);
 begin
    if  (tb.TableName <> '') then
+      removeRegistroDeTEF1Click(nil);
 end;
 
 procedure TfmRemRegTEF.edBuscaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

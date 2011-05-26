@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 425
-  Top = 180
+  Left = 310
+  Top = 184
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -38,22 +38,6 @@ object fmMain: TfmMain
       item
         Width = 150
       end>
-  end
-  object Button1: TButton
-    Left = 24
-    Top = 200
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 1
-    OnClick = Button1Click
-  end
-  object xml: TChilkatXml
-    Left = 240
-    Top = 88
-    Width = 192
-    Height = 192
-    ControlData = {00030000D8130000D8130000}
   end
   object menuPrincipal: TMainMenu
     Left = 49

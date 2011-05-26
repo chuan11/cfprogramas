@@ -186,40 +186,38 @@ procedure TfmFaturamento.ObterVendaLoja(Sender: Tobject);
 var
    qr:TDataSet;
    vVenda,vCartao,vCredito:real;
-//   modCartao: array[1..27] of byte;
    i:byte;
    dsModalidadeCartao:TStringList;
 begin
    MostraMSG('Obtendo vendas loja: ' + tb.fieldByName('Loja').AsString +'   -  ' );
 
    dsModalidadeCartao:= uCF.getCodModalidadesCartao();
-   qr := uCF.getPreviaGeralCaixa(tb.fieldByName('is_uo').asString, '', datai.date, dataf.date, cbListaVdMaracanau.Checked, false);
+   qr := uCF.getPreviaGeralCaixa(tb.fieldByName('is_uo').asString, '', datai.date, dataf.date, cbListaVdMaracanau.Checked, false, false);
 
+   vVenda := 0;
+   vCartao := 0;
+   vCredito := 0;
+   qr.First;
+   while qr.Eof = false do
+   begin
+      if qr.FieldByName('fl_sinal').AsString = 'E' then
+      begin
+         vVenda:= vVenda + qr.FieldByName('valor').AsFloat;
 
-  vVenda := 0;
-  vCartao := 0;
-  vCredito := 0;
-  qr.First;
-  while qr.Eof = false do
-  begin
-     if qr.FieldByName('fl_sinal').AsString = 'E' then
-     begin
-        vVenda:= vVenda + qr.FieldByName('valor').AsFloat;
-        if ( dsModalidadeCartao.IndexOf(trim(qr.FieldByName('cd_mve').asString)) > -1  ) then
-           vCartao := vcartao + qr.FieldByName('valor').asFloat;
+         if ( dsModalidadeCartao.IndexOf(trim(qr.FieldByName('cd_mve').asString)) > -1  ) then
+            vCartao := vcartao + qr.FieldByName('valor').asFloat;
 
-        if ( qr.FieldByName('cd_mve').asInteger = 68   ) or ( qr.FieldByName('cd_mve').asInteger = 68 + 999  ) then
-           vCredito := vCredito + qr.FieldByName('valor').asFloat;
-     end;
-     qr.Next;
-  end;
-  tb.Edit;
-//  tb.FieldByName(colunas[6]).AsFloat := vVenda;
-  tb.FieldByName('Previa geral caixa').AsFloat := vVenda;
-  tb.FieldByName(colunas[7]).AsFloat := vCredito;
-  tb.FieldByName(colunas[3]).AsFloat := vCartao;
-  tb.FieldByName(colunas[8]).AsFloat := vVenda - vCredito;
-  tb.Post;
+         if ( qr.FieldByName('cd_mve').asInteger = 68   ) or ( qr.FieldByName('cd_mve').asInteger = 68 + 999  ) then
+            vCredito := vCredito + qr.FieldByName('valor').asFloat;
+      end;
+      qr.Next;
+   end;
+   tb.Edit;
+   tb.FieldByName('Previa geral caixa').AsFloat := vVenda;
+   tb.FieldByName(colunas[7]).AsFloat := vCredito;
+   tb.FieldByName(colunas[3]).AsFloat := vCartao;
+   tb.FieldByName(colunas[8]).AsFloat := vVenda - vCredito;
+   tb.Post;
 end;
 
 procedure TfmFaturamento.ListarLojas(Sender: Tobject);

@@ -17,6 +17,7 @@ type
     EdNumeroLoja: TadLabelEdit;
     b3: TFlatButton;
     FlatButton3: TFlatButton;
+    edQtDigDesc: TadLabelEdit;
     procedure FlatButton1Click(Sender: TObject);
     procedure FlatButton2Click(Sender: TObject);
     Procedure ReceberArquivoRGIS(sender:Tobject;arquivo:string);
@@ -122,7 +123,8 @@ begin
    form1.Refresh;
 
    query.SQL.Clear;
-   query.SQL.Add(' Select cd_pesq, ''S'' as S from dscbr where tp_cdpesq = ''1'' order by cd_pesq ');
+
+   query.SQL.Add('select r.cd_pesq, c.ds_ref from dscbr r inner join crefe c on r.is_ref = c.is_ref order by cd_pesq');
    Query.Open;
 
    arq:= TStringList.Create();
@@ -131,8 +133,8 @@ begin
    begin
       inc(i);
       arq.Add(
-                funcoes.preencheCampo(13,'0','e', funcoes.SohNumeros( query.fieldByName('cd_pesq').AsString ) ) +
-                query.fieldByName('S').AsString
+                funcoes.preencheCampo(13,'0','E', funcoes.SohNumeros( query.fieldByName('cd_pesq').AsString ) ) +','+
+                funcoes.preencheCampo(strToInt(edQtDigDesc.text),' ','D', copy(query.fieldByName('ds_ref').AsString,01, strToInt(edQtDigDesc.text) ))
              );
       if i mod 100 = 0 then
          sb.SimpleText := 'Montando o arquivo...   ' + IntToStr(i) + ' de ' +  inttoStr(query.RecordCount) +  '  Eans ';

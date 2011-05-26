@@ -85,9 +85,7 @@ type
     Pagamentosemcarto1: TMenuItem;
     Cargadedadosparaconciliao1: TMenuItem;
     ImprimirDANFE1: TMenuItem;
-    Button1: TButton;
     RegistroSCAN1: TMenuItem;
-    xml: TChilkatXml;
 
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
@@ -186,7 +184,6 @@ type
     procedure cargadedadosparaconciliao1Click(Sender: TObject);
     procedure deletarRegistrodecartoTEF1Click(Sender: TObject);
     procedure RegistroSCAN1Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -601,7 +598,7 @@ begin
    if params <> nil then
       for i:=0 to params.Count-1 do
          RvProject1.SetParam(intToStr(i), params[i]);
-         
+
    RvProject1.ExecuteReport(nRelatorio);
 end;
 
@@ -1366,12 +1363,6 @@ begin
    screen.Cursor := crDefault;
 end;
 
-
-procedure TfmMain.Button1Click(Sender: TObject);
-begin
-   xml.LoadXml('C:\ProgramasDiversos\Logs\23110207221377000110550010000000100000018240-NFE.XML');
-   xml.SaveXml('C:\ProgramasDiversos\Logs\2.xml');
-end;
 
 end.
 

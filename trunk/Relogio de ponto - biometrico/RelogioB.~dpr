@@ -10,7 +10,5 @@ begin
   Application.Initialize;
   Application.Title := 'Controle interno';
   Application.CreateForm(TfmMain, fmMain);
-//  Application.CreateForm(TfmCad, fmCad);
-  //  Application.CreateForm(TfmImpFolhaPonto, fmImpFolhaPonto);
   Application.Run;
 end.

@@ -86,22 +86,26 @@ end;
 
 procedure TfmBatidas.calcularTotaisHoras();
 var
-   hPrevistas,hTrabalho,aJust,asJust,diferencas:smallInt;
+   tHorasPrev, tHorasTrab , tAtrasJus, tAtrasAut, tHorasDif, batIncJ, batInc , falta, faltaJ:smallInt;
    emp:string;
-   batInc,batIncJ, falta, faltaJ :smallint;
 begin
    emp := cbEmp.Items[cbEmp.itemIndex];
 
-   fmMain.calcHorastotais( table,  hprevistas, hTrabalho, aJust, asJust,diferencas,  batInc, batIncJ, falta, faltaJ, fmMain.getMatricula(emp), fmMain.getCartaoPontoStr(emp), dti.Date );
-   lbHTrabalhadas.Caption :=  intToHora(hTrabalho);
-   lbDiferencas.caption  := intToHora(diferencas);
-   lbAtrasoAut.Caption :=  intToHora(asJust);
-   lbAtrasoJust.Caption :=   intToHora(aJust);
-   lbBatInc.Caption := intToStr(BatInc);
+   fmMain.calcHorastotais( table,  tHorasPrev, tHorasTrab, tAtrasJus, tAtrasAut, tHorasDif,  batIncJ, batInc, falta, faltaJ, fmMain.getMatricula(emp), fmMain.getCartaoPontoStr(emp), dti.Date );
+
+   lbHorasPrevstas.Caption :=  intToHora(tHorasPrev);
+   lbHTrabalhadas.Caption :=  intToHora(tHorasTrab);
+
+   lbDiferencas.caption  := intToHora(tHorasDif);
+
+   lbAtrasoAut.Caption :=  intToHora(tAtrasAut);
+   lbAtrasoJust.Caption :=   intToHora(tAtrasJus);
+
+   lbBatInc.Caption := intToStr(batInc);
    lbBatIncJust.Caption := intToStr(batIncJ);
+
    LbFaltaJ.Caption := intToStr(faltaJ);
    LbFalta.Caption := intToStr(falta);
-   lbHorasPrevstas.Caption :=  intToHora(hprevistas);
 end;
 
 procedure TfmBatidas.FormActivate(Sender: TObject);
@@ -122,7 +126,7 @@ begin
 
       fmMain.getDadosEmpregado( cartaoPonto );
       uUtil.PreencheListaDosDias(table, dti.Date, dtf.Date);
-      fmMain.PreencherListaBatidas( table,dti.Date, dtf.Date, cbEmp.Items[cbEmp.itemIndex]);
+      fmMain.PreencherListaBatidas( table,dti.Date, dtf.Date, cartaoPonto);
       calcularTotaisHoras();
    end
    else
@@ -194,7 +198,7 @@ begin
     lst.Add(lbHorasPrevstas.Caption);
     lst.Add(lbDiferencas.Caption);
     lst.Add(lbAtrasoJust.Caption);
-    lst.Add(lbAtrasoJust.Caption);
+    lst.Add(lbAtrasoAut.Caption);
     lst.Add(lbBatInc.Caption);
     lst.Add(lbBatIncJust.Caption);
     lst.Add(lbFalta.Caption);

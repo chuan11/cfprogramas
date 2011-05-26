@@ -115,7 +115,7 @@ begin
    cbCaixas.ItemIndex:= 0;
    cbModalidade.ItemIndex := 0;
 
-   uCF.listaRecebimentosCaixa( tb, funcoes.getCodUO(cbLojas), '', dt, false, true);
+   uCF.listaRecebimentosCaixa( tb, funcoes.getCodUO(cbLojas), '', dt, dt, false, true, false);
 
    tb.Close();
    tb.Filter := 'valor > 0';
