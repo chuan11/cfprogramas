@@ -23,7 +23,6 @@ type
     SpinButton1: TSpinButton;
     tbDias: TADOTable;
     tbBatidas: TADOTable;
-    DBGrid1: TDBGrid;
     DataSource1: TDataSource;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -171,24 +170,35 @@ end;
 procedure TfmImpFolhaPonto.setPerfil(p: integer);
 begin
    PERFIL := p;
+   cbLojas.LabelDefs.Caption := '';
+   if (perfil = 2) then
+   begin
+      edEmp.Enabled := false;
+      cbEmp.Enabled := false;
+      GroupBox1.Enabled := false;
+   end;
 end;
 
 procedure TfmImpFolhaPonto.imprimeResumoBatidas;
+var
+  params:TStringlist;
 begin
-   uUtil.getEmpParaRelatorioBatidas(tbBatidas, fmMain.getCodLocalizacaoLoja(cbLojas), edMesAno.Text);
+    Params := TStringList.Create();
 
-   fmMain.impressaoRave(tbBatidas, nil, 'rpPontoBatidasPeriodoGrupo', nil );
+    uUtil.getEmpParaRelatorioBatidas(tbBatidas, fmMain.getCodLocalizacaoLoja(cbLojas), edMesAno.Text);
 
+    params.Add(funcoes.getNomeUO(cbLojas)  );
+    params.Add(edMesAno.Text);
+
+    fmMain.impressaoRave(tbBatidas, nil, 'rpPontoBatidasPeriodoGrupo', params );
 end;
 
 procedure TfmImpFolhaPonto.BitBtn1Click(Sender: TObject);
 begin
-{    case perfil of
+    case perfil of
        1:imprimeFolhaPonto();
        2:imprimeResumoBatidas();
     end;
-}
-imprimeResumoBatidas();
 end;
 
 

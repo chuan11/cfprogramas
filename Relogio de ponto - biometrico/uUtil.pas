@@ -809,6 +809,7 @@ begin
    uUtil.getTable(tb, cmd);
 
    ds:= getCadastroDeEmpregados(localizacao);
+
    ds.first();
    while( ds.Eof = false ) do
    begin
@@ -858,6 +859,11 @@ begin
       tb.FieldByName('faltaJust').AsString :=  intToStr(faltaJ);
 
       tb.FieldByName('dif').AsString :=  funcoes.intToHora(tHorasDif) ;
+
+      if  tHorasDif < 0 then
+         tb.FieldByName('sinal').AsString :=  '-'
+      else
+         tb.FieldByName('sinal').AsString :=  '+';
 
       tb.Post();
 

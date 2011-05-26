@@ -664,7 +664,7 @@ begin
    else
       cmd := cmd + ' @dsLojas = ' + Quotedstr( 'transacoesDoCaixa.codloja != 0 ');
 
-   cmd := cmd + ', @codEmpresa = 10033585'+
+   cmd := cmd + ', @codEmpresa = ' + fmMain.getParamBD('comum.codEmpresa', '0') +
                 ', @DataInicial = ' +  funcDatas.dateToSqlDate(datai) +
                 ', @DataFinal = '   +  funcDatas.dateToSqlDate(dataf) +
                 ', @CodCaixa = ' +caixa+

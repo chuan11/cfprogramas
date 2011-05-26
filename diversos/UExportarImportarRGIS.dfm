@@ -188,6 +188,20 @@ object Form1: TForm1
     TabOrder = 5
     OnClick = FlatButton3Click
   end
+  object edQtDigDesc: TadLabelEdit
+    Left = 20
+    Top = 105
+    Width = 134
+    Height = 19
+    LabelDefs.Width = 109
+    LabelDefs.Height = 13
+    LabelDefs.Caption = 'Tamanho da descricao'
+    Ctl3D = False
+    ParentCtl3D = False
+    MaxLength = 4
+    TabOrder = 6
+    Text = '0000'
+  end
   object Connection: TADOConnection
     LoginPrompt = False
     Provider = 'C:\ProgramasDiversos\ConexaoAoWell.udl'

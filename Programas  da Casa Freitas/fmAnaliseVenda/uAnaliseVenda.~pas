@@ -282,7 +282,7 @@ begin
    end;
 
  //verificar se for do grupo de gerentes ele nao mostrara algumas colunas
-   if funcsql.isGrupoComRestricao( fmMain.getGrupoLogado(), fmMain.AnaliseVLC1.Tag, fmMain.Conexao ) = true then
+   if (pos(fmMain.getGrupoLogado(), fmMain.getParamBD('gruposRestritosTela','') ) <> 0 ) then
    begin
       btImprime.Visible := false;
       tb.First;

@@ -400,7 +400,7 @@ begin
    if (localizacao = '') then
       ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null order by nome', connection)
    else
-      ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null and cartaoPonto = ''180007'' and localizacao = ' + localizacao + ' order by nome', connection);
+      ds := funcsql.getDataSetQ('Select * from zcf_pontoEmpregados (nolock) where dataDemissao is null and localizacao = ' + localizacao + ' order by nome', connection);
    result := ds;
 end;
 
@@ -710,7 +710,7 @@ end;
 
 function TDBClass.lerParametroBD(parametro:String):String;
 var
-   cmd, aux:String;
+   cmd:String;
 begin
    cmd := 'Select top 01 valor from zcf_paramgerais where nm_param = ' + quotedStr(parametro);
    result := funcsql.openSQL(cmd, 'valor',connection);

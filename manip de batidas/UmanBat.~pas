@@ -52,7 +52,6 @@ type
     procedure FormShow(Sender: TObject);
     procedure MaskEdit1Click(Sender: TObject);
     procedure BitBtn9Click(Sender: TObject);
-    procedure sg2SelectCell(Sender: TObject; ACol, ARow: Integer; var CanSelect: Boolean);
     procedure BitBtn12Click(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -516,35 +515,8 @@ begin
       sg2.cells[0,i] := copy(dados[i],26,08);
       sg2.cells[1,i] := copy(dados[i],01,25);
    end;
-//   label11.caption := 'Organizado por nome';
 end;
 
-procedure TForm2.sg2SelectCell(Sender: TObject; ACol, ARow: Integer;
-  var CanSelect: Boolean);
-begin
-{   if acol = 0 then OrganizaPorCodigo(sg2);
-   if acol = 1 then OrganizaPornome(sg2);
-}
-end;
-
-{
-procedure tform2.impPontoPorDia(sender:TObject);
-var
-   arq:TExtFIle;
-   i,j:integer;
-begin
-   AssignFile(arq,cbox2.items[cbox2.itemindex]);
-   reset(arq);
-   writeln( arq,'');
-   writeln( arq,'  Relacao de empregados por dia de trabalho');
-   writeln( arq,'');
-   writeln( arq,'  Dia da consulta: ' + DateToSTR(Calendario01.date));
-   writeln( arq,'  --------------------------------------------------------------------------------');
-   writeln( arq,'  Codigo  Nome');
-   for i:=1 to sg2.rowcount-1 do
-
-end;
-}
 procedure tForm2.impPontoPorDia(sender:TObject);
 var
    arq2: textFile;

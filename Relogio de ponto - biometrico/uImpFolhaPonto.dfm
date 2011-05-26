@@ -1,10 +1,11 @@
 object fmImpFolhaPonto: TfmImpFolhaPonto
-  Left = 446
-  Top = 219
-  Width = 989
-  Height = 550
+  Left = 194
+  Top = 139
   BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
   Caption = 'Impress'#227'o de folhas de ponto em branco'
+  ClientHeight = 145
+  ClientWidth = 738
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -92,8 +93,9 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
         ParentFont = False
         TabOrder = 0
         OnChange = cbLojasChange
-        LabelDefs.Width = 3
+        LabelDefs.Width = 37
         LabelDefs.Height = 13
+        LabelDefs.Caption = 'cbLojas'
         Colors.WhenEnterFocus.BackColor = clInfoBk
       end
     end
@@ -154,26 +156,13 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
     end
   end
   object BitBtn1: TBitBtn
-    Left = 647
+    Left = 632
     Top = 28
     Width = 86
     Height = 35
-    Caption = 'Imprimir'
+    Caption = 'OK'
     TabOrder = 1
     OnClick = BitBtn1Click
-  end
-  object DBGrid1: TDBGrid
-    Left = 8
-    Top = 152
-    Width = 961
-    Height = 345
-    DataSource = DataSource1
-    TabOrder = 2
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'MS Sans Serif'
-    TitleFont.Style = []
   end
   object qrEmp: TADOQuery
     Parameters = <>
@@ -185,12 +174,12 @@ object fmImpFolhaPonto: TfmImpFolhaPonto
     Top = 112
   end
   object tbBatidas: TADOTable
-    Left = 48
-    Top = 216
+    Left = 152
+    Top = 112
   end
   object DataSource1: TDataSource
     DataSet = tbBatidas
-    Left = 136
-    Top = 216
+    Left = 192
+    Top = 112
   end
 end

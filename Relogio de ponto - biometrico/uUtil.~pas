@@ -37,7 +37,7 @@ function getCadastroDeEmpregados(localizacao:String):TdataSet;
 function getCartaoPontoStr(str: String): String;
 function getDadosEmpregado(cartao:String):TdataSet;
 function getDetalheEmpregado(cartaoPonto:String):TdataSet;
-function getHoraPrevista(matricula, campo:String; ds:TDataSet):String;
+function getHoraPrevista(cartao, campo:String; ds:TDataSet):String;
 function getJustificativas(): Tstrings;
 function getLocalEmpregado(cartaoPonto:String): String;
 function getMatricula(cartaoPonto: String; DS: TdataSet): String;
@@ -114,9 +114,9 @@ begin
   result := db.getTempoAposUltBatida(cartao);
 end;
 
-function getHoraPrevista(matricula, campo:String; ds:TDataSet):String;
+function getHoraPrevista(cartao, campo:String; ds:TDataSet):String;
 begin
-   result := db.getHoraPrevista(matricula, campo, ds);
+   result := db.getHoraPrevista(cartao, campo, ds);
 end;
 
 // Write and describe an error.
@@ -501,9 +501,7 @@ begin
     result := fmMain.GrFingerXCtrl1.GetGrFingerVersion(majorVersion, minorVersion);
     If result = GRFINGER_FULL Then vStr := 'FULL';
     If result = GRFINGER_LIGHT Then vStr := 'LIGHT';
-    Application.MessageBox(PChar('The GrFinger DLL version is ' + IntToStr(majorVersion) +
-            '.' + IntToStr(minorVersion) + '.' + #13#10 +
-            'The license type is ''' + vStr + '''.'), PChar('GrFinger Version'), MB_OK);
+//    Application.MessageBox(PChar('The GrFinger DLL version is ' + IntToStr(majorVersion) + '.' + IntToStr(minorVersion) + '.' + #13#10 + 'The license type is ''' + vStr + '''.'), PChar('GrFinger Version'), MB_OK);
 end;
 
 procedure AbrirCadastroDigitais();
@@ -799,15 +797,14 @@ var
 begin
    tbAux := TADOTAble.Create(nil);
 
-   dti := strToDate('02/'+ mes);
-   dtf := dti;//   strToDate(funcDatas.getUltimoDiaMes(dti));
-
+   dti := strToDate('01/'+ mes);
+   dtf := strToDate(funcDatas.getUltimoDiaMes(dti));
 
    if (tb.TableName <> '') then
        tb.Close();
    cmd :=
-   'nome varchar(60), cartaoPonto varchar(10), matricula varchar(10), hTrabalhada varchar(08), hPrevista varchar(08), sinal varchar(01), dif varchar(08),  atrasJust varchar(08), atrasAutoriz ' +
-   'varchar(08), batIncomp varchar(08), batIncompJust varchar(08), falta varchar(08), faltaJust varchar(08)';
+   'nome varchar(60), cartaoPonto varchar(10), matricula varchar(10), hTrabalhada varchar(10), hPrevista varchar(10), sinal varchar(10), dif varchar(10),  atrasJust varchar(10), atrasAutoriz ' +
+   'varchar(10), batIncomp varchar(10), batIncompJust varchar(10), falta varchar(10), faltaJust varchar(10)';
 
    uUtil.getTable(tb, cmd);
 
@@ -842,12 +839,9 @@ begin
       uUtil.criaTbResumo(tbAux);
       uUtil.preencheListaDosDias(tbAux, dti, dtf);
 
-
-
       fmMain.PreencherListaBatidas(tbAux, dti, dtf, tb.FieldByName('cartaoPonto').AsString );
 
       gravaLog('calcular totais de horas - ' + tb.FieldByName('nome').AsString);
-
 
       fmMain.calcHorasTotais( tbAux, tHorasPrev, tHorasTrab, tAtrasJus, tAtrasAut, tHorasDif,  batIncJ, batInc, falta, faltaJ, tb.FieldByName('matricula').AsString, tb.FieldByName('cartaoPonto').AsString, dti);
 
@@ -856,12 +850,20 @@ begin
       tb.FieldByName('hTrabalhada').AsString :=  funcoes.intToHora(tHorasTrab);
       tb.FieldByName('atrasJust').AsString :=  funcoes.intToHora(tAtrasJus);
 
-      tb.FieldByName('atrasAutoriz').AsString := funcoes.intToHora(tAtrasAut -tHorasPrev );
+      tb.FieldByName('atrasAutoriz').AsString := funcoes.intToHora(tAtrasAut);
 
       tb.FieldByName('batIncomp').AsString :=  intToStr(batInc);
       tb.FieldByName('batIncompJust').AsString :=  intToStr(batIncJ);
       tb.FieldByName('falta').AsString :=  intToStr(falta);
       tb.FieldByName('faltaJust').AsString :=  intToStr(faltaJ);
+
+      tb.FieldByName('dif').AsString :=  funcoes.intToHora(tHorasDif) ;
+
+      if  tHorasDif < 0 then
+         tb.FieldByName('sinal').AsString :=  '-'
+      else
+         tb.FieldByName('sinal').AsString :=  '+';
+
       tb.Post();
 
       tb.Next();

@@ -521,7 +521,7 @@ var
 begin
     funcoes.GravaLog('Preenchendo Lista batidas :' + cartao );
 
-    Bat := Tstringlist.Create();
+    BatDoDia := Tstringlist.Create();
 
     BatPeriodo := Tstringlist.Create();
     batPeriodo := uUtil.getBatidas( dateToStr(dti), dateToStr(dtf), cartao );
@@ -532,7 +532,7 @@ begin
     while table.Eof = false do
     begin
        BatDoDia := fmMain.selecionaBatidasDoDia( dateToStr(dti+i), cartao, batPeriodo );
-       if bat.Count > 0 then
+       if BatDoDia.Count > 0 then
        begin
           table.Edit;
           table.FieldByName('ent').asString := copy(BatDoDia[0],01,05);
@@ -1019,7 +1019,7 @@ begin
       RvProject.ProjectFile := 'C:\ProgramasDiversos\relatoriosPCF.rav'
    else
       RvProject.ProjectFile := 'relatoriosPCF.rav';
-   RvProject.ExecuteReport(nomeRelatorio);
+///   RvProject.ExecuteReport(nomeRelatorio);
 end;
 
 procedure TfmMain.FolhaPonto1Click(Sender: TObject);

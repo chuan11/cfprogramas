@@ -11,8 +11,8 @@ uses
   IdTCPConnection, Sockets, ScktComp, DBCtrls,
   AppEvnts, RpRender, RpRenderPDF, RpRenderCanvas, RpRenderPrinter,
   OleCtrls, AcroPDFLib_TLB, shellAPI, adLabelCheckListBox, IdBaseComponent,
-  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox{, xmldom, XMLIntf,
-  msxmldom, XMLDoc, oxmldom {, CHILKATXMLLib_TLB} ;
+  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox , xmldom, XMLIntf,
+  msxmldom, XMLDoc, oxmldom, CHILKATXMLLib_TLB ;
 
 
 type
@@ -85,8 +85,8 @@ type
     Pagamentosemcarto1: TMenuItem;
     Cargadedadosparaconciliao1: TMenuItem;
     ImprimirDANFE1: TMenuItem;
-    Button1: TButton;
     RegistroSCAN1: TMenuItem;
+    Button1: TButton;
 
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
@@ -599,7 +599,7 @@ begin
    if params <> nil then
       for i:=0 to params.Count-1 do
          RvProject1.SetParam(intToStr(i), params[i]);
-         
+
    RvProject1.ExecuteReport(nRelatorio);
 end;
 

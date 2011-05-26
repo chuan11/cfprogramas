@@ -51,7 +51,7 @@ uses printers,windows,dialogs,SysUtils,classes,MaskUtils,Registry,   unMsgTela2,
        function getNomeDoCx(cb:TCustomComboBox):String;
        function GetNomeDoMicro() : string;
        function getNomePc(cb:TCustomComboBox):String;
-       function getNomeUO(cbox:TcomboBox):string;
+       function getNomeUO(cbox:TCustomComboBox):string;
        function getNomeModPagto(cbox:TcomboBox):string;
        function getNomeCX(cbox:TcomboBox):string;
        function getNumUO(cbox:TcomboBox):string;
@@ -193,11 +193,10 @@ begin
 end;
 
 
-function getNomeUO(cbox:TcomboBox):string;
+function getNomeUO(cbox:TCustomComboBox):string;
 begin
    result := copy(cbox.Items[cbox.itemIndex],01,30) ;
 end;
-
 
 function getNomeModPagto(cbox:TcomboBox):string;
 begin

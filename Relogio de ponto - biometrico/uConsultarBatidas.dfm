@@ -1,8 +1,8 @@
 object fmBatidas: TfmBatidas
-  Left = 453
-  Top = 226
+  Left = 342
+  Top = 59
   Width = 780
-  Height = 590
+  Height = 516
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,14 +16,14 @@ object fmBatidas: TfmBatidas
   OnCreate = FormCreate
   DesignSize = (
     764
-    552)
+    478)
   PixelsPerInch = 96
   TextHeight = 13
   object Grid: TSoftDBGrid
     Left = 3
     Top = 77
     Width = 758
-    Height = 408
+    Height = 334
     Anchors = [akLeft, akTop, akRight, akBottom]
     BiDiMode = bdLeftToRight
     Ctl3D = False
@@ -166,7 +166,7 @@ object fmBatidas: TfmBatidas
   end
   object Panel1: TPanel
     Left = 0
-    Top = 488
+    Top = 414
     Width = 764
     Height = 64
     Align = alBottom
