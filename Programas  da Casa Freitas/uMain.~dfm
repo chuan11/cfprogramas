@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 310
-  Top = 184
+  Left = 369
+  Top = 195
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -38,14 +38,6 @@ object fmMain: TfmMain
       item
         Width = 150
       end>
-  end
-  object Button1: TButton
-    Left = 224
-    Top = 88
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 1
   end
   object menuPrincipal: TMainMenu
     Left = 49
@@ -338,7 +330,6 @@ object fmMain: TfmMain
   end
   object RvProject1: TRvProject
     Engine = RvSystem1
-    ProjectFile = 'C:\ProgramasDiversos\RelatoriosPCF.rav'
     Left = 8
     Top = 342
   end

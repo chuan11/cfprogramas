@@ -24,7 +24,7 @@ interface
    function getItensDeUmaNota(isNota:String):TDataSet;
    function getItensParaCadastroNCM(var tabela:TADOTable; isNota:String):boolean;
    function getNomeImpressoraNFe():String;
-   function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao:boolean):TDataSet;
+   function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
    function getTotaisVendaAvaria(lojas:TadLabelComboBox; datai, dataf:Tdate; tabela:String):String;
    function getOperadoresPorCaixa(qr:TADOQuery; uo, caixa:String; dt: TDateTimePicker):TdataSet;
    function getPcProd(uo, codigo, preco:String):String;
@@ -38,7 +38,7 @@ interface
    procedure calCulaPercentualDoFornecedor(var tb:TADOTable);
    procedure calculaTotaisAvariasPorFornecedor(var tb:TADOTable; lojas:TadLabelComboBox; datai, dataf:Tdate);
    procedure calculaTotaisAvariasPorLoja(var tb:TADOTable; lojas:TadLabelComboBox; datai, dataf:Tdate);
-   procedure cargaDadosConciliacao(tb:TADOTable; dt: TDateTimePicker);
+   procedure cargaDadosConciliacao(tb:TADOTable; dti, dtf: TDateTimePicker);
    procedure carregaListarUosPorPreco(var clb: TadLabelCheckListBox; TpPreco:String);
    procedure criaTabelaDosTotaisDeAvarias(var tb: TADOTable);
    procedure getCRUCBaseNota(conexao:TADOConnection; var query:TADOquery; is_ref:String);
@@ -46,8 +46,7 @@ interface
    procedure getTotaIsPorTipoDeAvaria(var tbTotais:TadoTAble; nmTabela:String);
    procedure logAlteracoesBD(conexao:TADOConnection; tela, usuario, alteracao:String);
    procedure listarPrecosAlteradosPoPeriodo(qr:TADOQuery; uo,preco:String; data:Tdate);
-   procedure listaRecebimentosCaixa(tb: TADOTAble; uo, caixa:String; dt: TDateTimePicker; listaSoCartao:boolean; removeTrocos:boolean);
-
+   procedure listaRecebimentosCaixa(tb:TADOTAble; uo, caixa:String; dti, dtf: TDateTimePicker; listaSoCartao, removeTrocos, listaSangria:boolean);
    procedure getProdAvariadosPAraVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
 
 
@@ -602,7 +601,7 @@ begin
 end;
 
 
-procedure listaRecebimentosCaixa(tb:TADOTAble; uo, caixa:String; dt: TDateTimePicker; listaSoCartao:boolean; removeTrocos:boolean);
+procedure listaRecebimentosCaixa(tb:TADOTAble; uo, caixa:String; dti, dtf: TDateTimePicker; listaSoCartao, removeTrocos, listaSangria:boolean);
 var
    cmd:String;
    ds:TdataSet;
@@ -610,7 +609,7 @@ begin
    if (tb.TableName <> '') then
       tb.Close();
 
-   ds := uCF.getPreviaGeralCaixa( uo, caixa, dt.date, dt.date, false, listaSoCartao);
+   ds := uCF.getPreviaGeralCaixa( uo, caixa, dti.date, dtf.date, false, listaSoCartao, false);
 
    cmd := '(codLoja int, descEstacao varchar(20), cd_mve int, ds_mve varchar(30), dataSessaoCaixa smallDateTime, seqtransacaoCaixa int,'+
           ' seqModPagtoPorTransCaixa int, Valor money, numParcelas varchar(03), tefMagnetico varchar(1), seqTefTransCaixa int )';
@@ -649,15 +648,17 @@ begin
 end;
 
 
-function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao:boolean):TDataSet;
+function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
 var
    cmd:String;
 begin
   if (dataf = 0) then
      dataf := datai;
+
   if (caixa = '') then
      caixa := '0';
-   cmd := ' exec stoListarPreviaGeralCaixa_CF';
+
+   cmd := ' exec stoListarPreviaGeralCaixa_CF2';
 
    if (uo <> '' )then
       cmd := cmd + ' @dsLojas = ' + Quotedstr( 'transacoesDoCaixa.codloja = '+ uo)
@@ -676,17 +677,18 @@ begin
 end;
 
 
-procedure cargaDadosConciliacao(tb:TADOTable; dt: TDateTimePicker);
+procedure cargaDadosConciliacao(tb:TADOTable; dti, dtf: TDateTimePicker);
 var
   cmd:String;
 begin
-   uCF.listaRecebimentosCaixa( tb, '', '', dt, true, false);
+   uCF.listaRecebimentosCaixa( tb, '', '', dti, dtf, true, false, false);
 
    screen.cursor := crHourGlass;
    if (tb.IsEmpty = false) then
    begin
       fmMain.msgStatus('Verificando carga existente...');
-      cmd := ' delete from conciliacao..vendas_erp where dataSessaoCaixa = ' + funcDatas.dateToSqlDate(dt.date);
+
+      cmd := ' delete from conciliacao..vendas_erp where dataSessaoCaixa = ' + funcDatas.dateToSqlDate(dti.date);
 
       funcSQl.execSQl(cmd, fmMain.conexao);
 

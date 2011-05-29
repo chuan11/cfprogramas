@@ -1,6 +1,6 @@
 object fmRelGeral: TfmRelGeral
-  Left = 343
-  Top = 263
+  Left = 262
+  Top = 201
   Width = 792
   Height = 337
   Color = clBtnFace

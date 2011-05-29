@@ -1,6 +1,6 @@
 object fmTotalSaidas: TfmTotalSaidas
-  Left = 498
-  Top = 356
+  Left = 380
+  Top = 272
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Venda total no per'#237'odo'

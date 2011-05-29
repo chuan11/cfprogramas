@@ -200,7 +200,7 @@ object Form1: TForm1
     ParentCtl3D = False
     MaxLength = 4
     TabOrder = 6
-    Text = '0000'
+    Text = '0015'
   end
   object Connection: TADOConnection
     LoginPrompt = False

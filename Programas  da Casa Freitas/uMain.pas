@@ -225,7 +225,7 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
 
 function TfmMain.isGrupoPermitido(codTela: integer): boolean;
 begin
-   funcoes.gravaLog('Testando restricao da tela '+ intToStr(codTela)  +' result ' + boolToStr( (TELAS_PERMITIDAS.Values[intToStr(codTela)] = '0')));
+   funcoes.gravaLog('Testando restricao da tela '+ intToStr(codTela)  +' result ' + boolToStr( not(TELAS_PERMITIDAS.Values[intToStr(codTela)] = '0'), true));
    result := (TELAS_PERMITIDAS.Values[intToStr(codTela)] = '0')
 end;
 
@@ -259,8 +259,8 @@ begin
    begin
       fmMain.WindowState := wsNormal;
       is_logado := true;
-      montarMenu('Matriz', 'walter', '10033589','10000592');
-//        montarMenu('Matriz', 'walter', '10001008','10001593');
+//      montarMenu('Matriz', 'walter', '10033589','10000592');
+        montarMenu('Matriz', 'walter', '10001008','10001593');
 
       fmMain.Width := 900;
       fmMain.Height := 700;
@@ -700,7 +700,7 @@ end;
 
 procedure TfmMain.obterDetalhesSaida(Sender: Tobject; is_ref,uo:String);
 begin
-   if fmEtiquetas  = nil then
+   if (fmTotalSaidas  = nil) then
    begin
       Application.CreateForm( TfmTotalSaidas , fmTotalSaidas );
       fmTotalSaidas.calcularVenda(nil, is_ref, uo);
@@ -1256,14 +1256,14 @@ procedure TfmMain.PagamentosEmCartao1Click(Sender: TObject);
 begin
    Application.CreateForm(TfmRelGeral, fmRelGeral);
    fmRelGeral.show();
-   fmRelGeral.setPerfil(3);
+   fmRelGeral.setPerfil(406);
 end;
 
 procedure TfmMain.Cargadedadosparaconciliao1Click(Sender: TObject);
 begin
    Application.CreateForm(TfmRelGeral, fmRelGeral);
    fmRelGeral.show();
-   fmRelGeral.setPerfil(4);
+   fmRelGeral.setPerfil(407);
 end;
 
 procedure TfmMain.DeletarRegistrodecartoTEF1Click(Sender: TObject);

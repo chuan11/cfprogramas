@@ -1,6 +1,6 @@
 object fmMapa: TfmMapa
-  Left = 214
-  Top = 222
+  Left = 164
+  Top = 170
   Width = 790
   Height = 519
   Caption = 'fmMapa'
