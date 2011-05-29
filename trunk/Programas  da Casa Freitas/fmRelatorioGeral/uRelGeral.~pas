@@ -219,10 +219,10 @@ end;
 
 procedure TfmRelGeral.ajustaTelaParaRelCartoes;
 begin
-   dtf.Visible := false;
+//   dtf.Visible := false;
    label1.Visible := false;
    cbDetAvaForn.Visible := false;
-   GroupBox1.Width := dti.Width + 50;
+//   GroupBox1.Width := dti.Width + 50;
 
    IS_GRUPO_PERMITIDO_CARTAO :=  fmMain.isGrupoPermitido(fmMain.CargaDeDadosParaConciliao1.Tag);
 
@@ -255,7 +255,7 @@ end;
 procedure TfmRelGeral.cargaDadosConciliacao;
 begin
    msgTela('',' Se já houver alguma carga já feita ela será excluída.',0);
-   uCF.cargaDadosConciliacao(tbVendasCartao, dti);
+   uCF.cargaDadosConciliacao(tbVendasCartao, dti, dtf);
 end;
 
 procedure TfmRelGeral.listaVendasEmCartao;
@@ -264,7 +264,7 @@ var
    ds:TdataSet;
    i:integer;
 begin
-   uCF.listaRecebimentosCaixa( tbVendasCartao, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, true, true );
+   uCF.listaRecebimentosCaixa( tbVendasCartao, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, true, true, false );
    if (tbVendasCartao.IsEmpty = false) then
    begin
       ds:= uCF.getOperadoresPorCaixa(qr, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti );

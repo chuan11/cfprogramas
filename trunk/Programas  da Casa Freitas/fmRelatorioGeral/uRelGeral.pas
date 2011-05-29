@@ -93,6 +93,7 @@ var
   fmRelGeral: TfmRelGeral;
   PERFIL:integer;
   IS_GRUPO_PERMITIDO_CARTAO:boolean;
+  
 implementation
 uses uMain, uCF, funcoes, funcsql;
 
@@ -224,10 +225,13 @@ begin
    cbDetAvaForn.Visible := false;
 //   GroupBox1.Width := dti.Width + 50;
 
-   IS_GRUPO_PERMITIDO_CARTAO :=  fmMain.isGrupoPermitido(fmMain.CargaDeDadosParaConciliao1.Tag);
+   IS_GRUPO_PERMITIDO_CARTAO :=  fmMain.isGrupoPermitido(PERFIL);
 
    if (IS_GRUPO_PERMITIDO_CARTAO = false) then
+   begin
       dti.MinDate :=  funcSQL.getDateBd(fmMain.Conexao)-2;
+      dtf.Enabled := false;
+   end;
 
    dti.Date := funcSQL.getDateBd( fmMain.Conexao);
    dtf.Date := dti.Date;
@@ -311,8 +315,8 @@ begin
     case PERFIL of
        1:gerarVendaAvarias();
        2:calCulaValoresAvarias();
-       3:listaVendasEmCartao();
-       4:cargaDadosConciliacao
+       406:listaVendasEmCartao();
+       407:cargaDadosConciliacao
     end;
   end
   else
@@ -328,8 +332,8 @@ begin
    fmRelGeral.Tag := fmMain.Cargadedadosparaconciliao1.Tag;
    case perfil of
       2:ajustaTelaParaAvarias();
-      3:ajustaTelaParaRelCartoes();
-      4:ajustaTelaParaCargaConciliacao();
+      406:ajustaTelaParaRelCartoes();
+      407:ajustaTelaParaCargaConciliacao();
    end;
 end;
 

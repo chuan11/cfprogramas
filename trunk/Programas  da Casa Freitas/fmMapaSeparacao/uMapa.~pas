@@ -51,14 +51,13 @@ type
     procedure Aprovar1Click(Sender: TObject);
     procedure CarregaMapa(nMapa:String);
     procedure criarTabela(Sender:Tobject);
-    procedure CriaTabelaTemporaria(Sender:Tobject);
+//    procedure CriaTabelaTemporaria(Sender:Tobject);
     procedure fecharMapa();
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure gridColEnter(Sender: TObject);
     procedure gridColExit(Sender: TObject);
-    procedure gridDblClick(Sender: TObject);
     procedure gridKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure gridTitleClick(Column: TColumn);
     procedure Imprimir1Click(Sender: TObject);
@@ -74,6 +73,7 @@ type
     procedure tbBeforePost(DataSet: TDataSet);
     procedure vendasNoPeriodo1Click(Sender: TObject);
     procedure verRequisicoes1Click(Sender: TObject);
+    procedure gridCellClick(Column: TColumn);
 
   private
     { Private declarations }
@@ -146,21 +146,6 @@ begin
 end;
 
 
-
-procedure TfmMapa.CriaTabelaTemporaria(Sender: Tobject);
-var
-   nmTb,cmd:String;
-begin
-   nmTb := funcsql.getNomeTableTemp();
-
-   cmd := ' Create table ' + nmTb + ' ( ' +
-          ' Codigo varchar(13) , ' +
-          ' Nome varchar(50) , '   +
-          ' Est int ' +
-          ' )' ;
-   funcSql.execSQL( cmd, fmMain.Conexao );
-end;
-
 procedure TfmMapa.FormShow(Sender: TObject);
 begin
    alterada := false;
@@ -170,21 +155,6 @@ procedure TfmMapa.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
     fmMapa := nil;
     Action := Cafree;
-end;
-
-procedure TfmMapa.criarTabela(Sender: Tobject);
-var
-   nTable, cmd:String;
-begin
-   if tb.TableName <> '' then
-      tb.close;
-   nTable := funcSQl.getNomeTableTemp;
-   cmd := ' Create table ' + nTable +  '( Seq int, n smallInt, is_ref int, cd_ref varchar(08), ds_ref varchar(50), Caixa int, '+
-          ' Estoque int, L01 int , L03 int , L05 int , L06 int , L07 int , L08 int , L09 int , L10 int , L11 int ,'+
-          ' L12 int , L17 int , L18 int , Saldo int , Pco money )';
-   funcsql.execSQL(cmd, fmMain.Conexao);
-   tb.TableName := nTable;
-   tb.Open;
 end;
 
 procedure TfmMapa.insereItem(codigo:String);
@@ -209,6 +179,21 @@ begin
        fecharMapa();
        CarregaMapa(numMapa);
    end;
+end;
+
+procedure TfmMapa.criarTabela(Sender: Tobject);
+var
+   nTable, cmd:String;
+begin
+   if tb.TableName <> '' then
+      tb.close;
+   nTable := funcSQl.getNomeTableTemp;
+   cmd := ' Create table ' + nTable +  '(  seq int, n varchar(01), is_ref int, cd_ref varchar(08), ds_ref varchar(50), Caixa int, '+
+          ' Estoque int, L01 int , L03 int , L05 int , L06 int , L07 int , L08 int , L09 int , L10 int , L11 int ,'+
+          ' L12 int , L17 int , L18 int , Saldo int , Pco money )';
+   funcsql.execSQL(cmd, fmMain.Conexao);
+   tb.TableName := nTable;
+   tb.Open;
 end;
 
 procedure TfmMapa.CarregaMapa(nMapa:String);
@@ -248,8 +233,6 @@ begin
    end;
 
    cbCriticaQuant.Checked := (qr.fieldByName('criticaEstoque').AsBoolean);
-
-
 
 
    if (fmMain.getUserLogado() = fmMain.GetParamBD('mapa.usAutEdicao','') ) or( fmMain.getGrupoLogado() <> '')  then
@@ -293,7 +276,7 @@ begin
    begin
       tb.AppendRecord([
                        qr.FieldByName('seq').asString,
-                       '0',
+                       '',
                        qr.FieldByName('is_ref').asString,
                        qr.FieldByName('cd_ref').asString,
                        qr.FieldByName('ds_ref').asString,
@@ -321,7 +304,11 @@ begin
    tb.Edit;
 
    grid.Columns[0].visible := false;
-   grid.Columns[1].visible := false;
+
+   grid.Columns[tb.FieldByName('n').Index].visible := true;
+   grid.Columns[tb.FieldByName('n').Index].Title.Caption:= 'Del';
+
+
    grid.Columns[2].visible := false;
 
    grid.Columns[3].Title.Caption := 'Codigo';
@@ -479,15 +466,6 @@ begin
    if (PERMITE_EDITAR = false) then
       if (pos('L', tb.Fields[grid.SelectedIndex].FieldName) <> 0 ) then
          grid.SelectedIndex  := 7;
-end;
-
-procedure TfmMapa.gridDblClick(Sender: TObject);
-begin
-   if msgTela('', 'Tem certeza que deseja remover esse item ? ' , MB_ICONQUESTION + MB_YESNO) = mrYes then
-   begin
-      execSQl('delete from zcf_mapaSeparacaoI where seq = ' + tb.fieldByName('seq').asString , fmMain.Conexao );
-      tb.Delete;
-   end;
 end;
 
 function TfmMapa.GeraRequisicoes(Sender: Tobject; autorizador:String):String;
@@ -662,7 +640,27 @@ end;
 
 procedure TfmMapa.gridTitleClick(Column: TColumn);
 begin
-   OrganizarTabela(tb, Column);
+   if (Column.FieldName = 'n') then
+   begin
+
+      if (funcoes.msgTela('',' Remover os itens marcados ?', MB_YESNO + MB_ICONQUESTION) = mrYes) then
+      begin
+         tb.First();
+         while (tb.Eof = false) do
+         begin
+            if (tb.FieldByName('n').AsString = 'X') then
+            begin
+               execSQl('delete from zcf_mapaSeparacaoI where seq = ' + tb.fieldByName('seq').asString , fmMain.Conexao );
+               tb.Delete();
+            end
+            else
+              tb.Next;
+         end;
+      end;
+      tb.First();
+   end
+   else
+     OrganizarTabela(tb, Column);
 end;
 
 procedure TfmMapa.tbBeforePost(DataSet: TDataSet);
@@ -689,6 +687,19 @@ begin
       insereItem(str);
 end;
 
+
+procedure TfmMapa.gridCellClick(Column: TColumn);
+begin
+    if Column.FieldName = 'n' then
+    begin
+       tb.Edit();
+       if tb.FieldByName('n' ).asString <> 'X' then
+          tb.FieldByName(Column.FieldName).asString := 'X'
+       else
+          tb.FieldByName('n').asString := '';
+       tb.post;
+    end;
+end;
 
 end.
 

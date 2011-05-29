@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 310
-  Top = 184
+  Left = 369
+  Top = 195
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -330,7 +330,6 @@ object fmMain: TfmMain
   end
   object RvProject1: TRvProject
     Engine = RvSystem1
-    ProjectFile = 'C:\ProgramasDiversos\RelatoriosPCF.rav'
     Left = 8
     Top = 342
   end

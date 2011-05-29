@@ -658,7 +658,7 @@ begin
   if (caixa = '') then
      caixa := '0';
 
-   cmd := ' exec stoListarPreviaGeralCaixa_CF2';
+   cmd := ' exec stoListarPreviaGeralCaixa_CF';
 
    if (uo <> '' )then
       cmd := cmd + ' @dsLojas = ' + Quotedstr( 'transacoesDoCaixa.codloja = '+ uo)
@@ -670,8 +670,8 @@ begin
                 ', @DataFinal = '   +  funcDatas.dateToSqlDate(dataf) +
                 ', @CodCaixa = ' +caixa+
                 ', @CodOperador = 0' +
-                ', @listaVendaPMaracanau = ' + BoolToStr(listaVendaPMaracanau) +
-                ', @listaSoCartao = ' + boolToStr(listaSomenteCartao);
+                ', @listaVendaPMaracanau = ' + BoolToStr(listaVendaPMaracanau); //; +
+//                ', @listaSoCartao = ' + boolToStr(listaSomenteCartao);
 
    result :=  funcSQL.getDataSetQ(cmd, fmMain.conexao);
 end;
