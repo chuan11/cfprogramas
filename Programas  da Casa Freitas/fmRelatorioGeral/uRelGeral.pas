@@ -47,18 +47,58 @@ type
     tbValoresAvariasFornecedor: TStringField;
     tbValoresAvarias_Totalfornecedor: TStringField;
     cbCaixas: TadLabelComboBox;
-    tbVendasCartao: TADOTable;
-    tbVendasCartaocodLoja: TIntegerField;
-    tbVendasCartaodescEstacao: TStringField;
-    tbVendasCartaocd_mve: TIntegerField;
-    tbVendasCartaods_mve: TStringField;
-    tbVendasCartaodataSessaoCaixa: TDateTimeField;
-    tbVendasCartaoseqtransacaoCaixa: TIntegerField;
-    tbVendasCartaoseqModPagtoPorTransCaixa: TIntegerField;
-    tbVendasCartaoValor: TBCDField;
-    tbVendasCartaonumParcelas: TStringField;
-    tbVendasCartaotefMagnetico: TStringField;
-    tbVendasCartaoseqTefTransCaixa: TIntegerField;
+    tbPreviaDeCaixa: TADOTable;
+    tbPreviaDeCaixacodLoja: TIntegerField;
+    tbPreviaDeCaixadescEstacao: TStringField;
+    tbPreviaDeCaixacd_mve: TIntegerField;
+    tbPreviaDeCaixads_mve: TStringField;
+    tbPreviaDeCaixadataSessaoCaixa: TDateTimeField;
+    tbPreviaDeCaixaseqtransacaoCaixa: TIntegerField;
+    tbPreviaDeCaixaseqModPagtoPorTransCaixa: TIntegerField;
+    tbPreviaDeCaixaValor: TBCDField;
+    tbPreviaDeCaixanumParcelas: TStringField;
+    tbPreviaDeCaixatefMagnetico: TStringField;
+    tbPreviaDeCaixaseqTefTransCaixa: TIntegerField;
+    tbPreviaDeCaixacd_tpm: TStringField;
+    tbOperadores: TADOTable;
+    IntegerField1: TIntegerField;
+    StringField1: TStringField;
+    IntegerField2: TIntegerField;
+    StringField2: TStringField;
+    DateTimeField1: TDateTimeField;
+    IntegerField3: TIntegerField;
+    IntegerField4: TIntegerField;
+    BCDField1: TBCDField;
+    StringField3: TStringField;
+    StringField4: TStringField;
+    IntegerField5: TIntegerField;
+    StringField5: TStringField;
+    tbTotRec: TADOTable;
+    IntegerField6: TIntegerField;
+    StringField6: TStringField;
+    IntegerField7: TIntegerField;
+    StringField7: TStringField;
+    DateTimeField2: TDateTimeField;
+    IntegerField8: TIntegerField;
+    IntegerField9: TIntegerField;
+    BCDField2: TBCDField;
+    StringField8: TStringField;
+    StringField9: TStringField;
+    IntegerField10: TIntegerField;
+    StringField10: TStringField;
+    ADOTable2: TADOTable;
+    IntegerField11: TIntegerField;
+    StringField11: TStringField;
+    IntegerField12: TIntegerField;
+    StringField12: TStringField;
+    DateTimeField3: TDateTimeField;
+    IntegerField13: TIntegerField;
+    IntegerField14: TIntegerField;
+    BCDField3: TBCDField;
+    StringField13: TStringField;
+    StringField14: TStringField;
+    IntegerField15: TIntegerField;
+    StringField15: TStringField;
 
     procedure btOkClick(Sender: TObject);
     procedure setPerfil(p:integer);
@@ -251,15 +291,14 @@ end;
 
 procedure TfmRelGeral.cbLojasClick(Sender: TObject);
 begin
-   if (perfil = 3) then
+   if (perfil = fmMain.PagamentosEmCarto1.Tag ) then
      getDescCaixas();
 end;
-
 
 procedure TfmRelGeral.cargaDadosConciliacao;
 begin
    msgTela('',' Se já houver alguma carga já feita ela será excluída.',0);
-   uCF.cargaDadosConciliacao(tbVendasCartao, dti, dtf);
+   uCF.cargaDadosConciliacao(tbPreviaDeCaixa, dti, dtf);
 end;
 
 procedure TfmRelGeral.listaVendasEmCartao;
@@ -268,7 +307,31 @@ var
    ds:TdataSet;
    i:integer;
 begin
-   uCF.listaRecebimentosCaixa( tbVendasCartao, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, true, true, false );
+   uCF.listaRecebimentosCaixa( tbPreviaDeCaixa, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, false, false, true );
+   if (tbPreviaDeCaixa.IsEmpty = false) then
+   begin
+      uCF.getOperadoresPorCaixa(tbOperadores, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti );
+
+
+      param := TStringlist.Create();
+      param.add( funcoes.getNomeUO(cbLojas) );
+      param.add( funcoes.getNomeCX(cbCaixas) );
+      param.add( dateToStr(dti.date) );
+      param.add( fmMain.getNomeUsuario() );
+
+      totais := uCF.getTotalCartaoPorModo(tbPreviaDeCaixa);
+      for i:=0 to Totais.Count-1 do
+         param.Add(totais[i]);
+
+      fmMain.impressaoRaveQr4(tbOperadores , nil, nil, nil, 'report1'{'rpVendasEmCartao'},param);
+      ds.Free;
+      totais.Free();
+      param.Free();
+   end
+   else
+     funcoes.msgTela('', MSG_SEM_DADOS, mb_ok + MB_ICONERROR);
+
+{   uCF.listaRecebimentosCaixa( tbVendasCartao, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, true, true, false );
    if (tbVendasCartao.IsEmpty = false) then
    begin
       ds:= uCF.getOperadoresPorCaixa(qr, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti );
@@ -290,6 +353,7 @@ begin
    end
    else
       funcoes.msgTela('', MSG_SEM_DADOS, mb_ok + MB_ICONERROR);
+}
 end;
 
 procedure TfmRelGeral.FormClose(Sender: TObject; var Action: TCloseAction);

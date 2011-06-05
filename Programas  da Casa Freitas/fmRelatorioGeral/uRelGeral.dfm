@@ -1,7 +1,7 @@
 object fmRelGeral: TfmRelGeral
-  Left = 262
-  Top = 201
-  Width = 792
+  Left = 457
+  Top = 264
+  Width = 784
   Height = 337
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -297,47 +297,192 @@ object fmRelGeral: TfmRelGeral
       Size = 30
     end
   end
-  object tbVendasCartao: TADOTable
+  object tbPreviaDeCaixa: TADOTable
     Connection = fmMain.Conexao
-    Left = 16
-    Top = 112
-    object tbVendasCartaocodLoja: TIntegerField
+    Left = 304
+    Top = 160
+    object tbPreviaDeCaixacodLoja: TIntegerField
       FieldName = 'codLoja'
     end
-    object tbVendasCartaodescEstacao: TStringField
+    object tbPreviaDeCaixadescEstacao: TStringField
       FieldName = 'descEstacao'
     end
-    object tbVendasCartaocd_mve: TIntegerField
+    object tbPreviaDeCaixacd_mve: TIntegerField
       FieldName = 'cd_mve'
     end
-    object tbVendasCartaods_mve: TStringField
+    object tbPreviaDeCaixads_mve: TStringField
       FieldName = 'ds_mve'
       Size = 30
     end
-    object tbVendasCartaodataSessaoCaixa: TDateTimeField
+    object tbPreviaDeCaixadataSessaoCaixa: TDateTimeField
       FieldName = 'dataSessaoCaixa'
     end
-    object tbVendasCartaoseqtransacaoCaixa: TIntegerField
+    object tbPreviaDeCaixaseqtransacaoCaixa: TIntegerField
       FieldName = 'seqtransacaoCaixa'
     end
-    object tbVendasCartaoseqModPagtoPorTransCaixa: TIntegerField
+    object tbPreviaDeCaixaseqModPagtoPorTransCaixa: TIntegerField
       FieldName = 'seqModPagtoPorTransCaixa'
     end
-    object tbVendasCartaoValor: TBCDField
+    object tbPreviaDeCaixaValor: TBCDField
       FieldName = 'Valor'
       DisplayFormat = '#,###,###0.00'
       Precision = 19
     end
-    object tbVendasCartaonumParcelas: TStringField
+    object tbPreviaDeCaixanumParcelas: TStringField
       FieldName = 'numParcelas'
       Size = 3
     end
-    object tbVendasCartaotefMagnetico: TStringField
+    object tbPreviaDeCaixatefMagnetico: TStringField
       FieldName = 'tefMagnetico'
       Size = 1
     end
-    object tbVendasCartaoseqTefTransCaixa: TIntegerField
+    object tbPreviaDeCaixaseqTefTransCaixa: TIntegerField
       FieldName = 'seqTefTransCaixa'
+    end
+    object tbPreviaDeCaixacd_tpm: TStringField
+      FieldName = 'cd_tpm'
+      Size = 1
+    end
+  end
+  object tbOperadores: TADOTable
+    Connection = fmMain.Conexao
+    Left = 344
+    Top = 160
+    object IntegerField1: TIntegerField
+      FieldName = 'codLoja'
+    end
+    object StringField1: TStringField
+      FieldName = 'descEstacao'
+    end
+    object IntegerField2: TIntegerField
+      FieldName = 'cd_mve'
+    end
+    object StringField2: TStringField
+      FieldName = 'ds_mve'
+      Size = 30
+    end
+    object DateTimeField1: TDateTimeField
+      FieldName = 'dataSessaoCaixa'
+    end
+    object IntegerField3: TIntegerField
+      FieldName = 'seqtransacaoCaixa'
+    end
+    object IntegerField4: TIntegerField
+      FieldName = 'seqModPagtoPorTransCaixa'
+    end
+    object BCDField1: TBCDField
+      FieldName = 'Valor'
+      DisplayFormat = '#,###,###0.00'
+      Precision = 19
+    end
+    object StringField3: TStringField
+      FieldName = 'numParcelas'
+      Size = 3
+    end
+    object StringField4: TStringField
+      FieldName = 'tefMagnetico'
+      Size = 1
+    end
+    object IntegerField5: TIntegerField
+      FieldName = 'seqTefTransCaixa'
+    end
+    object StringField5: TStringField
+      FieldName = 'cd_tpm'
+      Size = 1
+    end
+  end
+  object tbTotRec: TADOTable
+    Connection = fmMain.Conexao
+    Left = 384
+    Top = 160
+    object IntegerField6: TIntegerField
+      FieldName = 'codLoja'
+    end
+    object StringField6: TStringField
+      FieldName = 'descEstacao'
+    end
+    object IntegerField7: TIntegerField
+      FieldName = 'cd_mve'
+    end
+    object StringField7: TStringField
+      FieldName = 'ds_mve'
+      Size = 30
+    end
+    object DateTimeField2: TDateTimeField
+      FieldName = 'dataSessaoCaixa'
+    end
+    object IntegerField8: TIntegerField
+      FieldName = 'seqtransacaoCaixa'
+    end
+    object IntegerField9: TIntegerField
+      FieldName = 'seqModPagtoPorTransCaixa'
+    end
+    object BCDField2: TBCDField
+      FieldName = 'Valor'
+      DisplayFormat = '#,###,###0.00'
+      Precision = 19
+    end
+    object StringField8: TStringField
+      FieldName = 'numParcelas'
+      Size = 3
+    end
+    object StringField9: TStringField
+      FieldName = 'tefMagnetico'
+      Size = 1
+    end
+    object IntegerField10: TIntegerField
+      FieldName = 'seqTefTransCaixa'
+    end
+    object StringField10: TStringField
+      FieldName = 'cd_tpm'
+      Size = 1
+    end
+  end
+  object ADOTable2: TADOTable
+    Connection = fmMain.Conexao
+    Left = 424
+    Top = 160
+    object IntegerField11: TIntegerField
+      FieldName = 'codLoja'
+    end
+    object StringField11: TStringField
+      FieldName = 'descEstacao'
+    end
+    object IntegerField12: TIntegerField
+      FieldName = 'cd_mve'
+    end
+    object StringField12: TStringField
+      FieldName = 'ds_mve'
+      Size = 30
+    end
+    object DateTimeField3: TDateTimeField
+      FieldName = 'dataSessaoCaixa'
+    end
+    object IntegerField13: TIntegerField
+      FieldName = 'seqtransacaoCaixa'
+    end
+    object IntegerField14: TIntegerField
+      FieldName = 'seqModPagtoPorTransCaixa'
+    end
+    object BCDField3: TBCDField
+      FieldName = 'Valor'
+      DisplayFormat = '#,###,###0.00'
+      Precision = 19
+    end
+    object StringField13: TStringField
+      FieldName = 'numParcelas'
+      Size = 3
+    end
+    object StringField14: TStringField
+      FieldName = 'tefMagnetico'
+      Size = 1
+    end
+    object IntegerField15: TIntegerField
+      FieldName = 'seqTefTransCaixa'
+    end
+    object StringField15: TStringField
+      FieldName = 'cd_tpm'
+      Size = 1
     end
   end
 end

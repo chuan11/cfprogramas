@@ -497,7 +497,7 @@ var
    cmd:String;
 begin
    cmd := 'Select valor from configuracoes where param = ' + quotedStr(nParametro);
-   if loja <> '' then
+   if (loja <> '') then
       cmd := cmd + ' and loja = ' + quotedStr(loja);
 
    cmd := funcsql.openSQL(cmd, 'valor' ,  ADOConnection1);

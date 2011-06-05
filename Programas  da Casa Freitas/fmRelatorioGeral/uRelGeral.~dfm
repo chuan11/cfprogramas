@@ -1,7 +1,7 @@
 object fmRelGeral: TfmRelGeral
-  Left = 343
-  Top = 263
-  Width = 792
+  Left = 457
+  Top = 264
+  Width = 784
   Height = 337
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -338,6 +338,10 @@ object fmRelGeral: TfmRelGeral
     end
     object tbVendasCartaoseqTefTransCaixa: TIntegerField
       FieldName = 'seqTefTransCaixa'
+    end
+    object tbVendasCartaotp_mve: TStringField
+      FieldName = 'tp_mve'
+      Size = 1
     end
   end
 end

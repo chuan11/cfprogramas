@@ -68,11 +68,10 @@ implementation
 
 function getContadorWell(conexao:TADOConnection; campo:String):String;
 begin
-{ alguns contadores
+{ Exemplo de alguns contadores
  pagamento:  SeqModPagtoPorTransCaixa
 
 }
-
    result:=
    funcSql.GetValorWell( 'O',
                          ' begin declare @P1 int set @P1=0 exec stoObterContador ' +
@@ -82,17 +81,6 @@ begin
                           conexao
                        );
 end;
-{
-function getParametro(nomeParametro, uo:String ; conexao: TADOConnection):String;
-var
-   cmd:String;
-begin
-   cmd := ' Select valor from zcf_paramGerais (Nolock) where nm_param = ' + quotedStr(nomeParametro) ;
-   if uo <> '' then
-      cmd := cmd + 'and uo = '+ uo ;
-   result := funcsql.openSQL(cmd,'valor', conexao);
-end;
-}
 
 function getParamBD(nParametro, loja: String; conexao : TADOConnection):String;
 var
@@ -234,13 +222,6 @@ begin
    query.Free;
 end;
 
-{
-procedure getComboBoxLojas (Connection:TADOConnection; lnTodas:Boolean; lnNenhuma:Boolean; user:String; cb:TadLabelComboBox);
-begin
-   cb.Items := getNomeLojas(Connection, lnTodas, lnNenhuma, user, '');
-   cb.ItemIndex := 0;
-end;
-}
 function getNomeLojas2(Connection:TADOConnection; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario:String): Tstrings;
 var
    cmd:String;

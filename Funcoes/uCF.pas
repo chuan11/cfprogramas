@@ -5,8 +5,7 @@ interface
    uses ADODB, Classes, sysutils, Dialogs, forms, DBGrids,
         ComCTRLs, mxExport, adLabelComboBox, windows, QStdCtrls, DB, DBCtrls, Controls, messages, adLabelCheckListBox,
         IdBaseComponent, IdComponent, IdRawBase, IdRawClient, IdIcmpClient, IdTelnet, SoftDBGrid,
-        uMain, funcsql, uListaFornecedores, funcDatas, funcoes, uSelecionaUo
-       ;
+        uMain, funcsql, uListaFornecedores, funcDatas, funcoes, uSelecionaUo;
 
    function ajustaCodigoNCM(isRef, ncm_sh:String):boolean;
    function alterarModPagamento(uo, seqtransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String):boolean;
@@ -26,7 +25,7 @@ interface
    function getNomeImpressoraNFe():String;
    function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
    function getTotaisVendaAvaria(lojas:TadLabelComboBox; datai, dataf:Tdate; tabela:String):String;
-   function getOperadoresPorCaixa(qr:TADOQuery; uo, caixa:String; dt: TDateTimePicker):TdataSet;
+   procedure getOperadoresPorCaixa(tb:TADOTable; uo, caixa:String; dti: TDateTimePicker);
    function getPcProd(uo, codigo, preco:String):String;
    function getTotalCartaoPorModo(tb:TADOTable):TStringlist;
    function insereModPagamento (uo, seqTransacao, codNovaModalidade, valor, numParcelas,  dataTrans:String):boolean;
@@ -47,8 +46,11 @@ interface
    procedure logAlteracoesBD(conexao:TADOConnection; tela, usuario, alteracao:String);
    procedure listarPrecosAlteradosPoPeriodo(qr:TADOQuery; uo,preco:String; data:Tdate);
    procedure listaRecebimentosCaixa(tb:TADOTAble; uo, caixa:String; dti, dtf: TDateTimePicker; listaSoCartao, removeTrocos, listaSangria:boolean);
-   procedure getProdAvariadosPAraVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
+   procedure getProdAvariadosParaVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
 
+   procedure getSomatorioValoresCaixa(tb, tbdestino, cd_tpm:String);
+   procedure getPagamentosDoCaixa(tb, tbTotalRec :TADOTable);
+   procedure getSangriasDoCaixa(tb, tbTotSangria :TADOTable);
 
 implementation
 
@@ -63,7 +65,7 @@ begin
           quotedStr('fmPrecos.Uos' + TpPreco) +
           ' order by uo.cd_uo';
 
-   ds := funcSQl.getDataSetQ(cmd, fmMain.Conexao);
+//   ds := funcSQl.getDataSetQ(cmd, fmMain.Conexao);
 
    ds.First();
    while (ds.Eof = false ) do
@@ -307,9 +309,11 @@ function getItensDeUmaNota(isNota:String):TDataSet;
 var
    cmd:String;
 begin
-   cmd := 'Select dmovi.is_ref, crefe.cd_ref, crefe.ds_ref, crefe.ncm_sh from dmovi (nolock)'+
+   cmd := 'Select dmovi.is_ref, crefe.cd_ref, crefe.ds_ref, crefe.ncm_sh ' +#13+
+          'from dmovi (nolock) '+#13+
           'inner join crefe (nolock) '+
-          'on dmovi.is_Ref = crefe.is_ref where dmovi.is_Nota = ' + isNota;
+          'on dmovi.is_Ref = crefe.is_ref ' +
+          'where dmovi.is_Nota = ' + isNota;
    result := funcSql.getDataSetQ( cmd, fmMain.Conexao);
 end;
 
@@ -353,8 +357,8 @@ begin
    ' dnota.cd_cfo,' +#13+
    ' dnota.dt_entsai as [Entrada/Saida],' +#13+
    ' dnota.VL_DSPEXTRA,' +#13+
-   ' case when is_fildest <> 0 then is_fildest else dnota.cd_pes end as cd_pes, '+#13+
-   ' case when is_fildest <> 0 then ( select nm_pes from dspes D where d.cd_pes = dnota.is_fildest) ' +
+   ' case when is_fildest > 0 then is_fildest else dnota.cd_pes end as cd_pes, '+#13+
+   ' case when is_fildest > 0 then ( select nm_pes from dspes D where d.cd_pes = dnota.is_fildest) ' +
    ' else ( select nm_pes from dspes D where d.cd_pes = dnota.cd_pes) end as [Emissor/Destino],'+#13+   ' vl_nota as Valor,' +#13+
    ' dnota.codigo_nfe,' +#13+
    ' zcf_tbuo.ds_uo as Loja,' +#13+
@@ -561,16 +565,24 @@ begin
    ds.free;
    result := lista;
 end;
-function getOperadoresPorCaixa(qr:TADOQuery; uo, caixa:String; dt: TDateTimePicker):TdataSet;
+
+procedure getOperadoresPorCaixa(tb:TADOTable; uo, caixa:String; dti: TDateTimePicker);
 var
    cmd:String;
 begin
+   if (tb.tablename <> '') then
+      tb.close;
+
+   cmd := 'dataSessaoCaixa smallDateTime, descEstacao varchar(20), nm_usu varchar(50)';
+   tb.tablename:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
+
    cmd :=
-   ' select  c.descEstacao, dsusu.nm_usu from sessoesdecaixa S with(nolock)' +
+   ' insert ' +
+   ' select  c.descEstacao, dsusu.nm_usu, sessoesdecaixa.dataSessaoCaixa from sessoesdecaixa S with(nolock)' +
    ' inner join caixas C  with(nolock) on s.codLoja = c.codLoja and  s.codCaixa = c.codCaixa '+
    ' inner join dsusu with(nolock) on s.codUsuario = dsusu.cd_pes '+
    ' where'+
-   ' s.dataSessaoCaixa=' + funcDatas.dateToSqlDate(dt.date);
+   ' s.dataSessaoCaixa=' + funcDatas.dateToSqlDate(dti.date);
 
    if (caixa <> '') then
       cmd := cmd + ' and s.codCaixa = ' + caixa;
@@ -578,8 +590,8 @@ begin
    if (uo <> '') then
       cmd := cmd + ' and  s.codLoja = ' + uo ;
 
-   cmd := cmd + ' Order by descEstacao';
-   result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+   cmd := cmd + ' Order by dataSessaoCaixa, descEstacao';
+   funcSQL.execSQL(cmd, fmMain.conexao);
 end;
 
 
@@ -600,23 +612,24 @@ begin
    result := aux;
 end;
 
-
 procedure listaRecebimentosCaixa(tb:TADOTAble; uo, caixa:String; dti, dtf: TDateTimePicker; listaSoCartao, removeTrocos, listaSangria:boolean);
 var
    cmd:String;
    ds:TdataSet;
 begin
+   screen.cursor:= crHourglass;
+
+// criar a tabela de vendas
    if (tb.TableName <> '') then
       tb.Close();
 
-   ds := uCF.getPreviaGeralCaixa( uo, caixa, dti.date, dtf.date, false, listaSoCartao, false);
-
    cmd := '(codLoja int, descEstacao varchar(20), cd_mve int, ds_mve varchar(30), dataSessaoCaixa smallDateTime, seqtransacaoCaixa int,'+
-          ' seqModPagtoPorTransCaixa int, Valor money, numParcelas varchar(03), tefMagnetico varchar(1), seqTefTransCaixa int )';
-
+          ' seqModPagtoPorTransCaixa int, Valor money, numParcelas varchar(03), tefMagnetico varchar(1), seqTefTransCaixa int, cd_tpm varchar(01) )';
    tb.tablename:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
 
-   screen.cursor:= crHourglass;
+
+   ds := uCF.getPreviaGeralCaixa( uo, caixa, dti.date, dtf.date, true, false, listaSangria);
+//             getPreviaGeralCaixa( uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
    tb.open();
    while (ds.eof = false) do
    begin
@@ -631,18 +644,22 @@ begin
                        ds.fieldByname('Valor').AsString,
                        ds.fieldByname('numParcelas').AsString,
                        ds.fieldByname('tefMagnetico').AsString,
-                       ds.fieldByname('seqTefTransCaixa').AsString
+                       ds.fieldByname('seqTefTransCaixa').AsString,
+                       ds.fieldByname('cd_tpm').AsString
                      ]);
       ds.next();
    end;
    ds.free();
 
-   if ( removeTrocos = true) then
+   if (removeTrocos = true) then
    begin
       tb.close;
       funcSQl.execSQL('delete from ' + tb.tableName + ' where valor <=0', fmMain.conexao);
       tb.open();
    end;
+
+   cmd := 'select sum(';
+
 
    screen.cursor:= crDefault;
 end;
@@ -658,7 +675,7 @@ begin
   if (caixa = '') then
      caixa := '0';
 
-   cmd := ' exec stoListarPreviaGeralCaixa_CF';
+   cmd := 'exec stoListarPreviaGeralCaixa_CF2';
 
    if (uo <> '' )then
       cmd := cmd + ' @dsLojas = ' + Quotedstr( 'transacoesDoCaixa.codloja = '+ uo)
@@ -670,8 +687,13 @@ begin
                 ', @DataFinal = '   +  funcDatas.dateToSqlDate(dataf) +
                 ', @CodCaixa = ' +caixa+
                 ', @CodOperador = 0' +
-                ', @listaVendaPMaracanau = ' + BoolToStr(listaVendaPMaracanau); //; +
-//                ', @listaSoCartao = ' + boolToStr(listaSomenteCartao);
+                ', @listaVendaPMaracanau = ' + BoolToStr(listaVendaPMaracanau) ;
+
+   if ( listaSomenteCartao = true) then
+     cmd := cmd + ', @listaSoCartao = ' + boolToStr(listaSomenteCartao);
+
+   if ( listaSangria = true) then
+     cmd := cmd + ', @listaSangria = ' + boolToStr(listaSangria);
 
    result :=  funcSQL.getDataSetQ(cmd, fmMain.conexao);
 end;
@@ -843,7 +865,7 @@ begin
    result := aux;
 end;
 
-procedure getProdAvariadosPAraVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
+procedure getProdAvariadosParaVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
 var
    cmd :String;
    i:integer;
@@ -907,6 +929,30 @@ function getNomeImpressoraNFe():String;
 begin
    result := getParamBD('comum.impNFe', getIsUo(true), fmMain.conexao);
 end;
+
+
+procedure getSomatorioValoresCaixa(tb, tbdestino, cd_tpm:String);
+var
+   cmd:String;
+begin
+   cmd :=
+   ' insert ' + tbDestino +
+   ' select ds_mve, sum(valor) as valor from ' + tb +
+   ' where cd_tpm = ' +cd_tpm +
+   ' group by ds_mve order by ds_mve';
+end;
+
+
+procedure getPagamentosDoCaixa(tb, tbTotalRec :TADOTable);
+begin  //
+
+end;
+
+procedure getSangriasDoCaixa(tb, tbTotSangria :TADOTable);
+begin //
+
+end;
+
 
 
 end.

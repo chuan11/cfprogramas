@@ -61,7 +61,7 @@ type
     procedure CarregaListaLojas(sender:tobject);
     procedure clbPc01Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure AdicionarItemAoReajuste(sender:Tobject; cod,des,pcAtual,pc01,pc02,pc03,is_ref,custo:string);
+    procedure AdicionarItemAoReajuste(cod, des, pcAtual, pc01, pc02, pc03, is_ref, custo: string);
     procedure LimparTabela(Sender:Tobject);
     procedure btNovoClick(Sender: TObject);
     function  getCodigoPreco():String;
@@ -74,7 +74,11 @@ type
     procedure clbPc02Click(Sender: TObject);
     procedure clbPc03Click(Sender: TObject);
     procedure cbDtExpPrecoClick(Sender: TObject);
-procedure chamaLancamentoDePrecos();    
+    procedure getPrecosDeUmaNota(isNota:String);
+    procedure getDadosItens(uo, cd_ref, preco:String);
+    procedure chamaLancamentoDePrecos();
+
+
   private
      is_oap: real;
      Is_alp:real;
@@ -88,7 +92,7 @@ var
   DS:TdataSet;
 implementation
 
-uses umain, uPrecoPorPedido, uReajuste, uListaItensPorNota, uCF;
+uses umain, uPrecoPorPedido, uReajuste, uListaItensPorNota, uCF, uGetNotas;
 
 {$R *.dfm}
 
@@ -170,19 +174,23 @@ begin
   end;
 end;
 
+
+procedure TfmLancaPrecos.getDadosItens(uo, cd_ref, preco:String);
+begin
+   DS:= uCF.getDadosProd( uo, cd_ref, preco);
+   if  (ds.IsEmpty = false)   then
+   begin
+      edDesc.text := DS.fieldByName('Descricao').asString;
+      edPcNovo.setfocus;
+   end
+   else
+      limpaCampos(nil);
+end;
+
 procedure TfmLancaPrecos.edCodigoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
    if key = vk_return then
-   begin
-      DS:= uCF.getDadosProd( funcoes.getCodUO(cbLoja), edCodigo.Text, fmMain.getCodPreco(cbPc01));
-      if  (ds.IsEmpty = false)   then
-      begin
-         edDesc.text := DS.fieldByName('Descricao').asString;
-         edPcNovo.setfocus;
-      end
-      else
-         limpaCampos(sender);
-   end;
+      getDadosItens( funcoes.getCodUO(cbLoja), edCodigo.Text, fmMain.getCodPreco(cbPc01));
 end;
 
 function TfmLancaPrecos.AjustaPreco(valor,percentual:string;arredondar:boolean):string;
@@ -419,13 +427,13 @@ begin
 
       // esconder a coluna de precos
       grid.Columns[grid.Columns.Count -2 ].Visible := false;
-      
+
       for i:=0 to grid.Columns.Count -1 do
         grid.Columns[i].Title.Font.Style := [fsBold];
    end;
 end;
 
-procedure TfmLancaPrecos.AdicionarItemAoReajuste(sender: Tobject; cod, des, pcAtual, pc01, pc02, pc03, is_ref, custo: string);
+procedure TfmLancaPrecos.AdicionarItemAoReajuste(cod, des, pcAtual, pc01, pc02, pc03, is_ref, custo: string);
 var
    erro:boolean;
 begin
@@ -458,7 +466,7 @@ procedure TfmLancaPrecos.edPcNovoKeyDown(Sender: TObject; var Key: Word;Shift: T
 begin
     if (key = vk_return)  then
     begin
-       AdicionarItemAoReajuste( sender,
+       AdicionarItemAoReajuste(
                            edCodigo.text,
                            edDesc.text,
                            ds.fieldByname('Preco').asString,
@@ -527,17 +535,8 @@ begin
       query.Next;
    end;
    grid.Visible := true
-
 end;
 
-procedure TfmLancaPrecos.Gerarprecoapartirdeumanota1Click(Sender: TObject);
-begin
-   if fmListaItensNota = nil then
-   begin
-      Application.CreateForm(TfmListaItensNota, fmListaItensNota);
-      fmListaItensNota.show;
-   end;
-end;
 
 function TfmLancaPrecos.getLojasDeumPreco(Sender: Tobject;itens: TadLabelCheckListBox): String;
 var
@@ -574,8 +573,40 @@ begin
 end;
 
 
+procedure TfmLancaPrecos.getPrecosDeUmaNota(isNota:String);
+var
+   preco:String;
+   ds:TdataSet;
+begin
+   ds:= uCF.getItensDeUmaNota(isNota);
+   if ds.IsEmpty = false then
+   begin
+      ds.First;
+      while ds.Eof = false do
+      begin
+         preco:= ucf.getPcProd( funcoes.getCodUO(cbLoja), ds.fieldByName('cd_ref').asString, funcoes.getCodPc(cbPc01) );
+         adicionarItemAoReajuste(ds.fieldByName('cd_ref').asString,
+                                 ds.fieldByName('ds_ref').asString,
+                                 ajustaPreco( preco, '1,00', false ),
+                                 ajustaPreco( preco, '1,00', false ),
+                                 ajustaPreco( preco, '1,'+edVlMrg02.text, false ),
+                                 ajustaPreco( preco, '1,'+edVlMrg03.text, false ),
+                                 ds.fieldByName('is_ref').asString,
+                                 '0');
+         ds.next();
+      end;
+      ds.free();
+   end
+end;
 
-
+procedure TfmLancaPrecos.Gerarprecoapartirdeumanota1Click(Sender: TObject);
+var
+   cmd:String;
+begin
+   cmd := uGetNotas.getIsNota();
+   if (cmd <> '') then
+      getPrecosDeUmaNota(cmd);
+end;
 
 
 end.

@@ -47,8 +47,6 @@ uses uMain, Uprecoswell, uCF, Math;
 
 procedure TfmListaItensNota.getprecosDeUmaNota;
 var
-//   cmd:String;
-//   tecla:Word;
    qr:TadoQuery;
 begin
 {   cmd := ' select cd_ref, dbo.z_cf_funObterPrecoProduto_cf('+ funcsql.getCodPreco(cbPreco)  +'  , is_ref, '+ getCodUo(cbLoja)+' ,0) as preco from crefe with(nolock) where ' +

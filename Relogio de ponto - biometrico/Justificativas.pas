@@ -405,6 +405,9 @@ end;
 procedure TJustificativa.dtp1Change(Sender: TObject);
 begin
    dtp2.DateTime := dtp1.DateTime;
+   dtRefFolga.Date := DTP1.Date -1;
+   dtRefFolga.MinDate := DTP1.Date - 30;
+   dtRefFolga.MaxDate := DTP1.Date - 1;
 end;
 
 procedure TJustificativa.incluiFuncionario(matricula, nome:String);
@@ -435,7 +438,6 @@ begin
    sg1.Cells[8,sg1.RowCount-1] := copy(cbJust.items[cbJust.itemindex],01,30);
 
    sg1.Cells[10,sg1.RowCount-1] := edit2.Text; // OBSERVACAO
-
 
    sg1.Cells[13, sg1.RowCount-1] := datetostr(dtRefFolga.Date);
    SG1.RowCount :=    SG1.RowCount+1;
@@ -548,9 +550,6 @@ procedure TJustificativa.cbJustClick(Sender: TObject);
 begin
    dtRefFolga.Visible :=  (getCodJust() = COD_FOLGA );
    lbRefFolga.Visible := dtRefFolga.Visible;
-   dtRefFolga.Date := DTP1.Date -1;
-   dtRefFolga.MinDate := DTP1.Date - 30;
-   dtRefFolga.MaxDate := DTP1.Date - 1;
 end;
 
 

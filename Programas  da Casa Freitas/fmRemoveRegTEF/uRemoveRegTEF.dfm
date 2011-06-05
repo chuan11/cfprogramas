@@ -1,6 +1,6 @@
 object fmRemRegTEF: TfmRemRegTEF
-  Left = 610
-  Top = 257
+  Left = 477
+  Top = 259
   Width = 800
   Height = 480
   BorderIcons = [biSystemMenu, biMinimize]
