@@ -75,7 +75,7 @@ type
 
 var
   fmAjustaNota: TfmAjustaNota;
-  IS_GRUPO_PRIVILEGIADO:boolean;
+  IS_GRUPO_PERMITIDO:boolean;
 implementation
 
 uses uMain, uListaFornecedores, uCF;
@@ -252,7 +252,7 @@ end;
 procedure TfmAjustaNota.FormCreate(Sender: TObject);
 begin
   cbOperIntegrada.Items := funcsql.getOperIntegradasFiscais(fmMain.Conexao);
-  IS_GRUPO_PRIVILEGIADO := (pos(fmMain.getGrupoLogado(), fmMain.getParamBD('fmAjustaNota.GrupoAjusteCDPES','') ) > 0);
+  IS_GRUPO_PERMITIDO := fmMain.isGrupoPermitido( fmMain.Ajustedenotas1.Tag );
 end;
 
 procedure TfmAjustaNota.btOkClick(Sender: TObject);
@@ -287,8 +287,8 @@ begin
             strStNota := '';
 
          cmd := ' Update dnota set ' +
-                ' nr_docf =' + edNumero.Text + ' , ' +
-                ' sr_docf =' + quotedstr(edSerie.Text) + ' , ' +
+                ' nr_docf =' + trim(edNumero.Text) + ' , ' +
+                ' sr_docf =' + quotedstr( trim(edSerie.Text)) + ' , ' +
                 ' cd_cfo = ' + edCFO.Text + ' , ';
 
          if (btEmisDest.Enabled = true) then
@@ -385,9 +385,9 @@ end;
 
 function TfmAjustaNota.isGrupoprivilegiado: boolean;
 begin
-    if (IS_GRUPO_PRIVILEGIADO = false) then
+    if (IS_GRUPO_PERMITIDO = false) then
        msgTela('', 'Você não tem acesso a essa função', MB_OK + MB_ICONERROR);
-    result := IS_GRUPO_PRIVILEGIADO;
+    result := IS_GRUPO_PERMITIDO;
 end;
 
 end.

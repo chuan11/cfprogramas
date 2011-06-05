@@ -238,7 +238,7 @@ object Form1: TForm1
     LoginPrompt = False
     Provider = 'SQLOLEDB.1'
     OnWillExecute = ConexaoWellWillExecute
-    Left = 40
-    Top = 312
+    Left = 8
+    Top = 256
   end
 end

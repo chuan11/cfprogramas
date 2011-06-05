@@ -211,6 +211,26 @@ object fmCad: TfmCad
       Font.Style = [fsBold]
       ParentFont = False
     end
+    object lbUser: TLabel
+      Left = 324
+      Top = 7
+      Width = 13
+      Height = 13
+      Caption = '---'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clMaroon
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Visible = False
+    end
+    object Bevel2: TBevel
+      Left = 6
+      Top = 29
+      Width = 340
+      Height = 2
+    end
     object btIncEsq: TfsBitBtn
       Left = 149
       Top = 5

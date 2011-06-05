@@ -59,6 +59,7 @@ type
     tbVendasCartaonumParcelas: TStringField;
     tbVendasCartaotefMagnetico: TStringField;
     tbVendasCartaoseqTefTransCaixa: TIntegerField;
+    tbVendasCartaotp_mve: TStringField;
 
     procedure btOkClick(Sender: TObject);
     procedure setPerfil(p:integer);
@@ -93,6 +94,7 @@ var
   fmRelGeral: TfmRelGeral;
   PERFIL:integer;
   IS_GRUPO_PERMITIDO_CARTAO:boolean;
+  
 implementation
 uses uMain, uCF, funcoes, funcsql;
 
@@ -224,10 +226,13 @@ begin
    cbDetAvaForn.Visible := false;
 //   GroupBox1.Width := dti.Width + 50;
 
-   IS_GRUPO_PERMITIDO_CARTAO :=  fmMain.isGrupoPermitido(fmMain.CargaDeDadosParaConciliao1.Tag);
+   IS_GRUPO_PERMITIDO_CARTAO :=  fmMain.isGrupoPermitido(PERFIL);
 
    if (IS_GRUPO_PERMITIDO_CARTAO = false) then
+   begin
       dti.MinDate :=  funcSQL.getDateBd(fmMain.Conexao)-2;
+      dtf.Enabled := false;
+   end;
 
    dti.Date := funcSQL.getDateBd( fmMain.Conexao);
    dtf.Date := dti.Date;
@@ -247,7 +252,7 @@ end;
 
 procedure TfmRelGeral.cbLojasClick(Sender: TObject);
 begin
-   if (perfil = 3) then
+   if (perfil = fmMain.PagamentosEmCarto1.Tag ) then
      getDescCaixas();
 end;
 
@@ -261,10 +266,39 @@ end;
 procedure TfmRelGeral.listaVendasEmCartao;
 var
    totais,param:Tstringlist;
+   qrOperadores, qrCartoes, qrPagamentos, qrSangria: TADOQuery;
    ds:TdataSet;
    i:integer;
 begin
-   uCF.listaRecebimentosCaixa( tbVendasCartao, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, true, true, false );
+   qrOperadores := TADOQuery.Create(nil);
+   qrCartoes := TADOQuery.Create(nil);
+   qrSangria := TADOQuery.Create(nil);
+   qrPagamentos := TADOQuery.Create(nil);
+
+   uCF.listaRecebimentosCaixa( tbVendasCartao, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, false, false, true );
+   if (tbVendasCartao.IsEmpty = false) then
+   begin
+      ds:= uCF.getOperadoresPorCaixa(qrOperadores, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti );
+
+      param := TStringlist.Create();
+      param.add( funcoes.getNomeUO(cbLojas));
+      param.add( funcoes.getNomeCX(cbCaixas));
+      param.add( dateToStr(dti.date));
+      param.add( fmMain.getNomeUsuario() );
+
+      totais := uCF.getTotalCartaoPorModo(tbVendasCartao);
+      for i:=0 to Totais.Count-1 do
+         param.Add(totais[i]);
+
+      fmMain.impressaoRaveQr2( tbVendasCartao, ds, 'rpVendasEmCartao',param);
+      ds.Free;
+      totais.Free();
+      param.Free();
+   end
+   else
+     funcoes.msgTela('', MSG_SEM_DADOS, mb_ok + MB_ICONERROR);
+
+{   uCF.listaRecebimentosCaixa( tbVendasCartao, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, true, true, false );
    if (tbVendasCartao.IsEmpty = false) then
    begin
       ds:= uCF.getOperadoresPorCaixa(qr, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti );
@@ -286,6 +320,7 @@ begin
    end
    else
       funcoes.msgTela('', MSG_SEM_DADOS, mb_ok + MB_ICONERROR);
+}
 end;
 
 procedure TfmRelGeral.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -311,8 +346,8 @@ begin
     case PERFIL of
        1:gerarVendaAvarias();
        2:calCulaValoresAvarias();
-       3:listaVendasEmCartao();
-       4:cargaDadosConciliacao
+       406:listaVendasEmCartao();
+       407:cargaDadosConciliacao
     end;
   end
   else
@@ -328,8 +363,8 @@ begin
    fmRelGeral.Tag := fmMain.Cargadedadosparaconciliao1.Tag;
    case perfil of
       2:ajustaTelaParaAvarias();
-      3:ajustaTelaParaRelCartoes();
-      4:ajustaTelaParaCargaConciliacao();
+      406:ajustaTelaParaRelCartoes();
+      407:ajustaTelaParaCargaConciliacao();
    end;
 end;
 

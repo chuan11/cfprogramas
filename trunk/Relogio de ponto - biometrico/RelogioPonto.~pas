@@ -52,6 +52,7 @@ type
     edPontodig: TadLabelMaskEdit;
     Bevel1: TBevel;
     Cadastrodedigitais1: TMenuItem;
+    Batidasporlocalizacao1: TMenuItem;
 
     function  buscaEmComboBox(cb: TStrings; str: String):integer;
     function  getCartaoPonto(cb: TCustomComboBox): String;
@@ -109,6 +110,8 @@ type
     procedure Timer2Timer(Sender: TObject);
     procedure verificaAtualizacaoDoLancador();
     procedure Cadastrodedigitais1Click(Sender: TObject);
+    procedure Batidasporlocalizacao1Click(Sender: TObject);
+    procedure AbrefmFolhaPonto(perfil:integer);
 
   private
     { Private declarations }
@@ -990,10 +993,7 @@ begin
    begin
       Application.CreateForm( TfmBatidas, fmBatidas);
       fmBatidas.Show();
-      
-
       fmMain.Hide();
-
     end;
 end;
 
@@ -1019,18 +1019,23 @@ begin
       RvProject.ProjectFile := 'C:\ProgramasDiversos\relatoriosPCF.rav'
    else
       RvProject.ProjectFile := 'relatoriosPCF.rav';
-///   RvProject.ExecuteReport(nomeRelatorio);
+   RvProject.ExecuteReport(nomeRelatorio);
 end;
+
+
+procedure TfmMain.AbrefmFolhaPonto(perfil: integer);
+begin
+   Application.CreateForm(TfmImpFolhaPonto, fmImpFolhaPonto);
+   fmImpFolhaPonto.Show;
+   fmImpFolhaPonto.setPerfil(perfil);
+   fmMain.Hide;
+end;
+
 
 procedure TfmMain.FolhaPonto1Click(Sender: TObject);
 begin
    if ( verificarSenha() <> '' ) then
-   begin
-      Application.CreateForm(TfmImpFolhaPonto, fmImpFolhaPonto);
-      fmImpFolhaPonto.Show;
-      fmImpFolhaPonto.setPerfil(1);
-      fmMain.Hide;
-    end;
+      abrefmFolhaPonto(1);
 end;
 
 function TfmMain.isAntecipacaoSaida(cartao, data, batida: String): integer;
@@ -1125,6 +1130,13 @@ begin
       fmCad.Show();
       fmCad.setUser(user);
    end;
+end;
+
+
+procedure TfmMain.Batidasporlocalizacao1Click(Sender: TObject);
+begin
+   if ( verificarSenha() <> '' ) then
+      abrefmFolhaPonto(2);
 end;
 
 

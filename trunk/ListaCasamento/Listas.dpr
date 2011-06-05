@@ -13,15 +13,19 @@ uses
   Unit8 in 'Unit8.pas' {Form8},
   uBaixaAvulsa in 'uBaixaAvulsa.pas' {fmBaixaAvulsa},
   uPRelacionadas in 'uPRelacionadas.pas' {fmPRelacionadas},
-
-  sysUtils, funcoes;
-
-
-
+  sysUtils, funcoes, windows;
 {$R *.res}
+
 begin
-  Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
-  Application.CreateForm(TfmPRelacionadas, fmPRelacionadas);
-  Application.Run;
+   if (length(ParamStr(1)) = 0) and ( FileExists('upgrade.exe') ) then
+   begin
+      winExec(pchar('cmd /c Upgrade.exe *** '+ ParamStr(0) ), sw_hide);
+      application.terminate;
+   end
+   else begin
+      Application.Initialize;
+      Application.Title := 'Programas Loja';
+      Application.CreateForm(TForm1, Form1);
+      Application.Run;
+   end;
 end.

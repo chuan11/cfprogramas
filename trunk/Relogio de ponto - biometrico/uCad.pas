@@ -11,7 +11,6 @@ uses
 type
   TfmCad = class(TForm)
     memoLog: TMemo;
-    btVerify: TButton;
     btIdentify: TButton;
     btClearDB: TButton;
     btClearLog: TButton;
@@ -39,6 +38,7 @@ type
     lbLadoAIncluir: TLabel;
     lbUser: TLabel;
     Bevel2: TBevel;
+    btVerify: TButton;
     procedure mnOptionsClick(Sender: TObject);
     procedure btClearDBClick(Sender: TObject);
     procedure btEnrollClick(Sender: TObject);
@@ -337,7 +337,7 @@ begin
   btEnroll.Enabled := false;
   btExtract.Enabled := true;
   btIdentify.Enabled := false;
-  btVerify.Enabled := false;
+//  btVerify.Enabled := false;
 
   // Extracting template from image.
   if fmCad.ckAutoExtract.Checked then

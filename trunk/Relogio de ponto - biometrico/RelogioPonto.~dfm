@@ -343,6 +343,10 @@ object fmMain: TfmMain
         Caption = '&Batidas'
         OnClick = Batidas1Click
       end
+      object Batidasporlocalizacao1: TMenuItem
+        Caption = 'Batidas por localiza'#231#227'o'
+        OnClick = Batidasporlocalizacao1Click
+      end
       object Ocorrncias1: TMenuItem
         Caption = '&Ocorr'#234'ncias'
         OnClick = Ocorrncias1Click

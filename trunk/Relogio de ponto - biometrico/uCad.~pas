@@ -37,6 +37,8 @@ type
     btRemDir: TfsBitBtn;
     Label3: TLabel;
     lbLadoAIncluir: TLabel;
+    lbUser: TLabel;
+    Bevel2: TBevel;
     procedure mnOptionsClick(Sender: TObject);
     procedure btClearDBClick(Sender: TObject);
     procedure btEnrollClick(Sender: TObject);
@@ -73,6 +75,7 @@ type
     procedure preparaParaIncluirLado(lado:String);
     procedure btIncEsqClick(Sender: TObject);
     procedure btIncDirClick(Sender: TObject);
+    procedure setUser(user:String);
   private
   public
   end;
@@ -461,6 +464,11 @@ end;
 procedure TfmCad.btIncDirClick(Sender: TObject);
 begin
    preparaParaIncluirLado('Direito');
+end;
+
+procedure TfmCad.setUser(user: String);
+begin
+   lbUser.Caption := user;
 end;
 
 end.

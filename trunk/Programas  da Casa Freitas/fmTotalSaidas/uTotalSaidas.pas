@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, TFlatButtonUnit,funcoes, funcsql,
-  StdCtrls;
+  StdCtrls, ExtCtrls, adLabelComboBox;
 
 type
   TfmTotalSaidas = class(TForm)
@@ -17,10 +17,12 @@ type
     lbDados: TLabel;
     Label3: TLabel;
     lbTotal: TLabel;
+    cbLoja: TadLabelComboBox;
+    Bevel1: TBevel;
     procedure FormCreate(Sender: TObject);
     procedure FlatButton1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure calcularVenda(Sender:Tobject; is_ref, uo:String);
+    procedure calcularVenda(is_ref, uo:String);
   private
     { Private declarations }
   public
@@ -39,11 +41,12 @@ procedure TfmTotalSaidas.FormCreate(Sender: TObject);
 var
    aux :string;
 begin
-    aux := DateToStr(now-60 );
-    delete(aux,01,02);
-    insert('01',aux,01);
-    dt01.Date := StrToDate(aux);
-    dt02.Date := now;
+   fmMain.getListaLojas(cbLoja, false, false, '');
+   aux := DateToStr(now-60 );
+   delete(aux,01,02);
+   insert('01',aux,01);
+   dt01.Date := StrToDate(aux);
+   dt02.Date := now;
 end;
 
 procedure TfmTotalSaidas.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -53,13 +56,15 @@ begin
 end;
 
 
-procedure TfmTotalSaidas.calcularVenda(Sender:Tobject; is_ref, uo:String);
+procedure TfmTotalSaidas.calcularVenda(is_ref, uo:String);
 var
    lst:TStrings;
 begin
+   if( uo = '') then
+      uo := '10033674';
+
    fmUO := UO;
    fmIS_REF := is_ref;
-
    lst := funcsql.GetValoresSQL(lst, ' Select crefe.cd_ref, crefe.ds_ref,  dbo.Z_CF_funObterVendaPorPeriodo( '+ fmUO +' , '+
                                       fmIS_REF   +' , '+
                                       funcoes.DateTimeToSqlDateTime(dt01.Date,'')   +', '+
@@ -76,7 +81,7 @@ end;
 
 procedure TfmTotalSaidas.FlatButton1Click(Sender: TObject);
 begin
-   calcularVenda(nil, fmIS_REF, fmUO);
+   calcularVenda(fmIS_REF, funcoes.getCodUO(cbLoja));
 end;
 
 

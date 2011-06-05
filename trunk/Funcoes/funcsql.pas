@@ -222,13 +222,6 @@ begin
    query.Free;
 end;
 
-{
-procedure getComboBoxLojas (Connection:TADOConnection; lnTodas:Boolean; lnNenhuma:Boolean; user:String; cb:TadLabelComboBox);
-begin
-   cb.Items := getNomeLojas(Connection, lnTodas, lnNenhuma, user, '');
-   cb.ItemIndex := 0;
-end;
-}
 function getNomeLojas2(Connection:TADOConnection; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario:String): Tstrings;
 var
    cmd:String;
@@ -753,7 +746,7 @@ var
 begin
    randomize;
    i:= random(99999);
-   result := '#' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
+   result := 'a' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
 end;
 
 procedure exportaQuery(qr:TADOQuery;expParaAqquivo:boolean; nArquivo:String );

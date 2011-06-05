@@ -356,7 +356,7 @@ object fmMain: TfmMain
   end
   object RvDSConn2: TRvDataSetConnection
     RuntimeVisibility = rtDeveloper
-    Left = 120
+    Left = 112
     Top = 344
   end
   object Timer1: TTimer
@@ -374,5 +374,15 @@ object fmMain: TfmMain
     DocInfo.Producer = 'Nevrona Designs'
     Left = 157
     Top = 344
+  end
+  object RvDSConn3: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    Left = 80
+    Top = 376
+  end
+  object RvDSConn4: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    Left = 112
+    Top = 376
   end
 end

@@ -67,17 +67,6 @@ object fmCad: TfmCad
     ScrollBars = ssVertical
     TabOrder = 0
   end
-  object btVerify: TButton
-    Left = 194
-    Top = 507
-    Width = 81
-    Height = 25
-    Caption = 'Verify'
-    Enabled = False
-    TabOrder = 1
-    Visible = False
-    OnClick = btVerifyClick
-  end
   object btIdentify: TButton
     Left = 100
     Top = 506
@@ -85,7 +74,7 @@ object fmCad: TfmCad
     Height = 25
     Caption = 'Identify'
     Enabled = False
-    TabOrder = 2
+    TabOrder = 1
     Visible = False
     OnClick = btIdentifyClick
   end
@@ -95,7 +84,7 @@ object fmCad: TfmCad
     Width = 81
     Height = 25
     Caption = 'Clear database'
-    TabOrder = 4
+    TabOrder = 3
     Visible = False
     OnClick = btClearDBClick
   end
@@ -105,7 +94,7 @@ object fmCad: TfmCad
     Width = 81
     Height = 25
     Caption = 'Clear log'
-    TabOrder = 5
+    TabOrder = 4
     Visible = False
     OnClick = btClearLogClick
   end
@@ -117,7 +106,7 @@ object fmCad: TfmCad
     Caption = 'Auto Extract'
     Checked = True
     State = cbChecked
-    TabOrder = 6
+    TabOrder = 5
     Visible = False
   end
   object btExtract: TButton
@@ -127,7 +116,7 @@ object fmCad: TfmCad
     Height = 25
     Caption = 'Extract template'
     Enabled = False
-    TabOrder = 3
+    TabOrder = 2
     Visible = False
     OnClick = btExtractClick
   end
@@ -163,14 +152,14 @@ object fmCad: TfmCad
     ParentCtl3D = False
     ParentFont = False
     Sorted = True
-    TabOrder = 8
+    TabOrder = 7
   end
   object pnDetCadastro: TPanel
     Left = 5
     Top = 58
     Width = 363
     Height = 59
-    TabOrder = 9
+    TabOrder = 8
     object Label1: TLabel
       Left = 7
       Top = 6
@@ -287,7 +276,7 @@ object fmCad: TfmCad
     Font.Style = []
     ParentCtl3D = False
     ParentFont = False
-    TabOrder = 10
+    TabOrder = 9
     OnChange = Edit1Change
   end
   object btVerificaCadastro: TBitBtn
@@ -296,7 +285,7 @@ object fmCad: TfmCad
     Width = 59
     Height = 46
     Caption = '&Consultar'
-    TabOrder = 11
+    TabOrder = 10
     OnClick = verificaCadastro
     NumGlyphs = 2
   end
@@ -305,7 +294,7 @@ object fmCad: TfmCad
     Top = 124
     Width = 363
     Height = 299
-    TabOrder = 12
+    TabOrder = 11
     Visible = False
     object image: TImage
       Left = 12
@@ -358,5 +347,14 @@ object fmCad: TfmCad
       TabOrder = 1
       OnClick = Button1Click
     end
+  end
+  object btVerify: TButton
+    Left = 267
+    Top = 434
+    Width = 81
+    Height = 25
+    Caption = 'Verify'
+    TabOrder = 12
+    OnClick = btVerifyClick
   end
 end

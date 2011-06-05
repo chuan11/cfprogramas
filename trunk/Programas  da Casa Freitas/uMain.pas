@@ -1,3 +1,4 @@
+// Provider=SQLOLEDB.1;Password=welladm;Persist Security Info=True;User ID=secrel;Initial Catalog=WellCfreitas;Data Source=125.0.0.200;Use Procedure for Prepare=1;Auto Translate=True;Packet Size=4096;Workstation ID=CPD-PC;Use Encryption for Data=False;Tag with column collation when possible=False
 unit uMain;
 
 interface
@@ -86,6 +87,8 @@ type
     Cargadedadosparaconciliao1: TMenuItem;
     ImprimirDANFE1: TMenuItem;
     RegistroSCAN1: TMenuItem;
+    RvDSConn3: TRvDataSetConnection;
+    RvDSConn4: TRvDataSetConnection;
 
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
@@ -138,6 +141,7 @@ type
     procedure impressaoRave(tb:TADOTable; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveQr(qr:TADOQuery; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveQr2(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings);
+    procedure impressaoRaveQr4(qr, qr2, qr3, qr4:TDataSet; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveTbQr(tb: TADOTable; qr:TADOQuery; nRelatorio:String; params:Tstrings);
     procedure impressaoRavePDF(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings;nmArquivo:String);
     procedure imprimirDANFE1Click(Sender:Tobject);
@@ -184,6 +188,7 @@ type
     procedure cargadedadosparaconciliao1Click(Sender: TObject);
     procedure deletarRegistrodecartoTEF1Click(Sender: TObject);
     procedure RegistroSCAN1Click(Sender: TObject);
+    procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);    
 
   private
     { Private declarations }
@@ -195,8 +200,8 @@ type
     { Public declarations }
   end;
 CONST
-   VERSAO = '11.05.02';
-   SUB_VERSAO = ' E';
+   VERSAO = '11.06.01';
+   SUB_VERSAO = ' B';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -225,7 +230,7 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
 
 function TfmMain.isGrupoPermitido(codTela: integer): boolean;
 begin
-   funcoes.gravaLog('Testando restricao da tela '+ intToStr(codTela)  +' result ' + boolToStr( not(TELAS_PERMITIDAS.Values[intToStr(codTela)] = '0'), true));
+   funcoes.gravaLog('isGrupoPermitido codTela: '+ intToStr(codTela)  +' result ' + boolToStr( (TELAS_PERMITIDAS.Values[intToStr(codTela)] = '0'), true));
    result := (TELAS_PERMITIDAS.Values[intToStr(codTela)] = '0')
 end;
 
@@ -259,8 +264,10 @@ begin
    begin
       fmMain.WindowState := wsNormal;
       is_logado := true;
-//      montarMenu('Matriz', 'walter', '10033589','10000592');
-        montarMenu('Matriz', 'walter', '10001008','10001593');
+      montarMenu('Matriz', 'walter', '10068438','10000592');
+
+//   montar menu na freitas
+//        montarMenu('Matriz', 'walter', '10001008','10001593');
 
       fmMain.Width := 900;
       fmMain.Height := 700;
@@ -395,6 +402,7 @@ begin
    deleteFile( ExtractFilePath(paramStr(0)) +'logs\' + ExtractFilename(ParamStr(0))  + '_log.txt'  );
    TIME_OUT_PROGRAMA := 60;
    PARAMS_APLICACAO := TStringlist.Create();
+   RvProject1.ProjectFile := 'C:\ProgramasDiversos\RelatoriosPCF.rav';
 end;
 
 function TfmMain.ehTelaPermitida(tag:string;  Telas:Tstrings): Boolean;
@@ -599,7 +607,7 @@ begin
       for i:=0 to params.Count-1 do
          RvProject1.SetParam(intToStr(i), params[i]);
 
-   RvProject1.ExecuteReport(nRelatorio);
+//   RvProject1.ExecuteReport(nRelatorio);
 end;
 
 procedure TfmMain.impressaoRaveQr(qr:TADOQuery; nRelatorio:String; params:Tstrings);
@@ -614,6 +622,16 @@ begin
    RvDSConn.DataSet := qr;
    chamaImpressaoRave(nRelatorio, params);
 end;
+
+procedure TfmMain.impressaoRaveQr4(qr, qr2, qr3, qr4:TDataSet; nRelatorio:String; params:Tstrings);
+begin
+   RvDSConn.DataSet := qr;
+   RvDSConn2.DataSet := qr2;
+   RvDSConn3.DataSet := qr3;
+   RvDSConn4.DataSet := qr4;
+   chamaImpressaoRave(nRelatorio, params);
+end;
+
 
 procedure TfmMain.impressaoRavePDF(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings;nmArquivo:String);
 begin
@@ -703,7 +721,7 @@ begin
    if (fmTotalSaidas  = nil) then
    begin
       Application.CreateForm( TfmTotalSaidas , fmTotalSaidas );
-      fmTotalSaidas.calcularVenda(nil, is_ref, uo);
+      fmTotalSaidas.calcularVenda(is_ref, uo);
       fmTotalSaidas.showModal;
    end;
 end;
@@ -890,7 +908,7 @@ var
 begin
    str := InputBox('','Entre com o novo número da versão:' ,  GetParamBD('comum.Versao','')) ;
    if str <> '' then
-     funcsql.execSQL('update zcf_paramGerais set valor = ' + quotedstr(str) +' where nm_param = ''comum.Versao'' ' , Conexao );
+      funcsql.execSQL('update zcf_paramGerais set valor = ' + quotedstr(str) +' where nm_param = ''comum.Versao'' ', Conexao );
 end;
 
 function TfmMain.getCdPesLogado(): String;
@@ -1256,7 +1274,7 @@ procedure TfmMain.PagamentosEmCartao1Click(Sender: TObject);
 begin
    Application.CreateForm(TfmRelGeral, fmRelGeral);
    fmRelGeral.show();
-   fmRelGeral.setPerfil(406);
+   fmRelGeral.setPerfil(Pagamentosemcarto1.Tag);
 end;
 
 procedure TfmMain.Cargadedadosparaconciliao1Click(Sender: TObject);
@@ -1299,26 +1317,30 @@ begin
       msgStatus('');
 end;
 
-procedure TfmMain.getListaLojas(cb:TadLabelComboBox; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario: String);
+procedure TfmMain.setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
 var
    achou:boolean;
    i:integer;
 begin
-   achou := false;
-   cb.Items.Clear();
-   cb.Items := funcSQL.getNomeLojas2( conexao, IncluirLinhaTodas, IncluiNenhuma, usuario );
+   if ( achou = false) then
+      cb.itemIndex := -1;
    for i:=0 to cb.Items.count-1 do
    begin
       cb.ItemIndex := i;
       if (funcoes.getCodUO(cb) = getUoLogada() ) then
       begin
-         achou := true;      
+         achou := true;
          break;
       end;
    end;
-   if ( achou = false) then
-      cb.itemIndex := -1;
+end;
 
+
+procedure TfmMain.getListaLojas(cb:TadLabelComboBox; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario: String);
+begin
+   cb.Items.Clear();
+   cb.Items := funcSQL.getNomeLojas2( conexao, IncluirLinhaTodas, IncluiNenhuma, usuario );
+   setaLojaLogadaNoComboBox(cb);
    cb.DropDownCount := cb.items.count;
 end;
 
