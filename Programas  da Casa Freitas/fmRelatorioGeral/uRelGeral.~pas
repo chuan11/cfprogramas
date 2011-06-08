@@ -47,19 +47,27 @@ type
     tbValoresAvariasFornecedor: TStringField;
     tbValoresAvarias_Totalfornecedor: TStringField;
     cbCaixas: TadLabelComboBox;
-    tbVendasCartao: TADOTable;
-    tbVendasCartaocodLoja: TIntegerField;
-    tbVendasCartaodescEstacao: TStringField;
-    tbVendasCartaocd_mve: TIntegerField;
-    tbVendasCartaods_mve: TStringField;
-    tbVendasCartaodataSessaoCaixa: TDateTimeField;
-    tbVendasCartaoseqtransacaoCaixa: TIntegerField;
-    tbVendasCartaoseqModPagtoPorTransCaixa: TIntegerField;
-    tbVendasCartaoValor: TBCDField;
-    tbVendasCartaonumParcelas: TStringField;
-    tbVendasCartaotefMagnetico: TStringField;
-    tbVendasCartaoseqTefTransCaixa: TIntegerField;
-    tbVendasCartaotp_mve: TStringField;
+    tbPreviaDeCaixa: TADOTable;
+    tbPreviaDeCaixacodLoja: TIntegerField;
+    tbPreviaDeCaixadescEstacao: TStringField;
+    tbPreviaDeCaixacd_mve: TIntegerField;
+    tbPreviaDeCaixads_mve: TStringField;
+    tbPreviaDeCaixadataSessaoCaixa: TDateTimeField;
+    tbPreviaDeCaixaseqtransacaoCaixa: TIntegerField;
+    tbPreviaDeCaixaseqModPagtoPorTransCaixa: TIntegerField;
+    tbPreviaDeCaixaValor: TBCDField;
+    tbPreviaDeCaixanumParcelas: TStringField;
+    tbPreviaDeCaixatefMagnetico: TStringField;
+    tbPreviaDeCaixaseqTefTransCaixa: TIntegerField;
+    tbPreviaDeCaixacd_tpm: TStringField;
+    tbOperadores: TADOTable;
+    tbTotRec: TADOTable;
+    tbSangrias: TADOTable;
+    tbPreviaDeCaixatp_mve: TStringField;
+    tbTotReccd_mve: TStringField;
+    tbTotRecvalor: TBCDField;
+    tbSangriascd_mve: TStringField;
+    tbSangriasvalor: TBCDField;
 
     procedure btOkClick(Sender: TObject);
     procedure setPerfil(p:integer);
@@ -253,47 +261,51 @@ end;
 procedure TfmRelGeral.cbLojasClick(Sender: TObject);
 begin
    if (perfil = fmMain.PagamentosEmCarto1.Tag ) then
-     getDescCaixas();
+      getDescCaixas();
 end;
-
 
 procedure TfmRelGeral.cargaDadosConciliacao;
 begin
    msgTela('',' Se já houver alguma carga já feita ela será excluída.',0);
-   uCF.cargaDadosConciliacao(tbVendasCartao, dti, dtf);
+   uCF.cargaDadosConciliacao(tbPreviaDeCaixa, dti, dtf);
 end;
 
 procedure TfmRelGeral.listaVendasEmCartao;
 var
    totais,param:Tstringlist;
-   qrOperadores, qrCartoes, qrPagamentos, qrSangria: TADOQuery;
    ds:TdataSet;
    i:integer;
+   recValor:TBCDField;
 begin
-   qrOperadores := TADOQuery.Create(nil);
-   qrCartoes := TADOQuery.Create(nil);
-   qrSangria := TADOQuery.Create(nil);
-   qrPagamentos := TADOQuery.Create(nil);
-
-   uCF.listaRecebimentosCaixa( tbVendasCartao, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, false, false, true );
-   if (tbVendasCartao.IsEmpty = false) then
+   uCF.listaRecebimentosCaixa( tbPreviaDeCaixa, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, false, false, true );
+   if (tbPreviaDeCaixa.IsEmpty = false) then
    begin
-      ds:= uCF.getOperadoresPorCaixa(qrOperadores, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti );
+// pegar os operadores do caixa
+      ucf.getOperadoresPorCaixa(tbOperadores, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, fmMain.conexao);
+
+// listar os recebimentos do caixa
+      ucf.getRecebDeCaixa(tbPreviaDeCaixa, tbTotRec);
+
+//listar as sangrias do caixa
+      ucf.getSangriasDoCaixa(tbPreviaDeCaixa, tbSangrias);
+
+
 
       param := TStringlist.Create();
-      param.add( funcoes.getNomeUO(cbLojas));
-      param.add( funcoes.getNomeCX(cbCaixas));
-      param.add( dateToStr(dti.date));
+      param.add( funcoes.getNomeUO(cbLojas) );
+      param.add( dateToStr(dti.date) );
       param.add( fmMain.getNomeUsuario() );
-
-      totais := uCF.getTotalCartaoPorModo(tbVendasCartao);
+{
+      totais := uCF.getTotalCartaoPorModo(tbPreviaDeCaixa);
       for i:=0 to Totais.Count-1 do
          param.Add(totais[i]);
+}
 
-      fmMain.impressaoRaveQr2( tbVendasCartao, ds, 'rpVendasEmCartao',param);
-      ds.Free;
-      totais.Free();
-      param.Free();
+
+      fmMain.impressaoRaveQr4( tbOperadores, tbTotRec, tbSangrias, nil, 'report1'{'rpVendasEmCartao'},param);
+//      ds.Free;
+//      totais.Free();
+//      param.Free();
    end
    else
      funcoes.msgTela('', MSG_SEM_DADOS, mb_ok + MB_ICONERROR);

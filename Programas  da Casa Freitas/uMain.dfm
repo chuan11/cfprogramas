@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 369
-  Top = 195
+  Left = 370
+  Top = 197
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -11,6 +11,7 @@ object fmMain: TfmMain
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   FormStyle = fsMDIForm
+  KeyPreview = True
   Menu = menuPrincipal
   OldCreateOrder = False
   Position = poScreenCenter
@@ -313,6 +314,13 @@ object fmMain: TfmMain
     end
   end
   object Conexao: TADOConnection
+    Connected = True
+    ConnectionString = 
+      'Provider=SQLOLEDB.1;Password=welladm;Persist Security Info=True;' +
+      'User ID=secrel;Initial Catalog=WellCfreitas;Data Source=125.0.0.' +
+      '200;Use Procedure for Prepare=1;Auto Translate=True;Packet Size=' +
+      '4096;Workstation ID=CPD-PC;Use Encryption for Data=False;Tag wit' +
+      'h column collation when possible=False'
     ConnectionTimeout = 3
     LoginPrompt = False
     Provider = 'SQLOLEDB.1'

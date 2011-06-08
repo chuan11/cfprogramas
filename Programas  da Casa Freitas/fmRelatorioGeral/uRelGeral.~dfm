@@ -1,6 +1,6 @@
 object fmRelGeral: TfmRelGeral
-  Left = 457
-  Top = 264
+  Left = 458
+  Top = 265
   Width = 784
   Height = 337
   Color = clBtnFace
@@ -235,8 +235,8 @@ object fmRelGeral: TfmRelGeral
   end
   object tbValoresAvarias: TADOTable
     Connection = fmMain.Conexao
-    Left = 16
-    Top = 151
+    Left = 64
+    Top = 103
     object tbValoresAvariasis_uo: TStringField
       FieldName = 'is_uo'
       Size = 8
@@ -297,51 +297,88 @@ object fmRelGeral: TfmRelGeral
       Size = 30
     end
   end
-  object tbVendasCartao: TADOTable
+  object tbPreviaDeCaixa: TADOTable
     Connection = fmMain.Conexao
-    Left = 16
-    Top = 112
-    object tbVendasCartaocodLoja: TIntegerField
+    Left = 304
+    Top = 160
+    object tbPreviaDeCaixacodLoja: TIntegerField
       FieldName = 'codLoja'
     end
-    object tbVendasCartaodescEstacao: TStringField
+    object tbPreviaDeCaixadescEstacao: TStringField
       FieldName = 'descEstacao'
     end
-    object tbVendasCartaocd_mve: TIntegerField
+    object tbPreviaDeCaixacd_mve: TIntegerField
       FieldName = 'cd_mve'
     end
-    object tbVendasCartaods_mve: TStringField
+    object tbPreviaDeCaixads_mve: TStringField
       FieldName = 'ds_mve'
       Size = 30
     end
-    object tbVendasCartaodataSessaoCaixa: TDateTimeField
+    object tbPreviaDeCaixadataSessaoCaixa: TDateTimeField
       FieldName = 'dataSessaoCaixa'
     end
-    object tbVendasCartaoseqtransacaoCaixa: TIntegerField
+    object tbPreviaDeCaixaseqtransacaoCaixa: TIntegerField
       FieldName = 'seqtransacaoCaixa'
     end
-    object tbVendasCartaoseqModPagtoPorTransCaixa: TIntegerField
+    object tbPreviaDeCaixaseqModPagtoPorTransCaixa: TIntegerField
       FieldName = 'seqModPagtoPorTransCaixa'
     end
-    object tbVendasCartaoValor: TBCDField
+    object tbPreviaDeCaixaValor: TBCDField
       FieldName = 'Valor'
       DisplayFormat = '#,###,###0.00'
       Precision = 19
     end
-    object tbVendasCartaonumParcelas: TStringField
+    object tbPreviaDeCaixanumParcelas: TStringField
       FieldName = 'numParcelas'
       Size = 3
     end
-    object tbVendasCartaotefMagnetico: TStringField
+    object tbPreviaDeCaixatefMagnetico: TStringField
       FieldName = 'tefMagnetico'
       Size = 1
     end
-    object tbVendasCartaoseqTefTransCaixa: TIntegerField
+    object tbPreviaDeCaixaseqTefTransCaixa: TIntegerField
       FieldName = 'seqTefTransCaixa'
     end
-    object tbVendasCartaotp_mve: TStringField
+    object tbPreviaDeCaixacd_tpm: TStringField
+      FieldName = 'cd_tpm'
+      Size = 1
+    end
+    object tbPreviaDeCaixatp_mve: TStringField
       FieldName = 'tp_mve'
       Size = 1
+    end
+  end
+  object tbOperadores: TADOTable
+    Connection = fmMain.Conexao
+    Left = 344
+    Top = 160
+  end
+  object tbTotRec: TADOTable
+    Connection = fmMain.Conexao
+    Left = 384
+    Top = 160
+    object tbTotReccd_mve: TStringField
+      FieldName = 'cd_mve'
+      Size = 50
+    end
+    object tbTotRecvalor: TBCDField
+      FieldName = 'valor'
+      DisplayFormat = '#,###,###0.00'
+      Precision = 19
+    end
+  end
+  object tbSangrias: TADOTable
+    Connection = fmMain.Conexao
+    Left = 424
+    Top = 160
+    object tbSangriascd_mve: TStringField
+      FieldName = 'cd_mve'
+      Size = 50
+    end
+    object tbSangriasvalor: TBCDField
+      FieldName = 'valor'
+      DisplayFormat = '#,###,###0.00'
+      Precision = 19
     end
   end
 end
