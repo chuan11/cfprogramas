@@ -25,7 +25,7 @@ interface
    function getNomeImpressoraNFe():String;
    function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
    function getTotaisVendaAvaria(lojas:TadLabelComboBox; datai, dataf:Tdate; tabela:String):String;
-   procedure getOperadoresPorCaixa(tb:TADOTable; uo, caixa:String; dti: TDateTimePicker);
+   procedure getOperadoresPorCaixa(tb:TADOTable; uo, caixa:String; dti: TDateTimePicker; conexao:TADOConnection);
    function getPcProd(uo, codigo, preco:String):String;
    function getTotalCartaoPorModo(tb:TADOTable):TStringlist;
    function insereModPagamento (uo, seqTransacao, codNovaModalidade, valor, numParcelas,  dataTrans:String):boolean;
@@ -48,9 +48,13 @@ interface
    procedure listaRecebimentosCaixa(tb:TADOTAble; uo, caixa:String; dti, dtf: TDateTimePicker; listaSoCartao, removeTrocos, listaSangria:boolean);
    procedure getProdAvariadosParaVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
 
-   procedure getSomatorioValoresCaixa(tb, tbdestino, cd_tpm:String);
-   procedure getPagamentosDoCaixa(tb, tbTotalRec :TADOTable);
-   procedure getSangriasDoCaixa(tb, tbTotSangria :TADOTable);
+//   procedure getSomatorioValoresCaixa(tb, tbdestino, cd_tpm:String);
+
+   procedure getModalidadesCaixa(tb, tbDestino :TADOTable; cd_tpm, tp_mve: String);
+
+   procedure getRecebDeCaixa(tb, tbReceb:TADOTable);
+   procedure getSangriasDoCaixa(tb, tbSangria :TADOTable);
+   procedure getRecebimentosEmCartao(tb, tbVendasCartao :TADOTable);
 
 implementation
 
@@ -65,7 +69,7 @@ begin
           quotedStr('fmPrecos.Uos' + TpPreco) +
           ' order by uo.cd_uo';
 
-//   ds := funcSQl.getDataSetQ(cmd, fmMain.Conexao);
+   ds := funcSQl.getDataSetQ(cmd, fmMain.Conexao);
 
    ds.First();
    while (ds.Eof = false ) do
@@ -566,19 +570,21 @@ begin
    result := lista;
 end;
 
-procedure getOperadoresPorCaixa(tb:TADOTable; uo, caixa:String; dti: TDateTimePicker);
+procedure getOperadoresPorCaixa(tb:TADOTable; uo, caixa:String; dti: TDateTimePicker; conexao:TADOConnection);
 var
    cmd:String;
 begin
    if (tb.tablename <> '') then
       tb.close;
 
-   cmd := 'dataSessaoCaixa smallDateTime, descEstacao varchar(20), nm_usu varchar(50)';
-   tb.tablename:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
+   funcoes.gravalog('ok');
+
+   cmd := ' descEstacao varchar(20), nm_usu varchar(50), dataSessaoCaixa smallDateTime';
+   tb.tablename:= funcSQL.criaTabelaTemporaria(conexao, cmd);
 
    cmd :=
-   ' insert ' +
-   ' select  c.descEstacao, dsusu.nm_usu, sessoesdecaixa.dataSessaoCaixa from sessoesdecaixa S with(nolock)' +
+   ' insert ' + tb.tableName +
+   ' select  c.descEstacao, dsusu.nm_usu, s.dataSessaoCaixa from sessoesdecaixa S with(nolock)' +
    ' inner join caixas C  with(nolock) on s.codLoja = c.codLoja and  s.codCaixa = c.codCaixa '+
    ' inner join dsusu with(nolock) on s.codUsuario = dsusu.cd_pes '+
    ' where'+
@@ -586,11 +592,10 @@ begin
 
    if (caixa <> '') then
       cmd := cmd + ' and s.codCaixa = ' + caixa;
-
    if (uo <> '') then
       cmd := cmd + ' and  s.codLoja = ' + uo ;
-
    cmd := cmd + ' Order by dataSessaoCaixa, descEstacao';
+
    funcSQL.execSQL(cmd, fmMain.conexao);
 end;
 
@@ -624,12 +629,11 @@ begin
       tb.Close();
 
    cmd := '(codLoja int, descEstacao varchar(20), cd_mve int, ds_mve varchar(30), dataSessaoCaixa smallDateTime, seqtransacaoCaixa int,'+
-          ' seqModPagtoPorTransCaixa int, Valor money, numParcelas varchar(03), tefMagnetico varchar(1), seqTefTransCaixa int, cd_tpm varchar(01) )';
+          ' seqModPagtoPorTransCaixa int, Valor money, numParcelas varchar(03), tefMagnetico varchar(1), seqTefTransCaixa int, cd_tpm varchar(01), tp_mve varchar(01) )';
    tb.tablename:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
 
 
    ds := uCF.getPreviaGeralCaixa( uo, caixa, dti.date, dtf.date, true, false, listaSangria);
-//             getPreviaGeralCaixa( uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
    tb.open();
    while (ds.eof = false) do
    begin
@@ -645,7 +649,8 @@ begin
                        ds.fieldByname('numParcelas').AsString,
                        ds.fieldByname('tefMagnetico').AsString,
                        ds.fieldByname('seqTefTransCaixa').AsString,
-                       ds.fieldByname('cd_tpm').AsString
+                       ds.fieldByname('cd_tpm').AsString,
+                       ds.fieldByname('tp_mve').AsString
                      ]);
       ds.next();
    end;
@@ -930,27 +935,49 @@ begin
    result := getParamBD('comum.impNFe', getIsUo(true), fmMain.conexao);
 end;
 
-
-procedure getSomatorioValoresCaixa(tb, tbdestino, cd_tpm:String);
+procedure getModalidadesCaixa(tb, tbDestino :TADOTable; cd_tpm, tp_mve: String);
 var
    cmd:String;
 begin
+   cmd := 'cd_mve varchar(50), valor money';
+   tbDestino.tableName:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
+
    cmd :=
-   ' insert ' + tbDestino +
-   ' select ds_mve, sum(valor) as valor from ' + tb +
-   ' where cd_tpm = ' +cd_tpm +
-   ' group by ds_mve order by ds_mve';
+   ' insert ' + tbDestino.tableName +
+   ' select ds_mve, sum(valor) from ' + tb.tableName +
+   ' where cd_tpm in ('+cd_tpm+')';
+
+   if( tp_mve <> '') then
+      cmd := cmd + ' and tp_mve in (' + tp_mve+')';
+
+   cmd := cmd + ' group by ds_mve order by ds_mve ';
+
+   funcSQL.execSQL(cmd, fmMain.conexao);
 end;
 
-
-procedure getPagamentosDoCaixa(tb, tbTotalRec :TADOTable);
-begin  //
-
+procedure getRecebDeCaixa(tb, tbReceb:TADOTable);
+begin
+   getModalidadesCaixa( tb, tbReceb, '5, 4', '');
 end;
 
-procedure getSangriasDoCaixa(tb, tbTotSangria :TADOTable);
-begin //
+procedure getSangriasDoCaixa(tb, tbSangria :TADOTable);
+begin
+   getModalidadesCaixa( tb, tbSangria , '2', '');
+end;
 
+procedure getRecebimentosEmCartao(tb, tbVendasCartao :TADOTable);
+var
+   cmd:String;
+begin
+   cmd :=    ' codLoja int, cd_mve int, ds_mve varchar(20), seqTransacaoCaixa int, valor money, numparcelas int, tp_mve varchar(01) ';
+   tbVendasCartao.tableName:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
+   cmd :=
+   ' insert ' + tbVendasCartao.tableName +
+   ' select codLoja, cd_mve, ds_mve, seqTransacaoCaixa, ' +
+   ' valor, numparcelas , tp_mve from ' + tb.tableName  +#13+
+   ' where tp_mve in (''B'', ''T'') ' +
+   ' and cd_tpm <> 2 ';
+   funcSQL.execSQL(cmd, fmMain.conexao);
 end;
 
 

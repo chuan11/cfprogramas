@@ -188,7 +188,7 @@ type
     procedure cargadedadosparaconciliao1Click(Sender: TObject);
     procedure deletarRegistrodecartoTEF1Click(Sender: TObject);
     procedure RegistroSCAN1Click(Sender: TObject);
-    procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);    
+    procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
 
   private
     { Private declarations }

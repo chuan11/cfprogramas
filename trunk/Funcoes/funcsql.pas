@@ -4,7 +4,7 @@ interface
    uses ADODB,Classes,funcoes,sysutils, Dialogs, forms, DBGrids,
         funcDatas, mxExport, adLabelComboBox, windows, QStdCtrls, DB, Controls, messages;
 
-   function criaTabelaTemporaria(conexao:TADOConnection; cmd:String):String;
+   function criaTabelaTemporaria(conexao:TADOConnection; camposTabela:String):String;
    function devolucaoDeProduto(is_ref,uo,usuario,codCli,is_emp,nLista,sq_opf,tipoPreco, srNota:string; valor:real; Conexao:TADOConnection):boolean;
    function execSQL(comando:string; connection: TADOConnection):boolean; overload
    function executeSQL(comando:string; connection: TADOConnection):String;
@@ -746,7 +746,7 @@ var
 begin
    randomize;
    i:= random(99999);
-   result := 'a' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
+   result := '#' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
 end;
 
 procedure exportaQuery(qr:TADOQuery;expParaAqquivo:boolean; nArquivo:String );
@@ -1335,16 +1335,17 @@ begin
    end;
 end;
 
-function criaTabelaTemporaria(conexao:TADOConnection; cmd:String):String;
+function criaTabelaTemporaria(conexao:TADOConnection; camposTabela:String):String;
 var
-nTable :String;
+   nTable :String;
 begin
    nTAble := funcsql.getNomeTableTemp;
 
-   if ( pos('(' , cmd ) < 0 ) then
-      cmd := '( ' + cmd + ' )';
+   if ( pos('(' , trim(copy(camposTabela,01,02))) <= 0 ) then
+      camposTabela := '( ' + camposTabela + ' )';
 
-   execSQL( 'create table ' +nTAble +  cmd, conexao );
+   execSQL( 'create table ' +nTAble +  camposTabela, conexao );
+
    result := nTable;
 end;
 

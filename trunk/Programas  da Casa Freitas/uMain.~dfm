@@ -11,6 +11,7 @@ object fmMain: TfmMain
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   FormStyle = fsMDIForm
+  KeyPreview = True
   Menu = menuPrincipal
   OldCreateOrder = False
   Position = poScreenCenter
@@ -313,6 +314,13 @@ object fmMain: TfmMain
     end
   end
   object Conexao: TADOConnection
+    Connected = True
+    ConnectionString = 
+      'Provider=SQLOLEDB.1;Password=welladm;Persist Security Info=True;' +
+      'User ID=secrel;Initial Catalog=WellCfreitas;Data Source=125.0.0.' +
+      '200;Use Procedure for Prepare=1;Auto Translate=True;Packet Size=' +
+      '4096;Workstation ID=CPD-PC;Use Encryption for Data=False;Tag wit' +
+      'h column collation when possible=False'
     ConnectionTimeout = 3
     LoginPrompt = False
     Provider = 'SQLOLEDB.1'
@@ -356,7 +364,7 @@ object fmMain: TfmMain
   end
   object RvDSConn2: TRvDataSetConnection
     RuntimeVisibility = rtDeveloper
-    Left = 120
+    Left = 112
     Top = 344
   end
   object Timer1: TTimer
@@ -374,5 +382,15 @@ object fmMain: TfmMain
     DocInfo.Producer = 'Nevrona Designs'
     Left = 157
     Top = 344
+  end
+  object RvDSConn3: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    Left = 80
+    Top = 376
+  end
+  object RvDSConn4: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    Left = 112
+    Top = 376
   end
 end
