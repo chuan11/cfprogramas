@@ -1,8 +1,8 @@
 object Form3: TForm3
   Left = 192
   Top = 106
-  Width = 740
-  Height = 167
+  Width = 947
+  Height = 464
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = '(06) An'#225'lise de distribui'#231#227'o de mercadorias. '
   Color = clBtnFace
@@ -223,10 +223,6 @@ object Form3: TForm3
     Top = 104
   end
   object Connection: TADOConnection
-    Connected = True
-    ConnectionString = 
-      'Provider=SQLOLEDB.1;Password=welladm;Persist Security Info=True;' +
-      'User ID=SECREL;Initial Catalog=wellt;Data Source=125.4.4.200'
     LoginPrompt = False
     Provider = 'SQLOLEDB.1'
     Left = 136

@@ -68,6 +68,7 @@ type
     tbTotRecvalor: TBCDField;
     tbSangriascd_mve: TStringField;
     tbSangriasvalor: TBCDField;
+    tbVendasCartao: TADOTable;
 
     procedure btOkClick(Sender: TObject);
     procedure setPerfil(p:integer);
@@ -272,11 +273,11 @@ end;
 
 procedure TfmRelGeral.listaVendasEmCartao;
 var
-   totais,param:Tstringlist;
-   ds:TdataSet;
+   totais, param:Tstringlist;
    i:integer;
-   recValor:TBCDField;
 begin
+   param := TStringlist.Create();
+
    uCF.listaRecebimentosCaixa( tbPreviaDeCaixa, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, false, false, true );
    if (tbPreviaDeCaixa.IsEmpty = false) then
    begin
@@ -289,23 +290,20 @@ begin
 //listar as sangrias do caixa
       ucf.getSangriasDoCaixa(tbPreviaDeCaixa, tbSangrias);
 
+// listar o odetalhe das vendas de cartao
+      ucf.getRecebimentosEmCartao(tbPreviaDeCaixa, tbVendasCartao);
+      totais := uCF.getTotalCartaoPorModo(tbVendasCartao);
 
 
-      param := TStringlist.Create();
       param.add( funcoes.getNomeUO(cbLojas) );
-      param.add( dateToStr(dti.date) );
+      param.add( funcoes.getNomeDoCx(cbCaixas) );
+      param.add( dateToStr(dti.date) + ' a ' +  dateToStr(dtf.date) );
       param.add( fmMain.getNomeUsuario() );
-{
-      totais := uCF.getTotalCartaoPorModo(tbPreviaDeCaixa);
+
       for i:=0 to Totais.Count-1 do
          param.Add(totais[i]);
-}
 
-
-      fmMain.impressaoRaveQr4( tbOperadores, tbTotRec, tbSangrias, nil, 'report1'{'rpVendasEmCartao'},param);
-//      ds.Free;
-//      totais.Free();
-//      param.Free();
+      fmMain.impressaoRaveQr4( tbOperadores, tbTotRec, tbSangrias, tbVendasCartao, 'rpPreviaCx', param);
    end
    else
      funcoes.msgTela('', MSG_SEM_DADOS, mb_ok + MB_ICONERROR);

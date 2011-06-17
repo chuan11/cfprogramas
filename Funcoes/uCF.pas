@@ -969,12 +969,13 @@ procedure getRecebimentosEmCartao(tb, tbVendasCartao :TADOTable);
 var
    cmd:String;
 begin
-   cmd :=    ' codLoja int, cd_mve int, ds_mve varchar(20), seqTransacaoCaixa int, valor money, numparcelas int, tp_mve varchar(01) ';
+   cmd :=    ' codLoja int, cd_mve int, ds_mve varchar(20), seqTransacaoCaixa int, '+
+             ' valor money, numparcelas int, tp_mve varchar(01), tefMagnetico varchar(1) ';
    tbVendasCartao.tableName:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
    cmd :=
    ' insert ' + tbVendasCartao.tableName +
    ' select codLoja, cd_mve, ds_mve, seqTransacaoCaixa, ' +
-   ' valor, numparcelas , tp_mve from ' + tb.tableName  +#13+
+   ' valor, numparcelas , tp_mve, tefmagnetico from ' + tb.tableName  +#13+
    ' where tp_mve in (''B'', ''T'') ' +
    ' and cd_tpm <> 2 ';
    funcSQL.execSQL(cmd, fmMain.conexao);

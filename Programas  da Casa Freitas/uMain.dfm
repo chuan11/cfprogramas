@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 370
-  Top = 197
+  Left = 336
+  Top = 141
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -100,6 +100,13 @@ object fmMain: TfmMain
           Caption = 'Rela'#231#227'o de notas de  transfer'#234'ncia'
           OnClick = Relacaodenotasdetransferncia1Click
         end
+        object Geraestoque1: TMenuItem
+          Caption = 'Gera estoque'
+          OnClick = Geraestoque1Click
+        end
+      end
+      object l1: TMenuItem
+        Caption = 'l'
       end
     end
     object compras1: TMenuItem
@@ -314,7 +321,6 @@ object fmMain: TfmMain
     end
   end
   object Conexao: TADOConnection
-    Connected = True
     ConnectionString = 
       'Provider=SQLOLEDB.1;Password=welladm;Persist Security Info=True;' +
       'User ID=secrel;Initial Catalog=WellCfreitas;Data Source=125.0.0.' +

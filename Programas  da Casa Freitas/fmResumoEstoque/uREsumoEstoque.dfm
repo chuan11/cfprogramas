@@ -1,9 +1,9 @@
 object fmResEstoque: TfmResEstoque
-  Left = 958
-  Top = 254
+  Left = 474
+  Top = 151
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = '(2) Resumo do estoque das lojas'
+  Caption = 'Resumo do estoque das lojas'
   ClientHeight = 454
   ClientWidth = 432
   Color = clBtnFace
@@ -14,7 +14,7 @@ object fmResEstoque: TfmResEstoque
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poMainFormCenter
   OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13

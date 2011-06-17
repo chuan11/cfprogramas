@@ -581,12 +581,12 @@ end;
 
 procedure TfmMapa.Listarentradasdoproduto1Click(Sender: TObject);
 begin
-   fmMain.obterDetalhesEntrada(nil,   tb.fieldByName('is_ref').asString );
+   fmMain.obterDetalhesEntrada(tb.fieldByName('is_ref').asString );
 end;
 
 procedure TfmMapa.Vendasnoperiodo1Click(Sender: TObject);
 begin
-   fmMain.obterDetalhesSaida( nil, tb.fieldByName('is_ref').asString , fmMain.getUoLogada() );
+   fmMain.obterDetalhesSaida( tb.fieldByName('is_ref').asString , fmMain.getUoLogada() );
 end;
 
 procedure TfmMapa.Imprimir1Click(Sender: TObject);
@@ -635,7 +635,7 @@ end;
 procedure TfmMapa.VerRequisicoes1Click(Sender: TObject);
 begin
    if tb.IsEmpty = false then
-      fmMain.requisicoesPorProduto(nil, tb.FieldByName('is_ref').asString);
+      fmMain.getRequisicoesPorProduto( tb.FieldByName('is_ref').asString);
 end;
 
 procedure TfmMapa.gridTitleClick(Column: TColumn);

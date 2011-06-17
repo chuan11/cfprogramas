@@ -273,69 +273,46 @@ end;
 
 procedure TfmRelGeral.listaVendasEmCartao;
 var
-   totais,param:Tstringlist;
-   ds:TdataSet;
+   totais, param:Tstringlist;
    i:integer;
-   recValor:TBCDField;
 begin
+   param := TStringlist.Create();
+
+   fmMain.msgStatus('Gerando previa de caixa');
    uCF.listaRecebimentosCaixa( tbPreviaDeCaixa, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, false, false, true );
    if (tbPreviaDeCaixa.IsEmpty = false) then
    begin
 // pegar os operadores do caixa
+      fmMain.msgStatus('Listando operadores');
       ucf.getOperadoresPorCaixa(tbOperadores, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, fmMain.conexao);
 
 // listar os recebimentos do caixa
+      fmMain.msgStatus('Agrupando recebimentos do caixa');
       ucf.getRecebDeCaixa(tbPreviaDeCaixa, tbTotRec);
 
 //listar as sangrias do caixa
+      fmMain.msgStatus('Listando sangrias de caixa');
       ucf.getSangriasDoCaixa(tbPreviaDeCaixa, tbSangrias);
 
 // listar o odetalhe das vendas de cartao
+      fmMain.msgStatus('Listando pagamentos em cartão');
       ucf.getRecebimentosEmCartao(tbPreviaDeCaixa, tbVendasCartao);
+      totais := uCF.getTotalCartaoPorModo(tbVendasCartao);
 
-
-      param := TStringlist.Create();
       param.add( funcoes.getNomeUO(cbLojas) );
-      param.add( dateToStr(dti.date) );
+      param.add( funcoes.getNomeDoCx(cbCaixas) );
+      param.add( dateToStr(dti.date) + ' a ' +  dateToStr(dtf.date) );
       param.add( fmMain.getNomeUsuario() );
-{
-      totais := uCF.getTotalCartaoPorModo(tbPreviaDeCaixa);
+
       for i:=0 to Totais.Count-1 do
          param.Add(totais[i]);
-}
-
-
-      fmMain.impressaoRaveQr4( tbOperadores, tbTotRec, tbSangrias, tbVendasCartao, 'report1'{'rpVendasEmCartao'},param);
-//      ds.Free;
-//      totais.Free();
-//      param.Free();
+      fmMain.msgStatus('');
+      fmMain.impressaoRaveQr4( tbOperadores, tbTotRec, tbSangrias, tbVendasCartao, 'rpPreviaCx', param);
+      totais.Free;
+      param.Free;
    end
    else
      funcoes.msgTela('', MSG_SEM_DADOS, mb_ok + MB_ICONERROR);
-
-{   uCF.listaRecebimentosCaixa( tbVendasCartao, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, true, true, false );
-   if (tbVendasCartao.IsEmpty = false) then
-   begin
-      ds:= uCF.getOperadoresPorCaixa(qr, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti );
-
-      param := TStringlist.Create();
-      param.add( funcoes.getNomeUO(cbLojas));
-      param.add( funcoes.getNomeCX(cbCaixas));
-      param.add( dateToStr(dti.date));
-      param.add( fmMain.getNomeUsuario() );
-
-      totais := uCF.getTotalCartaoPorModo(tbVendasCartao);
-      for i:=0 to Totais.Count-1 do
-         param.Add(totais[i]);
-
-      fmMain.impressaoRaveQr2( tbVendasCartao, ds, 'rpVendasEmCartao',param);
-      ds.Free;
-      totais.Free();
-      param.Free();
-   end
-   else
-      funcoes.msgTela('', MSG_SEM_DADOS, mb_ok + MB_ICONERROR);
-}
 end;
 
 procedure TfmRelGeral.FormClose(Sender: TObject; var Action: TCloseAction);
