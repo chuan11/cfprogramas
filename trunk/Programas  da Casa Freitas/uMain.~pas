@@ -89,6 +89,7 @@ type
     RegistroSCAN1: TMenuItem;
     RvDSConn3: TRvDataSetConnection;
     RvDSConn4: TRvDataSetConnection;
+    Geraestoque1: TMenuItem;
 
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
@@ -151,9 +152,9 @@ type
     procedure msgStatus(msg:String);
     procedure mudarfinanceiradeboleto1Click(Sender: TObject);
     procedure n1Click(Sender: TObject);
-    procedure obterDetalhesEntrada(Sender:Tobject; is_ref:String);
-    procedure obterDetalhesSaida(Sender: Tobject; is_ref, uo:String);
-    procedure obterResumoEstoque(Sender:Tobject;is_ref, is_disponivel:String);
+    procedure obterDetalhesEntrada(is_ref:String);
+    procedure obterDetalhesSaida(is_ref, uo:String);
+    procedure obterResumoEstoque(is_ref, is_disponivel:String);
     procedure parmetrosDoSistema1Click(Sender: TObject);
     procedure permisses2Click(Sender: TObject);
     procedure precosalteradosporperodo2Click(Sender: TObject);
@@ -162,7 +163,7 @@ type
     procedure relatriodeComisso1Click(Sender: TObject);
     procedure requisicaoparaocd1Click(Sender: TObject);
     procedure requisicoEntreLoas1Click(Sender: TObject);
-    procedure requisicoesPorProduto(Sender:Tobject; produto:String);
+    procedure getRequisicoesPorProduto(cd_ref:String);
     procedure requisiodereposio1Click(Sender: TObject);
     procedure requisioParaoCDAbastecimento1Click(Sender: TObject);
     procedure resunmoMovimentodirio1Click(Sender: TObject);
@@ -189,6 +190,7 @@ type
     procedure deletarRegistrodecartoTEF1Click(Sender: TObject);
     procedure RegistroSCAN1Click(Sender: TObject);
     procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
+    procedure Geraestoque1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -224,7 +226,7 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
      uClassificaProd, uCompFornecedor, fmAbrirAvarias, uParametros,
      uRemoveRegTEF, uCadastrarNCM, uListaFornecedores, uAjustaSPED,
      uCustoPorPedido, uCF, Math, funcDatas, uObterSaldoFiscal,
-  uAjusteModPag;
+  uAjusteModPag, uGeraEstoque;
 {$R *.dfm}
 
 
@@ -395,14 +397,22 @@ end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
 begin
-   conexao.Connected := false;
-   conexao.ConnectionString := funcoes.getDadosConexaoUDL(extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini');
-   conexao.Connected := true;
-   StatusBar1.Panels[2].Text := conexao.DefaultDatabase + ' ' + funcoes.lerParam( extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini', 3  );
-   deleteFile( ExtractFilePath(paramStr(0)) +'logs\' + ExtractFilename(ParamStr(0))  + '_log.txt'  );
-   TIME_OUT_PROGRAMA := 60;
-   PARAMS_APLICACAO := TStringlist.Create();
-   RvProject1.ProjectFile := 'C:\ProgramasDiversos\RelatoriosPCF.rav';
+   try
+      conexao.Connected := false;
+      conexao.ConnectionString := funcoes.getDadosConexaoUDL(extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini');
+      conexao.Connected := true;
+      StatusBar1.Panels[2].Text := conexao.DefaultDatabase + ' ' + funcoes.lerParam( extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini', 3  );
+      deleteFile( ExtractFilePath(paramStr(0)) +'logs\' + ExtractFilename(ParamStr(0))  + '_log.txt'  );
+      TIME_OUT_PROGRAMA := 60;
+      PARAMS_APLICACAO := TStringlist.Create();
+      RvProject1.ProjectFile := 'C:\ProgramasDiversos\RelatoriosPCF.rav';
+   except
+      on e:Exception do
+      begin
+         funcoes.msgTela('','Não foi possivel efetuar a conexão com o banco de dados!', MB_ICONEXCLAMATION + MB_ICONERROR);
+         application.Terminate();
+      end;
+   end;
 end;
 
 function TfmMain.ehTelaPermitida(tag:string;  Telas:Tstrings): Boolean;
@@ -607,7 +617,7 @@ begin
       for i:=0 to params.Count-1 do
          RvProject1.SetParam(intToStr(i), params[i]);
 
-//   RvProject1.ExecuteReport(nRelatorio);
+   RvProject1.ExecuteReport(nRelatorio);
 end;
 
 procedure TfmMain.impressaoRaveQr(qr:TADOQuery; nRelatorio:String; params:Tstrings);
@@ -696,27 +706,27 @@ begin
    end;
 end;
 
-procedure TfmMain.obterResumoEstoque(Sender:Tobject; is_ref, is_disponivel: String);
+procedure TfmMain.obterResumoEstoque(is_ref, is_disponivel: String);
 begin
    if fmEtiquetas  = nil then
    begin
       Application.CreateForm( TfmResEstoque , fmResEstoque);
-      fmResEstoque.Obterestoques(nil, is_ref, is_disponivel);
+      fmResEstoque.obterEstoques(nil, is_ref, is_disponivel);
       fmResEstoque.ShowModal;
    end;
 end;
 
-procedure TfmMain.obterDetalhesEntrada(Sender: Tobject; is_ref: String);
+procedure TfmMain.obterDetalhesEntrada(is_ref: String);
 begin
-   if fmEtiquetas  = nil then
+   if fmDetEntrada  = nil then
    begin
       Application.CreateForm( TfmDetEntrada , fmDetEntrada );
-      fmDetEntrada.ConsultaDetalhesEntrada(nil, is_ref);
+      fmDetEntrada.ConsultaDetalhesEntrada(is_ref);
       fmDetEntrada.showModal;
    end;
 end;
 
-procedure TfmMain.obterDetalhesSaida(Sender: Tobject; is_ref,uo:String);
+procedure TfmMain.obterDetalhesSaida(is_ref,uo:String);
 begin
    if (fmTotalSaidas  = nil) then
    begin
@@ -766,7 +776,7 @@ begin
 end;
 
 
-procedure TfmMain.requisicoesPorProduto(Sender: Tobject; produto: String);
+procedure TfmMain.getRequisicoesPorProduto(cd_ref: String);
 var
    programa, UO_CD :String;
 begin
@@ -775,7 +785,7 @@ begin
    programa := '"' + ExtractFilePath(ParamStr(0)) + 'RequisicaoPorProduto.exe" -c ' +
    ' 0 ' + UO_CD +
    ' '+ DateToStr(now - 60 ) +
-   ' '+ DateToStr(now) + ' ' + produto;
+   ' '+ DateToStr(now) + ' ' + cd_ref;
    PostMessage(FindWindow(nil, 'ConsultaRequisicao'), WM_CLOSE,0,0);
    winExec(pchar(programa) , sw_normal);
    screen.Cursor := crDefault;
@@ -1322,6 +1332,7 @@ var
    achou:boolean;
    i:integer;
 begin
+   achou := false;
    if ( achou = false) then
       cb.itemIndex := -1;
    for i:=0 to cb.Items.count-1 do
@@ -1385,6 +1396,16 @@ begin
    screen.Cursor := crDefault;
 end;
 
+
+
+procedure TfmMain.Geraestoque1Click(Sender: TObject);
+begin
+   if (fmGeraEstoque  = nil) then
+   begin
+      Application.CreateForm(TfmGeraEstoque, fmGeraEstoque);
+      fmGeraEstoque.show;
+   end;
+end;
 
 end.
 

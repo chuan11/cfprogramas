@@ -80,9 +80,9 @@ begin
    for i:=0 to tbPedido.FieldCount -1 do
      gdPedido.Columns[i].Title.Font.Style := [fsBold];
 
-   edit2.text := funcoes.lerParam( ARQ_INI ,10);
-   edit3.text := funcoes.lerParam( ARQ_INI ,11);
-   edit4.text := funcoes.lerParam( ARQ_INI ,12);
+//   edit2.text := funcoes.lerParam( ARQ_INI ,10);
+//   edit3.text := funcoes.lerParam( ARQ_INI ,11);
+//   edit4.text := funcoes.lerParam( ARQ_INI ,12);
    screen.Cursor := crDefault;
 end;
 
@@ -165,8 +165,8 @@ begin
 
    if checkBox1.Checked = true then
    begin
-      arq.SaveToFile(Path + 'memDeCaculo.txt');
-      Winexec(pchar('notepad.exe '+PATH+ 'memDeCaculo.txt'),sw_normal);
+      arq.SaveToFile(funcoes.getDirExe() + 'memDeCaculo.txt');
+      Winexec(pchar('notepad.exe '+funcoes.getDirExe()+ 'memDeCaculo.txt'),sw_normal);
    end;
    FlatButton2Click(Sender);
 end;

@@ -64,7 +64,10 @@ uses
   uObterSaldoFiscal in 'fmObterSaldoFiscal\uObterSaldoFiscal.pas' {fmObterSaldoFiscal},
   uAjusteModPag in 'fmAjusteModPag\uAjusteModPag.pas' {fmAjusteModPag},
   uAlteraModalidadePagto in 'fmRemoveRegTEF\uAlteraModalidadePagto.pas' {fmAlteraModPagto},
-  uSelecionaUo in 'fmSelecionaUo\uSelecionaUo.pas' {fmSelecionaUo};
+  uSelecionaUo in 'fmSelecionaUo\uSelecionaUo.pas' {fmSelecionaUo},
+  uGeraEstoque in 'fmGeraEstoque\uGeraEstoque.pas' {fmGeraEstoque},
+  uEentSai in 'fmGeraEstoque\uEentSai.pas' {fmEntSai},
+  Unit2 in 'fmGeraEstoque\Unit2.pas' {Form2};
 
 {$R *.res}
 
@@ -78,6 +81,8 @@ begin
       Application.Initialize;
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
-      Application.Run;
+  Application.CreateForm(TForm2, Form2);
+  //  Application.CreateForm(TfmGeraEstoque, fmGeraEstoque);
+  Application.Run;
    end;
 end.

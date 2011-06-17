@@ -43,7 +43,7 @@ var
 
 implementation
 
-uses Uprecoswell;
+uses Uprecoswell, uCadFornecedor, uMain;
 
 {$R *.dfm}
 function FloatSqlToStr(str:string):string;
@@ -64,7 +64,7 @@ begin
    nmTabela := '#Pedido'+ funcoes.SohNumeros(timeToStr(now));
    funcSQL.GetValorWell( 'E',
                         'Create Table ' + nmTabela + ' ( is_ref int, CODIGO varchar(07), DESCRICAO varchar(30), QUANT int, [PRECO UND] money, IPI int ) ',
-                        '@@error', form1.Connection);
+                        '@@error', fmMain.Conexao);
 
    tbPedido.TableName := nmTabela;
    tbPedido.Active := true;
@@ -80,9 +80,9 @@ begin
    for i:=0 to tbPedido.FieldCount -1 do
      gdPedido.Columns[i].Title.Font.Style := [fsBold];
 
-   edit2.text := funcoes.lerParam( ARQ_INI ,10);
-   edit3.text := funcoes.lerParam( ARQ_INI ,11);
-   edit4.text := funcoes.lerParam( ARQ_INI ,12);
+//   edit2.text := funcoes.lerParam( ARQ_INI ,10);
+//   edit3.text := funcoes.lerParam( ARQ_INI ,11);
+//   edit4.text := funcoes.lerParam( ARQ_INI ,12);
    screen.Cursor := crDefault;
 end;
 
@@ -92,7 +92,7 @@ var
   Query:TADoQuery;
 begin
    query := TADOQuery.Create(form2);
-   Query.Connection := form1.Connection;
+   Query.Connection := fmMain.Conexao;
 
    query.SQL.clear;
    query.SQL.Add('select prod.is_ref, Prod.cd_ref as CODIGO, Prod.ds_ref AS DESCRICAO, CAST ( item.qt_ped as int) as QUANT, item.pr_uni AS UND, item.pc_ipi AS IPI ');
@@ -150,7 +150,7 @@ begin
       arq.add( '     PC Gerado: '+FloatToStrF(vlvenda,ffFixed,18,02));
       arq.add( '');
 
-      form1.Table.AppendRecord([
+{      form1.Table.AppendRecord([
                                 tbPedido.fieldByName('codigo').AsString,
                                 tbPedido.fieldByName('DESCRICAO').AsString,
                                 funcSQL.GetValorWell('O','Select dbo.funObterPrecoProduto('+ form1.getCodigoPreco+ ' , '+ tbPedido.FieldByname('is_ref').AsString+ ' , 10033586, 10033585    ) as pco ', 'pco', form1.Connection),
@@ -160,7 +160,7 @@ begin
                                 tbPedido.fieldByName('is_ref').AsString,
                                 tbPedido.fieldByName('PRECO UND').AsString
                                ]);
-      tbPedido.Next;
+}      tbPedido.Next;
    end;
 
    if checkBox1.Checked = true then

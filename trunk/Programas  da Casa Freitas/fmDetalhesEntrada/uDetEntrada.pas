@@ -4,17 +4,19 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, funcsql,
-  Dialogs, Grids, DBGrids, SoftDBGrid, DB, ADODB, StdCtrls, ComCtrls;
+  Dialogs, Grids, DBGrids, SoftDBGrid, DB, ADODB, StdCtrls, ComCtrls,
+  ExtCtrls;
 
 type
   TfmDetEntrada = class(TForm)
     SoftDBGrid1: TSoftDBGrid;
-    Label1: TLabel;
-    Label2: TLabel;
     DataSource1: TDataSource;
     qrEnt: TADOQuery;
+    Panel1: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure ConsultaDetalhesEntrada(sender:Tobject;Is_ref:String);
+    procedure consultaDetalhesEntrada(is_ref:String);
   private
     { Private declarations }
   public
@@ -35,7 +37,7 @@ begin
    fmDetEntrada := nil;
 end;
 
-procedure TfmDetEntrada.ConsultaDetalhesEntrada(sender: Tobject; Is_ref:String);
+procedure TfmDetEntrada.consultaDetalhesEntrada(is_ref:String);
 var
   lst:Tstrings;
 begin
