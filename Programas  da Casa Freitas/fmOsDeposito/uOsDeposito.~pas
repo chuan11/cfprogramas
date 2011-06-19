@@ -69,7 +69,7 @@ var
   IS_CRITICA_VD_MEDIA, UO_CD, PC_VAREJO, COL_UO_MAPA_SEPARACAO:String;
 implementation
 
-uses umain, funcoes, funcSQL, verificaSenhas, funcDatas;
+uses umain, funcoes, funcSQL, verificaSenhas, funcDatas, uCF;
 {$R *.dfm}
 
 procedure TfmOsDeposito.bloqueiaSessaoRequisicao(uo: String);
@@ -134,14 +134,14 @@ begin
         datai := now - diasDesdePrimVenda ;
 
 //pegar a venda do ultimo semestre (ou antes, se houver)
-      qtVendaSemestre := funcSQl.qtVendaProduto( tb.fieldByname('is_ref').asString, fmMain.lbLoja.Caption, UO_CD, datai, dataf, fmMain.Conexao) ;
+      qtVendaSemestre :=   strToInt( uCF.getVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, datai, dataf)) ;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' qtVendaUltimoSemestre: ' + floatToStr(qtVendaSemestre) );
       qtVendaSemestre :=  ( qtVendaSemestre / diasDesdePrimVenda ) * DUR_ESTOQUE;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' Venda Media semestre: ' + floatToStr(qtVendaSemestre) );
 
 
 //pegar a venda do ultimo mes
-      qtVendaMes := funcSQl.qtVendaProduto( tb.fieldByname('is_ref').asString, fmMain.lbLoja.Caption, UO_CD, (dataf-30), dataf, fmMain.Conexao) ;
+      qtVendaMes := strToInt(uCF.getVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, (dataf-30), dataf)) ;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' qtVendaUltimoMes: ' + floatToStr(qtVendaMes) );
       qtVendaMes :=  ( qtVendaSemestre / 30 ) * DUR_ESTOQUE;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' Venda Media mes: ' + floatToStr(qtVendaMes) );
@@ -168,7 +168,6 @@ function TfmOsDeposito.isEmSeparacao(is_ref:String; mostraMsgErro:boolean):Boole
 var
   cmd : String;
   ds:TDataSet;
-  resultado:boolean;
 begin
    fmMain.MsgStatus('Consultando mapa dse separação.');
 
@@ -271,7 +270,7 @@ end;
 
 procedure TfmOsDeposito.GetDadosProdutos(cod:string);
 var
-  is_ref, cmd:string;
+  cmd:string;
   ds:TdataSet;
 begin
    fmMain.MsgStatus('Consultando codigo.');
@@ -310,7 +309,7 @@ begin
           end;
        end;
 
-      if existeQuantidadePendente(fmMAin. lbLoja.Caption, query.FieldByName('is_ref').AsString, true ) = false then
+      if existeQuantidadePendente(fmMain.getUoLogada(), query.FieldByName('is_ref').AsString, true ) = false then
       begin
          tb.FieldByName('codigo').AsString := query.fieldByName('codigo').AsString;
          tb.FieldByName('Descricao').AsString := query.fieldByName('descricao').AsString;
@@ -320,7 +319,7 @@ begin
 
 // pegar as informacoes do preco e estoque local
          fmMain.MsgStatus('Consultando dados de saldos...');
-         cmd :=' exec Z_CF_getInformacoesProduto ' + QuotedStr(cod) + ' , '+ fmMain.lbLoja.Caption + ' , 101';
+         cmd :=' exec Z_CF_getInformacoesProduto ' + QuotedStr(cod) + ' , '+ fmMain.getUoLogada() + ' , 101';
          destravaGrid(nil);
          query.Connection := fmMain.Conexao;
          query.SQL.Clear;
@@ -355,13 +354,13 @@ begin
    IS_REQ_SALVA:=TRUE;
    QT_DIAS_PEND := strToInt( fmMain.GetParamBD('periodoParaReqPendentes',''));
 
-   if funcsql.getParamBD('PedeCat15DoCd', fmMain.lbLoja.caption , fmMain.Conexao) <> '' then
+   if funcsql.getParamBD('PedeCat15DoCd', fmMain.getUoLogada(), fmMain.Conexao) <> '' then
       PEDE_PROD_MAISON := true
    else
       PEDE_PROD_MAISON := false;
 
-   COL_UO_MAPA_SEPARACAO := 'l' + funcsql.openSQL('Select top 01 cd_uo from zcf_tbuo where is_uo = ' + fmmain.lbLoja.Caption , 'cd_uo', fmMain.Conexao);
-   PC_VAREJO := fmMain.GetParamBD('pcVarejo', fmMain.lbLoja.Caption);
+   COL_UO_MAPA_SEPARACAO := 'l' + funcsql.openSQL('Select top 01 cd_uo from zcf_tbuo where is_uo = ' + fmMain.getUoLogada(), 'cd_uo', fmMain.Conexao);
+   PC_VAREJO := fmMain.GetParamBD('pcVarejo', fmMain.getUoLogada() );
    MAX_ITENS_REQ := strToInt(funcsql.getParamBD('maxItensReqVenda', '' , fmMain.Conexao));
    MESES_VD_MEDIA :=  strToInt(fmMain.GetParamBD('mesesVendaMedia', '')  );
    DUR_ESTOQUE := strToInt(fmMain.GetParamBD('osDeposito.qtDiasDurEstoque', '')  );
@@ -461,7 +460,7 @@ var
 begin
    ocoItens:= TStringList.create();
    if tb.IsEmpty = false then
-   str :=  funcSQl.gerarRequisicao( fmMain.Conexao, tb, fmMain.lbLoja.Caption,  fmMain.lbUser.Caption, true, true, ocoItens, QT_DIAS_PEND);
+   str :=  funcSQl.gerarRequisicao( fmMain.Conexao, tb, fmMain.getUoLogada(),  fmMain.getUserLogado(), true, true, ocoItens, QT_DIAS_PEND);
    if (str <> '') then
    begin
       gravaLog(str);
@@ -478,13 +477,13 @@ procedure TfmOsDeposito.salvaReqAbastecimento(Sender: Tobject);
 var
    cmd:String;
 begin
-   cmd := 'delete from zcf_dspd where is_uo = ' + fmMain.lbLoja.Caption;
+   cmd := 'delete from zcf_dspd where is_uo = ' + fmMain.getUoLogada();
    funcSql.execSQL(cmd, fmMain.Conexao);
    tb.First();
    while tb.Eof = false do
    begin
       cmd :='insert zcf_dspd values(' +
-             fmMain.lbLoja.Caption             +', '+
+             fmMain.getUoLogada()              +', '+
              tb.fieldByName('is_ref').asString +', '+
              tb.fieldByName('Qt pedida').asString +', '+
              tb.fieldByName('Pedido Maximo').asString +')';
@@ -654,7 +653,7 @@ begin
          end;
 
       aux := '';
-      aux := funcsql.gerarRequisicao( fmMain.Conexao, tbAux, funcoes.getCodPc(cbLojas), fmMain.lbUser.Caption, false, false, ocoReq, QT_DIAS_PEND );
+      aux := funcsql.gerarRequisicao( fmMain.Conexao, tbAux, funcoes.getCodPc(cbLojas), fmMain.getUserLogado(), false, false, ocoReq, QT_DIAS_PEND );
       if (aux <> '') then
          nGerados := nGerados  + aux + ' ';
    end;

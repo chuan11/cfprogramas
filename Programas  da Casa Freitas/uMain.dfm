@@ -104,9 +104,10 @@ object fmMain: TfmMain
           Caption = 'Gera estoque'
           OnClick = Geraestoque1Click
         end
-      end
-      object l1: TMenuItem
-        Caption = 'l'
+        object Processarinventrio1: TMenuItem
+          Caption = 'Relatorio de invent'#225'rio'
+          OnClick = Processarinventrio1Click
+        end
       end
     end
     object compras1: TMenuItem

@@ -577,7 +577,7 @@ end;
 procedure TfmGeraEstoque.FlatButton6Click(Sender: TObject);
 begin
     if (tbGE.IsEmpty = false) then
-    
+
 end;
 
 procedure TfmGeraEstoque.CalculaVendaNoPeriodo(uo, is_ref, dtInicio,dtFim,cod,desc: string; isVendaDetalhada:boolean);

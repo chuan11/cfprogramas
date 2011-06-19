@@ -1,6 +1,6 @@
 object fmEntSai: TfmEntSai
-  Left = 2124
-  Top = 270
+  Left = 587
+  Top = 308
   Width = 446
   Height = 213
   BorderIcons = [biSystemMenu]
@@ -48,7 +48,7 @@ object fmEntSai: TfmEntSai
   end
   object lbis_ref: TLabel
     Left = 248
-    Top = 54
+    Top = 30
     Width = 42
     Height = 13
     Caption = 'lbis_ref'
@@ -62,10 +62,9 @@ object fmEntSai: TfmEntSai
   end
   object lbTotEnt: TLabel
     Left = 107
-    Top = 90
-    Width = 71
+    Top = 98
+    Width = 137
     Height = 13
-    Alignment = taRightJustify
     AutoSize = False
     Caption = '0000000000'
     Font.Charset = DEFAULT_CHARSET
@@ -77,17 +76,16 @@ object fmEntSai: TfmEntSai
   end
   object Label5: TLabel
     Left = 8
-    Top = 90
+    Top = 98
     Width = 89
     Height = 13
     Caption = 'Total de Compras :'
   end
   object lbTotVenda: TLabel
-    Left = 108
+    Left = 107
     Top = 115
-    Width = 71
+    Width = 137
     Height = 13
-    Alignment = taRightJustify
     Caption = '0000000000'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clNavy
@@ -111,11 +109,10 @@ object fmEntSai: TfmEntSai
     Caption = 'Data 1'#186' entrada'
   end
   object lbPrimEnt: TLabel
-    Left = 106
+    Left = 107
     Top = 52
-    Width = 71
+    Width = 255
     Height = 13
-    Alignment = taRightJustify
     Caption = '0000000000'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clMaroon
@@ -135,5 +132,10 @@ object fmEntSai: TfmEntSai
     Top = 10
     Width = 426
     Height = 23
+  end
+  object qrEnt: TADOQuery
+    Parameters = <>
+    Left = 352
+    Top = 80
   end
 end

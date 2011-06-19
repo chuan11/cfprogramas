@@ -90,7 +90,7 @@ type
     RvDSConn3: TRvDataSetConnection;
     RvDSConn4: TRvDataSetConnection;
     Geraestoque1: TMenuItem;
-    l1: TMenuItem;
+    Processarinventrio1: TMenuItem;
 
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
@@ -154,7 +154,7 @@ type
     procedure mudarfinanceiradeboleto1Click(Sender: TObject);
     procedure n1Click(Sender: TObject);
     procedure obterDetalhesEntrada(is_ref:String);
-    procedure obterDetalhesSaida(is_ref, uo:String);
+    procedure obterDetalhesSaida(is_ref, uo:String; dtInicio:Tdate);
     procedure obterResumoEstoque(is_ref, is_disponivel:String);
     procedure obterResumoEntSai(isref:String);
     procedure parmetrosDoSistema1Click(Sender: TObject);
@@ -193,6 +193,7 @@ type
     procedure RegistroSCAN1Click(Sender: TObject);
     procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
     procedure Geraestoque1Click(Sender: TObject);
+    procedure Processarinventrio1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -228,7 +229,7 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
      uClassificaProd, uCompFornecedor, fmAbrirAvarias, uParametros,
      uRemoveRegTEF, uCadastrarNCM, uListaFornecedores, uAjustaSPED,
      uCustoPorPedido, uCF, Math, funcDatas, uObterSaldoFiscal,
-  uAjusteModPag, uGeraEstoque, uEentSai;
+  uAjusteModPag, uGeraEstoque, uEentSai, uRelInventario;
 {$R *.dfm}
 
 
@@ -268,7 +269,7 @@ begin
    begin
       fmMain.WindowState := wsNormal;
       is_logado := true;
-      montarMenu('Matriz', 'walter', '10068438','10000592');
+      montarMenu('Matriz', 'walter', '10033674','10000592');
 
 //   montar menu na freitas
 //        montarMenu('Matriz', 'walter', '10001008','10001593');
@@ -728,12 +729,12 @@ begin
    end;
 end;
 
-procedure TfmMain.obterDetalhesSaida(is_ref,uo:String);
+procedure TfmMain.obterDetalhesSaida(is_ref,uo:String; dtInicio:Tdate);
 begin
    if (fmTotalSaidas  = nil) then
    begin
       Application.CreateForm( TfmTotalSaidas , fmTotalSaidas );
-      fmTotalSaidas.calcularVenda(is_ref, uo);
+      fmTotalSaidas.calcularVenda(is_ref, uo, dtInicio, now );
       fmTotalSaidas.showModal;
    end;
 end;
@@ -1417,10 +1418,18 @@ begin//
    begin
       Application.CreateForm(TfmEntSai, fmEntSai);
       fmEntSai.show();
-
    end;
 
 
+end;
+
+procedure TfmMain.Processarinventrio1Click(Sender: TObject);
+begin
+   if (fmRelInventario = nil) then
+   begin
+      Application.CreateForm(TfmRelInventario, fmRelInventario);
+      fmRelInventario.show();
+   end;
 end;
 
 end.

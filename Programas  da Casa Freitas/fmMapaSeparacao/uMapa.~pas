@@ -576,7 +576,7 @@ end;
 
 procedure TfmMapa.Resumodeestoquedaslojas1Click(Sender: TObject);
 begin
-   fmMain.obterResumoEstoque( nil, tb.fieldByName('is_ref').asString, '1');
+   fmMain.obterResumoEstoque( tb.fieldByName('is_ref').asString, '1');
 end;
 
 procedure TfmMapa.Listarentradasdoproduto1Click(Sender: TObject);

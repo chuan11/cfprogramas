@@ -4,15 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, fCtrls, adLabelEdit,FUNCOES;
+  Dialogs, StdCtrls, Buttons, fCtrls, adLabelEdit,FUNCOES, ExtCtrls;
 
 type
   TPallet = class(TForm)
     ednPallete: TadLabelEdit;
     fsBitBtn1: TfsBitBtn;
-    Rg: TfsRadioGroup;
+    Rg: TRadioGroup;
     procedure fsBitBtn1Click(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure imprimirPalletArgox(Sender:TObject);
     procedure imprimirPalletDynaPos(Sender:TObject);
     procedure ednPalleteKeyDown(Sender: TObject; var Key: Word;
@@ -70,14 +69,8 @@ begin
                                      '000'{subFonte}+ yFONTE + xFONTE + ednPallete.Text );
                                                                 //100
    funcoes.GravaLinhaEmUmArquivo(arq, 'E');
-   Winexec( pchar('cmd.exe /c print /d:'+ fmEtiquetas.EdLocalimp.text+' '+arq)  , sw_Hide);
+   Winexec( pchar('cmd.exe /c print /d:'+ fmEtiquetas.EdLocalimp.text+' '+arq)  , SW_NORMAL);
 end;
-
-procedure TPallet.FormShow(Sender: TObject);
-begin
-   Pallet.Left := fmEtiquetas.Left+ 100;
-end;
-
 
 procedure TPallet.imprimirPalletDynaPos(Sender: TObject);
 var
@@ -120,7 +113,7 @@ begin
    funcoes.GravaLinhaEmUmArquivo(arq,'P1');
    funcoes.GravaLinhaEmUmArquivo(arq,'N');
 
-   Winexec( pchar('cmd.exe /c print /d:'+ fmEtiquetas.EdLocalimp.text+' '+arq)  , sw_Hide);
+   Winexec( pchar('cmd.exe /c print /d:'+ fmEtiquetas.EdLocalimp.text+' '+arq)  , SW_NORMAL);
 end;
 
 procedure TPallet.ednPalleteKeyDown(Sender: TObject; var Key: Word;
@@ -157,9 +150,9 @@ end;
 procedure TPallet.fsBitBtn1Click(Sender: TObject);
 begin
    case fmEtiquetas.cbTIpoImpressao.ItemIndex of
-    0:imprimirPalletArgox(Sender);
-    1:imprimirPalletDynaPos(Sender);
-   end;
+      0,2:imprimirPalletArgox(Sender);
+      1,3:imprimirPalletDynaPos(Sender);
+   end
 end;
 
 end.

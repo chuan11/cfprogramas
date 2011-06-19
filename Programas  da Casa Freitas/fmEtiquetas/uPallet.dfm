@@ -4,8 +4,8 @@ object Pallet: TPallet
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Pallet / Endereco'
-  ClientHeight = 105
-  ClientWidth = 273
+  ClientHeight = 89
+  ClientWidth = 246
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,13 +17,12 @@ object Pallet: TPallet
   OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object ednPallete: TadLabelEdit
-    Left = 107
+    Left = 115
     Top = 25
-    Width = 154
+    Width = 126
     Height = 19
     LabelDefs.Width = 87
     LabelDefs.Height = 13
@@ -36,30 +35,23 @@ object Pallet: TPallet
     OnKeyDown = ednPalleteKeyDown
   end
   object fsBitBtn1: TfsBitBtn
-    Left = 186
-    Top = 49
+    Left = 167
+    Top = 54
     Width = 75
     Height = 25
     Caption = '&OK'
     TabOrder = 1
     OnClick = fsBitBtn1Click
   end
-  object Rg: TfsRadioGroup
-    Left = 3
-    Top = 9
-    Width = 89
-    Height = 55
-    FlatFont.Charset = DEFAULT_CHARSET
-    FlatFont.Color = clWindowText
-    FlatFont.Height = -11
-    FlatFont.Name = 'MS Sans Serif'
-    FlatFont.Style = []
-    Caption = 'Imprimir '
-    ItemIndex = 0
+  object Rg: TRadioGroup
+    Left = 6
+    Top = 6
+    Width = 86
+    Height = 50
+    Caption = 'Tipo'
     Items.Strings = (
-      'P&allete'
-      'E&ndereco')
+      'Pallet'
+      'Endere'#231'o')
     TabOrder = 2
-    OnClick = RgClick
   end
 end
