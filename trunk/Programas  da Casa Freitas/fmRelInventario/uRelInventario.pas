@@ -12,6 +12,7 @@ type
     tb: TADOTable;
     procedure fsBitBtn1Click(Sender: TObject);
     procedure relatorioContagem(arq:String);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
   private
     { Private declarations }
@@ -51,7 +52,6 @@ const
    PAL_TAM = 4;
 var
    lst:TStringList;
-   cmd:String;
    i:integer;
    dsItem:TDataSet;
    params:TStringlist;
@@ -86,7 +86,15 @@ begin
    end;
   params := TStringList.create();
   params.add(arq);
+  params.add(intTostr(tb.RecordCount));
   fmMain.impressaoRaveQr2(tb, nil, 'rpInvContagem', params );
+end;
+
+procedure TfmRelInventario.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+    fmRelInventario := nil;
+    action := caFree;
 end;
 
 end.

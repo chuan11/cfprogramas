@@ -15,6 +15,7 @@ object fmRelInventario: TfmRelInventario
   Position = poDefault
   Visible = True
   WindowState = wsMaximized
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
   object fsBitBtn1: TfsBitBtn
