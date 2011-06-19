@@ -45,7 +45,6 @@ interface
    function isHoraPermitida(conexao:TADOConnection; tela:integer; grupo:String):boolean;
    function openQuery  (Conexao :TADOConnection; CampoInicio,CampoFim:Smallint; Comando:String):TStringList;
    function openSQL(comando, retorno:string; Connection : TADOConnection):String;
-   function qtVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate; conexao:TADOConnection):integer;
    function setParamBD(parametro, uo, valor:String; conexao:TADOConnection):boolean;
    function somaColQuery(Query:TADOQuery;Coluna:String; nDecimais:integer):String;
    function somaColTable(Table:TADOTable;Coluna:String):String; overload;
@@ -1471,13 +1470,6 @@ begin
    result :=  execSQL(cmd, conexao);
 end;
 
-function qtVendaProduto(is_ref, uo, uocd :String;  datai, dataf:Tdate; conexao:TADOConnection):integer;
-var
-   cmd:String;
-begin
-   cmd := 'SELECT [dbo].[Z_CF_funObterVendaPorPeriodo](' + uo +' , '+ is_ref +', '+  funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ funcoes.DateTimeToSqlDateTime(dataF,'') +', '+ funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ uoCD + ') as qt';
-   result := StrToint( OpenSql(cmd,'qt', conexao) );
-end;
 
 function getEmpregadosPonto(conexao:TadoConnection):TStrings;
 var

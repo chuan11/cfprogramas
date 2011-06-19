@@ -67,7 +67,8 @@ uses
   uSelecionaUo in 'fmSelecionaUo\uSelecionaUo.pas' {fmSelecionaUo},
   uGeraEstoque in 'fmGeraEstoque\uGeraEstoque.pas' {fmGeraEstoque},
   uEentSai in 'fmGeraEstoque\uEentSai.pas' {fmEntSai},
-  Unit2 in 'fmGeraEstoque\Unit2.pas' {Form2};
+  Unit2 in 'fmGeraEstoque\Unit2.pas' {Form2},
+  uRelInventario in 'fmRelInventario\uRelInventario.pas' {fmRelInventario};
 
 {$R *.res}
 
@@ -81,7 +82,6 @@ begin
       Application.Initialize;
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
-  Application.CreateForm(TForm2, Form2);
   //  Application.CreateForm(TfmGeraEstoque, fmGeraEstoque);
   Application.Run;
    end;

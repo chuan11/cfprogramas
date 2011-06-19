@@ -56,6 +56,9 @@ interface
    procedure getSangriasDoCaixa(tb, tbSangria :TADOTable);
    procedure getRecebimentosEmCartao(tb, tbVendasCartao :TADOTable);
 
+   function getVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate; conexao:TADOConnection):String;
+
+
 implementation
 
 procedure carregaListarUosPorPreco(var clb: TadLabelCheckListBox; TpPreco:String);
@@ -980,6 +983,18 @@ begin
    ' and cd_tpm <> 2 ';
    funcSQL.execSQL(cmd, fmMain.conexao);
 end;
+
+function getVendaProduto(is_ref, uo, uocd :String;  datai, dataf:Tdate; conexao:TADOConnection):String;
+var
+   cmd:String;
+begin
+   uocd := '10033674';
+   cmd := 'SELECT [dbo].[Z_CF_funObterVendaPorPeriodo](' + uo +' , '+ is_ref +', '+
+          funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ funcoes.DateTimeToSqlDateTime(dataF,'') +', '+
+          funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ uoCD + ') as qt';
+   result :=  funcSQL.openSql(cmd,'qt', conexao) ;
+end;
+
 
 
 

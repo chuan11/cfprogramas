@@ -69,7 +69,7 @@ var
   IS_CRITICA_VD_MEDIA, UO_CD, PC_VAREJO, COL_UO_MAPA_SEPARACAO:String;
 implementation
 
-uses umain, funcoes, funcSQL, verificaSenhas, funcDatas;
+uses umain, funcoes, funcSQL, verificaSenhas, funcDatas, uCF;
 {$R *.dfm}
 
 procedure TfmOsDeposito.bloqueiaSessaoRequisicao(uo: String);
@@ -134,14 +134,14 @@ begin
         datai := now - diasDesdePrimVenda ;
 
 //pegar a venda do ultimo semestre (ou antes, se houver)
-      qtVendaSemestre := funcSQl.qtVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, datai, dataf, fmMain.Conexao) ;
+      qtVendaSemestre :=   strToInt( uCF.getVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, datai, dataf, fmMain.Conexao)) ;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' qtVendaUltimoSemestre: ' + floatToStr(qtVendaSemestre) );
       qtVendaSemestre :=  ( qtVendaSemestre / diasDesdePrimVenda ) * DUR_ESTOQUE;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' Venda Media semestre: ' + floatToStr(qtVendaSemestre) );
 
 
 //pegar a venda do ultimo mes
-      qtVendaMes := funcSQl.qtVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, (dataf-30), dataf, fmMain.Conexao) ;
+      qtVendaMes := strToInt(uCF.getVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, (dataf-30), dataf, fmMain.Conexao)) ;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' qtVendaUltimoMes: ' + floatToStr(qtVendaMes) );
       qtVendaMes :=  ( qtVendaSemestre / 30 ) * DUR_ESTOQUE;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' Venda Media mes: ' + floatToStr(qtVendaMes) );
@@ -168,7 +168,6 @@ function TfmOsDeposito.isEmSeparacao(is_ref:String; mostraMsgErro:boolean):Boole
 var
   cmd : String;
   ds:TDataSet;
-  resultado:boolean;
 begin
    fmMain.MsgStatus('Consultando mapa dse separação.');
 
@@ -271,7 +270,7 @@ end;
 
 procedure TfmOsDeposito.GetDadosProdutos(cod:string);
 var
-  is_ref, cmd:string;
+  cmd:string;
   ds:TdataSet;
 begin
    fmMain.MsgStatus('Consultando codigo.');

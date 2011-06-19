@@ -143,7 +143,6 @@ begin
 
    strEstoque := ' dbo.Z_CF_EstoqueNaLoja (crefe.is_ref, '+ funcoes.getCodUO(cbLoja) + ', '+ strDisponivel + ')';
 
-
    cmd := ' select crefe.is_ref, crefe.ds_ref, crefe.cd_ref , '+ strEstoque +  ' as EstLoja from crefe with(NoLock)' ;
 
    if  lbNivel.Caption <> '0' then
@@ -151,7 +150,7 @@ begin
 
    cmd := cmd + ' where crefe.cd_ref like ' + quotedStr( edit1.Text + '%');
 
-   if cbLoja.ItemIndex = 0 then
+   if cbEstoque.ItemIndex = 0 then
       cmd := cmd + ' and ' + strEstoque + ' > 0 ';
 
    cmd := cmd + ' order by crefe.cd_ref ';
@@ -226,14 +225,14 @@ function TfmGeraEstoque.GetIniDtVen: string;
 var
   aux:string;
 begin
-  shortdateformat := 'dd/MM/yyyy';
+//  shortdateformat := 'dd/MM/yyyy';
   if fmGeraEstoque.spedit.Value < 1 then
      spedit.Value := 1;
   AUX := (DateToStr(now - (30 * spedit.Value)));
   delete(aux,01,02);
   insert('01',aux,01);
   result := funcoes.StrToSqlDate(aux);
-  shortdateformat := 'dd/MM/yy';
+//  shortdateformat := 'dd/MM/yy';
 end;
 
 procedure TfmGeraEstoque.SalvaColDbgrid(NomeForm:string;Dbgrid:tdbgrid);
@@ -325,10 +324,20 @@ begin
 end;
 
 procedure TfmGeraEstoque.Bt_SaidasClick(Sender: TObject);
+var
+   dtInicio:Tdate;
 begin
    screen.Cursor := crHourGlass;
+
+   if (tbGE.fieldByName('Data Ultima Ent').AsString <> '') then
+      dtInicio := tbGE.fieldByName('Data Ultima Ent').AsDateTime
+   else
+      dtInicio := now - (spedit.value * 30);
+
    if (tbGE.IsEmpty = false) then
-      fmMain.obterDetalhesSaida(tbGE.fieldByName('is_ref').asString, funcoes.getCodUO(cbLoja) );
+       fmMain.obterDetalhesSaida( tbGE.fieldByName('is_ref').asString,
+                                  funcoes.getCodUO(cbLoja), dtInicio
+                                 );
    screen.Cursor := crdefault;
 end;
 
@@ -414,14 +423,9 @@ end;
 
 procedure TfmGeraEstoque.CriarTabela(Sender: Tobject);
 var
-  cmd,ntbGE:String;
   i:integer;
 begin
-   ntbGE := trim('#' + funcoes.GetNomeDoMicro() + funcoes.SohNumeros( DateTimeToStr(now)) );
-   cmd := 'Create table ' + ntbGE + ' ( Codigo varchar(08), Descricao varchar(50), [Data Ultima Ent] smalldateTime, [Quant Ultima Ent] integer, [Total Venda] integer, Estoque integer, EstoqueCD integer, PV money, [is_ref] integer ) ';
-   funcSQl.GetValorWell('E',cmd,'@@error', fmMain.Conexao);
-
-   tbGE.tableName := ntbGE;
+   tbGE.TableName := funcSQL.criaTabelaTemporaria(fmMain.Conexao, ' ( Codigo varchar(08), Descricao varchar(50), [Data Ultima Ent] smalldateTime, [Quant Ultima Ent] integer, [Total Venda] integer, Estoque integer, EstoqueCD integer, PV money, [is_ref] integer ) ' );
    tbGE.Open;
 
    softdbgrid1.Columns[0].Width := 60;
@@ -436,7 +440,6 @@ begin
 
    for i:=0 to SoftDBGrid1.Columns.Count -1 do
       SoftDBGrid1.Columns[i].Title.Font.Style :=[fsbold];
-
 end;
 
 

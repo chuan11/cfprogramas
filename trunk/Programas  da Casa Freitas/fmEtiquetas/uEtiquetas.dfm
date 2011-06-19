@@ -1,6 +1,6 @@
 object fmEtiquetas: TfmEtiquetas
-  Left = 231
-  Top = 167
+  Left = 272
+  Top = 107
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = '(02) Gera'#231#227'o de C'#243'digos de Barras'

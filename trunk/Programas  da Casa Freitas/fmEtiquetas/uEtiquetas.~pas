@@ -101,7 +101,7 @@ begin
    cmd := '';
    cmd := 'exec Z_CF_GetInformacoesProduto ' +
            QuotedStr( FUNCOES.SohNumeros(EdCodigo.text))  +' , '+
-           funcSql.getCodUo(cbLojas) + ' , ' ;
+           funcoes.getCodUo(cbLojas) + ' , ' ;
 
    cmd := cmd + funcoes.SohNumeros((copy(cbPrecos.Items[cbPrecos.ItemIndex],00,100)));
 

@@ -56,6 +56,9 @@ interface
    procedure getSangriasDoCaixa(tb, tbSangria :TADOTable);
    procedure getRecebimentosEmCartao(tb, tbVendasCartao :TADOTable);
 
+   function getVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate):String;
+
+
 implementation
 
 procedure carregaListarUosPorPreco(var clb: TadLabelCheckListBox; TpPreco:String);
@@ -970,16 +973,28 @@ var
    cmd:String;
 begin
    cmd :=    ' codLoja int, cd_mve int, ds_mve varchar(20), seqTransacaoCaixa int, '+
-             ' valor money, numparcelas int, tp_mve varchar(01) ';
+             ' valor money, numparcelas int, tp_mve varchar(01), tefMagnetico varchar(1) ';
    tbVendasCartao.tableName:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
    cmd :=
    ' insert ' + tbVendasCartao.tableName +
    ' select codLoja, cd_mve, ds_mve, seqTransacaoCaixa, ' +
-   ' valor, numparcelas , tp_mve from ' + tb.tableName  +#13+
+   ' valor, numparcelas , tp_mve, tefmagnetico from ' + tb.tableName  +#13+
    ' where tp_mve in (''B'', ''T'') ' +
    ' and cd_tpm <> 2 ';
    funcSQL.execSQL(cmd, fmMain.conexao);
 end;
+
+function getVendaProduto(is_ref, uo, uocd :String;  datai, dataf:Tdate):String;
+var
+   cmd:String;
+begin
+   uocd := '10033674';
+   cmd := 'SELECT [dbo].[Z_CF_funObterVendaPorPeriodo](' + uo +' , '+ is_ref +', '+
+          funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ funcoes.DateTimeToSqlDateTime(dataF,'') +', '+
+          funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ uoCD + ') as qt';
+   result :=  funcSQL.openSql(cmd,'qt', fmMain.conexao) ;
+end;
+
 
 
 

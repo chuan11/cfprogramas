@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, funcsql, funcoes,ExtCtrls;
+  Dialogs, StdCtrls, ExtCtrls, DB, ADODB;
 
 type
   TfmEntSai = class(TForm)
@@ -20,9 +20,10 @@ type
     lbPrimEnt: TLabel;
     Bevel1: TBevel;
     Bevel2: TBevel;
-    procedure ListarEntrada(Sender:Tobject);
-    procedure ObterTotalEntradas(Sender:Tobject);
-    procedure ObtertotalVendas(Sender:Tobject);
+    qrEnt: TADOQuery;
+    procedure listaTotalEntSai(isref:String);
+    procedure listaDadosEntrada(isref: String);
+    procedure ObtertotalVendas(isRef:String);
   private
     { Private declarations }
   public
@@ -34,7 +35,7 @@ var
 
 implementation
 
-uses Unit1;
+uses uMain, funcsql, funcoes, uCF;
 
 {$R *.dfm}
 
@@ -42,75 +43,46 @@ uses Unit1;
 
 { TfmEntSai }
 
-procedure TfmEntSai.ListarEntrada(Sender: Tobject);
-var
-   aux:string;
-begin
-   //form1.qrEnt.SQL.clear();
-   //form1.qrEnt.SQL.Add('Exec dbo.Z_CF_stoListaQtEntradaPorItem '+ lbIs_ref.caption);
-   //form1.qrEnt.open;
-   //form1.qrEnt.Last();
-//   if //form1.qrEnt.IsEmpty = false }then
-  if 1 =1then begin
-      aux := '';//form1.qrEnt.fieldByName('data').asString;
-//       insert('20',aux, length(aux)-1);
-       lbPrimEnt.Caption := aux;
 
-       // calcular a soma das entradas
-       ObterTotalEntradas(nil);
-       //calcular a venda
-       ObtertotalVendas(nil);
+
+procedure TfmEntSai.listaDadosEntrada(isref: String);
+var
+   cmd:string;
+begin
+   cmd := 'Exec dbo.Z_CF_stoListaQtEntradaPorItem '+ isref;
+   funcsql.getQuery(fmMain.Conexao, qrEnt, cmd );
+
+   if (qrEnt.IsEmpty = false)then
+   begin
+      cmd := qrEnt.fieldByName('data').asString;
+      insert('20', cmd, length(cmd)-1);
+      lbPrimEnt.Caption := cmd;
+
+
+
+
+//       ObtertotalVendas(nil);
    end
    else
-   begin
        lbPrimEnt.Caption := 'Não há...';
-   end;
-
-  shortdateformat := 'dd/MM/yy';
 end;
 
-procedure TfmEntSai.ObterTotalEntradas(Sender: Tobject);
-var
-  uo:string;
-  total:integer;
+
+procedure TfmEntSai.ObtertotalVendas(isRef:String);
 begin
-{   total := 0 ;
-   uo := ''; //funcsql.getCodUo('');
-   //form1.qrEnt.First;
-   while 1=1 do //form1.qrEnt.Eof = false do
+   if (lbPrimEnt.Caption <> '0') then
    begin
-      if uo = '' then
-         total :=  total + 0//form1.qrEnt.FieldByName('quant').AsInteger
-      else
-      begin
-         if //form1.qrEnt.FieldByName('is_uo').AsString = uo then
-            //total :=  total + 0; //form1.qrEnt.FieldByName('quant').AsInteger
-      end
-      if total = 0 then
-         lbTotEnt.Caption := 'Sem compras (consta em outras)'
-      else
-         lbTotEnt.Caption :=    floattostrf(total ,ffNumber,18,0);
-
-      //form1.qrEnt.next;
+      lbTotVenda.Caption :=
+      ucf.getVendaProduto(isRef, '10033674', '10033674', strToDate(lbPrimEnt.Caption), now-1, fmMain.Conexao);
    end;
-}end;
+end;
 
-procedure TfmEntSai.ObtertotalVendas(Sender: Tobject);
-begin
- {  shortdateformat := 'dd/MM/yyyy';
-   //form1.CalculaVendaNoPeriodo(
-                                 funcSQl.getCodUo('') ,
-                                 lbis_ref.Caption,
-                                 lbPrimEnt.Caption,
-                                 dateToStr( now),
-                                 '',
-                                 '',
-                                 false
-     );
+procedure TfmEntSai.listaTotalEntSai(isref: String);
+begin //
+    listaDadosEntrada(isref);
+    obterTotalVendas(isref);
+end;
 
-    lbTotVenda.Caption :=   floattostrf( //form1.qrTVenda.fieldByname('quantidade').asFloat ,ffNumber,18,2);
 
-   shortdateformat := 'dd/MM/yy';
-}end;
 
 end.
