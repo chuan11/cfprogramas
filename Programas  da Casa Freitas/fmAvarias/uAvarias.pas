@@ -283,7 +283,7 @@ var
 begin
    if (key = VK_RETURN )or(key = VK_TAB) then
    begin
-      ds := uCF.getDadosProd( lbuo.Caption, edCodigo.Text, '5' );
+      ds := uCF.getDadosProd( lbuo.Caption, edCodigo.Text, '5', true );
       if (ds.IsEmpty = false ) then
       begin
          edDesc.Text := ds.fieldByName('codigo').AsString +'-'+ds.fieldByName('descricao').AsString;

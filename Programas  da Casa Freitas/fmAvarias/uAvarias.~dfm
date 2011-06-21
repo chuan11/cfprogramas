@@ -455,7 +455,7 @@ object fmCadAvarias: TfmCadAvarias
     object lbuo: TLabel
       Left = 128
       Top = 20
-      Width = 25
+      Width = 20
       Height = 13
       Caption = 'lbuo'
       Visible = False
@@ -630,7 +630,8 @@ object fmCadAvarias: TfmCadAvarias
     end
     object ransferirAvaria1: TMenuItem
       Tag = 103106
-      Caption = 'Transferir Avaria'
+      Caption = 'Ajuste a loja do desconto '
+      OnClick = ransferirAvaria1Click
     end
   end
   object QrItens: TADOQuery

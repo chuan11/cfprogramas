@@ -177,7 +177,7 @@ end;
 
 procedure TfmLancaPrecos.getDadosItens(uo, cd_ref, preco:String);
 begin
-   DS:= uCF.getDadosProd( uo, cd_ref, preco);
+   DS:= uCF.getDadosProd( uo, cd_ref, preco, true);
    if  (ds.IsEmpty = false)   then
    begin
       edDesc.text := DS.fieldByName('Descricao').asString;

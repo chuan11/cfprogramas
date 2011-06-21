@@ -36,6 +36,16 @@ object fmRelInventario: TfmRelInventario
     TabOrder = 1
     OnClick = fsBitBtn2Click
   end
+  object Memo1: TMemo
+    Left = 16
+    Top = 143
+    Width = 593
+    Height = 178
+    Color = clBtnFace
+    Ctl3D = False
+    ParentCtl3D = False
+    TabOrder = 2
+  end
   object tb: TADOTable
     Connection = fmMain.Conexao
     Left = 440
@@ -43,12 +53,12 @@ object fmRelInventario: TfmRelInventario
   end
   object tb2: TADOTable
     Connection = fmMain.Conexao
-    Left = 440
-    Top = 56
+    Left = 336
+    Top = 16
   end
   object tbDirvg: TADOTable
     Connection = fmMain.Conexao
-    Left = 440
-    Top = 96
+    Left = 384
+    Top = 16
   end
 end

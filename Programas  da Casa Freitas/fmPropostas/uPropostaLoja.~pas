@@ -244,7 +244,7 @@ begin
           ' zcf_tbuo.nm_razsoc, tp_lograd+''  ''+ds_end + '' Nº''+ zcf_tbuo.nr_end + '' ''+ tbai.nm_Bai as endereco, tcid.nm_cid + '' ''+ zcf_tbuo.cd_uf, nr_cgf  from zcf_tbuo with (Nolock) ' +
           ' inner join tcid with(nolock) on zcf_tbuo.cd_cid = tcid.cd_cid ' +
           ' inner join tbai with(nolock) on zcf_tbuo.cd_bai = tbai.cd_bai and tbai.cd_cid = zcf_tbuo.cd_cid '+
-          ' where zcf_tbuo.is_uo = ' + fmMain.lbLoja.Caption ;
+          ' where zcf_tbuo.is_uo = ' + fmMain.getUoLogada() ;
 
    dadosLoja := funcSQl.GetValoresSQL2( CMD ,fmMain.conexao);
    params := TStringlist.Create();
@@ -306,7 +306,7 @@ begin
       fmMain.EnviarEmail('', 'Assunto - proposta ' +arq , arq, body, 'Enviando e-mail para cliente...' );
 
       if ( msgTela('','Deseja guardar uma cópia ?', MB_YESNO + MB_ICONQUESTION) = mrYes ) then
-         fmMain.EnviarEmail(funcsql.getEmail(fmMain.lbLoja.Caption, fmMain.Conexao), 'Assunto - proposta ' +arq , arq, body, 'Enviando copia do email  para a loja.. ');
+         fmMain.EnviarEmail(funcsql.getEmail(fmMain.getUoLogada(), fmMain.Conexao), 'Assunto - proposta ' +arq , arq, body, 'Enviando copia do email  para a loja.. ');
       DeleteFile(arq);
    end;
 end;

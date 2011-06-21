@@ -13,6 +13,7 @@ type
     fsBitBtn2: TfsBitBtn;
     tb2: TADOTable;
     tbDirvg: TADOTable;
+    Memo1: TMemo;
     procedure fsBitBtn1Click(Sender: TObject);
     procedure relatorioContagem(arq:String);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -84,22 +85,31 @@ begin
 
       for i:=0 to lst.Count -1 do
       begin
-         dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], EAN_POS_INI, EAN_TAM)), '101');
+         fmMain.msgStatus('item '+ intToStr(i+1) + ' de ' + intTostr(lst.count) );
+         funcoes.gravaLog(lst[i]);
+
+        // testar no ean 13
+         dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], EAN_POS_INI, EAN_TAM)), '101', false);
+
+         if ( dsItem.IsEmpty = true ) then
+            dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 02, 12)), '101', false);
+
+         if ( dsItem.IsEmpty = true) then
+            dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 07, 07)), '101', false);
+
+         if ( dsItem.IsEmpty = true) then
+            dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 06, 08)), '101', false);
+
 
          if ( dsItem.IsEmpty = false) then
-         begin
+            tb.AppendRecord([ dsItem.fieldByName('codigo').asString, dsItem.fieldByName('descricao').asString, copy( lst[i], END_POS_INI, END_TAM), copy( lst[i], QT_POS_INI, QT_TAM), copy( lst[i], PAL_POS_INI, PAL_TAM) ])
+         else
+            memo1.lines.add('Não encontrado:' +  lst[i]);
 
-            tb.AppendRecord([
-                              dsItem.fieldByName('codigo').asString,
-                              dsItem.fieldByName('descricao').asString,
-                              copy( lst[i], END_POS_INI, END_TAM),
-                              copy( lst[i], QT_POS_INI, QT_TAM),
-                              copy( lst[i], PAL_POS_INI, PAL_TAM)
-                            ]);
-         end;
         dsItem.Free();
       end;
    end;
+   fmMain.msgStatus('');
 end;
 
 procedure TfmRelInventario.relatorioContagem(arq: String);
@@ -204,7 +214,6 @@ var
    arq2, arq1:String;
    params:TStringList;
 begin
-
    arq1 := funcoes.dialogAbrArq('txt','c:\');
    arq2 := funcoes.dialogAbrArq('txt','c:\');
 
@@ -225,8 +234,6 @@ begin
    else
       funcoes.msgTela('', 'Erro ao carregar arquivos.', MB_ICONERROR + MB_OK);
 end;
-
-
 
 procedure TfmRelInventario.adicionaDivergencia(tipo, codigo, descricao, endereco, quant, pallet, msg, segundoValor: String);
 begin

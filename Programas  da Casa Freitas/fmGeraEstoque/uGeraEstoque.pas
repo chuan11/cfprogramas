@@ -14,35 +14,21 @@ type
     edit1: TadLabelEdit;
     FlatButton1: TFlatButton;
     DataSource1: TDataSource;
-    SoftDBGrid1: TSoftDBGrid;
+    grid: TSoftDBGrid;
     cbLoja: TadLabelComboBox;
     cbPrecos: TadLabelComboBox;
     cbEstoque: TadLabelComboBox;
     Bt_Saidas: TFlatButton;
     Bt_Entradas: TFlatButton;
-    Panel2: TPanel;
+    pbRodape: TPanel;
     spedit: TadLabelSpinEdit;
     Label1: TLabel;
     CheckBox2: TCheckBox;
-    Query2: TADOQuery;
-    StringField1: TStringField;
-    StringField2: TStringField;
-    DateTimeField1: TDateTimeField;
-    IntegerField1: TIntegerField;
-    IntegerField2: TIntegerField;
-    IntegerField3: TIntegerField;
-    IntegerField4: TIntegerField;
-    FloatField1: TFloatField;
-    IntegerField5: TIntegerField;
-    FloatField2: TFloatField;
-    StringField3: TStringField;
     FlatButton5: TFlatButton;
-    cbEstDisponivel: TfsCheckBox;
     FlatButton4: TFlatButton;
     tbGE: TADOTable;
     FlatButton2: TFlatButton;
     FlatButton6: TFlatButton;
-    qrTVenda: TADOQuery;
     fsCheckBox1: TfsCheckBox;
     Panel1: TPanel;
     lbNivel: TLabel;
@@ -88,11 +74,9 @@ type
     Procedure ListarItensPorFaixaCodigo();
     procedure ProgressoDaExecucao(Sender:Tobject;nItem:integer);
     procedure GeraEstoque(Sender:TObject);
-    procedure cbEstoqueChange(Sender: TObject);
-    procedure SoftDBGrid1CellClick(Column: TColumn);
-    procedure SoftDBGrid1TitleClick(Column: TColumn);
+    procedure gridCellClick(Column: TColumn);
+    procedure gridTitleClick(Column: TColumn);
     procedure ChamaGeraEstoque(Sender:Tobject);
-    procedure CalculaVendaNoPeriodo(uo, is_ref, dtInicio, dtFim, cod, desc: string; isVendaDetalhada:boolean);
     procedure FlatButton6Click(Sender: TObject);
     procedure FlatButton7Click(Sender: TObject);
     procedure VerdetalhesdaCMU1Click(Sender: TObject);
@@ -104,6 +88,7 @@ type
     procedure VerdetalhesdaCRUCbaseadonanota1Click(Sender: TObject);
     function abreFormCRUC():boolean;
     procedure FlatButton3Click(Sender: TObject);
+    procedure FormResize(Sender: TObject);
 
 
   private
@@ -117,7 +102,7 @@ var
   IsOrderDesc:byte;
 implementation
 
-uses uCadFornecedor, uMain;
+uses uMain, ucf;
 
 {$R *.dfm}
 
@@ -133,39 +118,39 @@ end;
 
 procedure TfmGeraEstoque.ListarItensPorFaixaCodigo();
 var
-  ds:TDataSet;
-  strDisponivel,StrEstoque, cmd:String;
+  ds, dsItens:TDataSet;
+  cmd:String;
 begin
-   if (cbEstDisponivel.Checked = true) then
-      strDisponivel := '1'
-   else
-      strDisponivel := '0';
+   cmd :=
+   'Select cd_ref from crefe (nolock) ';
 
-   strEstoque := ' dbo.Z_CF_EstoqueNaLoja (crefe.is_ref, '+ funcoes.getCodUO(cbLoja) + ', '+ strDisponivel + ')';
-
-   cmd := ' select crefe.is_ref, crefe.ds_ref, crefe.cd_ref , '+ strEstoque +  ' as EstLoja from crefe with(NoLock)' ;
-
-   if  lbNivel.Caption <> '0' then
-      cmd := cmd + 'inner join cccom with(nolock) on crefe.is_ref = cccom.cd_chave and cd_campo = '+ quotedstr(lbNivel.caption) + ' and cd_vcampo  = ' + quotedstr(lbCodigo.caption);
+   if (lbNivel.Caption <> '0') then
+      cmd := cmd + 'inner join cccom with(nolock) on crefe.is_ref = cccom.cd_chave ' +
+      ' and cd_campo = '+ quotedstr(lbNivel.caption) +
+      ' and cd_vcampo  = ' + quotedstr(lbCodigo.caption);
 
    cmd := cmd + ' where crefe.cd_ref like ' + quotedStr( edit1.Text + '%');
 
-   if cbEstoque.ItemIndex = 0 then
-      cmd := cmd + ' and ' + strEstoque + ' > 0 ';
+   dsItens:= funcsql.getDataSetQ(cmd, fmMain.Conexao);
 
-   cmd := cmd + ' order by crefe.cd_ref ';
 
-   ds:= funcsql.getDataSetQ(cmd, fmMain.Conexao);
-   ds.first;
-   while ds.Eof = false do
+   dsItens.first;
+   while dsItens.Eof = false do
    begin
-      tbGE.Append;
-      tbGE.FieldByName('codigo').AsString := ds.fieldByName('cd_ref').asString;
-      tbGE.FieldByName('descricao').AsString := ds.fieldByName('ds_ref').asString;
-      tbGE.FieldByName('is_ref').AsString   := ds.fieldByName('is_ref').asString;
-      tbGE.FieldByName('Estoque').AsString   := ds.fieldByName('EstLoja').asString;
-      tbGE.Post;
-      ds.Next;
+      ds := uCF.getDadosProd(funcoes.getCodUO(cbLoja), dsItens.fieldByname('cd_ref').AsString, fmMain.getCodPreco(cbPrecos), true );
+
+      if (ds.IsEmpty = false) then
+      begin
+         tbGE.Append;
+         tbGE.FieldByName('codigo').AsString := ds.fieldByName('codigo').asString;
+         tbGE.FieldByName('descricao').AsString := ds.fieldByName('descricao').asString;
+         tbGE.FieldByName('is_ref').AsString   := ds.fieldByName('is_ref').asString;
+         tbGE.FieldByName('Estoque').AsString   := ds.fieldByName('EstoqueDisponivel').asString;
+         tbGE.FieldByName('pv').AsString   := ds.fieldByName('preco').asString;
+         tbGE.Post;
+         dsItens.Next;
+      end;
+
    end;
    ds.free;
 end;
@@ -177,10 +162,7 @@ var
   strDisponivel,StrEstoque, cmd:String;
 
 begin
-   if cbEstDisponivel.Checked = true then
-      strDisponivel := '1'
-   else
-      strDisponivel := '0';
+   strDisponivel := '0';
 
    strEstoque := ' dbo.Z_CF_EstoqueNaLoja (crefe.is_ref , '+ copy(cbLoja.Items[cbLoja.itemIndex],51,08) + ' , '+ strDisponivel + ')';
 
@@ -287,7 +269,7 @@ end;
 
 procedure TfmGeraEstoque.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-   SalvaColDbgrid('fmGeraEstoque',softDbGrid1);
+   SalvaColDbgrid('fmGeraEstoque',grid);
    funcoes.WParReg('Estoque','loja', inttoStr(cbLoja.ItemIndex));
    funcoes.WParReg('Estoque','venda', inttoStr(cbLoja.ItemIndex));
    funcoes.WParReg('Estoque','estoque', inttoStr(cbPrecos.ItemIndex));
@@ -299,7 +281,6 @@ begin
    funcoes.WParReg('Estoque','MesDefault',FloatToStr(spedit.value)) ;
    funcoes.WParReg('Estoque','TipoDeGeracao',intToStr(rgTpBusca.ItemIndex)) ;
    deleteFile(funcoes.TempDir()+'Log_'+Application.Title+'.txt');
-   funcoes.WParReg('Estoque','EhEstDisponivel', BoolToStr(cbEstDisponivel.Checked,false)) ;
 
    Action := caFree;
    fmGeraEstoque := nil;
@@ -361,10 +342,6 @@ var
 begin
    screen.Cursor := crhourGlass;
 
-   if cbEstDisponivel.Checked = true then
-      EhDisponivel := '1'
-   else
-      EhDisponivel := '0';
 
    programa := ExtractFilePath(ParamStr(0)) + 'ResumoEstoque.exe "'+ 'ResumoDoEstoque" '+tbGE.FieldByName('codigo').asString+' "'+tbGE.FieldByName('descricao').asString+'" '+tbGE.FieldByName('is_ref').asString +' '+ EhDisponivel;
 
@@ -403,10 +380,6 @@ procedure TfmGeraEstoque.FlatButton5Click(Sender: TObject);
 var
    disponivel: String;
 begin
-   if (cbEstDisponivel.Checked = true) then
-      disponivel := '1'
-   else
-      disponivel := '0';
 
    if not(tbGE.IsEmpty) then
       fmMain.obterResumoEstoque(
@@ -428,18 +401,18 @@ begin
    tbGE.TableName := funcSQL.criaTabelaTemporaria(fmMain.Conexao, ' ( Codigo varchar(08), Descricao varchar(50), [Data Ultima Ent] smalldateTime, [Quant Ultima Ent] integer, [Total Venda] integer, Estoque integer, EstoqueCD integer, PV money, [is_ref] integer ) ' );
    tbGE.Open;
 
-   softdbgrid1.Columns[0].Width := 60;
-   softdbgrid1.Columns[1].Width := 290;
-   softdbgrid1.Columns[2].Width :=  82;
-   softdbgrid1.Columns[3].Width :=  88;
-   softdbgrid1.Columns[4].Width :=  65;
-   softdbgrid1.Columns[5].Width :=  65;
-   softdbgrid1.Columns[6].Width :=  65;
-   softdbgrid1.Columns[7].Width :=  80;
-   softdbgrid1.Columns[8].Visible := false;
+   grid.Columns[0].Width := 60;
+   grid.Columns[1].Width := 290;
+   grid.Columns[2].Width :=  82;
+   grid.Columns[3].Width :=  88;
+   grid.Columns[4].Width :=  65;
+   grid.Columns[5].Width :=  65;
+   grid.Columns[6].Width :=  65;
+   grid.Columns[7].Width :=  80;
+   grid.Columns[8].Visible := false;
 
-   for i:=0 to SoftDBGrid1.Columns.Count -1 do
-      SoftDBGrid1.Columns[i].Title.Font.Style :=[fsbold];
+   for i:=0 to grid.Columns.Count -1 do
+      grid.Columns[i].Title.Font.Style :=[fsbold];
 end;
 
 
@@ -463,7 +436,7 @@ var
    itens : TStrings;
    nItens:integer;
 begin
-   softdbgrid1.Visible := false;
+   grid.Visible := false;
    screen.cursor := crHourGlass;
    fmMain.msgStatus('Obtendo lista de itens....');
 
@@ -481,7 +454,7 @@ begin
    itens := TStringList.Create();
 
 
-
+ {
    tbGE.First;
    while tbGE.Eof = false do
    begin
@@ -536,8 +509,8 @@ begin
             tbGE.Next;
       end;
  end;
-
- softdbgrid1.Visible := true;
+}
+ grid.Visible := true;
 end;
 
 
@@ -548,21 +521,13 @@ begin
    screen.Cursor := crDefault;
 end;
 
-procedure TfmGeraEstoque.cbEstoqueChange(Sender: TObject);
-begin
-   if cbEstoque.ItemIndex = 1 then
-     cbEstDisponivel.Visible := false
-   else
-     cbEstDisponivel.Visible := true;
-end;
-
-procedure TfmGeraEstoque.SoftDBGrid1CellClick(Column: TColumn);
+procedure TfmGeraEstoque.gridCellClick(Column: TColumn);
 begin
    if (tbGE.IsEmpty = false) then
       fmMain.msgStatus(tbGE.fieldByName('is_ref').asString);
 end;
 
-procedure TfmGeraEstoque.SoftDBGrid1TitleClick(Column: TColumn);
+procedure TfmGeraEstoque.gridTitleClick(Column: TColumn);
 begin
    if IsOrderDesc = 0 then
    begin
@@ -582,38 +547,6 @@ begin
     if (tbGE.IsEmpty = false) then
 
 end;
-
-procedure TfmGeraEstoque.CalculaVendaNoPeriodo(uo, is_ref, dtInicio,dtFim,cod,desc: string; isVendaDetalhada:boolean);
-begin
-   if ( fmGeraEstoque.qrTVenda.Active = true ) then
-
-   fmGeraEstoque.qrTVenda.Close();
-   fmGeraEstoque.qrTVenda.SQL.Clear();
-
-
-   if ( isVendaDetalhada = false) then
-   begin
-      qrTVenda.SQL.add(' select dbo.Z_CF_funObterVendaPorPeriodo( '+
-                       uo       +' , '+
-                       is_ref   +' , '+
-                       funcoes.StrToSqlDate(dtInicio)   +', '+
-                       funcoes.StrToSqlDate(dtFim)  +', '+
-                       fmGeraEstoque.GetIniDtVen() +' , ' + UO_CD
-                       +') as Quantidade'
-                     );
-   end
-   else
-   begin
-      qrTVenda.SQL.add( 'Select UO.ds_uo as Loja, sum(qt_mov) as Quantidade from zcf_dsdsi V with(nolock) '+
-                        'inner join zcf_tbuo UO (nolock) on V.is_estoque = UO.Is_uo '+
-                        'where ' +
-                        'V.dt_mov between '+ funcoes.StrToSqlDate(dtInicio) +' and ' + funcoes.StrToSqlDate(dtFim) +' '+
-                        'and V.is_ref =  ' + is_ref + 'group by UO.ds_uo'
-                      );
-   end;
-   qrTVenda.Open;
-end;
-
 
 procedure TfmGeraEstoque.FlatButton7Click(Sender: TObject);
 var
@@ -685,7 +618,7 @@ begin
    begin
       chamaGeraEstoque(Sender);
 
-      SoftDBGrid1.Columns[ tbGE.FieldByName('pv').Index ].Title.Caption := copy(cbPrecos.Items[cbPrecos.itemindex],01,20);
+      grid.Columns[ tbGE.FieldByName('pv').Index ].Title.Caption := copy(cbPrecos.Items[cbPrecos.itemindex],01,20);
    end
    else
       funcoes.msgTela('','Erro:'+#13+ erro, MB_ICONERROR);
@@ -748,6 +681,11 @@ procedure TfmGeraEstoque.FlatButton3Click(Sender: TObject);
 begin
    if ( tbGE.IsEmpty = false) then
 //      funcsql.exportatbGE(tbGE);
+end;
+
+procedure TfmGeraEstoque.FormResize(Sender: TObject);
+begin
+   grid.Height :=  fmGeraEstoque.Height - (grid.Top + pbRodape.Height + 40 );
 end;
 
 end.

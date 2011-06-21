@@ -586,7 +586,7 @@ end;
 
 procedure TfmMapa.Vendasnoperiodo1Click(Sender: TObject);
 begin
-   fmMain.obterDetalhesSaida( tb.fieldByName('is_ref').asString , fmMain.getUoLogada() );
+   fmMain.obterDetalhesSaida( tb.fieldByName('is_ref').asString , fmMain.getUoLogada(), now );
 end;
 
 procedure TfmMapa.Imprimir1Click(Sender: TObject);

@@ -13,14 +13,15 @@ type
     fsBitBtn2: TfsBitBtn;
     tb2: TADOTable;
     tbDirvg: TADOTable;
+    Memo1: TMemo;
     procedure fsBitBtn1Click(Sender: TObject);
     procedure relatorioContagem(arq:String);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure carregaTbInventario(tb:TADOTable; arq:String);
     procedure fsBitBtn2Click(Sender: TObject);
     procedure montaRelDivergencia(arq1,arq2:String);
-    procedure calculaDivergencia(tbBase:String; tb, tb2, tbDirvg:TADOTAble);
-    procedure adicionaDivergencia(tipo, codigo, descricao, endereco, quant, pallet, msg:String);
+    procedure calculaDivergencia(nmCont1, nmCont2:String; tb, tb2, tbDirvg:TADOTAble);
+    procedure adicionaDivergencia(tipo, codigo, descricao, endereco, quant, pallet, msg, segundoValor:String);
 
   private
     { Private declarations }
@@ -70,6 +71,7 @@ var
    i:integer;
    dsItem:TDataSet;
 begin
+   fmMain.msgStatus('Carregando itens de '+ arq);
    if (tb.TableName <> '') then
       tb.close();
 
@@ -83,22 +85,31 @@ begin
 
       for i:=0 to lst.Count -1 do
       begin
+         fmMain.msgStatus('item '+ intToStr(i+1) + ' de ' + intTostr(lst.count) );
+         funcoes.gravaLog(lst[i]);
+
+        // testar no ean 13
          dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], EAN_POS_INI, EAN_TAM)), '101');
 
-         if ( dsItem.IsEmpty = false) then
-         begin
+         if ( dsItem.IsEmpty = true ) then
+            dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 02, 12)), '101');
 
-            tb.AppendRecord([
-                              dsItem.fieldByName('codigo').asString,
-                              dsItem.fieldByName('descricao').asString,
-                              copy( lst[i], END_POS_INI, END_TAM),
-                              copy( lst[i], QT_POS_INI, QT_TAM),
-                              copy( lst[i], PAL_POS_INI, PAL_TAM)
-                            ]);
-         end;
+         if ( dsItem.IsEmpty = true) then
+            dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 07, 07)), '101');
+
+         if ( dsItem.IsEmpty = true) then
+            dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 06, 08)), '101');
+
+
+         if ( dsItem.IsEmpty = false) then
+            tb.AppendRecord([ dsItem.fieldByName('codigo').asString, dsItem.fieldByName('descricao').asString, copy( lst[i], END_POS_INI, END_TAM), copy( lst[i], QT_POS_INI, QT_TAM), copy( lst[i], PAL_POS_INI, PAL_TAM) ])
+         else
+            memo1.lines.add('Não encontrado:' +  lst[i]);
+
         dsItem.Free();
       end;
    end;
+   fmMain.msgStatus('');
 end;
 
 procedure TfmRelInventario.relatorioContagem(arq: String);
@@ -120,11 +131,13 @@ begin
 end;
 
 
-procedure TfmRelInventario.calculaDivergencia(tbBase:String; tb, tb2, tbDirvg: TADOTAble);
+procedure TfmRelInventario.calculaDivergencia(nmCont1, nmCont2:String; tb, tb2, tbDirvg: TADOTAble);
 var
    ds:TDataSet;
    cmd:String;
 begin
+   fmMain.msgStatus('Calculando divergencias...');
+
     tb.first();
     while (tb.eof = false) do
     begin
@@ -148,12 +161,12 @@ begin
                                tb.FieldByName('endereco').AsString,
                                tb.FieldByName('qt').AsString,
                                tb.FieldByName('pallet').AsString,
-                               tbBase + 'Falta a outra contagem'
+                               'Item de '+ nmCont1 + ', falta a outra contagem',
+                               ''
                                );
        end
        else
        begin
-
           if (tb.FieldByName('pallet').AsString <> ds.FieldByName('pallet').AsString) then
           begin
              adicionaDivergencia( 'pallet',
@@ -162,7 +175,8 @@ begin
                                   tb.FieldByName('endereco').AsString,
                                   tb.FieldByName('qt').AsString,
                                   tb.FieldByName('pallet').AsString,
-                                  tbBase   +' -  '+ ds.FieldByName('pallet').AsString      + ' Pallet divergente'
+                                  'Pallet divergente, ' + nmCont1 +' '+ tb.FieldByName('pallet').AsString +' '+nmCont2 +' '+ ds.FieldByName('pallet').AsString
+                                  , ds.FieldByName('pallet').AsString
                                  );
           end;
 
@@ -174,7 +188,8 @@ begin
                                   tb.FieldByName('endereco').AsString,
                                   tb.FieldByName('qt').AsString,
                                   tb.FieldByName('pallet').AsString,
-                                  tbBase   +' -  '+ ds.FieldByName('qt').AsString      + ' quantidade divergente.'
+                                  'Quant divergente, ' + nmCont1 +' '+ tb.FieldByName('qt').AsString +' '+ nmCont2 +' '+ ds.FieldByName('qt').AsString
+                                  ,ds.FieldByName('qt').AsString
                                  );
           end;
        end;
@@ -190,8 +205,8 @@ begin
     carregaTbInventario(tb2, arq2);
     carregaTbInventario(tbDirvg, '');
 
-    calculaDivergencia('C1 ', tb, tb2, tbDirvg);
-    calculaDivergencia('C2 ', tb2, tb, tbDirvg);
+    calculaDivergencia('C1', 'C2', tb, tb2, tbDirvg);
+    calculaDivergencia('C2', 'C1', tb2, tb, tbDirvg);
 end;
 
 procedure TfmRelInventario.fsBitBtn2Click(Sender: TObject);
@@ -199,27 +214,30 @@ var
    arq2, arq1:String;
    params:TStringList;
 begin
-
    arq1 := funcoes.dialogAbrArq('txt','c:\');
    arq2 := funcoes.dialogAbrArq('txt','c:\');
 
-   showMessage(arq1 + ' '+ arq2);
-
    if (arq1 <> '') and (arq2 <> '') and (arq1 <> arq2) then
+   begin
       montaRelDivergencia(arq1, arq2);
 
-   params := TStringlist.create();
-   params.add(arq1);
-   params.add(arq2);
+      params := TStringlist.create();
+      params.add(arq1);
+      params.add(arq2);
 
-   tbDirvg.Sort := 'codigo';
+      fmMain.msgStatus('Ordenando divergencias...' );
+      tbDirvg.Sort := 'codigo, msg';
 
-   fmMain.impressaoRaveQr2(tbDirvg, nil, 'rpInvDivergencias', params);
+      fmMain.msgStatus('');
+      fmMain.impressaoRaveQr2(tbDirvg, nil, 'rpInvDivergencias', params);
+   end
+   else
+      funcoes.msgTela('', 'Erro ao carregar arquivos.', MB_ICONERROR + MB_OK);
 end;
 
 
 
-procedure TfmRelInventario.adicionaDivergencia(tipo, codigo, descricao, endereco, quant, pallet, msg: String);
+procedure TfmRelInventario.adicionaDivergencia(tipo, codigo, descricao, endereco, quant, pallet, msg, segundoValor: String);
 begin
    tbDirvg.AppendRecord([codigo, descricao, endereco, quant, pallet, '', '', '', msg]);
 end;

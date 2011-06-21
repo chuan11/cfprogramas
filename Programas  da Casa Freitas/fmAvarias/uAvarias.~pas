@@ -92,6 +92,8 @@ type
     procedure Vendadeprodutosavariados1Click(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure GridTitleClick(Column: TColumn);
+    procedure ransferirAvaria1Click(Sender: TObject);
+    
   private
     { Private declarations }
   public
@@ -513,6 +515,13 @@ begin
    edCodigo.setFocus;
 end;
 
+
+procedure TfmCadAvarias.ransferirAvaria1Click(Sender: TObject);
+begin
+   if (QrItens.IsEmpty = false) then
+      DesabilitaItens();
+   AbreFmPesqLista(4);
+end;
 
 end.
 

@@ -57,10 +57,10 @@ object fmDetEntrada: TfmDetEntrada
     object Label2: TLabel
       Left = 58
       Top = 6
-      Width = 15
+      Width = 5
       Height = 13
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clMaroon
+      Font.Color = clBlack
       Font.Height = -11
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]

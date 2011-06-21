@@ -309,9 +309,8 @@ function TFmMain.GetParamBD(nParametro, loja: String):String;
 var
   str:String;
 begin
-  Funcoes.gravaLog('Lendo parametro: ' + nParametro + ' loja: ' + loja );
   str := funcSQl.getParamBD(nParametro,loja, Conexao);
-  gravaLog('Resultado: '+ str);
+  funcoes.gravaLog('Lendo parametro: ' + nParametro + ' loja: ' + loja +' Resultado: '+ str );
   result := str;
 end;
 
@@ -406,6 +405,7 @@ begin
       conexao.Connected := true;
       StatusBar1.Panels[2].Text := conexao.DefaultDatabase + ' ' + funcoes.lerParam( extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini', 3  );
       deleteFile( ExtractFilePath(paramStr(0)) +'logs\' + ExtractFilename(ParamStr(0))  + '_log.txt'  );
+
       TIME_OUT_PROGRAMA := 60;
       PARAMS_APLICACAO := TStringlist.Create();
       RvProject1.ProjectFile := 'C:\ProgramasDiversos\RelatoriosPCF.rav';
@@ -466,11 +466,13 @@ begin
    begin
       PARAMS_APLICACAO.Values['IS_UO'] := is_uo;
       PARAMS_APLICACAO.Values['CD_USU'] := is_usu;
-      StatusBar1.Panels[0].Text := loja;
-      StatusBar1.Panels[1].Text := usuario;
 
       PARAMS_APLICACAO.Values['cd_pes'] := funcSQl.GetValorWell( 'O','select cd_pes from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_pes', Conexao);
       PARAMS_APLICACAO.Values['CD_GRUSU'] :=  funcSQl.GetValorWell( 'O','select cd_grusu from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_grusu', Conexao);
+      PARAMS_APLICACAO.Values['uocd'] :=  fmMain.getParamBD('uocd','');
+
+      StatusBar1.Panels[0].Text := loja;
+      StatusBar1.Panels[1].Text := usuario;
 
       TELAS_PERMITIDAS :=  getTelasPermDoGrupo(getGrupoLogado() );
     end
@@ -1410,17 +1412,13 @@ begin
    end;
 end;
 
-
-
 procedure TfmMain.obterResumoEntSai(isref: String);
-begin//
-//   if (fmEntSai = nil) then
+begin
+   if (fmEntSai = nil) then
    begin
       Application.CreateForm(TfmEntSai, fmEntSai);
       fmEntSai.show();
    end;
-
-
 end;
 
 procedure TfmMain.Processarinventrio1Click(Sender: TObject);
