@@ -1,6 +1,6 @@
 object fmGeraEstoque: TfmGeraEstoque
-  Left = 314
-  Top = 22
+  Left = 347
+  Top = 177
   Width = 861
   Height = 607
   Caption = 'Gera Estoque'
@@ -20,6 +20,7 @@ object fmGeraEstoque: TfmGeraEstoque
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
+  OnResize = FormResize
   DesignSize = (
     845
     569)
@@ -34,7 +35,7 @@ object fmGeraEstoque: TfmGeraEstoque
     TabOrder = 1
     OnClick = FlatButton1Click
   end
-  object SoftDBGrid1: TSoftDBGrid
+  object grid: TSoftDBGrid
     Left = 0
     Top = 136
     Width = 845
@@ -51,8 +52,8 @@ object fmGeraEstoque: TfmGeraEstoque
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = []
-    OnCellClick = SoftDBGrid1CellClick
-    OnTitleClick = SoftDBGrid1TitleClick
+    OnCellClick = gridCellClick
+    OnTitleClick = gridTitleClick
     AlternateColor = True
     ColorLow = clInfoBk
     ColorHigh = clWindow
@@ -111,7 +112,6 @@ object fmGeraEstoque: TfmGeraEstoque
     ParentBiDiMode = False
     TabOrder = 5
     Text = 'Que t'#234'm estoque'
-    OnChange = cbEstoqueChange
     Items.Strings = (
       'Que t'#234'm estoque'
       'Tudo')
@@ -168,7 +168,7 @@ object fmGeraEstoque: TfmGeraEstoque
     TabOrder = 7
     OnClick = Bt_EntradasClick
   end
-  object Panel2: TPanel
+  object pbRodape: TPanel
     Left = 0
     Top = 540
     Width = 845
@@ -331,19 +331,6 @@ object fmGeraEstoque: TfmGeraEstoque
     ParentFont = False
     TabOrder = 0
   end
-  object cbEstDisponivel: TfsCheckBox
-    Left = 309
-    Top = 50
-    Width = 148
-    Height = 17
-    Caption = 'Apenas estoque dipon'#237'vel'
-    TabOrder = 11
-    FlatFont.Charset = DEFAULT_CHARSET
-    FlatFont.Color = clWindowText
-    FlatFont.Height = -11
-    FlatFont.Name = 'MS Sans Serif'
-    FlatFont.Style = []
-  end
   object FlatButton4: TFlatButton
     Left = 474
     Top = 109
@@ -365,7 +352,7 @@ object fmGeraEstoque: TfmGeraEstoque
       3333333333333333333333333333333333333333333333333333}
     Layout = blGlyphLeft
     NumGlyphs = 2
-    TabOrder = 12
+    TabOrder = 11
     OnClick = FlatButton4Click
   end
   object FlatButton6: TFlatButton
@@ -402,7 +389,7 @@ object fmGeraEstoque: TfmGeraEstoque
       607F0000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFFFFFFA06080DF60607F0000FFFFFFFFFFFFFFFFFFFFFFFF}
     Layout = blGlyphLeft
-    TabOrder = 13
+    TabOrder = 12
     OnClick = FlatButton6Click
   end
   object fsCheckBox1: TfsCheckBox
@@ -413,7 +400,7 @@ object fmGeraEstoque: TfmGeraEstoque
     Caption = 'Somente ativos'
     Checked = True
     State = cbChecked
-    TabOrder = 14
+    TabOrder = 13
     FlatFont.Charset = DEFAULT_CHARSET
     FlatFont.Color = clWindowText
     FlatFont.Height = -11
@@ -426,7 +413,7 @@ object fmGeraEstoque: TfmGeraEstoque
     Width = 187
     Height = 76
     BevelOuter = bvNone
-    TabOrder = 15
+    TabOrder = 14
     object lbNivel: TLabel
       Left = 145
       Top = 4
@@ -578,16 +565,16 @@ object fmGeraEstoque: TfmGeraEstoque
     Caption = '...'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 16
+    TabOrder = 15
     OnClick = btBuscaFornecedorClick
   end
   object lbSoEntrada: TfsCheckBox
     Left = 309
-    Top = 69
+    Top = 50
     Width = 133
     Height = 16
     Caption = 'Somente com entrada'
-    TabOrder = 17
+    TabOrder = 16
     FlatFont.Charset = DEFAULT_CHARSET
     FlatFont.Color = clWindowText
     FlatFont.Height = -11
@@ -596,84 +583,17 @@ object fmGeraEstoque: TfmGeraEstoque
   end
   object DataSource1: TDataSource
     DataSet = tbGE
-    Left = 32
-    Top = 216
-  end
-  object Query2: TADOQuery
-    CursorType = ctStatic
-    LockType = ltBatchOptimistic
-    CommandTimeout = 0
-    Parameters = <>
-    SQL.Strings = (
-      
-        'exec DBO.Z_CF_ListaEstoqueFornLoja2 10033586 , '#39'xxxxx'#39', 0, 0, '#39'0' +
-        '4/01/2007'#39' , 10033674 , 0')
-    Left = 34
-    Top = 177
-    object StringField1: TStringField
-      FieldName = 'C'#243'digo'
-    end
-    object StringField2: TStringField
-      FieldName = 'Descri'#231#227'o'
-      Size = 50
-    end
-    object DateTimeField1: TDateTimeField
-      FieldName = 'Data Ultima Ent'
-      ReadOnly = True
-    end
-    object IntegerField1: TIntegerField
-      FieldName = 'Quant Ultima Ent'
-      ReadOnly = True
-      DisplayFormat = '#,###,###0'
-    end
-    object IntegerField2: TIntegerField
-      FieldName = 'Total Venda'
-      ReadOnly = True
-      DisplayFormat = '#,###,###0'
-    end
-    object IntegerField3: TIntegerField
-      FieldName = 'Estoque'
-      ReadOnly = True
-      DisplayFormat = '#,###,###0'
-    end
-    object IntegerField4: TIntegerField
-      FieldName = 'EstoqueCD'
-      ReadOnly = True
-      DisplayFormat = '#,###,###0'
-    end
-    object FloatField1: TFloatField
-      FieldName = 'Vd Med Diaria'
-      ReadOnly = True
-      DisplayFormat = '#,###,###0.0000'
-    end
-    object IntegerField5: TIntegerField
-      FieldName = 'is_ref'
-      Visible = False
-    end
-    object FloatField2: TFloatField
-      FieldName = 'DEstoque'
-      ReadOnly = True
-      Visible = False
-      DisplayFormat = '#,###,###0.0000'
-    end
-    object StringField3: TStringField
-      FieldName = 'Duracao do Estoque'
-      Size = 50
-    end
+    Left = 48
+    Top = 197
   end
   object tbGE: TADOTable
     Connection = fmMain.Conexao
-    Left = 114
-    Top = 205
-  end
-  object qrTVenda: TADOQuery
-    Parameters = <>
-    Left = 80
-    Top = 409
+    Left = 10
+    Top = 197
   end
   object PopupMenu1: TPopupMenu
-    Left = 304
-    Top = 192
+    Left = 90
+    Top = 197
     object VerdetalhesdaCMU1: TMenuItem
       Caption = 'Ver detalhes da CRUC  '
       OnClick = VerdetalhesdaCMU1Click
@@ -692,7 +612,7 @@ object fmGeraEstoque: TfmGeraEstoque
   end
   object QrCredores: TADOQuery
     Parameters = <>
-    Left = 128
-    Top = 409
+    Left = 10
+    Top = 233
   end
 end

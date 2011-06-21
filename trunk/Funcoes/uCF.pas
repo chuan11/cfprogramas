@@ -11,23 +11,24 @@ interface
    function alterarModPagamento(uo, seqtransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String):boolean;
    function getCodModalidadesCartao():TStringList;
    function getCodModalidadesPagamento(mostraTodos:boolean):TStringList;
-   function getDescCaixas(uo:String; mostraTodos:boolean):TStrings;
    function getDadosCliente(cd_pes, nm_pes:String):TDataSet;
+   function getDadosEntProduto(uo, isRef:String):TDataSet;
    function getDadosFornecedor(cd_pes, nm_pes:String):TDataSet;
    function getDadosNota(isNota, is_uo, sr_docf, nr_docf:String):TADOQuery;
    function getDadosPedidoDeCompra(conexao: TADOconnection; numPedido:String):TdataSet;
-   function getDadosProd(uo, codigo, preco:String):TdataSet;
+   function getDadosProd(uo, codigo, preco:String; mostraMsg:boolean):TdataSet;
+   function getDescCaixas(uo:String; mostraTodos:boolean):TStrings;
    function getFileFromACBR(server, dirRemoto, dirLocal, arquivo: String): boolean;
    function getFmDadosPessoa(codPerfil: String):String;
-   function getIsUo(mostraEscritorio:boolean):String;   
+   function getIsUo(mostraEscritorio:boolean):String;
    function getItensDeUmaNota(isNota:String):TDataSet;
    function getItensParaCadastroNCM(var tabela:TADOTable; isNota:String):boolean;
    function getNomeImpressoraNFe():String;
+   function getPcProd(uo, codigo, preco:String):String;
    function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
    function getTotaisVendaAvaria(lojas:TadLabelComboBox; datai, dataf:Tdate; tabela:String):String;
-   procedure getOperadoresPorCaixa(tb:TADOTable; uo, caixa:String; dti: TDateTimePicker; conexao:TADOConnection);
-   function getPcProd(uo, codigo, preco:String):String;
    function getTotalCartaoPorModo(tb:TADOTable):TStringlist;
+   function getVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate; conexao:TADOConnection):String;
    function insereModPagamento (uo, seqTransacao, codNovaModalidade, valor, numParcelas,  dataTrans:String):boolean;
    function insereRegistroTEF(uo, seqTransacao, seqModalidade, tp_mve, valor, numParcelas, dataTrans:String):boolean;
    function recalcularCmuItem(is_ref:String):String;
@@ -41,22 +42,17 @@ interface
    procedure carregaListarUosPorPreco(var clb: TadLabelCheckListBox; TpPreco:String);
    procedure criaTabelaDosTotaisDeAvarias(var tb: TADOTable);
    procedure getCRUCBaseNota(conexao:TADOConnection; var query:TADOquery; is_ref:String);
+   procedure getModalidadesCaixa(tb, tbDestino :TADOTable; cd_tpm, tp_mve: String);
+   procedure getOperadoresPorCaixa(tb:TADOTable; uo, caixa:String; dti: TDateTimePicker; conexao:TADOConnection);
+   procedure getProdAvariadosParaVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
+   procedure getRecebDeCaixa(tb, tbReceb:TADOTable);
+   procedure getRecebimentosEmCartao(tb, tbVendasCartao :TADOTable);
+   procedure getSangriasDoCaixa(tb, tbSangria :TADOTable);
    procedure getTotaisAvariasPorFornecedor(var tbTotais:TadoTAble; nmTabela:String);
    procedure getTotaIsPorTipoDeAvaria(var tbTotais:TadoTAble; nmTabela:String);
-   procedure logAlteracoesBD(conexao:TADOConnection; tela, usuario, alteracao:String);
-   procedure listarPrecosAlteradosPoPeriodo(qr:TADOQuery; uo,preco:String; data:Tdate);
    procedure listaRecebimentosCaixa(tb:TADOTAble; uo, caixa:String; dti, dtf: TDateTimePicker; listaSoCartao, removeTrocos, listaSangria:boolean);
-   procedure getProdAvariadosParaVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
-
-//   procedure getSomatorioValoresCaixa(tb, tbdestino, cd_tpm:String);
-
-   procedure getModalidadesCaixa(tb, tbDestino :TADOTable; cd_tpm, tp_mve: String);
-
-   procedure getRecebDeCaixa(tb, tbReceb:TADOTable);
-   procedure getSangriasDoCaixa(tb, tbSangria :TADOTable);
-   procedure getRecebimentosEmCartao(tb, tbVendasCartao :TADOTable);
-
-   function getVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate; conexao:TADOConnection):String;
+   procedure listarPrecosAlteradosPoPeriodo(qr:TADOQuery; uo,preco:String; data:Tdate);
+   procedure logAlteracoesBD(conexao:TADOConnection; tela, usuario, alteracao:String);
 
 
 implementation
@@ -85,7 +81,7 @@ begin
 end;
 
 
-function getDadosProd(uo, codigo, preco:String):TdataSet;
+function getDadosProd(uo, codigo, preco:String; mostraMsg:boolean):TdataSet;
 var
    cmd:String;
    ds:TDataSet;
@@ -100,7 +96,7 @@ begin
       cmd := 'exec Z_CF_GetInformacoesProduto ' + quotedStr(codigo)  +', '+ uo + ', ' + preco;
       ds:=  funcSQl.getDataSetQ(cmd, fmMain.Conexao);
 
-      if (ds.IsEmpty = true) then
+      if (ds.IsEmpty = true) and (mostraMsg = true) then
          msgTela('','Produto não cadastrado', MB_ICONERROR + MB_OK);
    end;
    result := ds;
@@ -866,7 +862,7 @@ var
    aux:String;
 begin
    aux := '0';
-   ds := getDadosProd(uo, codigo, preco);
+   ds := getDadosProd(uo, codigo, preco, true);
    if (ds.isEmpty = false) then
       aux := ds.fieldbyName('preco').asString;
    ds.free();
@@ -995,7 +991,21 @@ begin
    result :=  funcSQL.openSql(cmd,'qt', conexao) ;
 end;
 
-
+function getDadosEntProduto(uo, isRef:String):TDataSet;
+var
+  cmd:String;
+begin
+   cmd := ' Select sum(qt_mov) as qt_mov, dt_mov '+
+          ' from zcf_dsdei where ' +
+          ' is_ref = ' + isRef +
+          ' and is_estoque = '+ uo +
+          ' and dt_mov in( select top 01  dt_mov ' +
+          ' from zcf_DSDEI (nolock) where is_ref = ' + isRef +
+          ' and is_estoque = '+ uo +
+          ' order by is_lanc desc ) '+
+          ' group by dt_mov ';
+  result := funcSQL.getDataSetq( cmd, fmMain.conexao);
+end;
 
 
 end.

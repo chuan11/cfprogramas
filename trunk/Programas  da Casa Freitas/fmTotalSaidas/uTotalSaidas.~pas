@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, TFlatButtonUnit,funcoes, funcsql,
+  Dialogs, ComCtrls, TFlatButtonUnit, db,
   StdCtrls, ExtCtrls, adLabelComboBox;
 
 type
@@ -22,7 +22,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FlatButton1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure calcularVenda(is_ref, uo:String);
+    procedure calcularVenda(is_ref, uo:String; inicio, fim: Tdate);
+
   private
     { Private declarations }
   public
@@ -34,7 +35,7 @@ var
   fmUO, fmIS_REF:String;
 implementation
 
-uses uMain;
+uses uMain,   funcoes, funcsql, uCF;
 
 {$R *.dfm}
 procedure TfmTotalSaidas.FormCreate(Sender: TObject);
@@ -56,32 +57,34 @@ begin
 end;
 
 
-procedure TfmTotalSaidas.calcularVenda(is_ref, uo:String);
+procedure TfmTotalSaidas.calcularVenda(is_ref, uo:String; inicio, fim: Tdate);
 var
-   lst:TStrings;
+   ds:TdataSet;
+   uocd:String;
 begin
+   uocd := fmMain.GetParamBD('uocd','');
+
+   if (lbDados.Caption = '') then
+   begin
+      ds:= uCF.getDadosProd(uo, is_ref, '101');
+      lbDados.Caption := ds.fieldByName('codigo').AsString + '  '+
+                         ds.fieldByName('descricao').AsString;
+      ds.free();
+   end;
+
    if( uo = '') then
-      uo := '10033674';
+      uo := fmMain.getParamBD('uocd','');
 
    fmUO := UO;
    fmIS_REF := is_ref;
-   lst := funcsql.getValoresSQL(lst, ' Select crefe.cd_ref, crefe.ds_ref,  dbo.Z_CF_funObterVendaPorPeriodo( '+ fmUO +' , '+
-                                      fmIS_REF   +' , '+
-                                      funcoes.DateTimeToSqlDateTime(dt01.Date,'')   +', '+
-                                      funcoes.DateTimeToSqlDateTime(dt02.Date,'')   +', '+
-                                      funcoes.DateTimeToSqlDateTime(now -90,'') +' , ' + '10033674 '+
-                                      ' ) as Quantidade from crefe (nolock) where is_ref = ' + fmIS_REF, fmMain.Conexao );
-   if lst.Count > 0 then
-   begin
-      lbDados.Caption := lst[0] + '  ' + lst[1]; ;
-      lbTotal.Caption :='';
-   end;
+
+   lbTotal.caption := ucf.getVendaProduto( fmIS_REF, fmUO, uocd, inicio, fim, fmMain.Conexao);
 end;
 
 
 procedure TfmTotalSaidas.FlatButton1Click(Sender: TObject);
 begin
-   calcularVenda(fmIS_REF, funcoes.getCodUO(cbLoja));
+   calcularVenda( fmIS_REF, funcoes.getCodUO(cbLoja), dt01.Date, dt02.date);
 end;
 
 
