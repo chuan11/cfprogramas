@@ -310,20 +310,11 @@ object fmEtiquetas: TfmEtiquetas
     Top = 38
   end
   object MainMenu1: TMainMenu
-    Left = 217
-    Top = 214
+    Left = 73
+    Top = 182
     object Palets1: TMenuItem
       Caption = '&Pallet / Endereco'
       OnClick = Palets1Click
     end
-    object NotaFiscal1: TMenuItem
-      Caption = 'Nota Fiscal'
-      OnClick = NotaFiscal1Click
-    end
-  end
-  object tb: TADOTable
-    Connection = fmMain.Conexao
-    Left = 72
-    Top = 224
   end
 end

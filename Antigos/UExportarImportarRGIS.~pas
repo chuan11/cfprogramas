@@ -134,14 +134,14 @@ begin
       inc(i);
       arq.Add(
                 funcoes.preencheCampo(13,'0','E', funcoes.SohNumeros( query.fieldByName('cd_pesq').AsString ) ) +','+
-                funcoes.preencheCampo(strToInt(edQtDigDesc.text),' ','D', copy(query.fieldByName('ds_ref').AsString,01, strToInt(edQtDigDesc.text) ))
+                funcoes.preencheCampo(strToInt(edQtDigDesc.text),' ','D', copy(query.fieldByName('ds_ref').AsString, 01, strToInt(edQtDigDesc.text) ))
              );
       if i mod 100 = 0 then
          sb.SimpleText := 'Montando o arquivo...   ' + IntToStr(i) + ' de ' +  inttoStr(query.RecordCount) +  '  Eans ';
-
       query.next;
    end;
-   arq.SaveToFile('c:\CadastroCodigosDeBarras.TXT');
+   arq.Sort();
+   arq.SaveToFile('c:\produtos.TXT');
    screen.Cursor := crDefault;
    sb.SimpleText := 'Exportado ' + inttoStr(query.RecordCount) +  '  Eans para c:\CadastroCodigosDeBarras.TXT' ;
 end;

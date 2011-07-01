@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 336
-  Top = 141
+  Left = 304
+  Top = 140
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -328,7 +328,7 @@ object fmMain: TfmMain
       '200;Use Procedure for Prepare=1;Auto Translate=True;Packet Size=' +
       '4096;Workstation ID=CPD-PC;Use Encryption for Data=False;Tag wit' +
       'h column collation when possible=False'
-    ConnectionTimeout = 3
+    ConnectionTimeout = 5
     LoginPrompt = False
     Provider = 'SQLOLEDB.1'
     OnExecuteComplete = ConexaoExecuteComplete
@@ -399,5 +399,10 @@ object fmMain: TfmMain
     RuntimeVisibility = rtDeveloper
     Left = 112
     Top = 376
+  end
+  object ApplicationEvents1: TApplicationEvents
+    OnException = AppException
+    Left = 16
+    Top = 160
   end
 end

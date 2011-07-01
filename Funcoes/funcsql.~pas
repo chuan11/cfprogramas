@@ -45,10 +45,9 @@ interface
    function isHoraPermitida(conexao:TADOConnection; tela:integer; grupo:String):boolean;
    function openQuery  (Conexao :TADOConnection; CampoInicio,CampoFim:Smallint; Comando:String):TStringList;
    function openSQL(comando, retorno:string; Connection : TADOConnection):String;
-   function qtVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate; conexao:TADOConnection):integer;
    function setParamBD(parametro, uo, valor:String; conexao:TADOConnection):boolean;
    function somaColQuery(Query:TADOQuery;Coluna:String; nDecimais:integer):String;
-   function somaColTable(Table:TADOTable;Coluna:String):String; overload;
+   function somaColTable(Table:TDataSet;Coluna:String):String; overload;
    function somaColunaTable(Table:TDataSet;Coluna:String):real; overload;
    procedure abrirQuery(var query:TADOQuery; conexao:TADOConnection; comando:String);
    procedure acertaQuantidadeItens(uo,usuario:String;qrItens:TADOQuery; conexao:TADOConnection);
@@ -470,7 +469,7 @@ begin
 end;
 
 
-function somaColTable(Table:TADOTable;Coluna:String):String; overload;
+function somaColTable(Table:TDataSet;Coluna:String):String; overload;
 var
    aux:real;
 begin
@@ -770,13 +769,18 @@ end;
 
 procedure exportaTable(tb:TADOTable);
 var
-   export:TmxDataSetExport;
+   export1:TmxDataSetExport;
 begin
-   export := TmxDataSetExport.Create(nil);
-   export.ExportType := xtExcel;
-   export.DataSet :=  tb;
-   export.ExportStyle := xsView;
-   export.Execute;
+   export1 := TmxDataSetExport.Create(nil);
+   with export1 do
+   begin
+      ExportType := xtTXT;
+      DataSet :=  tb;
+      ExportStyle := xsView;
+      Options := [xoShowProgress, xoUseAlignments ];
+      Execute;
+   end;
+   export1.Destroy;
 end;
 
 
@@ -1471,13 +1475,6 @@ begin
    result :=  execSQL(cmd, conexao);
 end;
 
-function qtVendaProduto(is_ref, uo, uocd :String;  datai, dataf:Tdate; conexao:TADOConnection):integer;
-var
-   cmd:String;
-begin
-   cmd := 'SELECT [dbo].[Z_CF_funObterVendaPorPeriodo](' + uo +' , '+ is_ref +', '+  funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ funcoes.DateTimeToSqlDateTime(dataF,'') +', '+ funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ uoCD + ') as qt';
-   result := StrToint( OpenSql(cmd,'qt', conexao) );
-end;
 
 function getEmpregadosPonto(conexao:TadoConnection):TStrings;
 var

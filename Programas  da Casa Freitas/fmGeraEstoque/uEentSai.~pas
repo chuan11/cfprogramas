@@ -9,7 +9,6 @@ uses
 type
   TfmEntSai = class(TForm)
     Label1: TLabel;
-    Label4: TLabel;
     lbDesc: TLabel;
     lbis_ref: TLabel;
     lbTotEnt: TLabel;
@@ -19,12 +18,12 @@ type
     Label7: TLabel;
     lbPrimEnt: TLabel;
     Bevel1: TBevel;
-    Bevel2: TBevel;
-    qrEnt: TADOQuery;
+    Panel1: TPanel;
+    Label2: TLabel;
+    Label3: TLabel;
     procedure listaTotalEntSai(isref:String);
-    procedure listaPrimeiraEntrada(isref: String);
-    procedure ObterTotalEntradas(Sender:Tobject);
-    procedure ObtertotalVendas(Sender:Tobject);
+    procedure listaDadosEntrada(isref: String);
+    procedure ObtertotalVendas(isRef:String);
   private
     { Private declarations }
   public
@@ -44,70 +43,45 @@ uses uMain, funcsql, funcoes, uCF;
 
 { TfmEntSai }
 
-procedure TfmEntSai.listaTotalEntSai(isref: String);
-begin //
-    list
 
 
-end;
-
-
-procedure TfmEntSai.listaPrimeiraEntrada(isref: String);
+procedure TfmEntSai.listaDadosEntrada(isref: String);
 var
-   cmd:string;
+   cmd:String;
 begin
    cmd := 'Exec dbo.Z_CF_stoListaQtEntradaPorItem '+ isref;
-   funcsql.getQuery(fmMain.Conexao, qrEnt, cmd );
+//   funcsql.getQuery(fmMain.Conexao, qrEnt, cmd );
 
-   if (qrEnt.IsEmpty = false)then
+//   if (qrEnt.IsEmpty = false)then
    begin
-      cmd := qrEnt.fieldByName('data').asString;
+//      cmd := qrEnt.fieldByName('data').asString;
       insert('20', cmd, length(cmd)-1);
       lbPrimEnt.Caption := cmd;
 
-       ObterTotalEntradas(nil);
-       ObtertotalVendas(nil);
-   end
-   else
+
+//       ObtertotalVendas(nil);
+//   end
+//   else
        lbPrimEnt.Caption := 'Não há...';
+       end;
 end;
 
 
-procedure TfmEntSai.ObterTotalEntradas(Sender: Tobject);
-var
-  total:integer;
+procedure TfmEntSai.ObtertotalVendas(isRef:String);
 begin
-   total := 0 ;
-   qrEnt.First;
-   while (qrEnt.Eof = false) do
+   if (lbPrimEnt.Caption <> '0') then
    begin
-      total :=  total + qrEnt.FieldByName('quant').AsInteger;
-      qrEnt.Next();
+      lbTotVenda.Caption :=
+      ucf.getVendaProduto(isRef, '10033674', '10033674', strToDate(lbPrimEnt.Caption), now-1, fmMain.Conexao);
    end;
-
-   if total = 0 then
-     lbTotEnt.Caption := '0'
-   else
-      lbTotEnt.Caption := floattostrf(total, ffNumber, 18, 0);
-   qrEnt.Free();
 end;
 
-procedure TfmEntSai.ObtertotalVendas(Sender: Tobject);
-begin
-{   shortdateformat := 'dd/MM/yyyy';
-   fmMain.CalculaVendaNoPeriodo(
-                                 funcSQl.getCodUo('') ,
-                                 lbis_ref.Caption,
-                                 lbPrimEnt.Caption,
-                                 dateToStr( now),
-                                 '',
-                                 '',
-                                 false
-     );
-}
-//    lbTotVenda.Caption :=   uCF.getVendaProduto(lbis_ref.Caption,  ;
+procedure TfmEntSai.listaTotalEntSai(isref: String);
+begin //
+    listaDadosEntrada(isref);
+    obterTotalVendas(isref);
+end;
 
-   shortdateformat := 'dd/MM/yy';
-}end;
+
 
 end.

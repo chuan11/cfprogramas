@@ -61,7 +61,7 @@ type
     procedure ADOConnection1ExecuteComplete(Connection: TADOConnection; RecordsAffected: Integer; const Error: Error;      var EventStatus: TEventStatus; const Command: _Command;      const Recordset: _Recordset);
     procedure Bt_EntradasClick(Sender: TObject);
     procedure Bt_SaidasClick(Sender: TObject);
-    function GetIniDtVen():string;
+    function GetIniDtVen():Tdate;
     procedure speditChange(Sender: TObject);
     procedure cbLojaChange(Sender: TObject);
     procedure FlatButton5Click(Sender: TObject);
@@ -202,19 +202,9 @@ begin
    query.First;
 end;
 
-
-function TfmGeraEstoque.GetIniDtVen: string;
-var
-  aux:string;
+function TfmGeraEstoque.getIniDtVen():TDate;
 begin
-//  shortdateformat := 'dd/MM/yyyy';
-  if fmGeraEstoque.spedit.Value < 1 then
-     spedit.Value := 1;
-  AUX := (DateToStr(now - (30 * spedit.Value)));
-  delete(aux,01,02);
-  insert('01',aux,01);
-  result := funcoes.StrToSqlDate(aux);
-//  shortdateformat := 'dd/MM/yy';
+   result := (now - (30 * spedit.Value));
 end;
 
 procedure TfmGeraEstoque.SalvaColDbgrid(NomeForm:string;Dbgrid:tdbgrid);
@@ -256,15 +246,15 @@ end;
 
 procedure TfmGeraEstoque.FormCreate(Sender: TObject);
 begin
+   carregaCampos(fmGeraEstoque);
+
    cbPrecos.items := funcsQL.getListaPrecos( fmMain.Conexao, true, true, true, '13' ); // getListaPrecos (sender);
    fmMain.getListaLojas( cbLoja, false, false, '' );
-
-   carregaCampos(fmGeraEstoque);
 
    cbLojaChange(Sender);
    fmGeraEstoque.CriarTabela(Sender);
    rgTpBuscaClick(Sender);
-   UO_CD := fmMain.getParamBD('uocd', '');
+   UO_CD := fmMain.getUOCD();
 end;
 
 procedure TfmGeraEstoque.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -294,7 +284,7 @@ end;
 
 procedure TfmGeraEstoque.ADOConnection1ExecuteComplete(Connection: TADOConnection;  RecordsAffected: Integer; const Error: Error;  var EventStatus: TEventStatus; const Command: _Command;  const Recordset: _Recordset);
 begin
-   SCREEN.Cursor := CRdEFAULT;
+   screen.cursor := crDefault;
 end;
 procedure TfmGeraEstoque.Bt_EntradasClick(Sender: TObject);
 begin
@@ -313,7 +303,7 @@ begin
    if (tbGE.fieldByName('Data Ultima Ent').AsString <> '') then
       dtInicio := tbGE.fieldByName('Data Ultima Ent').AsDateTime
    else
-      dtInicio := now - (spedit.value * 30);
+      dtInicio :=  getIniDtVen();
 
    if (tbGE.IsEmpty = false) then
        fmMain.obterDetalhesSaida( tbGE.fieldByName('is_ref').asString,
@@ -427,7 +417,6 @@ begin
        btBuscaFornecedor.Visible := true
     else
        btBuscaFornecedor.Visible := false;
-
 end;
 
 procedure TfmGeraEstoque.GeraEstoque(Sender: TObject);
@@ -545,7 +534,6 @@ end;
 procedure TfmGeraEstoque.FlatButton6Click(Sender: TObject);
 begin
     if (tbGE.IsEmpty = false) then
-
 end;
 
 procedure TfmGeraEstoque.FlatButton7Click(Sender: TObject);

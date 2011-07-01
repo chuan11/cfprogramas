@@ -4,21 +4,24 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, fCtrls, adLabelEdit,FUNCOES;
+  Dialogs, StdCtrls, Buttons, fCtrls, adLabelEdit,FUNCOES, ExtCtrls;
 
 type
   TPallet = class(TForm)
     ednPallete: TadLabelEdit;
     fsBitBtn1: TfsBitBtn;
-    Rg: TfsRadioGroup;
+    Rg: TRadioGroup;
+    ednPalleteFim: TadLabelEdit;
     procedure fsBitBtn1Click(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure imprimirPalletArgox(Sender:TObject);
     procedure imprimirPalletDynaPos(Sender:TObject);
     procedure ednPalleteKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure RgClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure ednPalleteChange(Sender: TObject);
+    procedure imprimirEnderecoArgox();
+
   private
     { Private declarations }
   public
@@ -36,6 +39,7 @@ uses uEtiquetas;
 
 procedure TPallet.imprimirPalletArgox(Sender:TObject);
 var
+  i,inicio,fim:integer;
   arq:string;
   tEAN,xEAN,yEAN:string;
   tFONTE, xFONTE, yFONTE:STRING;
@@ -61,22 +65,53 @@ begin
       xfONTE := '0020';
    end;
 
+   inicio := strToInt(ednPallete.text);
+   fim := strToInt(ednPalleteFim.text);
+
+   arq:= funcoes.getDirLogs()+ 'Etiquetas.txt';
+   DeleteFile(arq);
+   for i:= inicio to fim do
+   begin
+      funcoes.GravaLinhaEmUmArquivo(arq, 'L');
+      funcoes.GravaLinhaEmUmArquivo(arq, '1F31025'+ '0005' + '0020' + intToStr(i));
+      funcoes.GravaLinhaEmUmArquivo(arq, '1'+ 'a'+ '31'+ '060' + yEAN + xEAN + intTostr(i) );
+      funcoes.GravaLinhaEmUmArquivo(arq, '1'{orientacao}+ tFonte+'2'{multHoriz}+'2'{multvert}+
+                                     '000'{subFonte}+ yFONTE + xFONTE + intToStr(i) );
+      funcoes.GravaLinhaEmUmArquivo(arq, 'E');
+   end;
+   Winexec( pchar('cmd.exe /c print /d:'+ fmEtiquetas.EdLocalimp.text+' '+arq)  , SW_NORMAL);
+end;
+
+procedure TPallet.imprimirEnderecoArgox();
+var
+  i,inicio,fim:integer;
+  arq:string;
+  tEAN,xEAN,yEAN:string;
+  tFONTE, xFONTE, yFONTE:STRING;
+begin
+///  AORIENTACAO Y É DA ESQUERDA PARA A DIREITA
+//   A ORIENTACAO X E DE BAIXO PARA CIMA
+      tEAN:=  '3';
+      xEAN:= '0030';
+      yEAN := '0010';
+      tFONTE:= '3';
+      yFONTE := '0075';
+      xfONTE := '0020';
+
+
    arq:='Etiquetas.txt';
    DeleteFile(arq);
      funcoes.GravaLinhaEmUmArquivo(arq, 'L');
          funcoes.GravaLinhaEmUmArquivo(arq, '1F31025'+ '0005' + '0020' + ednPallete.text);
-   funcoes.GravaLinhaEmUmArquivo(arq, '1'{Orientacao}+ {a}'a'+ '31'+ '060'{Altura} + yEAN {Y}+ xEAN {X}+ednPallete.Text{codigo});
+   funcoes.GravaLinhaEmUmArquivo(arq, '1'+ 'a'+ '31'+ '060' + yEAN + xEAN +ednPallete.Text);
    funcoes.GravaLinhaEmUmArquivo(arq, '1'{orientacao}+ tFonte+'2'{multHoriz}+'2'{multvert}+
                                      '000'{subFonte}+ yFONTE + xFONTE + ednPallete.Text );
-                                                                //100
+
    funcoes.GravaLinhaEmUmArquivo(arq, 'E');
-   Winexec( pchar('cmd.exe /c print /d:'+ fmEtiquetas.EdLocalimp.text+' '+arq)  , sw_Hide);
+
+   Winexec( pchar('cmd.exe /c print /d:'+ fmEtiquetas.EdLocalimp.text+' '+arq)  , SW_NORMAL);
 end;
 
-procedure TPallet.FormShow(Sender: TObject);
-begin
-   Pallet.Left := fmEtiquetas.Left+ 100;
-end;
 
 
 procedure TPallet.imprimirPalletDynaPos(Sender: TObject);
@@ -120,7 +155,7 @@ begin
    funcoes.GravaLinhaEmUmArquivo(arq,'P1');
    funcoes.GravaLinhaEmUmArquivo(arq,'N');
 
-   Winexec( pchar('cmd.exe /c print /d:'+ fmEtiquetas.EdLocalimp.text+' '+arq)  , sw_Hide);
+   Winexec( pchar('cmd.exe /c print /d:'+ fmEtiquetas.EdLocalimp.text+' '+arq)  , SW_NORMAL);
 end;
 
 procedure TPallet.ednPalleteKeyDown(Sender: TObject; var Key: Word;
@@ -157,9 +192,30 @@ end;
 procedure TPallet.fsBitBtn1Click(Sender: TObject);
 begin
    case fmEtiquetas.cbTIpoImpressao.ItemIndex of
-    0:imprimirPalletArgox(Sender);
-    1:imprimirPalletDynaPos(Sender);
+      0,2:begin
+             if (Rg.ItemIndex = 0)  then
+                 imprimirPalletArgox(Sender)
+             else
+                 imprimirEnderecoArgox();
+          end;
+      1,3:imprimirPalletDynaPos(Sender);
    end;
+   ednPallete.setFocus();
+end;
+
+procedure TPallet.ednPalleteChange(Sender: TObject);
+begin
+  if (Rg.ItemIndex = 0) then
+  begin
+     ednPalleteFim.Text := ednPallete.text;
+     ednPalleteFim.Visible := true;
+     ednPallete.LabelDefs.Caption := 'pallet'
+  end
+  else
+  begin
+     ednPalleteFim.Visible := true;
+     ednPallete.LabelDefs.Caption := 'endereço';
+  end;
 end;
 
 end.

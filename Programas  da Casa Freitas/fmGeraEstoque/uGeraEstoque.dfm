@@ -1,6 +1,6 @@
 object fmGeraEstoque: TfmGeraEstoque
-  Left = 347
-  Top = 177
+  Left = 341
+  Top = 127
   Width = 861
   Height = 607
   Caption = 'Gera Estoque'
@@ -197,6 +197,8 @@ object fmGeraEstoque: TfmGeraEstoque
       Ctl3D = False
       ParentCtl3D = False
       Decimals = -1
+      MaxValue = 999.000000000000000000
+      MinValue = 1.000000000000000000
       Format = nfStandard
       OnChange = speditChange
       TabOrder = 0
@@ -255,7 +257,7 @@ object fmGeraEstoque: TfmGeraEstoque
       Colors.WhenEnterFocus.BackColor = clInfoBk
     end
     object FlatButton3: TFlatButton
-      Left = 495
+      Left = 568
       Top = 3
       Width = 115
       Height = 19

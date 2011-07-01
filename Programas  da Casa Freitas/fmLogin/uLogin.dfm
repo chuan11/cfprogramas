@@ -63,9 +63,9 @@ object fmLogin: TfmLogin
     Kind = bkCancel
   end
   object cbLoja: TadLabelComboBox
-    Left = 260
+    Left = 268
     Top = 22
-    Width = 179
+    Width = 173
     Height = 21
     BevelInner = bvLowered
     BevelKind = bkSoft
@@ -83,9 +83,9 @@ object fmLogin: TfmLogin
     Colors.WhenEnterFocus.BackColor = clInfoBk
   end
   object cbUser: TadLabelComboBox
-    Left = 260
+    Left = 268
     Top = 63
-    Width = 180
+    Width = 174
     Height = 21
     BevelInner = bvLowered
     BevelKind = bkSoft
@@ -104,9 +104,9 @@ object fmLogin: TfmLogin
     Colors.WhenEnterFocus.BackColor = clInfoBk
   end
   object edSenha: TadLabelEdit
-    Left = 260
+    Left = 268
     Top = 104
-    Width = 180
+    Width = 174
     Height = 19
     LabelDefs.Width = 31
     LabelDefs.Height = 13

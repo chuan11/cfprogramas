@@ -51,7 +51,6 @@ type
     procedure Endereco1Click(Sender: TObject);
     procedure imprimeGondolaArgox(sender: Tobject);
     procedure imprimeGondolaArgoxGrande(sender: Tobject);
-    procedure NotaFiscal1Click(Sender: TObject);
     function preparaListaDeItens(Sender: Tobject):TStringList;
     procedure imprimeELimpaCampos(Sender: TObject; arq:String);
     procedure imprimeGondolaDynapos(Sender:Tobject);
@@ -67,7 +66,7 @@ var
 implementation
 {$R *.dfm}
 
-uses upallet, uMain, uetqNotas;
+uses upallet, uMain;
 
 procedure TfmEtiquetas.imprimeGondolaDynapos(Sender: Tobject);
 var
@@ -501,15 +500,6 @@ begin
    Palets1Click(Sender);
 end;
 
-
-procedure TfmEtiquetas.NotaFiscal1Click(Sender: TObject);
-begin
-   if fmEtq = nil then
-   begin
-      Application.CreateForm(TfmEtq, fmEtq);
-      fmEtq.Show;
-   end;
-end;
 
 procedure TfmEtiquetas.FlatButton3Click(Sender: TObject);
 begin

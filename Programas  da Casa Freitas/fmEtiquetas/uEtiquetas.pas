@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, fCtrls, DB, ADODB, TFlatButtonUnit, Grids, DBGrids,
-  SoftDBGrid, adLabelEdit, funcoes, ExtCtrls, adLabelComboBox, funcsql,
+  SoftDBGrid, adLabelEdit,  ExtCtrls, adLabelComboBox,
   Menus, RpBase, RpSystem, RpRave, RpDefine, RpCon, Spin, verificaSenhas,
   TFlatCheckBoxUnit;
 
@@ -26,8 +26,6 @@ type
     Palets1: TMenuItem;
     edQuant: TSpinEdit;
     Label3: TLabel;
-    NotaFiscal1: TMenuItem;
-    tb: TADOTable;
     Panel1: TPanel;
     FlatButton1: TFlatButton;
     cbTIpoImpressao: TadLabelComboBox;
@@ -51,7 +49,6 @@ type
     procedure Endereco1Click(Sender: TObject);
     procedure imprimeGondolaArgox(sender: Tobject);
     procedure imprimeGondolaArgoxGrande(sender: Tobject);
-    procedure NotaFiscal1Click(Sender: TObject);
     function preparaListaDeItens(Sender: Tobject):TStringList;
     procedure imprimeELimpaCampos(Sender: TObject; arq:String);
     procedure imprimeGondolaDynapos(Sender:Tobject);
@@ -63,11 +60,11 @@ type
 
 var
   fmEtiquetas: TfmEtiquetas;
-
+  ds:TDataSet;
 implementation
 {$R *.dfm}
 
-uses upallet, uMain, uetqNotas;
+uses upallet, uMain, uCF, funcsql, funcoes;
 
 procedure TfmEtiquetas.imprimeGondolaDynapos(Sender: Tobject);
 var
@@ -96,8 +93,16 @@ end;
 
 procedure TfmEtiquetas.ListaEansProduto(sender: tobject);
 var
-  Cmd:string;
+  cmd:string;
 begin
+   if (ds <> nil) then
+      ds.Free();
+
+
+   ds:= uCF.getDadosProd( funcoes.getCodUo(cbLojas), EdCodigo.Text, fmMain.getCodPreco(cbPrecos), true  );
+
+   DataSource1.DataSet := ds;
+
    cmd := '';
    cmd := 'exec Z_CF_GetInformacoesProduto ' +
            QuotedStr( FUNCOES.SohNumeros(EdCodigo.text))  +' , '+
@@ -121,8 +126,6 @@ procedure TfmEtiquetas.FormCreate(Sender: TObject);
 var
   str:String;
 begin
-//   cbLojas.Items := funcsql.GetNomeLojas( fmMain.Conexao, false, false, fmMain.lbPes.caption,'');//  fmEtiquetas.GetNomeLojas(Sender);
-
    cbPrecos.Items := funcsql.getListaPrecos(fmMain.Conexao,false,false,false, fmMain.getGrupoLogado());
    fmMain.getParametrosForm(fmEtiquetas);
 
@@ -145,11 +148,11 @@ end;
 procedure TfmEtiquetas.AdicionaProdutoParaImpressao(sender: tobject);
 begin
    lbItens.Items.add(
-                      funcoes.preencheCampo(08,' ', 'd', query.fieldByName('codigo').asString )+
-                      funcoes.preencheCampo(20,' ', 'd', query.fieldByName('ean').asString )+
+                      funcoes.preencheCampo(08,' ', 'd', ds.fieldByName('codigo').asString )+
+                      funcoes.preencheCampo(20,' ', 'd', ds.fieldByName('ean').asString )+
                       funcoes.preencheCampo(40,' ', 'd', copy(query.fieldByName('descricao').asString,01,40)) + ' '+
                       funcoes.preencheCampo(04,'0', 'E', inttoStr(edQuant.Value) ) +' '+
-                      funcoes.preencheCampo(15,' ', 'E', floattostrf(Query.fieldByname('preco').asfloat ,ffNumber,18,2)   )
+                      funcoes.preencheCampo(15,' ', 'E', floattostrf(ds.fieldByname('preco').asfloat ,ffNumber,18,2)   )
                     );
    edCodigo.Text:='';
    edCodigo.SetFocus;
@@ -502,18 +505,10 @@ begin
 end;
 
 
-procedure TfmEtiquetas.NotaFiscal1Click(Sender: TObject);
-begin
-   if fmEtq = nil then
-   begin
-      Application.CreateForm(TfmEtq, fmEtq);
-      fmEtq.Show;
-   end;
-end;
-
 procedure TfmEtiquetas.FlatButton3Click(Sender: TObject);
 begin
-   ListaEansProduto(Sender);
+// if
+//   ListaEansProduto(Sender);
    if query.IsEmpty = true then
    begin
       application.MessageBox(' Este produto não tem Codigo de barras cadastrado. ', '', mb_ok+ mb_iconerror);

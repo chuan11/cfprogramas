@@ -18,6 +18,7 @@ interface
    function getDadosPedidoDeCompra(conexao: TADOconnection; numPedido:String):TdataSet;
    function getDadosProd(uo, codigo, preco:String; mostraMsg:boolean):TdataSet;
    function getDescCaixas(uo:String; mostraTodos:boolean):TStrings;
+   function getEntradasPorItem(is_ref:String):TdataSet;
    function getFileFromACBR(server, dirRemoto, dirLocal, arquivo: String): boolean;
    function getFmDadosPessoa(codPerfil: String):String;
    function getIsUo(mostraEscritorio:boolean):String;
@@ -28,7 +29,8 @@ interface
    function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
    function getTotaisVendaAvaria(lojas:TadLabelComboBox; datai, dataf:Tdate; tabela:String):String;
    function getTotalCartaoPorModo(tb:TADOTable):TStringlist;
-   function getVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate; conexao:TADOConnection):String;
+   function getVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate):String;
+   function getVdItemDetPorLojaPeriodo(is_ref, uo, uocd:String; di, df:Tdate):TdataSet;
    function insereModPagamento (uo, seqTransacao, codNovaModalidade, valor, numParcelas,  dataTrans:String):boolean;
    function insereRegistroTEF(uo, seqTransacao, seqModalidade, tp_mve, valor, numParcelas, dataTrans:String):boolean;
    function recalcularCmuItem(is_ref:String):String;
@@ -980,15 +982,45 @@ begin
    funcSQL.execSQL(cmd, fmMain.conexao);
 end;
 
-function getVendaProduto(is_ref, uo, uocd :String;  datai, dataf:Tdate; conexao:TADOConnection):String;
+function getVdItemDetPorLojaPeriodo(is_ref, uo, uocd:String; di, df:Tdate):TdataSet;
 var
    cmd:String;
 begin
-   uocd := '10033674';
+   gravaLog(funcDatas.dateToSqlDate(di));
+
+
+   cmd :=
+   'Select UO.ds_uo as Loja, sum(qt_mov) as Quantidade from zcf_dsdsi V with(nolock) '+
+   'inner join zcf_tbuo UO (nolock) on V.is_estoque = UO.Is_uo '+
+   'where ' +
+   'V.dt_mov between '+
+   funcDatas.dateToSqlDate(di) +' and ' +
+   funcDatas.dateToSqlDate(df) +
+   'and V.is_ref =  ' + is_ref ;
+
+   if (uo <> uocd) and (uo <> '') then
+      cmd := cmd + ' and V.is_uo = '+ uo;
+
+   cmd := cmd + ' group by UO.ds_uo';
+
+   result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+end;
+
+function getVendaProduto(is_ref, uo, uocd :String;  datai, dataf:Tdate):String;
+var
+//   cmd:String;
+   ds:TdataSet;
+begin
+{   uocd := '10033674';
    cmd := 'SELECT [dbo].[Z_CF_funObterVendaPorPeriodo](' + uo +' , '+ is_ref +', '+
           funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ funcoes.DateTimeToSqlDateTime(dataF,'') +', '+
           funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ uoCD + ') as qt';
-   result :=  funcSQL.openSql(cmd,'qt', conexao) ;
+   result :=  funcSQL.openSql(cmd,'qt', fmMain.conexao) ;}
+   ds:= getVdItemDetPorLojaPeriodo(is_ref, uo, uocd, datai, dataf);
+   if ( ds.IsEmpty = true) then
+      result := '0'
+   else
+      result := funcSQL.somaColTable(ds,'Quantidade');
 end;
 
 function getDadosEntProduto(uo, isRef:String):TDataSet;
@@ -1007,5 +1039,26 @@ begin
   result := funcSQL.getDataSetq( cmd, fmMain.conexao);
 end;
 
+function getEntradasPorItem(is_ref:String):TdataSet;
+var
+   cmd:String;
+begin
+   cmd :=
+   'select '+
+   'dnota.nr_docf as [NumNota], '+#13+
+   'dnota.sr_docf [SrNota], '+#13+
+   'dnota.dt_entSai as [Data], '+#13+
+   'zcf_dsdei.qt_mov  as [Quant], '+#13+
+   'zcf_tbuo.ds_uo  as [Loja], '+#13+
+   'zcf_tbuo.is_uo  as [is_uo] '+#13+
+   'from zcf_dsdei with(NoLock) '+#13+
+   'inner join dnota with(NoLock) on zcf_dsdei.is_oper = dnota.is_oper '+#13+
+   'inner join zcf_tbuo with(NoLock) on dnota.is_estoque = zcf_tbuo.Is_uo '+#13+
+   'where zcf_dsdei.is_ref = '+ is_ref +
+   'and  zcf_dsdei.codTransacao  = 1 '+#13+
+   'and DNOTA.st_nf = '''' '+#13+
+   'order by  zcf_dsdei.dt_mov desc';
+   result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+end;
 
 end.

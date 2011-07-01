@@ -47,7 +47,7 @@ interface
    function openSQL(comando, retorno:string; Connection : TADOConnection):String;
    function setParamBD(parametro, uo, valor:String; conexao:TADOConnection):boolean;
    function somaColQuery(Query:TADOQuery;Coluna:String; nDecimais:integer):String;
-   function somaColTable(Table:TADOTable;Coluna:String):String; overload;
+   function somaColTable(Table:TDataSet;Coluna:String):String; overload;
    function somaColunaTable(Table:TDataSet;Coluna:String):real; overload;
    procedure abrirQuery(var query:TADOQuery; conexao:TADOConnection; comando:String);
    procedure acertaQuantidadeItens(uo,usuario:String;qrItens:TADOQuery; conexao:TADOConnection);
@@ -64,6 +64,18 @@ interface
    function isReqPendProduto(conexao:TADoConnection; uo, is_ref:String; QT_DIAS_PEND:integer ): TDataSet;
 
 implementation
+
+function getNomeTableTemp():String;
+var
+  i:integer;
+
+begin
+   randomize;
+   i:= random(99999);
+   result := 'A' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
+end;
+
+
 
 function getContadorWell(conexao:TADOConnection; campo:String):String;
 begin
@@ -469,7 +481,7 @@ begin
 end;
 
 
-function somaColTable(Table:TADOTable;Coluna:String):String; overload;
+function somaColTable(Table:TDataSet;Coluna:String):String; overload;
 var
    aux:real;
 begin
@@ -738,15 +750,6 @@ begin
       msgTela('FuncSQL.AcertaQuantidadeItens','Nao há itens no acerto',0);
 end;
 
-function getNomeTableTemp():String;
-var
-  i:integer;
-
-begin
-   randomize;
-   i:= random(99999);
-   result := '#' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
-end;
 
 procedure exportaQuery(qr:TADOQuery;expParaAqquivo:boolean; nArquivo:String );
 var
@@ -769,13 +772,18 @@ end;
 
 procedure exportaTable(tb:TADOTable);
 var
-   export:TmxDataSetExport;
+   export1:TmxDataSetExport;
 begin
-   export := TmxDataSetExport.Create(nil);
-   export.ExportType := xtExcel;
-   export.DataSet :=  tb;
-   export.ExportStyle := xsView;
-   export.Execute;
+   export1 := TmxDataSetExport.Create(nil);
+   with export1 do
+   begin
+      ExportType := xtTXT;
+      DataSet :=  tb;
+      ExportStyle := xsView;
+      Options := [xoShowProgress, xoUseAlignments ];
+      Execute;
+   end;
+   export1.Destroy;
 end;
 
 
