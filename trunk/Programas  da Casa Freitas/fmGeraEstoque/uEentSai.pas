@@ -9,7 +9,6 @@ uses
 type
   TfmEntSai = class(TForm)
     Label1: TLabel;
-    Label4: TLabel;
     lbDesc: TLabel;
     lbis_ref: TLabel;
     lbTotEnt: TLabel;
@@ -19,8 +18,9 @@ type
     Label7: TLabel;
     lbPrimEnt: TLabel;
     Bevel1: TBevel;
-    Bevel2: TBevel;
-    qrEnt: TADOQuery;
+    Panel1: TPanel;
+    Label2: TLabel;
+    Label3: TLabel;
     procedure listaTotalEntSai(isref:String);
     procedure listaDadosEntrada(isref: String);
     procedure ObtertotalVendas(isRef:String);
@@ -47,24 +47,23 @@ uses uMain, funcsql, funcoes, uCF;
 
 procedure TfmEntSai.listaDadosEntrada(isref: String);
 var
-   cmd:string;
+   cmd:String;
 begin
    cmd := 'Exec dbo.Z_CF_stoListaQtEntradaPorItem '+ isref;
-   funcsql.getQuery(fmMain.Conexao, qrEnt, cmd );
+//   funcsql.getQuery(fmMain.Conexao, qrEnt, cmd );
 
-   if (qrEnt.IsEmpty = false)then
+//   if (qrEnt.IsEmpty = false)then
    begin
-      cmd := qrEnt.fieldByName('data').asString;
+//      cmd := qrEnt.fieldByName('data').asString;
       insert('20', cmd, length(cmd)-1);
       lbPrimEnt.Caption := cmd;
 
 
-
-
 //       ObtertotalVendas(nil);
-   end
-   else
+//   end
+//   else
        lbPrimEnt.Caption := 'Não há...';
+       end;
 end;
 
 
@@ -73,7 +72,7 @@ begin
    if (lbPrimEnt.Caption <> '0') then
    begin
       lbTotVenda.Caption :=
-      ucf.getVendaProduto(isRef, '10033674', '10033674', strToDate(lbPrimEnt.Caption), now-1, fmMain.Conexao);
+      ucf.getVendaProduto(isRef, '10033674', '10033674', strToDate(lbPrimEnt.Caption), now-1);
    end;
 end;
 

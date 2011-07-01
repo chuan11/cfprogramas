@@ -22,7 +22,8 @@ uses printers,windows,dialogs,SysUtils,classes,MaskUtils,Registry,   unMsgTela2,
        function dateToInteiro(str:string):string;
        function dateToSQLDateInt(data:String):String; overload;
        function dateToSQLDateInt(data:Tdate):String; overload;
-       function DialogAbrArq(TpArquivo,DirInicial:string):string;
+       function dialogAbrArq(tpArquivo,dirInicial:String):String;
+       function dialogAbrVariosArq(tpArquivo,DirInicial:string):TStrings;
        function DialogSalvaArq(DirInicial,extensao,SugestaoNmArq:string):string;
        function DigCNPJCPF(Num09Digitos:String) : String;
        function ehAnoBiSexto(Ayear: Integer): Boolean;
@@ -739,24 +740,39 @@ begin
    NumLinArq := Inttostr( tamArq div col )
 end;
 
-function DialogAbrArq(tpArquivo,DirInicial:string):string;
+function dialogAbrVariosArq(tpArquivo,DirInicial:string):TStrings;
 var
-   CxDialogo:TOpenDialog;
+   cxDialogo:TOpenDialog;
 begin
-   CxDialogo :=TOpenDialog.create(CxDialogo);
+   cxDialogo := TOpenDialog.create(nil);
 
    if (tpArquivo <> '') then
       CxDialogo.Filter := 'Arquivo ' + TpArquivo +'|*.'+tpArquivo;
 
-   CxDialogo.FilterIndex:=0;
+   cxDialogo.FilterIndex:=0;
 
-   if DirInicial <> '' then
-      CxDialogo.InitialDir := DirInicial
+   if dirInicial <> '' then
+      cxDialogo.InitialDir := DirInicial
    else
-      CxDialogo.InitialDir := 'c:\';
+      cxDialogo.InitialDir := 'c:\';
 
-   if CxDialogo.Execute then
-      DialogAbrArq := CxDialogo.FileName;
+   cxDialogo.Options:= [ofAllowMultiSelect];
+
+   if cxDialogo.Execute then
+      result := CxDialogo.Files
+   else
+      result := nil;
+end;
+
+function dialogAbrArq(tpArquivo,DirInicial:string):string;
+var
+   arquivos:Tstrings;
+begin
+   arquivos := dialogAbrVariosArq(tpArquivo, dirInicial);
+   if (arquivos <> nil) then
+      result := arquivos[0]
+   else
+      result := '';
 end;
 
 function DialogSalvaArq(DirInicial,extensao,SugestaoNmArq:string):string;

@@ -59,12 +59,9 @@ uses umain;
 
 procedure TfmConReqDep.FormCreate(Sender: TObject);
 begin
-   fmMain.getListaLojas(cbLojas, true,false, fmMain.lbPes.Caption);
+   fmMain.getListaLojas(cbLojas, true, false, fmMain.getCdPesLogado() );
    fmMain.getListaLojas(cbLojaEstoque, true,false, '');
 
-//   cbLojas.Items := fmMain.get  funcsQL.GetNomeLojas(fmMain.Conexao,true,false, fmMain.lbPes.Caption,'');
-//   cbLojaEstoque.Items  := funcsQL.GetNomeLojas( fmMain.Conexao , false ,false,'','');
-//   cbLojas.ItemIndex := 0;
 
    cbLojaEstoque.ItemIndex :=0;
 end;

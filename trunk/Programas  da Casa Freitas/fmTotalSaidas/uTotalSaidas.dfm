@@ -1,11 +1,11 @@
 object fmTotalSaidas: TfmTotalSaidas
-  Left = 380
-  Top = 272
+  Left = 398
+  Top = 149
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Venda total no per'#237'odo'
-  ClientHeight = 160
-  ClientWidth = 356
+  ClientHeight = 442
+  ClientWidth = 579
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,35 +19,22 @@ object fmTotalSaidas: TfmTotalSaidas
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 7
-    Top = 65
+    Left = 6
+    Top = 79
     Width = 38
     Height = 13
     Caption = 'Per'#237'odo'
   end
   object Label2: TLabel
     Left = 115
-    Top = 89
+    Top = 105
     Width = 15
     Height = 13
     Caption = 'at'#233
   end
-  object lbDados: TLabel
-    Left = 4
-    Top = 5
-    Width = 350
-    Height = 15
-    AutoSize = False
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
   object Label3: TLabel
-    Left = 6
-    Top = 122
+    Left = 398
+    Top = 100
     Width = 51
     Height = 20
     Caption = 'Total :'
@@ -59,8 +46,8 @@ object fmTotalSaidas: TfmTotalSaidas
     ParentFont = False
   end
   object lbTotal: TLabel
-    Left = 66
-    Top = 123
+    Left = 458
+    Top = 101
     Width = 11
     Height = 20
     Caption = '0'
@@ -73,13 +60,13 @@ object fmTotalSaidas: TfmTotalSaidas
   end
   object Bevel1: TBevel
     Left = 8
-    Top = 56
-    Width = 307
+    Top = 73
+    Width = 569
     Height = 2
   end
   object dt01: TDateTimePicker
     Left = 5
-    Top = 83
+    Top = 98
     Width = 109
     Height = 28
     Date = 39288.669176423610000000
@@ -94,7 +81,7 @@ object fmTotalSaidas: TfmTotalSaidas
   end
   object dt02: TDateTimePicker
     Left = 133
-    Top = 83
+    Top = 98
     Width = 109
     Height = 28
     Date = 39288.669176423610000000
@@ -109,7 +96,7 @@ object fmTotalSaidas: TfmTotalSaidas
   end
   object FlatButton1: TFlatButton
     Left = 247
-    Top = 83
+    Top = 98
     Width = 72
     Height = 27
     Caption = '&Recalcula'
@@ -118,7 +105,7 @@ object fmTotalSaidas: TfmTotalSaidas
   end
   object cbLoja: TadLabelComboBox
     Left = 26
-    Top = 29
+    Top = 44
     Width = 153
     Height = 21
     AutoCloseUp = True
@@ -142,5 +129,62 @@ object fmTotalSaidas: TfmTotalSaidas
     LabelPosition = adLeft
     Colors.WhenEnterFocus.BackColor = clWindow
     Colors.WhenExitFocus.BackColor = clInfoBk
+  end
+  object Panel1: TPanel
+    Left = 1
+    Top = 1
+    Width = 575
+    Height = 41
+    TabOrder = 4
+    object Label4: TLabel
+      Left = 6
+      Top = 6
+      Width = 49
+      Height = 13
+      Caption = 'Produto:'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lbDados: TLabel
+      Left = 63
+      Top = 6
+      Width = 33
+      Height = 13
+      Caption = '--------'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+  end
+  object grid: TSoftDBGrid
+    Left = 0
+    Top = 132
+    Width = 579
+    Height = 310
+    Align = alBottom
+    Ctl3D = False
+    DataSource = DataSource1
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit]
+    ParentCtl3D = False
+    TabOrder = 5
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+    TitleFont.Style = []
+    AlternateColor = True
+    ColorLow = clInfoBk
+    ColorHigh = clWindow
+  end
+  object DataSource1: TDataSource
+    Left = 80
+    Top = 136
   end
 end

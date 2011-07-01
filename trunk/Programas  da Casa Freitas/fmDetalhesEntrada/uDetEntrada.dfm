@@ -68,15 +68,7 @@ object fmDetEntrada: TfmDetEntrada
     end
   end
   object DataSource1: TDataSource
-    DataSet = qrEnt
     Left = 88
     Top = 112
-  end
-  object qrEnt: TADOQuery
-    Connection = fmMain.Conexao
-    CommandTimeout = 0
-    Parameters = <>
-    Left = 88
-    Top = 144
   end
 end

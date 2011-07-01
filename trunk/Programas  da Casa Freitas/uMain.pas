@@ -4,7 +4,7 @@ unit uMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  qforms, Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Menus, DB, ADODB, ComCtrls, funcoes, funcsql, verificaSenhas,
   StdCtrls, Buttons, fCtrls, mxOneInstance, uEmail, ExtCtrls, TFlatEditUnit,
   TFlatButtonUnit,  RpCon, RpConDS, RpBase, RpSystem, RpDefine, RpRave,
@@ -12,8 +12,7 @@ uses
   IdTCPConnection, Sockets, ScktComp, DBCtrls,
   AppEvnts, RpRender, RpRenderPDF, RpRenderCanvas, RpRenderPrinter,
   OleCtrls, AcroPDFLib_TLB, shellAPI, adLabelCheckListBox, IdBaseComponent,
-  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox , xmldom, XMLIntf,
-  msxmldom, XMLDoc, oxmldom, CHILKATXMLLib_TLB ;
+  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox;
 
 
 type
@@ -91,6 +90,7 @@ type
     RvDSConn4: TRvDataSetConnection;
     Geraestoque1: TMenuItem;
     Processarinventrio1: TMenuItem;
+    ApplicationEvents1: TApplicationEvents;
 
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
@@ -104,6 +104,7 @@ type
     function getNomeLojaLogada():String;
     function getNomeUsuario():String;
     function getUoLogada():String;
+    function getUOCD():String;
     function getUserLogado:String;
     function getParamBD(nParametro, loja: String):String;
     function getTelasPermDoGrupo(grupo:String):TstringList;
@@ -194,7 +195,6 @@ type
     procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
     procedure Geraestoque1Click(Sender: TObject);
     procedure Processarinventrio1Click(Sender: TObject);
-
   private
     { Private declarations }
   public
@@ -206,7 +206,7 @@ type
   end;
 CONST
    VERSAO = '11.06.01';
-   SUB_VERSAO = ' B';
+   SUB_VERSAO = ' C';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -305,7 +305,7 @@ begin
    end;
 end;
 
-function TFmMain.GetParamBD(nParametro, loja: String):String;
+function TFmMain.getParamBD(nParametro, loja: String):String;
 var
   str:String;
 begin
@@ -320,16 +320,16 @@ begin
    result := funcSql.setParamBD(nParametro, loja, valor, Conexao);
 end;
 
-procedure TfmMain.AppException(Sender: TObject; E: Exception);
+procedure TfmMain.appException(Sender: TObject; E: Exception);
 var
    str:String;
 begin
    msgTela('', 'Erro:'+#13+e.Message, 0);
    str:=  dateTimeTostr(now)+ ' '+ fmMain.getUoLogada() +   ' Usuario: ' + fmMain.getCdPesLogado() +#13+ e.Message;
-   funcoes.gravaLog('Erro - Loja: ' + fmMain.StatusBar1.Panels[0].Text +'  usuario: '+ fmMain.StatusBar1.Panels[1].Text  + ' ' + e.Message );
+   funcoes.gravaLog('Erro - Loja: ' + fmMain.getUoLogada() +'  usuario: '+ fmMain.getUserLogado()  + ' ' + e.Message );
 end;
 
-procedure TfmMain.Consultaarequisies2Click(Sender: TObject);
+procedure TfmMain.ConsultaARequisies2Click(Sender: TObject);
 begin
    if  fmConReqDep = nil then
    begin
@@ -338,7 +338,7 @@ begin
    end;
 end;
 
-procedure TfmMain.rocardeUsuario1Click(Sender: TObject);
+procedure TfmMain.rocarDeUsuario1Click(Sender: TObject);
 var
   i:integer;
   aux:String;
@@ -399,6 +399,7 @@ end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
 begin
+//   application.OnActionExecute
    try
       conexao.Connected := false;
       conexao.ConnectionString := funcoes.getDadosConexaoUDL(extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini');
@@ -462,7 +463,7 @@ begin
 
 // obter a lista de telas que o usuário acessa
    TELAS_PERMITIDAS := TStringList.Create();
-   if loja <> '-1' then
+   if (loja <> '-1') then
    begin
       PARAMS_APLICACAO.Values['IS_UO'] := is_uo;
       PARAMS_APLICACAO.Values['CD_USU'] := is_usu;
@@ -622,7 +623,7 @@ begin
       for i:=0 to params.Count-1 do
          RvProject1.SetParam(intToStr(i), params[i]);
 
-   RvProject1.ExecuteReport(nRelatorio);
+  RvProject1.ExecuteReport(nRelatorio);
 end;
 
 procedure TfmMain.impressaoRaveQr(qr:TADOQuery; nRelatorio:String; params:Tstrings);
@@ -646,7 +647,6 @@ begin
    RvDSConn4.DataSet := qr4;
    chamaImpressaoRave(nRelatorio, params);
 end;
-
 
 procedure TfmMain.impressaoRavePDF(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings;nmArquivo:String);
 begin
@@ -674,8 +674,6 @@ begin
    RvDSConn2.DataSet := qr;
    chamaImpressaoRave(nRelatorio, params);
 end;
-
-
 
 procedure TfmMain.Geracaopreodecusto1Click(Sender: TObject);
 begin
@@ -737,6 +735,7 @@ begin
    begin
       Application.CreateForm( TfmTotalSaidas , fmTotalSaidas );
       fmTotalSaidas.calcularVenda(is_ref, uo, dtInicio, now );
+      fmTotalSaidas.ajustaDataInicio(dtInicio);
       fmTotalSaidas.showModal;
    end;
 end;
@@ -779,7 +778,6 @@ begin
       fmRelatorioComissao.show;
    end;
 end;
-
 
 procedure TfmMain.getRequisicoesPorProduto(cd_ref: String);
 var
@@ -841,6 +839,12 @@ function TfmMain.getUserLogado(): String;
 begin
    result := PARAMS_APLICACAO.Values['CD_USU'];
 end;
+
+function TfmMain.getUOCD: String;
+begin
+   result := PARAMS_APLICACAO.Values['uocd'];
+end;
+
 
 
 procedure TfmMain.Requisiodereposio1Click(Sender: TObject);
@@ -1125,7 +1129,6 @@ begin
    end;
 end;
 
-
 procedure TfmMain.EnviarXML1Click(Sender: TObject);
 var
    cmd:String;
@@ -1134,7 +1137,6 @@ begin
    if (cmd <> '') then
       exportaXMLNota(cmd);
 end;
-
 
 procedure TfmMain.EnviarespelhoPDFdeNFeParaEmail1Click(Sender: TObject);
 var
@@ -1205,7 +1207,6 @@ begin
      end;
     end;
 end;
-
 
 function TfmMain.GetPDFNFe(isNota: String):String;
 var
@@ -1284,7 +1285,6 @@ begin
     end;
 end;
 
-
 procedure TfmMain.PagamentosEmCartao1Click(Sender: TObject);
 begin
    Application.CreateForm(TfmRelGeral, fmRelGeral);
@@ -1349,8 +1349,9 @@ begin
          break;
       end;
    end;
+   if (achou = false) then
+      cb.ItemIndex := -1;
 end;
-
 
 procedure TfmMain.getListaLojas(cb:TadLabelComboBox; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario: String);
 begin
@@ -1359,8 +1360,6 @@ begin
    setaLojaLogadaNoComboBox(cb);
    cb.DropDownCount := cb.items.count;
 end;
-
-
 
 procedure TfmMain.RegistroSCAN1Click(Sender: TObject);
 var
@@ -1401,8 +1400,6 @@ begin
    screen.Cursor := crDefault;
 end;
 
-
-
 procedure TfmMain.Geraestoque1Click(Sender: TObject);
 begin
    if (fmGeraEstoque  = nil) then
@@ -1430,5 +1427,7 @@ begin
    end;
 end;
 
+
 end.
+
 

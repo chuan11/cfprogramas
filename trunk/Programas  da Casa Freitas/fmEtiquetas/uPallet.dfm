@@ -1,11 +1,11 @@
 object Pallet: TPallet
-  Left = 333
-  Top = 125
+  Left = 746
+  Top = 269
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Pallet / Endereco'
   ClientHeight = 89
-  ClientWidth = 246
+  ClientWidth = 322
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,9 +20,9 @@ object Pallet: TPallet
   PixelsPerInch = 96
   TextHeight = 13
   object ednPallete: TadLabelEdit
-    Left = 115
+    Left = 103
     Top = 25
-    Width = 126
+    Width = 97
     Height = 19
     LabelDefs.Width = 87
     LabelDefs.Height = 13
@@ -32,15 +32,16 @@ object Pallet: TPallet
     ParentCtl3D = False
     MaxLength = 12
     TabOrder = 0
+    OnChange = ednPalleteChange
     OnKeyDown = ednPalleteKeyDown
   end
   object fsBitBtn1: TfsBitBtn
-    Left = 167
+    Left = 236
     Top = 54
     Width = 75
     Height = 25
     Caption = '&OK'
-    TabOrder = 1
+    TabOrder = 2
     OnClick = fsBitBtn1Click
   end
   object Rg: TRadioGroup
@@ -49,9 +50,27 @@ object Pallet: TPallet
     Width = 86
     Height = 50
     Caption = 'Tipo'
+    ItemIndex = 0
     Items.Strings = (
       'Pallet'
       'Endere'#231'o')
-    TabOrder = 2
+    TabOrder = 3
+    OnClick = RgClick
+  end
+  object ednPalleteFim: TadLabelEdit
+    Left = 217
+    Top = 25
+    Width = 97
+    Height = 19
+    LabelDefs.Width = 9
+    LabelDefs.Height = 13
+    LabelDefs.Caption = 'a '
+    LabelPosition = adLeft
+    Colors.WhenEnterFocus.BackColor = clInfoBk
+    Ctl3D = False
+    ParentCtl3D = False
+    MaxLength = 12
+    TabOrder = 1
+    OnKeyDown = ednPalleteKeyDown
   end
 end

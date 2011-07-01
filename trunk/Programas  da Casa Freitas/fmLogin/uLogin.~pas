@@ -122,7 +122,6 @@ procedure TfmLogin.edSenhaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftS
 begin
    if key = vk_return then
       btOkClick(nil);
-   if Shift in [] then
 end;
 
 procedure TfmLogin.connWillExecute(Connection: TADOConnection;  var CommandText: WideString; var CursorType: TCursorType;  var LockType: TADOLockType; var CommandType: TCommandType;  var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;  const Command: _Command; const Recordset: _Recordset);

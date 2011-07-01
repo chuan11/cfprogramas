@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, TFlatButtonUnit, db,
-  StdCtrls, ExtCtrls, adLabelComboBox;
+  StdCtrls, ExtCtrls, adLabelComboBox, Grids, DBGrids, SoftDBGrid;
 
 type
   TfmTotalSaidas = class(TForm)
@@ -14,11 +14,15 @@ type
     FlatButton1: TFlatButton;
     Label1: TLabel;
     Label2: TLabel;
-    lbDados: TLabel;
     Label3: TLabel;
     lbTotal: TLabel;
     cbLoja: TadLabelComboBox;
     Bevel1: TBevel;
+    Panel1: TPanel;
+    Label4: TLabel;
+    lbDados: TLabel;
+    grid: TSoftDBGrid;
+    DataSource1: TDataSource;
     procedure FormCreate(Sender: TObject);
     procedure FlatButton1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -56,29 +60,30 @@ begin
    fmTotalSaidas := nil;
 end;
 
-
 procedure TfmTotalSaidas.calcularVenda(is_ref, uo:String; inicio, fim: Tdate);
 var
    ds:TdataSet;
-   uocd:String;
 begin
-   uocd := fmMain.GetParamBD('uocd','');
-
    if (lbDados.Caption = '') then
    begin
-      ds:= uCF.getDadosProd(uo, is_ref, '101');
+      ds:= uCF.getDadosProd(uo, is_ref, '101', true);
       lbDados.Caption := ds.fieldByName('codigo').AsString + '  '+
                          ds.fieldByName('descricao').AsString;
       ds.free();
    end;
 
    if( uo = '') then
-      uo := fmMain.getParamBD('uocd','');
+      uo := fmMain.getUOCD();
 
    fmUO := UO;
    fmIS_REF := is_ref;
 
-   lbTotal.caption := ucf.getVendaProduto( fmIS_REF, fmUO, uocd, inicio, fim, fmMain.Conexao);
+//   lbTotal.caption := ucf.getVendaProduto( fmIS_REF, fmUO, fmMain.getUOCD(), inicio, fim);
+   ds:= uCF.getVdItemDetPorLojaPeriodo(is_ref, uo, fmMain.getUOCD(), inicio, fim);
+
+   dataSource1.DataSet := ds;
+   lbTotal.caption := funcSQL.somaColTable(ds, 'quantidade');
+
 end;
 
 

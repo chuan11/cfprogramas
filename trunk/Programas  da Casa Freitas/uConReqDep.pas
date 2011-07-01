@@ -189,7 +189,7 @@ var
    dest:TstringList;
    linha:string;
    l,Fl:integer;
-   nmArquivo,codForn:string;
+   nmArquivo:string;
 begin
    nmArquivo:= funcoes.SohNumeros( DateTimeToStr(now) ) + 'txt';
 
