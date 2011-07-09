@@ -1,6 +1,6 @@
 object fmEtiquetas: TfmEtiquetas
-  Left = 272
-  Top = 107
+  Left = 273
+  Top = 108
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = '(02) Gera'#231#227'o de C'#243'digos de Barras'
@@ -295,17 +295,7 @@ object fmEtiquetas: TfmEtiquetas
       TabOrder = 2
     end
   end
-  object Query: TADOQuery
-    Connection = fmMain.Conexao
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      'exec Z_CF_getInformacoesProduto '#39'-1'#39', 10033586, -1 ')
-    Left = 376
-    Top = 38
-  end
   object DataSource1: TDataSource
-    DataSet = Query
     Left = 408
     Top = 38
   end

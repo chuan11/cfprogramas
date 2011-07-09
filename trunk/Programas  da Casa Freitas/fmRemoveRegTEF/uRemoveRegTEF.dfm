@@ -1,8 +1,8 @@
 object fmRemRegTEF: TfmRemRegTEF
-  Left = 477
-  Top = 259
+  Left = 369
+  Top = 212
   Width = 800
-  Height = 480
+  Height = 469
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Liberar cart'#227'o para cancelamento'
   Color = clBtnFace
@@ -21,7 +21,7 @@ object fmRemRegTEF: TfmRemRegTEF
   OnCreate = FormCreate
   DesignSize = (
     784
-    442)
+    431)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -53,8 +53,8 @@ object fmRemRegTEF: TfmRemRegTEF
   object grid: TSoftDBGrid
     Left = 5
     Top = 81
-    Width = 647
-    Height = 282
+    Width = 636
+    Height = 271
     Anchors = [akLeft, akTop, akRight, akBottom]
     Ctl3D = False
     DataSource = DataSource1
@@ -211,6 +211,14 @@ object fmRemRegTEF: TfmRemRegTEF
     end
     object tbseqTefTransCaixa: TIntegerField
       FieldName = 'seqTefTransCaixa'
+    end
+    object tbcd_tpm: TStringField
+      FieldName = 'cd_tpm'
+      Size = 1
+    end
+    object tbtp_mve: TStringField
+      FieldName = 'tp_mve'
+      Size = 1
     end
   end
   object PopupMenu1: TPopupMenu

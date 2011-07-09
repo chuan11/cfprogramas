@@ -134,14 +134,14 @@ begin
         datai := now - diasDesdePrimVenda ;
 
 //pegar a venda do ultimo semestre (ou antes, se houver)
-      qtVendaSemestre :=   strToInt( uCF.getVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, datai, dataf, fmMain.Conexao)) ;
+      qtVendaSemestre :=   strToInt( uCF.getVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, datai, dataf)) ;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' qtVendaUltimoSemestre: ' + floatToStr(qtVendaSemestre) );
       qtVendaSemestre :=  ( qtVendaSemestre / diasDesdePrimVenda ) * DUR_ESTOQUE;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' Venda Media semestre: ' + floatToStr(qtVendaSemestre) );
 
 
 //pegar a venda do ultimo mes
-      qtVendaMes := strToInt(uCF.getVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, (dataf-30), dataf, fmMain.Conexao)) ;
+      qtVendaMes := strToInt(uCF.getVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, (dataf-30), dataf)) ;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' qtVendaUltimoMes: ' + floatToStr(qtVendaMes) );
       qtVendaMes :=  ( qtVendaSemestre / 30 ) * DUR_ESTOQUE;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' Venda Media mes: ' + floatToStr(qtVendaMes) );
@@ -227,7 +227,6 @@ begin
    end;
    fmMain.MsgStatus('');
 end;
-
 
 function TfmOsDeposito.criticaQuantidade(Sender: TObject):String;
 var

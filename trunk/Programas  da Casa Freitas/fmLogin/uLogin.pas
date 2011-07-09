@@ -103,18 +103,13 @@ begin
 
    fmMain.getListaLojas( cbLoja,  false, false,'');
 
-//   fmMain.getListaLojas(cbLojas, false, false,'');
-//   cbLoja.ItemIndex :=-1;
-
    verificaControl(nil,tecla, []);
 end;
 procedure TfmLogin.cbUserEnter(Sender: TObject);
-var
-   loja:string;
 begin
-   if cbLoja.ItemIndex < 0  then cbLoja.ItemIndex :=0;
-   loja := trim( copy(cbLoja.Items[cbLoja.ItemIndex], 51,100));
-   cbUser.Items :=   getUsuariosPorLoja(fmMain.Conexao, loja );
+   if (cbLoja.ItemIndex < 0)  then
+      cbLoja.ItemIndex :=0;
+   cbUser.Items :=   getUsuariosPorLoja(fmMain.Conexao, funcoes.getCodUO(cbLoja));
    cbUser.ItemIndex :=-1;
 end;
 

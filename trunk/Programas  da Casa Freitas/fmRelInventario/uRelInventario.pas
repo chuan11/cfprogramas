@@ -433,16 +433,17 @@ begin
    arqItensP := TStringlist.Create();
 
     ds.Free();
-
+}
     arqItensP := TStringlist.Create();
-    cmd := 'Select codigo, ean, endereco, pallet,qt from zcf_inv_wms order by codigo';
+    cmd := 'Select codigo, ean, endereco, pallet2 as pallet, qt from zcf_inv_wms where codigo = ''00020443'' order by codigo';
     ds:= funcSQL.getDataSetQ(cmd, fmMain.Conexao);
 
 
-
+   i:=0;
    ds.First();
    while (ds.Eof = false) do
    begin
+      inc(i);
       aux :=
       'INSERT INTO TITPALETE ( STR_ID_PALETE, ' +
                               'STR_ID_ITPALETE, ' +
@@ -466,9 +467,9 @@ begin
                               'FLT_PESOALOCADO_ITPALETE ' +
                               ') VALUES (' +
 
-         quotedStr(tiraTraco( ds.fieldByName('endereco').AsString )) +', '+
-         quotedStr( ds.fieldByName('pallet').AsString  ) +', '+
-         quotedStr( intToStr(i+1)  ) +', '+
+         quotedStr(tiraTraco( ds.fieldByName('pallet').AsString )) +', '+
+         quotedStr( intToStr(i)  ) +', '+
+         quotedStr( intToStr(i)  ) +', '+
          quotedStr( ds.fieldByName('codigo').AsString ) +', '+
          quotedStr( '7221377000110') +', '+
          ds.fieldByName('qt').AsString  +', '+
@@ -493,7 +494,7 @@ begin
    arqItensP.SaveToFile('c:\Script_carga_pallet_itens.sql' );
    arqItensP.Free();
    memo1.Lines.add('itens do Pallet');
- }
+{ }
  cmd:=
     'select codigo, ean, endereco, qt, pallet from zcf_inv_wms order by codigo';
 
@@ -516,8 +517,8 @@ procedure TfmRelInventario.Button1Click(Sender: TObject);
 var
   str:String;
 begin
-   str:= funcoes.dialogAbrArq('txt','c:\');
-   if ( str <> '') then
+//   str:= funcoes.dialogAbrArq('txt','c:\');
+//   if ( str <> '') then
       montaScriptWMS(str);
 end;
 

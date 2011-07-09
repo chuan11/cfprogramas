@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, adLabelEdit, Grids,funcoes, Buttons,Clipbrd, funcSQL,
+  Dialogs, StdCtrls, adLabelEdit, Grids, Buttons,Clipbrd, funcSQL,
   adLabelNumericEdit, mxExport, DB, ADODB, TFlatButtonUnit, DBGrids,
   SoftDBGrid, fCtrls;
 
@@ -43,7 +43,7 @@ var
 
 implementation
 
-uses Uprecoswell,uMain, uCF;
+uses Uprecoswell, uMain, uCF, funcoes;
 
 {$R *.dfm}
 function FloatSqlToStr(str:string):string;
@@ -80,9 +80,6 @@ begin
    for i:=0 to tbPedido.FieldCount -1 do
      gdPedido.Columns[i].Title.Font.Style := [fsBold];
 
-   edit2.text := funcoes.lerParam( ARQ_INI ,10);
-   edit3.text := funcoes.lerParam( ARQ_INI ,11);
-   edit4.text := funcoes.lerParam( ARQ_INI ,12);
    screen.Cursor := crDefault;
 end;
 
@@ -147,8 +144,8 @@ begin
                                 tbPedido.fieldByName('DESCRICAO').AsString,
                                 funcSQL.GetValorWell('O','Select dbo.funObterPrecoProduto('+ fmLancaPrecos.getCodigoPreco+ ' , '+ tbPedido.FieldByname('is_ref').AsString+ ' , ' +  funcoes.getNumUO(fmLancaPrecos.cbLoja)   + ' , 0   ) as pco ', 'pco', fmMain.Conexao),
                                 FloatToStrF(vlvenda,ffFixed,18,02),
-                                fmLancaPrecos.AjustaPreco( FloatToStrF(vlvenda,ffFixed,18,02) , '1,'+fmLancaPrecos.EDIT4.TEXT, false ),
-                                fmLancaPrecos.AjustaPreco( FloatToStrF(vlvenda,ffFixed,18,02) , '1,'+fmLancaPrecos.EDIT5.TEXT, false ),
+                                fmLancaPrecos.AjustaPreco( FloatToStrF(vlvenda,ffFixed,18,02) , '1,'+fmLancaPrecos.edVlMrg02.TEXT, false ),
+                                fmLancaPrecos.AjustaPreco( FloatToStrF(vlvenda,ffFixed,18,02) , '1,'+fmLancaPrecos.edVlMrg03.TEXT, false ),
                                 tbPedido.fieldByName('is_ref').AsString,
                                 tbPedido.fieldByName('PRECO UND').AsString
                                ]);
@@ -157,8 +154,8 @@ begin
 
    if checkBox1.Checked = true then
    begin
-      arq.SaveToFile(Path + 'memDeCaculo.txt');
-      Winexec(pchar('notepad.exe '+PATH+ 'memDeCaculo.txt'),sw_normal);
+      arq.SaveToFile(getDirLogs()+'memDeCaculo.txt');
+      Winexec(pchar('notepad.exe '+getDirLogs()+ 'memDeCaculo.txt'),sw_normal);
    end;
    fmPcporPedido.Close;
 end;

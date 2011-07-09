@@ -65,7 +65,7 @@ end;
 procedure TfmRelatorioComissao.FormCreate(Sender: TObject);
 begin
 //   cbLoja.items := funcsQL.GetNomeLojas( fmMain.Conexao, false, false, fmMain.lbPes.caption,'' ); // getListaPrecos (sender);
-   fmMain.getListaLojas(cbLoja, false, false, fmMain.getCDPESUsuario() );
+   fmMain.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
 
    fmMain.getParametrosForm(fmRelatorioComissao);
    OpenTempTable( tb,  'is_oper integer, cd_mve int, valor money, TipoPrecoSugerido int, cd_vend int, cd_pes int, seq int identity(01,01) ', fmMain.Conexao);

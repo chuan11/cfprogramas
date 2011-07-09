@@ -295,34 +295,16 @@ object fmEtiquetas: TfmEtiquetas
       TabOrder = 2
     end
   end
-  object Query: TADOQuery
-    Connection = fmMain.Conexao
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      'exec Z_CF_getInformacoesProduto '#39'-1'#39', 10033586, -1 ')
-    Left = 376
-    Top = 38
-  end
   object DataSource1: TDataSource
-    DataSet = Query
     Left = 408
     Top = 38
   end
   object MainMenu1: TMainMenu
-    Left = 217
-    Top = 214
+    Left = 73
+    Top = 182
     object Palets1: TMenuItem
       Caption = '&Pallet / Endereco'
       OnClick = Palets1Click
     end
-    object NotaFiscal1: TMenuItem
-      Caption = 'Nota Fiscal'
-    end
-  end
-  object tb: TADOTable
-    Connection = fmMain.Conexao
-    Left = 72
-    Top = 224
   end
 end

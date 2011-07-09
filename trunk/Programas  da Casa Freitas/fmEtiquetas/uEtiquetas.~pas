@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, fCtrls, DB, ADODB, TFlatButtonUnit, Grids, DBGrids,
-  SoftDBGrid, adLabelEdit, funcoes, ExtCtrls, adLabelComboBox, funcsql,
+  SoftDBGrid, adLabelEdit,  ExtCtrls, adLabelComboBox,
   Menus, RpBase, RpSystem, RpRave, RpDefine, RpCon, Spin, verificaSenhas,
   TFlatCheckBoxUnit;
 
@@ -15,7 +15,6 @@ type
     DBGrid: TSoftDBGrid;
     LBItens: TListBox;
     Label1: TLabel;
-    Query: TADOQuery;
     DataSource1: TDataSource;
     FlatButton3: TFlatButton;
     FlatButton4: TFlatButton;
@@ -26,8 +25,6 @@ type
     Palets1: TMenuItem;
     edQuant: TSpinEdit;
     Label3: TLabel;
-    NotaFiscal1: TMenuItem;
-    tb: TADOTable;
     Panel1: TPanel;
     FlatButton1: TFlatButton;
     cbTIpoImpressao: TadLabelComboBox;
@@ -62,11 +59,11 @@ type
 
 var
   fmEtiquetas: TfmEtiquetas;
-
+  ds:TDataSet;
 implementation
 {$R *.dfm}
 
-uses upallet, uMain;
+uses upallet, uMain, uCF, funcsql, funcoes;
 
 procedure TfmEtiquetas.imprimeGondolaDynapos(Sender: Tobject);
 var
@@ -95,33 +92,42 @@ end;
 
 procedure TfmEtiquetas.ListaEansProduto(sender: tobject);
 var
-  Cmd:string;
+  cmd:string;
 begin
-   cmd := '';
-   cmd := 'exec Z_CF_GetInformacoesProduto ' +
-           QuotedStr( FUNCOES.SohNumeros(EdCodigo.text))  +' , '+
-           funcoes.getCodUo(cbLojas) + ' , ' ;
+   if (ds <> nil) then
+      ds.Free();
 
-   cmd := cmd + funcoes.SohNumeros((copy(cbPrecos.Items[cbPrecos.ItemIndex],00,100)));
-
-   query.SQL.clear;
-   query.SQL.Add(cmd);
+   ds:= uCF.getDadosProd( funcoes.getCodUo(cbLojas), EdCodigo.Text, fmMain.getCodPreco(cbPrecos), true  );
+   if (ds.IsEmpty = false ) then
+   begin
+      DataSource1.DataSet := ds;
 
 
-   query.Open;
-   dbgrid.Columns[0].Width :=  50;
-   dbgrid.Columns[1].Width :=  85;
-   dbgrid.Columns[2].Width :=  200;
-   dbgrid.Columns[3].Visible:= FALSE;
-   dbgrid.Columns[4].Width := 50;
+
+      dbgrid.Columns[0].Width :=  50;
+      dbgrid.Columns[1].Width :=  85;
+      dbgrid.Columns[2].Width :=  200;
+      dbgrid.Columns[3].Visible:= FALSE;
+      dbgrid.Columns[4].Width := 50;
+
+      DBGrid.Columns[ ds.FieldByName('codigo').Index].Width := 50;
+      DBGrid.Columns[ ds.FieldByName('fornecedor').Index].Visible := false;
+      DBGrid.Columns[ ds.FieldByName('categoria').Index].Visible := false;
+
+
+      edQuant.SetFocus;
+   end
+   else
+   begin
+      edQuant.SetFocus;
+      EdCodigo.SetFocus;
+   end
 end;
 
 procedure TfmEtiquetas.FormCreate(Sender: TObject);
 var
   str:String;
 begin
-//   cbLojas.Items := funcsql.GetNomeLojas( fmMain.Conexao, false, false, fmMain.lbPes.caption,'');//  fmEtiquetas.GetNomeLojas(Sender);
-
    cbPrecos.Items := funcsql.getListaPrecos(fmMain.Conexao,false,false,false, fmMain.getGrupoLogado());
    fmMain.getParametrosForm(fmEtiquetas);
 
@@ -144,15 +150,14 @@ end;
 procedure TfmEtiquetas.AdicionaProdutoParaImpressao(sender: tobject);
 begin
    lbItens.Items.add(
-                      funcoes.preencheCampo(08,' ', 'd', query.fieldByName('codigo').asString )+
-                      funcoes.preencheCampo(20,' ', 'd', query.fieldByName('ean').asString )+
-                      funcoes.preencheCampo(40,' ', 'd', copy(query.fieldByName('descricao').asString,01,40)) + ' '+
+                      funcoes.preencheCampo(08,' ', 'd', ds.fieldByName('codigo').asString )+
+                      funcoes.preencheCampo(20,' ', 'd', ds.fieldByName('ean').asString )+
+                      funcoes.preencheCampo(40,' ', 'd', copy(ds.fieldByName('descricao').asString,01,40)) + ' '+
                       funcoes.preencheCampo(04,'0', 'E', inttoStr(edQuant.Value) ) +' '+
-                      funcoes.preencheCampo(15,' ', 'E', floattostrf(Query.fieldByname('preco').asfloat ,ffNumber,18,2)   )
+                      funcoes.preencheCampo(15,' ', 'E', floattostrf(ds.fieldByname('preco').asfloat ,ffNumber,18,2)   )
                     );
    edCodigo.Text:='';
    edCodigo.SetFocus;
-   query.SQL.Clear;
 end;
 
 
@@ -356,7 +361,7 @@ end;
 
 procedure TfmEtiquetas.FlatButton4Click(Sender: TObject);
 begin
-   if query.IsEmpty = false then
+   if (ds.IsEmpty = false) then
       AdicionaProdutoParaImpressao(sender);
 end;
 
@@ -504,14 +509,6 @@ end;
 procedure TfmEtiquetas.FlatButton3Click(Sender: TObject);
 begin
    ListaEansProduto(Sender);
-   if query.IsEmpty = true then
-   begin
-      application.MessageBox(' Este produto não tem Codigo de barras cadastrado. ', '', mb_ok+ mb_iconerror);
-      edQuant.SetFocus;
-      EdCodigo.SetFocus;
-   end
-   else
-      edQuant.SetFocus;
 end;
 
 

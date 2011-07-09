@@ -16,6 +16,7 @@ type
     Memo1: TMemo;
     cbExporta: TfsCheckBox;
     cbExportaWell: TfsCheckBox;
+    Button1: TButton;
     procedure btCarregaContagemClick(Sender: TObject);
     procedure relatorioContagem(arquivos:TStrings);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -25,6 +26,9 @@ type
     procedure calculaDivergencia(nmCont1, nmCont2:String; tb, tb2, tbDirvg:TADOTAble);
     procedure adicionaDivergencia(tipo, codigo, descricao, endereco, quant, pallet, msg, segundoValor:String);
     procedure exportaContagemWell(tableName:String);
+    procedure Button1Click(Sender: TObject);
+    procedure montaScriptWMS(arq:String);
+    function tiraTraco(str:String):String;
   private
     { Private declarations }
   public
@@ -369,4 +373,161 @@ begin
 
 end;
 }
+procedure TfmRelInventario.montaScriptWMS(arq: String);
+var
+   ds:TDataSet;
+   arqPallet,arqItensP: TstringList;
+   i:integer;
+   aux:String;
+   cmd:String;
+begin
+
+
+
+{   arqPallet:=TStringList.create();
+
+
+   cmd := 'Select pallet, endereco from zcf_pallet order by pallet' ;
+   ds:= funcSQL.getDataSetQ(cmd, fmMain.Conexao);
+
+{
+//montar arquivo script de pallet
+   ds.First();
+   while (ds.Eof = false) do
+   begin
+      aux:=
+      'INSERT INTO TPALETE ( STR_ID_PALETE, '  +
+                            'STR_ID_TIPOPALETE, '+
+				                  	'STR_ID_PESSOA, '+
+					                  'STR_ID_ENDERECO, '+
+					                  'INT_ID_ARMAZEM, '+
+					                  'FLT_PESOEMPILHAMENTO_PALETE, '+
+					                  'DTM_MONTAGEM_PALETE, '+
+					                  'STR_FLAGUTILIZADO_PALETE, '+
+					                  'STR_FLAGBLOQUEADO_PALETE, '+
+					                  'STR_FLAGRESERVADO_PALETE, '+
+					                  'STR_FLAGRECEBIMENTO_PALETE, '+
+					                  'STR_FLAGPRODAVARIADO_PALETE '+
+                            ') VALUES ( '+
+       quotedStr( funcoes.preencheCampo(4,'0','e', ds.fieldByName('pallet').AsString) ) +', '+
+       quotedStr('P01') +', '+
+       quotedStr('7221377000110') +', '+
+       quotedStr(tiraTraco( ds.fieldByName('endereco').AsString)) +', '+
+       '1' +', '+
+       '100000'+', '+
+       'NULL'+', '+
+       quotedstr('true')+', '+
+       quotedstr('false')+', '+
+       quotedstr('false')+', '+
+       quotedstr('false')+', '+
+       quotedstr('false')+'); ' ;
+
+       arqPallet.add(aux);
+       ds.Next();
+   end;
+   arqPallet.SaveToFile('c:\Script_carga_pallet.sql' );
+   arqPallet.Free();
+   memo1.Lines.add('Pallet');
+
+
+   arqItensP := TStringlist.Create();
+
+    ds.Free();
+}
+    arqItensP := TStringlist.Create();
+    cmd := 'Select codigo, ean, endereco, pallet2 as pallet, qt from zcf_inv_wms where codigo = ''00020443'' order by codigo';
+    ds:= funcSQL.getDataSetQ(cmd, fmMain.Conexao);
+
+
+   i:=0;
+   ds.First();
+   while (ds.Eof = false) do
+   begin
+      inc(i);
+      aux :=
+      'INSERT INTO TITPALETE ( STR_ID_PALETE, ' +
+                              'STR_ID_ITPALETE, ' +
+                              'STR_SERIE_ITPALETE, ' +
+                              'STR_ID_SKU,  ' +
+                              'STR_ID_PESSOA_SKU, ' +
+                              'FLT_QUANTIDADE_ITPALETE, ' +
+                              'STR_NUMERO_DOC, ' +
+                              'STR_SERIE_DOC, ' +
+                              'STR_ID_PESSOA, ' +
+                              'STR_IDPRODUTO_DOC, ' +
+                              'DTM_ENTRADA_ITPALETE, ' +
+                              'STR_FLAG_ALOCADO, ' +
+                              'DTM_VALIDADE_ITPALETE, ' +
+                              'STR_LOTE_ITPALETE, ' +
+                              'STR_FLAG_BLOQUEIO, ' +
+                              'FLT_PESO_ITPALETE, ' +
+                              'STR_TIPO_DOC, ' +
+                              'STR_UNIDADE_ITPALETE, ' +
+                              'FLT_QTDALOCADA_ITPALETE, ' +
+                              'FLT_PESOALOCADO_ITPALETE ' +
+                              ') VALUES (' +
+
+         quotedStr(tiraTraco( ds.fieldByName('pallet').AsString )) +', '+
+         quotedStr( intToStr(i)  ) +', '+
+         quotedStr( intToStr(i)  ) +', '+
+         quotedStr( ds.fieldByName('codigo').AsString ) +', '+
+         quotedStr( '7221377000110') +', '+
+         ds.fieldByName('qt').AsString  +', '+
+         quotedStr('00001') +', '+
+         quotedStr('0') +', '+
+         quotedStr( '7221377000110') +', '+
+         quotedStr( '0000001') +', '+
+         quotedStr( '2011-07-01 00:00:00') +', '+
+         quotedStr( 'false') +', '+
+         quotedStr( '2050-07-01 00:00:00') +', '+
+         quotedStr('0') +', '+
+         quotedStr('false') +', '+
+         '0' +', '+
+         quotedStr('E') +', '+
+         quotedStr('MT') +', '+
+         '0' +', '+
+         '0' +' );';
+
+       arqItensP.add(aux);
+       ds.Next();
+   end;
+   arqItensP.SaveToFile('c:\Script_carga_pallet_itens.sql' );
+   arqItensP.Free();
+   memo1.Lines.add('itens do Pallet');
+{ }
+ cmd:=
+    'select codigo, ean, endereco, qt, pallet from zcf_inv_wms order by codigo';
+
+ ds:= funcSQL.getDataSetQ(cmd, fmMain.Conexao);
+ ds.First();
+ while (ds.Eof = false) do
+ begin
+    funcoes.GravaLinhaEmUmArquivo('c:\InventarioWMS.txt',
+    ds.FieldByName('codigo').AsString +';'+
+    ds.FieldByName('ean').AsString +';'+
+    ds.FieldByName('endereco').AsString +';'+
+    ds.FieldByName('qt').AsString +';'+
+    ds.FieldByName('pallet').AsString +';');
+    ds.Next();
+end;
+end;
+
+
+procedure TfmRelInventario.Button1Click(Sender: TObject);
+var
+  str:String;
+begin
+//   str:= funcoes.dialogAbrArq('txt','c:\');
+//   if ( str <> '') then
+      montaScriptWMS(str);
+end;
+
+
+function TfmRelInventario.tiraTraco(str: String): String;
+begin
+   while (pos('-',str) > 0) do
+      delete(str, pos('-',str), 01);
+   result := str;
+end;
+
 end.

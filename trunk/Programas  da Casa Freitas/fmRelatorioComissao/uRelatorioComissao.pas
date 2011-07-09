@@ -35,7 +35,6 @@ type
     procedure ObterVendedoresDasVendasDoDia(Sender:Tobject);
     procedure AdicionarVendas(Sender:Tobject);
     procedure prencheDadosVendedor(Sender:Tobject);
-    procedure exportaDadosDoAtendimento(data:Tdate);
     procedure FormResize(Sender: TObject);
 
   private
@@ -310,7 +309,6 @@ begin
       fmMain.MsgStatus(dateToStr(dataAux) + ' Obter atendente das vendas...');
       ObterVendedoresDasVendasDoDia(nil);
       fmMain.MsgStatus(dateToStr(dataAux) + ' Somar os resultados...');
-//      exportaDadosDoAtendimento(dataAux);
       AdicionarVendas(nil);
       dataAux:= dataAux +1;
       inc(inicio);
@@ -343,11 +341,6 @@ begin
    end;
 end;
 
-
-procedure TfmRelatorioComissao.exportaDadosDoAtendimento(data:Tdate);
-begin
-   funcsql.execSQL('insert zcf_comissaoDL select ' + funcoes.DateTimeToSqlDateTime(data,'') + ', * from ' + tb.TableName, fmMain.Conexao );
-end;
 
 procedure TfmRelatorioComissao.FormResize(Sender: TObject);
 begin

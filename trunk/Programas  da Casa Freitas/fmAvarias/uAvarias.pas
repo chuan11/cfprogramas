@@ -498,7 +498,7 @@ end;
 
 procedure TfmCadAvarias.FormActivate(Sender: TObject);
 begin
-   fmMain.verificaPermissao(fmCadAvarias.Menu.Items, fmMain.getTelasPermDoGrupo( fmMain.getGrupoLogado() ) );
+   fmMain.verificaPermissao(fmCadAvarias.Menu.Items, { fmMain.getTelasPermDoGrupo( fmMain.getGrupoLogado() )} );
 end;
 
 procedure TfmCadAvarias.GridTitleClick(Column: TColumn);

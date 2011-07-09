@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 304
-  Top = 140
+  Left = 420
+  Top = 167
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -48,7 +48,7 @@ object fmMain: TfmMain
       object ConsultaaRequisies1: TMenuItem
         Caption = 'Fun'#231#245'es'
         object Analisedeestoque1: TMenuItem
-          Tag = 106
+          Tag = 110
           Caption = 'An'#225'lise de estoque para compras'
           OnClick = Analisedeestoque1Click
         end
@@ -101,10 +101,17 @@ object fmMain: TfmMain
           OnClick = Relacaodenotasdetransferncia1Click
         end
         object Geraestoque1: TMenuItem
+          Tag = 111
           Caption = 'Gera estoque'
           OnClick = Geraestoque1Click
         end
+        object Produtostransferidos1: TMenuItem
+          Tag = 112
+          Caption = 'Ranking de produtos transferidos'
+          OnClick = Produtostransferidos1Click
+        end
         object Processarinventrio1: TMenuItem
+          Tag = 113
           Caption = 'Relatorio de invent'#225'rio'
           OnClick = Processarinventrio1Click
         end
@@ -267,7 +274,7 @@ object fmMain: TfmMain
         end
         object Pagamentosemcarto1: TMenuItem
           Tag = 406
-          Caption = 'Pagamentos em cart'#227'o'
+          Caption = 'Pagamentos em cart'#227'o - pr'#233'via de caixa'
           OnClick = PagamentosEmCartao1Click
         end
       end
@@ -322,12 +329,6 @@ object fmMain: TfmMain
     end
   end
   object Conexao: TADOConnection
-    ConnectionString = 
-      'Provider=SQLOLEDB.1;Password=welladm;Persist Security Info=True;' +
-      'User ID=secrel;Initial Catalog=WellCfreitas;Data Source=125.0.0.' +
-      '200;Use Procedure for Prepare=1;Auto Translate=True;Packet Size=' +
-      '4096;Workstation ID=CPD-PC;Use Encryption for Data=False;Tag wit' +
-      'h column collation when possible=False'
     ConnectionTimeout = 5
     LoginPrompt = False
     Provider = 'SQLOLEDB.1'
@@ -375,6 +376,7 @@ object fmMain: TfmMain
     Top = 344
   end
   object Timer1: TTimer
+    OnTimer = timer1Timer
     Left = 194
     Top = 344
   end

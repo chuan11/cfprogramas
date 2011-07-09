@@ -1,8 +1,9 @@
 object fmRelGeral: TfmRelGeral
-  Left = 458
-  Top = 265
+  Left = 667
+  Top = 357
   Width = 784
   Height = 337
+  Caption = 'Pagamentos em cart'#227'o - pr'#233'via de caixa'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -383,7 +384,36 @@ object fmRelGeral: TfmRelGeral
   end
   object tbVendasCartao: TADOTable
     Connection = fmMain.Conexao
+    CursorType = ctStatic
     Left = 472
     Top = 160
+    object tbVendasCartaocodLoja: TIntegerField
+      FieldName = 'codLoja'
+    end
+    object tbVendasCartaocd_mve: TIntegerField
+      FieldName = 'cd_mve'
+    end
+    object tbVendasCartaods_mve: TStringField
+      FieldName = 'ds_mve'
+    end
+    object tbVendasCartaoseqTransacaoCaixa: TIntegerField
+      FieldName = 'seqTransacaoCaixa'
+    end
+    object tbVendasCartaovalor: TBCDField
+      FieldName = 'valor'
+      DisplayFormat = '#,###,###0.00'
+      Precision = 19
+    end
+    object tbVendasCartaonumparcelas: TIntegerField
+      FieldName = 'numparcelas'
+    end
+    object tbVendasCartaotp_mve: TStringField
+      FieldName = 'tp_mve'
+      Size = 1
+    end
+    object tbVendasCartaotefMagnetico: TStringField
+      FieldName = 'tefMagnetico'
+      Size = 1
+    end
   end
 end

@@ -35,6 +35,12 @@ type
     procedure mostraPermissoes(cod:String);
     procedure btIncluiXMLClick(Sender: TObject);
     procedure gridCellClick(Column: TColumn);
+    procedure ajustaPermisssaoAcessoTela();
+    procedure ajustaPermisaoAcessoRestrito();
+    procedure ajustaPermissaoSolicitaSenha();
+    procedure ajustaPermissaoCampo(campo:String);
+
+
   private
     { Private declarations }
   public
@@ -43,7 +49,6 @@ type
 
 var
   fmPermissoes: TfmPermissoes;
-//  flagAlteracoes:Boolean;
   lista:TStringList;
   menuSelecionado:String;
 implementation
@@ -72,7 +77,6 @@ begin
       begin
           tb.InsertRecord(['','',item.Caption,'']);
       end ;
-
 
       for i:=0 to item.Count -1 do
          ListarMenus(nil, item.Items[i]);
@@ -148,7 +152,7 @@ procedure TfmPermissoes.mostraPermissoes(cod: String);
 var
   ds:TdataSet;
 begin
-   ds:= funcsql.getDataSetQ( 'Select grupo, isAcessoRestrito, codTela from zcf_telasPermitidas where codTela = ' + cod,  fmMain.Conexao );
+   ds:= funcsql.getDataSetQ( 'Select grupo, isAcessoRestrito, codTela, isPedeAutorizacao from zcf_telasPermitidas where codTela = ' + cod,  fmMain.Conexao );
    grid.Visible := false;
    tb.First;
    while (tb.Eof = false) do
@@ -192,7 +196,7 @@ procedure TfmPermissoes.criarTabela();
 var
    cmd:String;
 begin
-   cmd := ' seq int primary key identity, Acessa varchar(02), Grupo varchar(50), codGrupo int, isAcessoRestrito varchar(02)';
+   cmd := ' seq int primary key identity, Acessa varchar(02), Grupo varchar(50), codGrupo int, isAcessoRestrito varchar(02), isPedeAutorizacao varchar(02)';
    funcsql.getTable( fmMain.Conexao, tb, cmd );
    DataSource1.DataSet := tb;
 end;
@@ -201,13 +205,20 @@ procedure TfmPermissoes.inserirGruposNaTabela();
 var
    cmd : String;
 begin
-   cmd := 'insert ' + tb.TableName + ' Select '''', nm_grusu, cd_grusu, ''''  from dsgrusu order by nm_grusu';
+   cmd := 'insert ' + tb.TableName + ' Select '''', nm_grusu, cd_grusu, '''', '''' from dsgrusu order by nm_grusu';
    funcsql.execSQL(cmd,fmMain.Conexao);
    tb.Close();
    tb.open();
 
-   grid.Fields[ tb.Fields.IndexOf( tb.fieldByname('seq') )  ].Visible := false;
-   grid.Fields[ tb.Fields.IndexOf( tb.fieldByname('grupo') )  ].Visible := false;
+   grid.Columns[ tb.FieldByName('isPedeAutorizacao').Index ].Title.Caption := 'Acesso restrito';
+   grid.Columns[ tb.FieldByName('isAcessoRestrito').Index ].Title.Caption := 'Pede autorização';
+   grid.Columns[ tb.FieldByName('seq').Index ].Visible := false;
+   grid.Columns[ tb.FieldByName('Codgrupo').Index ].Visible := false;
+   grid.Columns[ tb.FieldByName('grupo').Index ].Width := 150;
+   grid.Columns[ tb.FieldByName('acessa').Index ].Width := 50;
+   grid.Columns[ tb.FieldByName('acessa').Index ].Alignment := taCenter;
+   grid.Columns[ tb.FieldByName('isPedeAutorizacao').Index ].Alignment := taCenter;
+   grid.Columns[ tb.FieldByName('isAcessoRestrito').Index ].Alignment := taCenter;
 end;
 
 
@@ -218,47 +229,98 @@ begin
    lista := TStringList.Create();
 
 // carrega o menu principal
-   CarregaMenu(fmMain.menuPrincipal);
-
+   carregaMenu(fmMain.menuPrincipal);
 
 // inica o menu de avarias para aplicar as permissoes a ele
    Application.CreateForm( TfmCadAvarias  , fmCadAvarias);
    fmCadAvarias.Enabled := false;
 
-   CarregaMenu(fmCadAvarias.menuAvarias);
+   carregaMenu(fmCadAvarias.menuAvarias);
 end;
-
-
-
+                             
 procedure TfmPermissoes.btIncluiXMLClick(Sender: TObject);
+var
+   cmd:String;
 begin
-   dsuser.DataSet := funcSql.getDataSetQ('select top 10  * from crefe', fmMain.Conexao);
+   cmd :=
+   ' select dsusu.nm_usu, dsgrusu.nm_grusu from dsusu inner join dsgrusu on dsgrusu.cd_grusu = dsusu.cd_grusu ' +
+   ' where nm_usu like ' + quotedStr(edUser.Text + '%');
+   dsuser.DataSet := funcSql.getDataSetQ(cmd, fmMain.Conexao);
 end;
 
 procedure TfmPermissoes.gridCellClick(Column: TColumn);
 var
    cmd:String;
 begin
-   if (tb.IsEmpty = false) then
+   if (tb.IsEmpty = false) and (tree.Selected <> nil) then
    begin
-      tb.Edit;
-      if (Column.FieldName = 'Acessa') or  (Column.FieldName = 'isAcessoRestrito') then
+      if (Column.FieldName = 'Acessa') or (Column.FieldName = 'isAcessoRestrito') or (Column.FieldName = 'isPedeAutorizacao') then
       begin
-         if tb.FieldByName(Column.FieldName).asString = 'X' then
-            tb.FieldByName(Column.FieldName).asString := ''
-          else
-             tb.FieldByName(Column.FieldName).asString := 'X';
-          tb.Post();
+          if (Column.FieldName = 'Acessa')then
+              ajustaPermisssaoAcessoTela();
+
+          if (tb.FieldByName('Acessa').asString = 'X') and (Column.FieldName = 'isAcessoRestrito') then
+             ajustaPermisaoAcessoRestrito();
+
+          if (tb.FieldByName('Acessa').asString = 'X') and (Column.FieldName = 'isPedeAutorizacao') then
+             ajustaPermissaoSolicitaSenha();
       end;
-
-      funcsql.execSQL( 'Delete from zcf_telasPermitidas where codTela  =  ' +  menuSelecionado +' and grupo = ' + tb.FieldByName('codGrupo').AsString, fmMain.Conexao);
-
-      funcsql.execSQL( ' if not exists( select * from zcf_telasPermitidas where grupo = ' + tb.fieldByname('codGrupo').asString + ' and codTela = ' + menuSelecionado  +')'
-                               +#13+ ' insert zcf_telasPermitidas (codTela, grupo, isAcessoRestrito) values ( ' + menuSelecionado + ' , ' +
-                              tb.fieldByname('codGrupo').asString + ' , ' +
-                               BoolToStr( (tb.fieldByname('isAcessoRestrito').asString <> '')) + ')', fmMain.Conexao  );
    end;
-
 end;
+
+procedure TfmPermissoes.ajustaPermisssaoAcessoTela();
+begin
+   tb.Edit();
+   if(tb.FieldByName('Acessa').asString = '') then
+   begin
+      funcsql.execSQL( ' if not exists( select * from zcf_telasPermitidas where grupo = ' + tb.fieldByname('codGrupo').asString + ' and codTela = ' + menuSelecionado  +')'+
+                       #13+ ' insert zcf_telasPermitidas (codTela, grupo) values ( '+
+                       menuSelecionado + ', ' +
+                       tb.fieldByname('codGrupo').asString + ')'
+                     , fmMain.Conexao);
+   tb.FieldByName('Acessa').asString := 'X'
+   end
+   else
+   begin
+     funcsql.execSQL( 'delete from zcf_telasPermitidas where codTela  =  ' +  menuSelecionado +
+                      ' and grupo = ' + tb.FieldByName('codGrupo').AsString, fmMain.Conexao);
+
+   tb.FieldByName('Acessa').asString := ''
+   end;
+   tb.Post();
+end;
+
+procedure TfmPermissoes.ajustaPermissaoCampo(campo:String);
+var
+   cmd:String;
+begin
+  tb.Edit();
+   cmd := ' update zcf_telasPermitidas '+
+          ' set '+
+          ' ' + campo +'= ' + boolToStr((tb.fieldByname(campo).asString <> '')) +
+          ' where '+
+          ' codTela= '+ menuSelecionado + ' and ' +
+          ' grupo= ' + tb.fieldByname('codGrupo').asString;
+
+   funcSQL.execSQL(cmd, fmMain.conexao);
+
+   if(tb.FieldByName(campo).asString = '') then
+      tb.FieldByName(campo).asString := 'X'
+   else
+      tb.FieldByName(campo).asString := '';
+
+   tb.post();
+end;
+
+procedure TfmPermissoes.ajustaPermisaoAcessoRestrito();
+begin
+   ajustaPermissaoCampo('isAcessoRestrito');
+end;
+
+procedure TfmPermissoes.ajustaPermissaoSolicitaSenha();
+begin
+   ajustaPermissaoCampo('isPedeAutorizacao');
+end;
+
 
 end.

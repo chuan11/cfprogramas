@@ -21,11 +21,8 @@ type
     fsBitBtn2: TfsBitBtn;
     procedure btPesqClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure getprecosDeUmaNota();
     procedure getIsNota();
     procedure btOkClick(Sender: TObject);
-    procedure fsBitBtn2Click(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 
     
@@ -45,44 +42,9 @@ uses uMain, Uprecoswell, uCF, Math;
 {$R *.dfm}
 
 
-procedure TfmListaItensNota.getprecosDeUmaNota;
-var
-   qr:TadoQuery;
-begin
-{   cmd := ' select cd_ref, dbo.z_cf_funObterPrecoProduto_cf('+ funcsql.getCodPreco(cbPreco)  +'  , is_ref, '+ getCodUo(cbLoja)+' ,0) as preco from crefe with(nolock) where ' +
-          ' is_ref in  (select is_ref from dmovi (noLock)where is_nota in ' +
-          ' ( select is_nota from dnota where is_estoque =  ' + funcSQL.getCodUo(cbLoja) + '   and sr_docf = ' + quotedStr(edSerie.text) + ' and '
-          + ' nr_docf = ' + edNNota.Text    + '  ) )  ';
-   funcsql.getQuery( fmMain.Conexao, qr, cmd);
-   tecla:= VK_RETURN;
-   if qr.IsEmpty = false then
-   begin
-      qr.First;
-      while qr.Eof = false do
-      begin
-         fmLancaPrecos.edPcNovo.Text := qr.fieldByName('cd_ref').asString;
-         fmLancaPrecos.edPcNovo.OnKeyDown(nil, tecla , []);
-         fmLancaPrecos.edPcNovo.Text := qr.fieldByName('preco').asString;
-         fmLancaPrecos.edPcNovo.OnKeyDown(nil, tecla , []);
-         qr.Next();
-      end;
-   end
-   else
-      msgTela('','Nao achei essa nota.',MB_ICONERROR + MB_OK);
-
-}  fmListaItensNota.Close();
-end;
-
 procedure TfmListaItensNota.FormCreate(Sender: TObject);
 begin
    fmMain.getListaLojas(cbLoja, false, false, '');
-//   cbPreco.Items := funcSql.getListaPrecos( fmMain.Conexao, false, false, false, fmMain.getGrupoLogado());
-end;
-
-procedure TfmListaItensNota.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-//   fmListaItensNota := NIL;
-//   Action := CaFree;
 end;
 
 procedure TfmListaItensNota.getIsNota;
@@ -136,14 +98,8 @@ begin
     fmListaItensNota.ModalResult := mrCancel;
 end;
 
-procedure TfmListaItensNota.fsBitBtn2Click(Sender: TObject);
-begin
-//    fmListaItensNota.ModalResult := mrCancel;
-end;
-
 procedure TfmListaItensNota.FormCloseQuery(Sender: TObject;  var CanClose: Boolean);
 begin
-//   showMessage(intToStr(modalREsult));
    if (ModalResult = 2 ) then
    begin
       CanClose := false;
