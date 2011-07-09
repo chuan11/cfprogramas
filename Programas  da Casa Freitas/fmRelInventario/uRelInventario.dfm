@@ -1,6 +1,6 @@
 object fmRelInventario: TfmRelInventario
-  Left = 467
-  Top = 198
+  Left = 468
+  Top = 199
   Width = 673
   Height = 480
   Caption = 'Invent'#225'rio'
@@ -83,8 +83,8 @@ object fmRelInventario: TfmRelInventario
     FlatFont.Style = []
   end
   object Button1: TButton
-    Left = 408
-    Top = 48
+    Left = 496
+    Top = 24
     Width = 75
     Height = 25
     Caption = 'Button1'

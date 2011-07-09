@@ -15,7 +15,6 @@ type
     DBGrid: TSoftDBGrid;
     LBItens: TListBox;
     Label1: TLabel;
-    Query: TADOQuery;
     DataSource1: TDataSource;
     FlatButton3: TFlatButton;
     FlatButton4: TFlatButton;
@@ -98,28 +97,31 @@ begin
    if (ds <> nil) then
       ds.Free();
 
-
    ds:= uCF.getDadosProd( funcoes.getCodUo(cbLojas), EdCodigo.Text, fmMain.getCodPreco(cbPrecos), true  );
-
-   DataSource1.DataSet := ds;
-
-   cmd := '';
-   cmd := 'exec Z_CF_GetInformacoesProduto ' +
-           QuotedStr( FUNCOES.SohNumeros(EdCodigo.text))  +' , '+
-           funcoes.getCodUo(cbLojas) + ' , ' ;
-
-   cmd := cmd + funcoes.SohNumeros((copy(cbPrecos.Items[cbPrecos.ItemIndex],00,100)));
-
-   query.SQL.clear;
-   query.SQL.Add(cmd);
+   if (ds.IsEmpty = false ) then
+   begin
+      DataSource1.DataSet := ds;
 
 
-   query.Open;
-   dbgrid.Columns[0].Width :=  50;
-   dbgrid.Columns[1].Width :=  85;
-   dbgrid.Columns[2].Width :=  200;
-   dbgrid.Columns[3].Visible:= FALSE;
-   dbgrid.Columns[4].Width := 50;
+
+      dbgrid.Columns[0].Width :=  50;
+      dbgrid.Columns[1].Width :=  85;
+      dbgrid.Columns[2].Width :=  200;
+      dbgrid.Columns[3].Visible:= FALSE;
+      dbgrid.Columns[4].Width := 50;
+
+      DBGrid.Columns[ ds.FieldByName('codigo').Index].Width := 50;
+      DBGrid.Columns[ ds.FieldByName('fornecedor').Index].Visible := false;
+      DBGrid.Columns[ ds.FieldByName('categoria').Index].Visible := false;
+
+
+      edQuant.SetFocus;
+   end
+   else
+   begin
+      edQuant.SetFocus;
+      EdCodigo.SetFocus;
+   end
 end;
 
 procedure TfmEtiquetas.FormCreate(Sender: TObject);
@@ -150,13 +152,12 @@ begin
    lbItens.Items.add(
                       funcoes.preencheCampo(08,' ', 'd', ds.fieldByName('codigo').asString )+
                       funcoes.preencheCampo(20,' ', 'd', ds.fieldByName('ean').asString )+
-                      funcoes.preencheCampo(40,' ', 'd', copy(query.fieldByName('descricao').asString,01,40)) + ' '+
+                      funcoes.preencheCampo(40,' ', 'd', copy(ds.fieldByName('descricao').asString,01,40)) + ' '+
                       funcoes.preencheCampo(04,'0', 'E', inttoStr(edQuant.Value) ) +' '+
                       funcoes.preencheCampo(15,' ', 'E', floattostrf(ds.fieldByname('preco').asfloat ,ffNumber,18,2)   )
                     );
    edCodigo.Text:='';
    edCodigo.SetFocus;
-   query.SQL.Clear;
 end;
 
 
@@ -360,7 +361,7 @@ end;
 
 procedure TfmEtiquetas.FlatButton4Click(Sender: TObject);
 begin
-   if query.IsEmpty = false then
+   if (ds.IsEmpty = false) then
       AdicionaProdutoParaImpressao(sender);
 end;
 
@@ -507,16 +508,7 @@ end;
 
 procedure TfmEtiquetas.FlatButton3Click(Sender: TObject);
 begin
-// if
-//   ListaEansProduto(Sender);
-   if query.IsEmpty = true then
-   begin
-      application.MessageBox(' Este produto não tem Codigo de barras cadastrado. ', '', mb_ok+ mb_iconerror);
-      edQuant.SetFocus;
-      EdCodigo.SetFocus;
-   end
-   else
-      edQuant.SetFocus;
+   ListaEansProduto(Sender);
 end;
 
 

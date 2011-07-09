@@ -110,9 +110,9 @@ function DateTimeToSqlDateTime(data,hora:string):string; OverLoad;
 var
    aux:String;
 begin
-  if hora = '' then hora := '00:00:00';
+  if hora = '' then hora := ' 00:00:00';
    aux := dateToSqldate( StrToDate(data));
-   insert(' '+hora,aux, length(aux));
+   insert(' '+hora, aux, length(aux));
    Result := aux;
 end;
 

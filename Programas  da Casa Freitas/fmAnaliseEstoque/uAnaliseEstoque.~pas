@@ -63,7 +63,7 @@ end;
 
 procedure TfmAnaliseEstoque.FormActivate(Sender: TObject);
 begin
-   CBPRECO01.Items := funcsql.getListaPrecos(fmMain.Conexao, true, false, false, fmMain.getGrupoUserLogado());
+   CBPRECO01.Items := funcsql.getListaPrecos(fmMain.Conexao, true, false, false, fmMain.getGrupoLogado());
    CBPRECO01.ItemIndex := 0;
 //   cbLoja.Items := funcsql.GetNomeLojas(fmMain.Conexao, false, false, fmMain.lbPes.Caption,'');
 
@@ -73,7 +73,7 @@ begin
    fmMain.getParametrosForm(fmAnaliseEstoque);
 
 
-   fmMain.getListaLojas(cbLoja, false, false, fmMain.getCDPESUsuario());
+   fmMain.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
 
    edEnd.text := '';
 end;

@@ -1,4 +1,4 @@
-unit ucf;
+unit uCF;
 
 interface
 
@@ -9,12 +9,14 @@ interface
 
    function ajustaCodigoNCM(isRef, ncm_sh:String):boolean;
    function alterarModPagamento(uo, seqtransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String):boolean;
+   function getAutorizadoresPorTela(codTela:smallInt; grupoUser:String):String;
    function getCodModalidadesCartao():TStringList;
    function getCodModalidadesPagamento(mostraTodos:boolean):TStringList;
    function getDadosCliente(cd_pes, nm_pes:String):TDataSet;
    function getDadosEntProduto(uo, isRef:String):TDataSet;
    function getDadosFornecedor(cd_pes, nm_pes:String):TDataSet;
-   function getDadosNota(isNota, is_uo, sr_docf, nr_docf:String):TADOQuery;
+   function getDadosNota(isNota, is_uo, sr_docf, nr_docf:String):TADOQuery; overload;
+   function getDadosNota(isNota, is_uo, sr_docf, nr_docf:String; di, df:Tdate):TADOQuery; overload;
    function getDadosPedidoDeCompra(conexao: TADOconnection; numPedido:String):TdataSet;
    function getDadosProd(uo, codigo, preco:String; mostraMsg:boolean):TdataSet;
    function getDescCaixas(uo:String; mostraTodos:boolean):TStrings;
@@ -44,6 +46,7 @@ interface
    procedure carregaListarUosPorPreco(var clb: TadLabelCheckListBox; TpPreco:String);
    procedure criaTabelaDosTotaisDeAvarias(var tb: TADOTable);
    procedure getCRUCBaseNota(conexao:TADOConnection; var query:TADOquery; is_ref:String);
+   procedure getListaProdutosTransferidos(tb:TADOTable; uo:String; di, df:Tdate);
    procedure getModalidadesCaixa(tb, tbDestino :TADOTable; cd_tpm, tp_mve: String);
    procedure getOperadoresPorCaixa(tb:TADOTable; uo, caixa:String; dti: TDateTimePicker; conexao:TADOConnection);
    procedure getProdAvariadosParaVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
@@ -55,6 +58,7 @@ interface
    procedure listaRecebimentosCaixa(tb:TADOTAble; uo, caixa:String; dti, dtf: TDateTimePicker; listaSoCartao, removeTrocos, listaSangria:boolean);
    procedure listarPrecosAlteradosPoPeriodo(qr:TADOQuery; uo,preco:String; data:Tdate);
    procedure logAlteracoesBD(conexao:TADOConnection; tela, usuario, alteracao:String);
+
 
 
 implementation
@@ -255,7 +259,6 @@ procedure calculaTotaisAvariasPorLoja(var tb:TADOTable; lojas:TadLabelComboBox; 
 var
   uo, cmd:String;
 begin
-
     criaTabelaDosTotaisDeAvarias(tb);
 
     uo := funcoes.getCodUO(lojas);
@@ -348,7 +351,7 @@ begin
 end;
 
 
-function getDadosNota(isNota, is_uo, sr_docf, nr_docf:String):TADOQuery;
+function getDadosNota(isNota, is_uo, sr_docf, nr_docf:String; di, df:Tdate):TADOQuery; overload;
 var
    cmd :String;
    qr:TADOQuery;
@@ -394,12 +397,19 @@ begin
 
       if (is_uo <> '') then
          cmd := cmd + ' and is_estoque = ' + is_uo;
+
+      if ( (di <> 0) or (df <> 0 ) ) then
+         cmd := cmd + ' dnota.dt_entSai between '+ funcDatas.dateToSqlDate(di) + ' and = ' + funcDatas.dateToSqlDate(df) ;
    end;
    qr := TADOQuery.Create(nil);
    funcsql.getQuery(fmMain.Conexao, qr, cmd);
    result := qr;
 end;
 
+function getDadosNota(isNota, is_uo, sr_docf, nr_docf:String):TADOQuery;
+begin
+    result := getDadosNota(isNota, is_uo, sr_docf, nr_docf, 0, 0);
+end;
 
 function getDadosFornecedor(cd_pes, nm_pes:String):TDataSet;
 var
@@ -629,29 +639,41 @@ begin
    if (tb.TableName <> '') then
       tb.Close();
 
-   cmd := '(codLoja int, descEstacao varchar(20), cd_mve int, ds_mve varchar(30), dataSessaoCaixa smallDateTime, seqtransacaoCaixa int,'+
-          ' seqModPagtoPorTransCaixa int, Valor money, numParcelas varchar(03), tefMagnetico varchar(1), seqTefTransCaixa int, cd_tpm varchar(01), tp_mve varchar(01) )';
+   cmd := 'codLoja int, ' +
+          'descEstacao varchar(20), '+
+          'cd_mve int, '+
+          'ds_mve varchar(30), '+
+          'dataSessaoCaixa smallDateTime, ' +
+          'seqTransacaoCaixa int, '+
+          'seqModPagtoPorTransCaixa int, ' +
+          'Valor money, ' +
+          'numParcelas varchar(03), ' +
+          'tefMagnetico varchar(1), ' +
+          'seqTefTransCaixa int, ' +
+          'cd_tpm varchar(01), '+
+          'tp_mve varchar(01) ';
+
    tb.tablename:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
 
-
    ds := uCF.getPreviaGeralCaixa( uo, caixa, dti.date, dtf.date, true, false, listaSangria);
+   ds.first();
    tb.open();
    while (ds.eof = false) do
    begin
       tb.AppendRecord([
-                       ds.fieldByname('codLoja').AsString,
-                       ds.fieldByname('descEstacao').AsString,
-                       ds.fieldByname('cd_mve').AsString,
-                       ds.fieldByname('ds_mve').AsString,
-                       ds.fieldByname('dataSessaoCaixa').AsString,
-                       ds.fieldByname('seqTransacaoCaixa').AsString,
-                       ds.fieldByname('seqModPagtoPorTransCaixa').AsString,
-                       ds.fieldByname('Valor').AsString,
-                       ds.fieldByname('numParcelas').AsString,
-                       ds.fieldByname('tefMagnetico').AsString,
-                       ds.fieldByname('seqTefTransCaixa').AsString,
-                       ds.fieldByname('cd_tpm').AsString,
-                       ds.fieldByname('tp_mve').AsString
+                       ds.fieldByname('codLoja').AsString
+                       ,ds.fieldByname('descEstacao').AsString
+                       ,ds.fieldByname('cd_mve').AsString
+                       ,ds.fieldByname('ds_mve').AsString
+                       ,ds.fieldByname('dataSessaoCaixa').AsString
+                       ,ds.fieldByname('seqTransacaoCaixa').AsString
+                       ,ds.fieldByname('seqModPagtoPorTransCaixa').AsString
+                       ,ds.fieldByname('Valor').AsString
+                       ,ds.fieldByname('numParcelas').AsString
+                       ,ds.fieldByname('tefMagnetico').AsString
+                       ,ds.fieldByname('seqTefTransCaixa').AsString
+                       ,ds.fieldByname('cd_tpm').AsString
+                       ,ds.fieldByname('tp_mve').AsString
                      ]);
       ds.next();
    end;
@@ -663,10 +685,6 @@ begin
       funcSQl.execSQL('delete from ' + tb.tableName + ' where valor <=0', fmMain.conexao);
       tb.open();
    end;
-
-   cmd := 'select sum(';
-
-
    screen.cursor:= crDefault;
 end;
 
@@ -986,8 +1004,7 @@ function getVdItemDetPorLojaPeriodo(is_ref, uo, uocd:String; di, df:Tdate):Tdata
 var
    cmd:String;
 begin
-   gravaLog(funcDatas.dateToSqlDate(di));
-
+   gravaLog('funcao getVdItemDetPorLojaPeriodo()');
 
    cmd :=
    'Select UO.ds_uo as Loja, sum(qt_mov) as Quantidade from zcf_dsdsi V with(nolock) '+
@@ -999,7 +1016,7 @@ begin
    'and V.is_ref =  ' + is_ref ;
 
    if (uo <> uocd) and (uo <> '') then
-      cmd := cmd + ' and V.is_uo = '+ uo;
+      cmd := cmd + ' and V.is_estoque = '+ uo;
 
    cmd := cmd + ' group by UO.ds_uo';
 
@@ -1008,19 +1025,13 @@ end;
 
 function getVendaProduto(is_ref, uo, uocd :String;  datai, dataf:Tdate):String;
 var
-//   cmd:String;
    ds:TdataSet;
 begin
-{   uocd := '10033674';
-   cmd := 'SELECT [dbo].[Z_CF_funObterVendaPorPeriodo](' + uo +' , '+ is_ref +', '+
-          funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ funcoes.DateTimeToSqlDateTime(dataF,'') +', '+
-          funcoes.DateTimeToSqlDateTime(dataI,'')  +', '+ uoCD + ') as qt';
-   result :=  funcSQL.openSql(cmd,'qt', fmMain.conexao) ;}
    ds:= getVdItemDetPorLojaPeriodo(is_ref, uo, uocd, datai, dataf);
    if ( ds.IsEmpty = true) then
       result := '0'
    else
-      result := funcSQL.somaColTable(ds,'Quantidade');
+      result :=  floatTostrf(  funcSQL.somaColunaTable(ds,'Quantidade') , ffNumber, 18, 0);
 end;
 
 function getDadosEntProduto(uo, isRef:String):TDataSet;
@@ -1059,6 +1070,56 @@ begin
    'and DNOTA.st_nf = '''' '+#13+
    'order by  zcf_dsdei.dt_mov desc';
    result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+end;
+
+function getAutorizadoresPorTela(codTela:smallInt; grupoUser:String):String;
+var
+   ds:TDataSet;
+   cmd:String;
+begin
+   cmd := 'select gruposAut from zcf_autorizadoresTelas where codTela = '+
+           intToStr(codTela) +
+          ' and grupoUser = ' + grupoUser;
+   ds := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+
+   cmd := '';
+   if (ds.isEmpty = true) then
+      cmd  := '13'
+   else
+   begin
+      ds.first();
+      while (ds.eof = false) do
+      begin
+         cmd := cmd + ds.fieldByName('gruposAut').asString;
+         if (ds.eof = false) then
+            cmd := cmd + ', ';
+         ds.next();
+      end;
+      cmd := cmd + ' 13';
+   end;
+   ds.free();
+//   funcoes.gravaLog('getAutorizadoresPorTela():'+ cmd);
+   result := cmd;
+end;
+
+procedure getListaProdutosTransferidos(tb:TADOTable; uo:String; di, df:Tdate);
+var
+   cmd:String;
+begin
+   if (tb.tableName <> '') then
+      tb.close();
+   cmd:=
+   'insert ' + tb.TableName +
+   ' select crefe.cd_ref, crefe.ds_ref, sum(dlest.qt_mov)as QtTransferida from dlest (nolock) ' +#13+
+   'inner join toper (nolock) on toper.is_oper = dlest.is_oper and toper.codTransacao = 2 ' +#13+
+   'inner join crefe (nolock) on dlest.is_ref = crefe.is_ref '+#13+
+   'where '+#13+
+   'dlest.is_estoque = '+ uo +#13+
+   'and dlest.is_tpcte = 6 '  +#13+
+   'and toper.dt_trab between '+ funcDatas.dateTimeToSqlDateTime(di, ' 00:00:01') + ' and ' + funcDatas.dateTimeToSqlDateTime(df, ' 23:59:00') +#13+
+   'group by dlest.is_ref, crefe.cd_ref, crefe.ds_ref '+#13+
+   'order by cd_ref ';
+   funcSQL.execSQL(cmd, fmMain.conexao);
 end;
 
 end.

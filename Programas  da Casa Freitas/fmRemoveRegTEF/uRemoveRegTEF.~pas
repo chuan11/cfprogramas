@@ -37,6 +37,8 @@ type
     tbtefMagnetico: TStringField;
     tbseqTefTransCaixa: TIntegerField;
     edBusca: TadLabelNumericEdit;
+    tbcd_tpm: TStringField;
+    tbtp_mve: TStringField;
     procedure FormCreate(Sender: TObject);
     procedure btConsultaClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -115,10 +117,11 @@ begin
    cbCaixas.ItemIndex:= 0;
    cbModalidade.ItemIndex := 0;
 
+
    uCF.listaRecebimentosCaixa( tb, funcoes.getCodUO(cbLojas), '', dt, dt, false, true, false);
 
    tb.Close();
-   tb.Filter := 'valor > 0';
+   tb.Filter := 'valor >= 0';
    tb.Filtered := true;
    tb.Open();
    ajustaColunas();
@@ -288,10 +291,51 @@ end;
 
 
 procedure TfmRemRegTEF.removerModalidadePagamento;
+var
+   valor, descMod, codMod, nParcelas:String;
+   cmd, descModAnt, nParcelasAnt, valorAnt:String;
 begin
-    uCF.removeModPagamento( tb.FieldByName('SeqModPagtoPorTransCaixa').AsString, tb.FieldByName('seqTefTransCaixa').AsString );
-    tb.Delete();
+   edbusca.Value := 0;
+
+   descModAnt := tb.fieldByName('ds_mve').AsString;
+   nParcelasAnt := tb.fieldByName('numParcelas').AsString;
+   valorAnt := tb.fieldByName('valor').AsString;
+
+   codMod := '1';
+   descMod := '_ItemExcluido/Dinheiro_';
+   nParcelas := '0';
+   valor := '000';
+
+   tb.Edit();
+   tb.FieldByName('ds_mve').AsString := descMod;
+   tb.FieldByName('numParcelas').AsString := nParcelas;
+   tb.FieldByName('valor').AsString := valor;
+   tb.Post();
+
+   if ( uCF.alterarModPagamento( tb.FieldByName('codLoja').AsString,
+                                 tb.FieldByName('seqtransacaoCaixa').AsString,
+                                 tb.FieldByName('SeqModPagtoPorTransCaixa').AsString,
+                                 codMod,
+                                 valor,
+                                 nParcelas,
+                                 tb.FieldByName('seqTefTransCaixa').AsString,
+                                 tb.FieldByName('dataSessaoCaixa').asString
+                               )  = true ) then
+   begin
+      cmd:= 'Exclusao de modalidade, loja = ' + tb.FieldByName('codLoja').AsString +
+            ' data: ' + tb.FieldByName('dataSessaoCaixa').asString +
+            ' SeqModPagtoPorTransCaixa: '+ tb.FieldByName('SeqModPagtoPorTransCaixa').AsString +
+            ' Dados: ' + descModAnt +'/'+ valorAnt +' '+ nParcelasAnt+ 'Paracelas' +
+            ' Para: '+ descMod +'/'+ valor +' ' + nParcelas + 'Paracelas';
+
+      logAlteracoesBD( fmMain.conexao, fmRemRegTEF.Name, fmMain.getNomeUsuario(), cmd);
+      msgTela('','Dados excluidos! ', MB_OK  + MB_ICONEXCLAMATION);
+   end
+   else
+      msgTela('','Problemas ao excluir a modalidade de pagamento.', MB_OK  + mb_iconError);
 end;
+
+
 
 
 procedure TfmRemRegTEF.RemoveModalidaDedePagamento1Click(Sender: TObject);

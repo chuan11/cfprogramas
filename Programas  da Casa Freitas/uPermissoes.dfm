@@ -62,7 +62,7 @@ object fmPermissoes: TfmPermissoes
     Left = 6
     Top = 26
     Width = 290
-    Height = 268
+    Height = 254
     Ctl3D = False
     Indent = 19
     ParentCtl3D = False
@@ -71,15 +71,15 @@ object fmPermissoes: TfmPermissoes
   end
   object GroupBox1: TGroupBox
     Left = 7
-    Top = 301
+    Top = 282
     Width = 290
-    Height = 76
+    Height = 88
     Anchors = [akLeft, akTop, akBottom]
     Caption = 'Consultar o grupo '
     TabOrder = 2
     DesignSize = (
       290
-      76)
+      88)
     object edUser: TadLabelEdit
       Left = 8
       Top = 30
@@ -123,7 +123,7 @@ object fmPermissoes: TfmPermissoes
       Left = 9
       Top = 56
       Width = 266
-      Height = 17
+      Height = 29
       Anchors = [akLeft, akTop, akRight, akBottom]
       Ctl3D = False
       DataSource = dsuser
@@ -143,13 +143,13 @@ object fmPermissoes: TfmPermissoes
   end
   object tb: TADOTable
     Connection = fmMain.Conexao
-    Left = 368
-    Top = 104
+    Left = 336
+    Top = 72
   end
   object DataSource1: TDataSource
     DataSet = tb
-    Left = 400
-    Top = 96
+    Left = 376
+    Top = 72
   end
   object dsuser: TDataSource
     Left = 215

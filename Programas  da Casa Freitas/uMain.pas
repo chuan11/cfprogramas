@@ -91,6 +91,9 @@ type
     Geraestoque1: TMenuItem;
     Processarinventrio1: TMenuItem;
     ApplicationEvents1: TApplicationEvents;
+    Produtostransferidos1: TMenuItem;
+
+    function isTelaRequerSenha( codTela:smallInt ):boolean;
 
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
@@ -107,8 +110,8 @@ type
     function getUOCD():String;
     function getUserLogado:String;
     function getParamBD(nParametro, loja: String):String;
-    function getTelasPermDoGrupo(grupo:String):TstringList;
     function isGrupoPermitido(codTela: integer):boolean;
+    function isPermiteAbrirTela( codTela:smallInt ): boolean;
     function setParamBD(nParametro, loja, valor: String):boolean;
     function telaAutWell(Grupos,cd_usu:string ):String;
     procedure abeladePreos2Click(Sender: TObject);
@@ -141,6 +144,7 @@ type
     procedure Fornecedoreacriticar1Click(Sender: TObject);
     procedure Geracaopreodecusto1Click(Sender: TObject);
     procedure getListaLojas(cb:TadLabelComboBox; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario: String);
+    procedure getTelasPermDoGrupo(grupo:String);
     procedure impressaoRave(tb:TADOTable; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveQr(qr:TADOQuery; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveQr2(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings);
@@ -149,7 +153,7 @@ type
     procedure impressaoRavePDF(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings;nmArquivo:String);
     procedure imprimirDANFE1Click(Sender:Tobject);
     procedure mapadeseparao1Click(Sender: TObject);
-    procedure montarMenu(loja,usuario,is_uo,is_usu:string);
+    procedure montarMenu(nomeloja, nomeUsuario, is_uo, is_usu:string);
     procedure mostraDetalhesNota(Sender:Tobject; is_nota:String);
     procedure msgStatus(msg:String);
     procedure mudarfinanceiradeboleto1Click(Sender: TObject);
@@ -174,7 +178,7 @@ type
     procedure setaAversoNobd1Click(Sender: TObject);
     procedure showGridCol(grid:TSoftDBGrid;qr:TdataSet;col:String;is_visible:Boolean);
     procedure timer1Timer(Sender: TObject);
-    procedure verificaPermissao(item:TmenuItem ; telas: Tstrings );
+    procedure verificaPermissao(item:TmenuItem { ; telas: Tstrings });
     procedure compromissosdefornecedorespordata1Click(Sender: TObject);
     procedure CadastrarNCM1Click(Sender: TObject);
     procedure ajustedoarquivoSPED1Click(Sender: TObject);
@@ -195,18 +199,20 @@ type
     procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
     procedure Geraestoque1Click(Sender: TObject);
     procedure Processarinventrio1Click(Sender: TObject);
+    procedure Produtostransferidos1Click(Sender: TObject);
   private
     { Private declarations }
+    DS_PERMISSOES:TdataSet;
   public
      is_logado:boolean;
 
-     TELAS_PERMITIDAS, PARAMS_APLICACAO: TStringList;
+     PARAMS_APLICACAO: TStringList;
 
     { Public declarations }
   end;
 CONST
-   VERSAO = '11.06.01';
-   SUB_VERSAO = ' C';
+   VERSAO = '11.07.01';
+   SUB_VERSAO = ' ';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -216,7 +222,8 @@ CONST
    MSG_ERRO_CH_NFE = 'Não existe chave de acesso para essa nota, ou ela não é eltrônica.';
 var
   fmMain: TfmMain;
-  TIME_OUT_PROGRAMA:integer;
+  TIME_OUT_PROGRAMA_DEFAULT, TIME_OUT_PROGRAMA:integer;
+
   RESP_TELNET:String;
 
 implementation
@@ -234,29 +241,80 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
 
 
 function TfmMain.isGrupoPermitido(codTela: integer): boolean;
-begin
-   funcoes.gravaLog('isGrupoPermitido codTela: '+ intToStr(codTela)  +' result ' + boolToStr( (TELAS_PERMITIDAS.Values[intToStr(codTela)] = '0'), true));
-   result := (TELAS_PERMITIDAS.Values[intToStr(codTela)] = '0')
-end;
-
-function TfmMain.getTelasPermDoGrupo(grupo:String):TstringList;
 var
-   ds:TdataSet;
-   aux:TStringlist;
+   aux:boolean;
 begin
-   ds:= funcSQl.getDataSetQ('Select codTela, isAcessoRestrito from zcf_telasPermitidas where grupo = ' + grupo + ' order by codTela' , conexao);
-   aux := TStringlist.Create();
-
-   ds.First();
-   while (ds.Eof = false) do
-   begin
-      aux.Add(ds.fieldByName('codTela').AsString);
-      aux.Values[ds.fieldByName('codTela').AsString] := ds.fieldByName('isAcessoRestrito').AsString;
-      ds.Next();
-   end;
-   ds.Free();
+   DS_PERMISSOES.Locate('codTela', intToStr(codTela),[]);
+   aux := (DS_PERMISSOES.FieldByName('isAcessoRestrito').AsString <> '1') ;
+   funcoes.gravaLog('funcao isGrupoPermitido(), cod tela:'+ intToStr(codTela)+ ' result: '+ BoolToStr(aux,true));
    result := aux;
 end;
+
+procedure TfmMain.getTelasPermDoGrupo(grupo:String);
+begin
+   DS_PERMISSOES := funcSQl.getDataSetQ('Select distinct codTela, isAcessoRestrito, isPedeAutorizacao from zcf_telasPermitidas where grupo = ' + grupo + ' order by codTela' , conexao);
+end;
+
+function TfmMain.isTelaRequerSenha( codTela:smallInt ):boolean;
+begin
+   DS_PERMISSOES.Locate('codTela', intToStr(codTela),[]);
+   gravaLog( 'getTelasPermDoGrupo()' +    boolToStr((DS_PERMISSOES.FieldByName('isPedeAutorizacao').asString = '1') , true) );
+   result := (DS_PERMISSOES.FieldByName('isPedeAutorizacao').asString = '1');
+end;
+
+function TfmMain.isPermiteAbrirTela( codTela:smallInt ): boolean;
+begin
+   if (isTelaRequerSenha(codTela) = true) then
+      result := (verificaSenhas.TelaAutorizacao2( fmMain.Conexao, ucf.getAutorizadoresPorTela(codTela, fmMain.getGrupoLogado()), '' ) <> '')
+   else
+      result := true;
+end;
+
+procedure TfmMain.verificaPermissao(item:TmenuItem {; telas: Tstrings });
+var
+   i:integer;
+begin
+   if (item.Count > 0) then
+   begin
+      for i:=0 to item.Count -1 do
+         verificaPermissao(item.Items[i]{, telas});
+    end
+    else
+    begin
+       if (DS_PERMISSOES.Locate('codTela', intToStr(item.tag),[]) = true) or (item.tag = 0) then
+          item.Visible := true
+       else
+          item.Visible := false;
+    end;
+end;
+
+procedure TfmMain.montarMenu(nomeloja, nomeUsuario, is_uo, is_usu:string);
+var
+  i:integer;
+begin
+   fmMain.Menu := menuPrincipal;
+
+   if (is_uo <> '-1') then
+   begin
+      PARAMS_APLICACAO.Values['IS_UO'] := is_uo;
+      PARAMS_APLICACAO.Values['CD_USU'] := is_usu;
+
+      PARAMS_APLICACAO.Values['cd_pes'] := funcSQl.GetValorWell( 'O','select cd_pes from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_pes', Conexao);
+      PARAMS_APLICACAO.Values['CD_GRUSU'] :=  funcSQl.GetValorWell( 'O','select cd_grusu from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_grusu', Conexao);
+      PARAMS_APLICACAO.Values['uocd'] :=  fmMain.getParamBD('uocd','');
+
+      StatusBar1.Panels[0].Text := nomeloja;
+      StatusBar1.Panels[1].Text := nomeUsuario;
+
+      getTelasPermDoGrupo(getGrupoLogado() );
+    end;
+
+   for i:=0 to fmMain.Menu.Items.Count -1 do
+   begin
+      verificaPermissao(fmMain.Menu.Items[i]);
+   end;
+end;
+
 
 procedure TfmMain.FormActivate(Sender: TObject);
 var
@@ -280,7 +338,7 @@ begin
       fmMain.top := 10;
    end;
 
-   if is_logado = false then
+   if (is_logado = false) then
    begin
       fmMain.Menu := nil;
       versao_BD := GetParamBD('comum.versao','');
@@ -356,7 +414,7 @@ begin
       end;
    end;
 
-   if erro  = true then
+   if (erro  = true) then
        msgTela('',' Feche as telas do programa antes de trocar de usuario. '+#13+'Telas : '+telas,MB_ICONERROR+ mb_ok)
    else
    begin
@@ -394,20 +452,24 @@ begin
    Screen.cursor := crHourGlass;
    funcoes.gravaLog(CommandText);
    timer1.enabled := false;
-   TIME_OUT_PROGRAMA :=  180;
+   TIME_OUT_PROGRAMA_DEFAULT := 180;
+   TIME_OUT_PROGRAMA :=  TIME_OUT_PROGRAMA_DEFAULT;
 end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
 begin
-//   application.OnActionExecute
    try
+      if (fileexists(funcoes.getDirExe()+ 'CF.ico') = true) then
+         Application.Icon.LoadFromFile(funcoes.getDirExe()+ 'CF.ico')
+       else
+         funcoes.gravaLog('Não acjei o arquivo de icone da aplicação');
+
       conexao.Connected := false;
       conexao.ConnectionString := funcoes.getDadosConexaoUDL(extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini');
       conexao.Connected := true;
       StatusBar1.Panels[2].Text := conexao.DefaultDatabase + ' ' + funcoes.lerParam( extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini', 3  );
       deleteFile( ExtractFilePath(paramStr(0)) +'logs\' + ExtractFilename(ParamStr(0))  + '_log.txt'  );
 
-      TIME_OUT_PROGRAMA := 60;
       PARAMS_APLICACAO := TStringlist.Create();
       RvProject1.ProjectFile := 'C:\ProgramasDiversos\RelatoriosPCF.rav';
    except
@@ -436,62 +498,10 @@ begin
    result := achou;
 end;
 
-procedure TfmMain.verificaPermissao(item:TmenuItem ; telas: Tstrings );
-var
-   i:integer;
-begin
-   if item.Count > 0 then
-   begin
-      for i:=0 to item.Count -1 do
-         verificaPermissao(item.Items[i], telas);
-    end
-    else
-    begin
-       if (fmMain.ehTelaPermitida(inttoStr(item.tag),telas) = true) or (item.tag = 0) then
-          item.Visible := true
-       else
-          item.Visible := false;
-    end;
-end;
-
-procedure TfmMain.montarMenu(loja,usuario,is_uo,is_usu:string);
-var
-  i:integer;
-//  telas:Tstrings;
-begin
-   fmMain.Menu := menuPrincipal;
-
-// obter a lista de telas que o usuário acessa
-   TELAS_PERMITIDAS := TStringList.Create();
-   if (loja <> '-1') then
-   begin
-      PARAMS_APLICACAO.Values['IS_UO'] := is_uo;
-      PARAMS_APLICACAO.Values['CD_USU'] := is_usu;
-
-      PARAMS_APLICACAO.Values['cd_pes'] := funcSQl.GetValorWell( 'O','select cd_pes from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_pes', Conexao);
-      PARAMS_APLICACAO.Values['CD_GRUSU'] :=  funcSQl.GetValorWell( 'O','select cd_grusu from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_grusu', Conexao);
-      PARAMS_APLICACAO.Values['uocd'] :=  fmMain.getParamBD('uocd','');
-
-      StatusBar1.Panels[0].Text := loja;
-      StatusBar1.Panels[1].Text := usuario;
-
-      TELAS_PERMITIDAS :=  getTelasPermDoGrupo(getGrupoLogado() );
-    end
-    else
-    begin
-       TELAS_PERMITIDAS.Clear();
-       TELAS_PERMITIDAS.Add('-1');
-       TELAS_PERMITIDAS.Values['-1'] := '-1';
-    end;
-
-   for i:=0 to fmMain.Menu.Items.Count -1 {  menuPrincipal.Items.Count -1 } do
-      verificaPermissao(fmMain.Menu.Items[i], TELAS_PERMITIDAS);
-end;
-
 procedure TfmMain.msgStatus(msg: String);
 begin
     fmMain.StatusBar1.Panels[3].Text := msg;
-    funcoes.gravaLog(#13+ 'msgStatus: '+ msg);
+    funcoes.gravaLog('msgStatus: '+ msg);
     fmMain.StatusBar1.Refresh;
     fmMain.Refresh();
 end;
@@ -605,7 +615,7 @@ end;
 
 procedure TfmMain.AnaliseVLC1Click(Sender: TObject);
 begin
-   if fmFaturamento = nil then
+   if (fmFaturamento = nil) then
       if (funcsql.isHoraPermitida(fmMain.Conexao, AnaliseVLC1.tag, fmMain.getGrupoLogado() ) = true ) then
       begin
          Application.CreateForm(TfmFaturamento, fmFaturamento);
@@ -748,7 +758,8 @@ end;
 
 procedure TfmMain.N1Click(Sender: TObject);
 begin
-   montarMenu(StatusBar1.Panels[0].Text, StatusBar1.Panels[1].Text, fmMain.getUoLogada(), getUserLogado());
+   // recarregar o menu
+   montarMenu( fmMain.getNomeLojaLogada(),  fmMain.getNomeUsuario(), fmMain.getUoLogada(), getUserLogado());
 end;
 
 procedure TfmMain.Mudarfinanceiradeboleto1Click(Sender: TObject);
@@ -789,7 +800,7 @@ begin
    ' 0 ' + UO_CD +
    ' '+ DateToStr(now - 60 ) +
    ' '+ DateToStr(now) + ' ' + cd_ref;
-   PostMessage(FindWindow(nil, 'ConsultaRequisicao'), WM_CLOSE,0,0);
+   PostMessage(FindWindow(nil, 'ConsultaRequisicao'), WM_CLOSE, 0, 0);
    winExec(pchar(programa) , sw_normal);
    screen.Cursor := crDefault;
 end;
@@ -814,7 +825,7 @@ end;
 
 procedure TfmMain.Ajustedenotas1Click(Sender: TObject);
 begin
-   if fmAjustaNota = nil then
+   if (fmAjustaNota = nil) then
    begin
       Application.CreateForm(TfmAjustaNota, fmAjustaNota);
       fmAjustaNota.show;
@@ -844,8 +855,6 @@ function TfmMain.getUOCD: String;
 begin
    result := PARAMS_APLICACAO.Values['uocd'];
 end;
-
-
 
 procedure TfmMain.Requisiodereposio1Click(Sender: TObject);
 begin
@@ -888,12 +897,6 @@ begin
    result := fmMain.StatusBar1.Panels[0].Text;
 end;
 
-function TfmMain.getUoLogada(): String;
-begin
-   result := PARAMS_APLICACAO.Values['IS_UO'];
-end;
-
-
 procedure TfmMain.Resunmomovimentodirio1Click(Sender: TObject);
 begin
    if (fmMovDiario = nil) then
@@ -935,6 +938,16 @@ begin
    result := PARAMS_APLICACAO.Values['CD_PES'];
 end;
 
+function TfmMain.getGrupoLogado: String;
+begin
+   result := PARAMS_APLICACAO.Values['CD_GRUSU'];
+end;
+
+function TfmMain.getUoLogada(): String;
+begin
+   result := PARAMS_APLICACAO.Values['IS_UO'];
+end;
+
 function TfmMain.ehCampoPermitido(nParam:String): Boolean;
 var
    str:String;
@@ -947,13 +960,23 @@ begin
 end;
 
 procedure TfmMain.Timer1Timer(Sender: TObject);
+var
+   nFormsAbertos, i:integer;
 begin
+    nFormsAbertos :=0;
     TIME_OUT_PROGRAMA := TIME_OUT_PROGRAMA -1;
-    if TIME_OUT_PROGRAMA < 1 then
-       if (pos(fmMain.getUserLogado(), fmMain.GetParamBD('comum.usrSemTimeOut','') ) = 0 ) then
+    if (TIME_OUT_PROGRAMA < 1) then
+    begin
+       for i:=0 to Application.ComponentCount-1do
+          if application.Components[i].InheritsFrom(Tform) = true then
+            inc(nFormsAbertos);
+
+       if (pos(fmMain.getUserLogado(), fmMain.GetParamBD('comum.usrSemTimeOut','') ) = 0 ) and (nFormsAbertos <= 1) then
           Application.Terminate()
        else
-          TIME_OUT_PROGRAMA := 60;
+          TIME_OUT_PROGRAMA := TIME_OUT_PROGRAMA_DEFAULT;
+
+    end;
 end;
 
 procedure TfmMain.Parmetrosdosistema1Click(Sender: TObject);
@@ -1030,11 +1053,6 @@ begin
             (form.Components[i] as TControl).Hint := funcSQL.getHint(form.Name + '.'+form.Components[i].Name, conexao);
 // carrega as informacoes dos components
    funcoes.carregaCampos(form);
-end;
-
-function TfmMain.getGrupoLogado: String;
-begin
-   result := PARAMS_APLICACAO.Values['CD_GRUSU'];
 end;
 
 procedure TfmMain.CompromissosDeFornecedoresPorData1Click(Sender: TObject);
@@ -1287,9 +1305,12 @@ end;
 
 procedure TfmMain.PagamentosEmCartao1Click(Sender: TObject);
 begin
-   Application.CreateForm(TfmRelGeral, fmRelGeral);
-   fmRelGeral.show();
-   fmRelGeral.setPerfil(Pagamentosemcarto1.Tag);
+  if (isPermiteAbrirTela(Pagamentosemcarto1.Tag) = true) then
+  begin
+     Application.CreateForm(TfmRelGeral, fmRelGeral);
+     fmRelGeral.show();
+     fmRelGeral.setPerfil(Pagamentosemcarto1.Tag);
+  end;
 end;
 
 procedure TfmMain.Cargadedadosparaconciliao1Click(Sender: TObject);
@@ -1427,6 +1448,15 @@ begin
    end;
 end;
 
+
+procedure TfmMain.Produtostransferidos1Click(Sender: TObject);
+begin
+  begin
+     Application.CreateForm(TfmRelGeral, fmRelGeral);
+     fmRelGeral.show();
+     fmRelGeral.setPerfil(ProdutosTransferidos1.Tag);
+  end;
+end;
 
 end.
 

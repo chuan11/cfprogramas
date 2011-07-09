@@ -65,6 +65,18 @@ interface
 
 implementation
 
+function getNomeTableTemp():String;
+var
+  i:integer;
+
+begin
+   randomize;
+   i:= random(99999);
+   result := '#' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
+end;
+
+
+
 function getContadorWell(conexao:TADOConnection; campo:String):String;
 begin
 { Exemplo de alguns contadores
@@ -738,15 +750,6 @@ begin
       msgTela('FuncSQL.AcertaQuantidadeItens','Nao há itens no acerto',0);
 end;
 
-function getNomeTableTemp():String;
-var
-  i:integer;
-
-begin
-   randomize;
-   i:= random(99999);
-   result := '#' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
-end;
 
 procedure exportaQuery(qr:TADOQuery;expParaAqquivo:boolean; nArquivo:String );
 var
@@ -774,7 +777,9 @@ begin
    export1 := TmxDataSetExport.Create(nil);
    with export1 do
    begin
+//      ExportType := xtTXT;
       ExportType := xtTXT;
+
       DataSet :=  tb;
       ExportStyle := xsView;
       Options := [xoShowProgress, xoUseAlignments ];

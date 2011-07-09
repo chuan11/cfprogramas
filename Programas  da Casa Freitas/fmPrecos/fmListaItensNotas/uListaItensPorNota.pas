@@ -57,7 +57,6 @@ begin
    for i:=0 to grid.Columns.Count -1 do
    grid.Columns[i].Visible := false;
 
-
    grid.Columns[qrNota.FieldByname('Serie').Index].Visible := true;
    grid.Columns[qrNota.FieldByname('Tipo').Index].Visible := true;
    grid.Columns[qrNota.FieldByname('Situacao').Index].Visible := true;

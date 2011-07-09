@@ -72,7 +72,7 @@ var
 begin
    randomize;
    i:= random(99999);
-   result := 'A' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
+   result := '#' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
 end;
 
 
@@ -470,6 +470,8 @@ function somaColunaTable(Table:TDataSet;Coluna:String):real; overload;
 var
    aux:real;
 begin
+  funcoes.gravaLog('somaColTable (real)');
+
    Table.First;
    aux := 0;
    while (Table.Eof = false) do
@@ -485,6 +487,7 @@ function somaColTable(Table:TDataSet;Coluna:String):String; overload;
 var
    aux:real;
 begin
+  funcoes.gravaLog('somaColTable (String)');
   aux := funcsql.somaColunaTable(table, Coluna);
   Result := floattostrf( aux, ffNumber, 18, 2);
 end;
@@ -777,7 +780,9 @@ begin
    export1 := TmxDataSetExport.Create(nil);
    with export1 do
    begin
+//      ExportType := xtTXT;
       ExportType := xtTXT;
+
       DataSet :=  tb;
       ExportStyle := xsView;
       Options := [xoShowProgress, xoUseAlignments ];

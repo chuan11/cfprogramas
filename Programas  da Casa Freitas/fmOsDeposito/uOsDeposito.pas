@@ -228,7 +228,6 @@ begin
    fmMain.MsgStatus('');
 end;
 
-
 function TfmOsDeposito.criticaQuantidade(Sender: TObject):String;
 var
    aux, erro:String;

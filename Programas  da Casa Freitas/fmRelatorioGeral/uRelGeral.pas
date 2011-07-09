@@ -69,30 +69,35 @@ type
     tbSangriascd_mve: TStringField;
     tbSangriasvalor: TBCDField;
     tbVendasCartao: TADOTable;
+    tbVendasCartaocodLoja: TIntegerField;
+    tbVendasCartaocd_mve: TIntegerField;
+    tbVendasCartaods_mve: TStringField;
+    tbVendasCartaoseqTransacaoCaixa: TIntegerField;
+    tbVendasCartaovalor: TBCDField;
+    tbVendasCartaonumparcelas: TIntegerField;
+    tbVendasCartaotp_mve: TStringField;
+    tbVendasCartaotefMagnetico: TStringField;
 
-    procedure btOkClick(Sender: TObject);
-    procedure setPerfil(p:integer);
-    procedure gerarVendaAvarias();
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-
-
-    procedure calCulaValoresAvarias();
-    procedure ajustaTelaParaAvarias();
-    procedure calCulaTotalAvariasPorLoja();
-    procedure calCulaTotalAvariasPorFornecedor();
     function getParametrosRelatorioAvarias():TstringList;
-
-    procedure dtiChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-
+    procedure ajustaTelaParaAvarias();
+    procedure ajustaTelaParaCargaConciliacao();
+    procedure produtosTransferidosAjustaTela();
+    procedure produtosTransferidosGeraLista();    
     procedure ajustaTelaParaRelCartoes();
+    procedure btOkClick(Sender: TObject);
+    procedure calCulaTotalAvariasPorFornecedor();
+    procedure calCulaTotalAvariasPorLoja();
+    procedure calCulaValoresAvarias();
+    procedure cargaDadosConciliacao();
     procedure cbLojasClick(Sender: TObject);
+    procedure dtiChange(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormShow(Sender: TObject);
+    procedure gerarVendaAvarias();
     procedure getDescCaixas();
     procedure listaVendasEmCartao();
-    procedure ajustaTelaParaCargaConciliacao();
-    procedure cargaDadosConciliacao();
-
-
+    procedure setPerfil(p:integer);
+    
   private
     { Private declarations }
   public
@@ -230,10 +235,8 @@ end;
 
 procedure TfmRelGeral.ajustaTelaParaRelCartoes;
 begin
-//   dtf.Visible := false;
    label1.Visible := false;
    cbDetAvaForn.Visible := false;
-//   GroupBox1.Width := dti.Width + 50;
 
    IS_GRUPO_PERMITIDO_CARTAO :=  fmMain.isGrupoPermitido(PERFIL);
 
@@ -322,6 +325,31 @@ begin
    fmRelGeral := nil;
 end;
 
+procedure TfmRelGeral.produtosTransferidosGeraLista;
+var
+   tb:TADOTable;
+   cmd:String;
+   params:TStringList;
+begin
+   cmd:= 'cd_ref varchar(08), ds_ref varchar(60), QtTransferida int';
+   funcSQL.getTable( fmMain.Conexao, tb, cmd);
+
+   uCF.getListaProdutosTransferidos(tb, funcoes.getCodUO(cbLojas), dti.date, dtf.date);
+
+   tb.Open();
+   tb.sort := 'QtTransferida DESC';
+
+   if ( tb.IsEmpty = false) then
+   begin
+      params := TStringList.create();
+      params.add( funcoes.getNomeUO(cbLojas) );
+      params.add( dateToStr(dti.date)+' até '+ dateToStr(dtf.date) );
+      fmMain.impressaoRaveQr4(tb, nil, nil, nil, 'rpProdTransferidos', params);
+   end
+   else
+      funcoes.msgTela('',MSG_SEM_DADOS, MB_ICONERROR);
+end;
+
 
 procedure TfmRelGeral.btOkClick(Sender: TObject);
 var
@@ -339,7 +367,8 @@ begin
        1:gerarVendaAvarias();
        2:calCulaValoresAvarias();
        406:listaVendasEmCartao();
-       407:cargaDadosConciliacao
+       407:cargaDadosConciliacao();
+       112:produtosTransferidosGeraLista();
     end;
   end
   else
@@ -347,6 +376,14 @@ begin
      erro := MSG_ERRO_TIT +  erro;
      msgTela('', erro, MB_OK + MB_ICONERROR);
   end;
+end;
+
+
+procedure TfmRelGeral.produtosTransferidosAjustaTela;
+begin
+    cbCaixas.Visible := false;
+    dti.Date := funcSQL.getDateBd(fmMain.Conexao);
+    dtf.Date := dti.Date;
 end;
 
 procedure TfmRelGeral.setPerfil(P: integer);
@@ -357,8 +394,10 @@ begin
       2:ajustaTelaParaAvarias();
       406:ajustaTelaParaRelCartoes();
       407:ajustaTelaParaCargaConciliacao();
+      112:produtosTransferidosAjustaTela();
    end;
 end;
+
 
 
 end.
