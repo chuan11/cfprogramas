@@ -152,7 +152,7 @@ begin
 // calcular o percentual de cada fornecedor
    calCulaPercentualDoFornecedor(tbValoresAvarias_Total);
 
-   fmMain.impressaoRaveQr2(tbValoresAvarias, tbValoresAvarias_Total, 'rpValoresAvariasPorForn', params )
+   fmMain.impressaoRaveQr4(tbValoresAvarias, tbValoresAvarias_Total, nil, nil, 'rpValoresAvariasPorForn', params )
 end;
 
 procedure TfmRelGeral.calCulaTotalAvariasPorLoja();
@@ -171,7 +171,7 @@ begin
    uCF.getTotaIsPorTipoDeAvaria( tbValoresAvarias_Total,  tbValoresAvarias.TableName);
 
    if( tbValoresAvarias.RecordCount > 0) then
-      fmMain.impressaoRaveQr2( tbValoresAvarias, tbValoresAvarias_Total, 'rpValoresAvarias', params )
+      fmMain.impressaoRaveQr4( tbValoresAvarias, tbValoresAvarias_Total, nil, nil, 'rpValoresAvarias', params )
    else
       msgTela('','Sem valores para consulta.', MB_ICONERROR+MB_OK);
 end;

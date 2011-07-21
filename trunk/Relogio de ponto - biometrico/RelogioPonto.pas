@@ -115,14 +115,14 @@ type
 
   private
     { Private declarations }
-  public
+  public                               
      DS_EMP:TdataSet;
 
     { Public declarations }
   end;
 
 const
-   VERSAO = '11.06.01';
+   VERSAO = '11.07.01';
    TITULO = ' ' + VERSAO;
    CH_REG = 'ProgramasCF\Relogio';
    BATIDA_VAZIA = '  :  ';
@@ -766,7 +766,7 @@ begin
 
    fmMain.Caption := TITULO +  '    -  Iniciando Leitor.';
 
-   if uUtil.InitializeGrFinger(GrFingerXCtrl1) < 0 then
+   if (uUtil.InitializeGrFinger(GrFingerXCtrl1) < 0) then
       application.Terminate;
 
    fmMain.Caption := TITULO +  '    -  Abrindo conexão com o BD.';

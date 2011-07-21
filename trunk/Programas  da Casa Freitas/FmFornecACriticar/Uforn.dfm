@@ -1,9 +1,9 @@
 object fmForn: TfmForn
-  Left = 668
-  Top = 335
+  Left = 501
+  Top = 280
   Width = 526
   Height = 341
-  Caption = 'fmForn'
+  Caption = 'Fornecedores'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,6 +12,7 @@ object fmForn: TfmForn
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
@@ -127,7 +128,7 @@ object fmForn: TfmForn
   end
   object FlatButton1: TFlatButton
     Left = 408
-    Top = 10
+    Top = 16
     Width = 97
     Height = 29
     Caption = '&Procurar'

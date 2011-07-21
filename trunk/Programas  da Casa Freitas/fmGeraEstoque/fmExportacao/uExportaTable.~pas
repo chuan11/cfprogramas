@@ -1,0 +1,57 @@
+unit uExportaTable;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, mxExport;
+
+type
+  TfmExportaTable = class(TForm)
+    RadioGroup1: TRadioGroup;
+    Button1: TButton;
+    procedure Button1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmExportaTable: TfmExportaTable;
+
+implementation
+
+{$R *.dfm}
+uses uMain, funcoes, funcSQL, uGeraEstoque;
+
+procedure TfmExportaTable.Button1Click(Sender: TObject);
+var
+   arq:String;
+   msgEmail:TStringlist;
+begin
+
+
+   if (radioGroup1.ItemIndex = 0) then
+      funcSQl.exportacaoDeTabela( fmGeraEstoque.tbGE, xtExcel, xsView, '')
+   else
+   begin
+      arq:= funcSQl.exportacaoDeTabela( fmGeraEstoque.tbGE, xtExcel, xsFile, '');
+      if (fileExists(arq) = true) then
+      begin
+         msgEmail := TStringList.Create
+         msgEmail.Add('Arquivo  enviado pelo geraEstoque:')
+
+         fmMain.EnviarEmail('', 'Exportação do gera estoque'
+
+
+
+
+
+
+
+      end;
+   end;
+end;
+
+end.

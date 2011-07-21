@@ -63,6 +63,8 @@ interface
    procedure organizarTabela(var tabela:TADOTable;Coluna:Tcolumn );
    function isReqPendProduto(conexao:TADoConnection; uo, is_ref:String; QT_DIAS_PEND:integer ): TDataSet;
 
+   function exportacaoDeTabela(tb:TADOTAble; tipoSaida:TmxExportType; estilo:TmxExportStyle; nomeArq:String):String;
+
 implementation
 
 function getNomeTableTemp():String;
@@ -165,6 +167,10 @@ begin
    execSQL( 'create table ' + nTable + ' ( ' + tbFields +' ) ', Connection);
    if (tb = nil) then
       tb := TADOTable.Create(nil);
+
+   if (tb.TableName <> '') then
+      tb.close();
+
    tb.Connection := Connection;
    tb.TableName := nTable;
    tb.Open;
@@ -315,18 +321,18 @@ begin
       query.Next;
    end;
 
-   if mostraPcoCusto = true then
+   if (mostraPcoCusto = true) then
    begin
-      Aux.add('Custo Fiscal  (1)                                  1');
-      aux.add('Custo Médio Unitário (02)                          2');
-      Aux.add('Custo da última entrada (10)                      10');
-      Aux.add('Custo médio unico (05)                             5');
-      Aux.add('Último ped compra     (06)                         6');
-      Aux.add('Custo real últ compra (07)                         7');
+      Aux.add('Custo Fiscal(1)                                    1');
+      aux.add('Custo Médio Unitário(02)                           2');
+      Aux.add('Custo da última entrada(10)                       10');
+      Aux.add('CMU(05)                                            5');
+      Aux.add('Último ped compra(06)                              6');
+      Aux.add('CRUC(07)                                           7');
    end;
 
    if MostraCampoNhenhum = true then
-      Aux.add('< Nenhum >                                           -1');
+      Aux.add('< Nenhum >                                        -1');
 
    query.Destroy;
    Result := aux;
@@ -773,22 +779,32 @@ begin
    export.Execute;
 end;
 
-procedure exportaTable(tb:TADOTable);
+function exportacaoDeTabela(tb:TADOTAble;  tipoSaida:TmxExportType;  estilo:TmxExportStyle; nomeArq:String):String;
 var
    export1:TmxDataSetExport;
 begin
    export1 := TmxDataSetExport.Create(nil);
    with export1 do
    begin
-//      ExportType := xtTXT;
-      ExportType := xtTXT;
-
+      ExportType := tipoSaida;
       DataSet :=  tb;
-      ExportStyle := xsView;
-      Options := [xoShowProgress, xoUseAlignments ];
+      ExportStyle := estilo;
+
+      if (Estilo = xsFile ) then
+         FileName:= TempDir + 'MAX' + intToStr(Random(9999));
+
+      Options := [xoShowProgress, xoUseAlignments, xoRowNumbers, xoShowHeader];
       Execute;
    end;
-   export1.Destroy;
+   nomeArq := export1.NativeExcel.FileName;
+   funcoes.gravaLog('function exportacaoDeTabela:'+ nomeArq);
+   export1.Free();
+   result := nomeArq;
+end;
+
+procedure exportaTable(tb:TADOTable);
+begin
+   funcoes.gravaLog('Arquivo exportado:' + exportacaoDeTabela(tb, xtExcel, xsView, ''));
 end;
 
 
@@ -1451,7 +1467,6 @@ begin
    // pegar a data do bd
    strData := funcoes.SohNumerosPositivos( getDataBd(conexao) );
 
-
    // pegar os dados do usuario autorizador
    dadosUsrAut :=  TStringList.Create();
    dadosUsrAut := funcSQl.GetValoresSQL2('Select nm_usu, p_cod_usu from dsusu where cd_usu = ' + usAutorizador, conexao);
@@ -1503,7 +1518,7 @@ end;
 
 function getDataBd(conexao:TADOConnection):String;
 begin
-   result := getDataBd(conexao,0) ;
+   result := getDataBd(conexao, 0) ;
 end;
 
 function getDateBd(conexao:TADOConnection):TDate;
@@ -1521,6 +1536,7 @@ begin
    str := funcsql.GetValorWell( 'O', 'Select getDate()- ' + intToStr(diasARecuar) + ' as data', 'data',  conexao );
    result := quotedStr(copy(str,07,04) +'-'+ copy(str, 04,02) +'-'+ copy(str,01,02));
 end;
+
 
 function getOperIntegradasFiscais(conexao:TADOConnection):TStrings;
 var

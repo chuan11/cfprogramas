@@ -296,10 +296,10 @@ begin
          if (msgTela('','Deseja setar a loja para desconto dessa a varia ?', MB_ICONQUESTION + MB_YESNO ) = mrYes) then
          begin
             cmd := ' update zcf_avarias set codLojaDesconto = ' + uo  +
-                   ' where ' + qrBusca.fieldByName('numero').AsString + ' and  loja = '+ qrBusca.fieldByName('uo').AsString;
+                   ' where numAvaria= ' + qrBusca.fieldByName('numero').AsString + ' and  loja = '+ qrBusca.fieldByName('uo').AsString;
             funcSQL.execSQL(cmd, fmMain.Conexao);
             cmd := ' update zcf_avariasItens set codLojaDesconto = ' + uo  +
-                   ' where ' + qrBusca.fieldByName('numero').AsString +  ' and  loja = '+ qrBusca.fieldByName('uo').AsString ;
+                   ' where numAvaria= ' + qrBusca.fieldByName('numero').AsString +  ' and  loja = '+ qrBusca.fieldByName('uo').AsString ;
             funcSQL.execSQL(cmd, fmMain.Conexao);
             funcoes.msgTela('',' Ajuste efetuado com sucesso.', mb_ok + MB_ICONEXCLAMATION );
          end

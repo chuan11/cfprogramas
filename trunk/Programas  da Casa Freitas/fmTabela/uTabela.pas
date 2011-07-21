@@ -12,39 +12,49 @@ uses
 
 type
   TfmTabela = class(TForm)
-    edCodigo: TadLabelEdit;
-    cbPreco01: TadLabelComboBox;
-    edDescricao: TadLabelEdit;
     Query: TADOQuery;
-    FlatButton1: TFlatButton;
-    cbLoja: TadLabelComboBox;
     dbgrid: TSoftDBGrid;
     DataSource1: TDataSource;
-    cbItens: TRadioGroup;
-    RgOrdem: TRadioGroup;
-    rgTpestoque: TadLabelComboBox;
-    Animate: TAnimate;
     Panel1: TPanel;
     btImprime: TFlatButton;
     cbTpImp: TadLabelComboBox;
-    cbPreco02: TadLabelComboBox;
     Querycodigo: TStringField;
     Querydescricao: TStringField;
     QueryestoqueAtual: TIntegerField;
     QueryPreco01: TFloatField;
     QueryPreco02: TFloatField;
     FlatButton3: TFlatButton;
-    cbOrder: TFlatCheckBox;
     Queryqt_emb: TBCDField;
     EdLocalImp: TadLabelEdit;
     tpPapel: TadLabelComboBox;
     Querycd_pes: TIntegerField;
-    cbTotaliza: TFlatCheckBox;
     Label1: TLabel;
     Label2: TLabel;
     lbTotal1: TLabel;
     lbTotal2: TLabel;
-    FlatButton2: TFlatButton;
+    Panel2: TPanel;
+    edCodigo: TadLabelEdit;
+    cbPreco01: TadLabelComboBox;
+    cbPreco02: TadLabelComboBox;
+    cbLoja: TadLabelComboBox;
+    rgTpestoque: TadLabelComboBox;
+    edDescricao: TadLabelEdit;
+    cbItens: TRadioGroup;
+    cbOrder: TFlatCheckBox;
+    cbTotaliza: TFlatCheckBox;
+    pnCategoria: TPanel;
+    lbNivel: TLabel;
+    lbVlCat: TLabel;
+    lbClasse1: TLabel;
+    lbClasse2: TLabel;
+    lbClasse3: TLabel;
+    Bevel1: TBevel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label3: TLabel;
+    btGetCategorias: TFlatButton;
+    FlatButton1: TFlatButton;
+    Animate: TAnimate;
     function GetNumLojas(sender: tobject): Tstrings;
     procedure FlatButton1Click(Sender: TObject);
     function GetNomeLojas(sender: tobject): Tstrings;
@@ -56,16 +66,15 @@ type
     procedure dbgridCellClick(Column: TColumn);
     procedure PesquisaCodigos(sender:tobject);
     procedure cbTpImpChange(Sender: TObject);
-
-    procedure GerarMapaSeparacao(sender: tobject);
     procedure FlatButton3Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure edCodigoKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure edCodigoKeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);
     procedure cbTotalizaClick(Sender: TObject);
     procedure CalculaTotais(Sender:Tobject);
     procedure dbgridTitleClick(Column: TColumn);
     procedure FormCreate(Sender: TObject);
+    procedure btGetCategoriasClick(Sender: TObject);
+
 
   private
     { Private declarations }
@@ -78,7 +87,7 @@ var
 
 implementation
 
-uses uMain;
+uses uMain, uCF;
 
 {$R *.dfm}
 
@@ -134,36 +143,25 @@ begin
 end;
 
 procedure tfmTabela.PesquisaCodigos(sender:tobject);
-var
-  OrdenaFornecedor:string;
 begin
   SCREEN.CURSOR := crhourglass;
   fmMain.MsgStatus('');
   animate.Visible:= true;
   Animate.Active:= true;
 
-  if cbOrder.Checked = true then
-     OrdenaFornecedor := '1'
-  else
-     OrdenaFornecedor := '0';
-
-   Query.SQL.Clear;
-   query.SQL.Add('Exec Z_CF_Tabela_Estoque ' +
-                  '@is_ref ='+ QuotedStr (edCodigo.text) + ', ' +
-                  '@cd_desc ='+ quotedstr(edDescricao.text)  + ', ' +
-                  '@uo ='+ funcoes.getCodUO(cbLoja) +' , '+
-                  '@pc01='+ funcoes.SohNumeros((copy(cbPreco01.Items[cbPreco01.ItemIndex],40,100))) +' , '+
-                  '@pc02='+ funcoes.SohNumeros((copy(cbPreco02.Items[cbPreco02.ItemIndex],40,100))) +' , '+
-                  '@itens='+ intToStr(cbItens.ItemIndex)+ ' , ' +
-                  '@ordem='+ intToStr(RgOrdem.ItemIndex)+ ' , ' +
-                  '@tpEstoque='+ intToStr(RgTpEstoque.ItemIndex)+ ' , ' +
-                  '@ordenafornecedor='+ OrdenaFornecedor
-                );
-   query.SQL.SaveToFile(funcoes.TempDir()+ 'Query_tabelaPrecos.tmp');
-   query.Open;
-   cbTotalizaClick(Sender);   
+  uCF.listaTabelaPrecos( cbItens.ItemIndex,
+                         rgTpestoque.ItemIndex,
+                         edDescricao.text,
+                         edCodigo.Text,
+                         funcoes.getCodUO(cbLoja),
+                         funcoes.getCodPc(cbPreco01),
+                         funcoes.getCodPc(cbPreco02),
+                         lbNivel.caption,
+                         lbVlCat.caption, Query);
+   cbTotalizaClick(Sender);
    animate.Visible:= false;
    Animate.Active:= false;
+
    edCodigo.SetFocus;
    cbpreco01.SetFocus;
    edCodigo.SetFocus;
@@ -174,7 +172,7 @@ begin
    dbgrid.Columns[04].Width := 80;
    dbgrid.Columns[05].Width := 80;
 
-   if query.IsEmpty = false then
+   if (query.IsEmpty = false) then
       if query.RecordCount = 1 then
           fmMain.MsgStatus( inttostr(query.RecordCount) + ' Item')
       else
@@ -306,7 +304,7 @@ begin
       {0}params.Add( fmMain.getDescPreco(cbPreco01) );
       {1}params.Add( fmMain.getDescPreco(cbPreco02) );
       {2}params.Add(trim( edCodigo.text));
-      {3}params.Add(copy( rgOrdem.Items[rgordem.ItemIndex],02,20));
+      {3}params.Add('');
       {4}params.Add( fmMain.getDescUO(cbLoja) );
       fmMain.impressaoRaveQr( Query, 'rpTabela', params );
    end;
@@ -333,37 +331,6 @@ begin
 end;
 
 
-procedure TfmTabela.GerarMapaSeparacao(sender: tobject);
-var
-  Excel : Variant;
-  Linha:integer;
-begin
-   screen.Cursor := crHourGlass;
-   dbgrid.Visible := False;
-
-   Excel := CreateOleObject('Excel.Application');
-   Excel.WorkBooks.open( ExtractFilePath(ParamStr(0))+'TabelaModelo.xls');
-   Excel.WorkBooks[1].Sheets[1].Cells[02,02]:= trim( edCodigo.text);
-   Excel.WorkBooks[1].Sheets[1].Cells[02,04]:= trim( DateTimeToStr(now));
-   Excel.WorkBooks[1].Sheets[1].Cells[04,04]:= trim(copy(cbPreco01.Items[cbPreco01.ItemIndex],01,15));
-   Excel.WorkBooks[1].Sheets[1].Cells[04,05]:= trim(copy(cbPreco02.Items[cbPreco02.ItemIndex],01,15));
-   Linha:=5;
-   While Query.Eof = false do
-   Begin
-      Excel.WorkBooks[1].Sheets[1].Cells[Linha,1]:= trim(Query.fieldByname('codigo').AsVariant);
-      Excel.WorkBooks[1].Sheets[1].Cells[Linha,2]:= trim(Query.fieldByname('descricao').AsVariant);
-      Excel.WorkBooks[1].Sheets[1].Cells[Linha,3]:= trim(Query.fieldByname('estoqueAtual').AsVariant);
-      Excel.WorkBooks[1].Sheets[1].Cells[Linha,4]:= floattostrf(  Query.fieldByname('preco 01').asfloat ,ffNumber,18,2);
-      Excel.WorkBooks[1].Sheets[1].Cells[Linha,5]:= floattostrf(  Query.fieldByname('preco 02').asfloat ,ffNumber,18,2);
-      query.Next;
-      inc(Linha);
-   end;
-   Query.First;
-   Excel.Visible :=True;
-
-   screen.Cursor := crDefault;
-   dbgrid.Visible := true;
-end;
 procedure TfmTabela.FlatButton3Click(Sender: TObject);
 begin
    funcsql.exportaQuery(Query, false,'');
@@ -383,7 +350,6 @@ begin
    else if  application.MessageBox(pchar('Deseja mesmo gerar de todos os fornecedores  ???' +#13),pchar(fmTabela.caption), mb_YesNo + mb_iconQuestion)= mrYes then
       PesquisaCodigos(sender)
 end;
-
 
 
 procedure TfmTabela.edCodigoKeyDown(Sender: TObject; var Key: Word;
@@ -435,11 +401,20 @@ procedure TfmTabela.FormCreate(Sender: TObject);
 begin
    cbpreco01.Items := funcsql.getListaPrecos( fmMain.Conexao, true, true, true, fmMain.getGrupoLogado() );
    cbPreco02.Items := cbPreco01.Items;
-
-//   cbLoja.items :=  funcsql.GetNomeLojas(fmMain.Conexao,false,false,'','');
    funcoes.carregaCampos(fmTabela);
-
    fmMain.getListaLojas(cbLoja, false, false, '');
+end;
+
+procedure TfmTabela.btGetCategoriasClick(Sender: TObject);
+var
+  descCat01, descCat02, descCat03, vlNivel, vlCat: String;
+begin
+   fmMain.ajustaValoresCategorias(descCat01, descCat02, descCat03, vlNivel, vlCat);
+   lbClasse1.Caption := descCat01;
+   lbClasse2.Caption := descCat02;
+   lbClasse3.Caption := descCat03;
+   lbNivel.Caption := vlNivel;
+   lbVlCat.Caption := vlCat;
 end;
 
 end.

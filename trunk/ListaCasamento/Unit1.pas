@@ -126,9 +126,9 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
    funcoes.limparLog();
 
-   VERSAO := '11.04.00';
+   VERSAO := '11.07.05';
 
-   if HaParametroInvalido(sender) = true then
+   if haParametroInvalido(sender) = true then
    begin
       MsgTela( ' Exitem parâmetros não preenchidos '+#13+ ' Execute o configurador (ConfigListas.exe) e informe os parâmetros',MB_Ok+ MB_IconError);
       application.terminate;
@@ -203,6 +203,7 @@ begin
         break;
      end;
 end;
+ 
 function TForm1.EhlistaDaloja(num:string;MostraMensagem:boolean): boolean;
 begin
    if (num = funcoes.RParReg('listas','loja') ) or ( funcoes.RParReg('listas','loja') = '00' )  then
@@ -329,7 +330,7 @@ var
    r2:Tstringlist;
    query:Tadoquery;
 begin
-   query := Tadoquery.Create(query);
+   query := Tadoquery.Create(nil);
    query.Connection := ADOConnection1;
 
    query.sql.Clear;
@@ -508,6 +509,7 @@ end;
 procedure TForm1.FormResize(Sender: TObject);
 begin
    Panel1.Left := form1.Width - panel1.Width-30;
+
 end;
 
 procedure TForm1.N1Click(Sender: TObject);

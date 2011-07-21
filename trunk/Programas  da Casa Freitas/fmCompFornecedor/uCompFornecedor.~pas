@@ -146,7 +146,7 @@ begin
    if ( codigo <> '') then
    begin
       ds := TDataSet.Create(nil);
-      ds := uCF.getDadosPessoa(codigo,'');
+      ds := uCF.getDadosFornecedor(codigo,'');
       edCodForn.Text := ds.fieldByName('is_cred').AsString;
       lbCred.Caption := ds.fieldByName('fornecedor').AsString;
       ds.Destroy();

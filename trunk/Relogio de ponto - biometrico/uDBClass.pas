@@ -88,7 +88,7 @@ type
     procedure deletajustificativa(numJustificativa:String);
     procedure getQuery(var qr:TADOQuery; ComandoSQL:string);
     procedure getTable(var tb:TADOTable; tbFields:string);
-    procedure getTemplates();
+    function getTemplates():boolean;
     procedure organizarQuery(var query:TADOQuery;Coluna:Tcolumn);
     procedure preencheListaDosDias(var tabela:TADOTable; dti,dtf:Tdate);
     procedure Connection1WillExecute(Connection: TADOConnection;  var CommandText: WideString; var CursorType: TCursorType;  var LockType: TADOLockType; var CommandType: TCommandType; var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;  const Command: _Command; const Recordset: _Recordset);
@@ -200,19 +200,27 @@ var
 {}
 end;
 
-
 // Start fetching all enrolled templates from database.
-procedure TDBClass.getTemplates();
+function TDBClass.getTemplates():boolean;
 begin
-   gravaLog('TDBClass.getTemplates()');
-   dsTemplates.CacheSize := 15000;
-   dsTemplates.CursorLocation := clUseClient;
-   dsTemplates.CursorType := ctOpenForwardOnly;
-   dsTemplates.LockType := ltReadOnly;
-//   dsTemplates.Connection := connection;
-   dsTemplates.CommandText := 'SELECT id, template FROM zcf_PontoCadDigitais where isAtivo = 1 order by id'; {zcf_PontoCadDigitais}
-   dsTemplates.Open();
-   dsTemplates.BlockReadSize := 15000;
+   try
+      gravaLog('TDBClass.getTemplates()');
+      dsTemplates.CacheSize := 15000;
+      dsTemplates.CursorLocation := clUseClient;
+      dsTemplates.CursorType := ctOpenForwardOnly;
+      dsTemplates.LockType := ltReadOnly;
+      dsTemplates.CommandText := 'SELECT id, template FROM zcf_PontoCadDigitais where isAtivo = 1 order by id'; {zcf_PontoCadDigitais}
+      dsTemplates.Open();
+      dsTemplates.BlockReadSize := 15000;
+      gravaLog('TDBClass.getTemplates() result = true');
+      result := true;
+   except
+      on  e: exception do
+      begin
+         gravaLog('TDBClass.getTemplates() result = false');
+         result := false;
+      end;
+  end;
 end;
 
 

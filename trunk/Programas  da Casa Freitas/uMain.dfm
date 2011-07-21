@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 420
-  Top = 167
+  Left = 360
+  Top = 157
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -353,6 +353,7 @@ object fmMain: TfmMain
     TitleSetup = 'Op'#231#245'es de impress'#227'o'
     TitleStatus = 'Status da impress'#227'o'
     TitlePreview = 'Previa da impress'#227'o'
+    SystemSetups = [ssAllowSetup, ssAllowCopies, ssAllowDestPreview, ssAllowDestPrinter, ssAllowPrinterSetup, ssAllowPreviewSetup]
     DefaultDest = rdPrinter
     SystemFiler.StatusFormat = 'Generating page %p'
     SystemPreview.FormState = wsMaximized

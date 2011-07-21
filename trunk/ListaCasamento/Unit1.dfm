@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 265
-  Top = 129
+  Left = 480
+  Top = 210
   Width = 800
   Height = 456
   Anchors = [akTop, akRight]

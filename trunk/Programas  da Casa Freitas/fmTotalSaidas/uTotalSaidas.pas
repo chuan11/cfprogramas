@@ -28,7 +28,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure calcularVenda(is_ref, uo:String; inicio, fim: Tdate);
     procedure ajustaDataInicio(data:Tdate);
-
+    
   private
     { Private declarations }
   public
@@ -75,8 +75,9 @@ begin
    ds:= uCF.getVdItemDetPorLojaPeriodo(is_ref, uo, fmMain.getUOCD(), inicio, fim);
 
    dataSource1.DataSet := ds;
-   lbTotal.caption := funcSQL.somaColTable(ds, 'quantidade');
+   lbTotal.caption := funcSQL.somaColTable(ds, 'qt_mov');
 
+   grid.Columns[ ds.FieldByName('qt_mov').Index ].Title.Caption := 'Quantidade';
 end;
 
 
@@ -89,6 +90,7 @@ end;
 procedure TfmTotalSaidas.ajustaDataInicio(data: Tdate);
 begin
    dt01.Date := data;
+   dt02.Date := now;
 end;
 
 end.

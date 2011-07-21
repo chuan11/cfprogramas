@@ -337,7 +337,7 @@ begin
    uCF.getListaProdutosTransferidos(tb, funcoes.getCodUO(cbLojas), dti.date, dtf.date);
 
    tb.Open();
-   tb.sort := 'QtTransferida';
+   tb.sort := 'QtTransferida DESC';
 
    if ( tb.IsEmpty = false) then
    begin

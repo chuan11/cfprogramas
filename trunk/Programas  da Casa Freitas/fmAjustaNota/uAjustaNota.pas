@@ -248,7 +248,6 @@ begin
 end;
 
 
-
 procedure TfmAjustaNota.FormCreate(Sender: TObject);
 begin
   cbOperIntegrada.Items := funcsql.getOperIntegradasFiscais(fmMain.Conexao);

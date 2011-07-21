@@ -1,6 +1,6 @@
 object fmGeraEstoque: TfmGeraEstoque
-  Left = 341
-  Top = 127
+  Left = 419
+  Top = 162
   Width = 861
   Height = 607
   Caption = 'Gera Estoque'
@@ -79,7 +79,7 @@ object fmGeraEstoque: TfmGeraEstoque
     Colors.WhenEnterFocus.BackColor = clInfoBk
   end
   object cbPrecos: TadLabelComboBox
-    Left = 485
+    Left = 459
     Top = 17
     Width = 142
     Height = 21
@@ -177,21 +177,28 @@ object fmGeraEstoque: TfmGeraEstoque
     BevelOuter = bvNone
     TabOrder = 8
     object Label1: TLabel
-      Left = 258
+      Left = 157
       Top = 5
       Width = 30
       Height = 13
       Caption = 'meses'
     end
+    object Label3: TLabel
+      Left = 0
+      Top = 17
+      Width = 97
+      Height = 13
+      Caption = ' a venda dos ultimos'
+    end
     object spedit: TadLabelSpinEdit
-      Left = 203
+      Left = 113
       Top = 1
-      Width = 52
+      Width = 42
       Height = 22
       Cursor = crDefault
-      LabelDefs.Width = 199
+      LabelDefs.Width = 108
       LabelDefs.Height = 13
-      LabelDefs.Caption = 'Itens sem entrada, liste a venda ds ultimos'
+      LabelDefs.Caption = 'Itens sem entrada, liste'
       LabelPosition = adLeft
       Colors.WhenEnterFocus.BackColor = clInfoBk
       Ctl3D = False
@@ -208,8 +215,8 @@ object fmGeraEstoque: TfmGeraEstoque
       Wrap = False
     end
     object FlatButton2: TFlatButton
-      Left = 712
-      Top = 0
+      Left = 742
+      Top = 2
       Width = 97
       Height = 23
       Caption = '&Imprimir'
@@ -232,7 +239,7 @@ object fmGeraEstoque: TfmGeraEstoque
       OnClick = FlatButton2Click
     end
     object rgTpBusca: TadLabelComboBox
-      Left = 380
+      Left = 292
       Top = 1
       Width = 101
       Height = 21
@@ -248,8 +255,8 @@ object fmGeraEstoque: TfmGeraEstoque
       OnChange = rgTpBuscaClick
       Items.Strings = (
         'Codigo'
-        'Fornecedor'
-        'Ped Forn')
+        'Ped Forn'
+        'Fornecedor')
       LabelDefs.Width = 65
       LabelDefs.Height = 13
       LabelDefs.Caption = 'Consultar por:'
@@ -257,11 +264,11 @@ object fmGeraEstoque: TfmGeraEstoque
       Colors.WhenEnterFocus.BackColor = clInfoBk
     end
     object FlatButton3: TFlatButton
-      Left = 568
-      Top = 3
-      Width = 115
-      Height = 19
-      Caption = 'excel'
+      Left = 650
+      Top = 2
+      Width = 79
+      Height = 22
+      Caption = 'exportar'
       TabOrder = 3
       OnClick = FlatButton3Click
     end
@@ -394,14 +401,12 @@ object fmGeraEstoque: TfmGeraEstoque
     TabOrder = 12
     OnClick = FlatButton6Click
   end
-  object fsCheckBox1: TfsCheckBox
-    Left = 457
-    Top = 51
+  object cbProdAtivos: TfsCheckBox
+    Left = 310
+    Top = 60
     Width = 97
     Height = 16
     Caption = 'Somente ativos'
-    Checked = True
-    State = cbChecked
     TabOrder = 13
     FlatFont.Charset = DEFAULT_CHARSET
     FlatFont.Color = clWindowText
@@ -410,22 +415,22 @@ object fmGeraEstoque: TfmGeraEstoque
     FlatFont.Style = []
   end
   object Panel1: TPanel
-    Left = 655
+    Left = 633
     Top = 3
     Width = 187
     Height = 76
     BevelOuter = bvNone
     TabOrder = 14
     object lbNivel: TLabel
-      Left = 145
+      Left = 146
       Top = 4
       Width = 6
       Height = 13
       Caption = '0'
       Visible = False
     end
-    object lbCodigo: TLabel
-      Left = 156
+    object lbVlCat: TLabel
+      Left = 157
       Top = 4
       Width = 24
       Height = 13
@@ -472,7 +477,7 @@ object fmGeraEstoque: TfmGeraEstoque
       ParentFont = False
     end
     object Bevel1: TBevel
-      Left = 0
+      Left = 1
       Top = 18
       Width = 184
       Height = 55
@@ -499,7 +504,7 @@ object fmGeraEstoque: TfmGeraEstoque
       Caption = 'Categoria:'
     end
     object FlatButton7: TFlatButton
-      Left = 16
+      Left = 17
       Top = 2
       Width = 91
       Height = 21
@@ -558,30 +563,79 @@ object fmGeraEstoque: TfmGeraEstoque
       OnClick = FlatButton7Click
     end
   end
-  object btBuscaFornecedor: TFlatButton
-    Left = 166
-    Top = 60
-    Width = 24
-    Height = 22
-    Hint = 'Buscar um fornecedor'
-    Caption = '...'
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 15
-    OnClick = btBuscaFornecedorClick
-  end
-  object lbSoEntrada: TfsCheckBox
-    Left = 309
-    Top = 50
+  object cbSoEntrada: TfsCheckBox
+    Left = 310
+    Top = 43
     Width = 133
     Height = 16
     Caption = 'Somente com entrada'
+    TabOrder = 15
+    FlatFont.Charset = DEFAULT_CHARSET
+    FlatFont.Color = clWindowText
+    FlatFont.Height = -11
+    FlatFont.Name = 'MS Sans Serif'
+    FlatFont.Style = []
+  end
+  object cbCalEmp: TfsCheckBox
+    Left = 53
+    Top = 0
+    Width = 117
+    Height = 16
+    Caption = 'Calcula na empresa'
+    Checked = True
+    State = cbChecked
     TabOrder = 16
     FlatFont.Charset = DEFAULT_CHARSET
     FlatFont.Color = clWindowText
     FlatFont.Height = -11
     FlatFont.Name = 'MS Sans Serif'
     FlatFont.Style = []
+  end
+  object pnForn: TPanel
+    Left = 83
+    Top = 143
+    Width = 199
+    Height = 49
+    TabOrder = 17
+    Visible = False
+    object btAddForn: TFlatButton
+      Left = 180
+      Top = 5
+      Width = 17
+      Height = 16
+      Hint = 'Buscar um fornecedor'
+      Caption = '+'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      OnClick = btAddFornClick
+    end
+    object btRemoveForn: TFlatButton
+      Left = 180
+      Top = 28
+      Width = 17
+      Height = 16
+      Hint = 'Buscar um fornecedor'
+      Caption = '-'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+      OnClick = btRemoveFornClick
+    end
+    object lbForn: TadLabelListBox
+      Left = 3
+      Top = 2
+      Width = 176
+      Height = 45
+      Ctl3D = False
+      ItemHeight = 13
+      ParentCtl3D = False
+      TabOrder = 2
+      LabelDefs.Width = 29
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'lbForn'
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+    end
   end
   object DataSource1: TDataSource
     DataSet = tbGE
@@ -604,17 +658,5 @@ object fmGeraEstoque: TfmGeraEstoque
       Caption = 'Pedidos de compra'
       OnClick = Pedidosdecompra1Click
     end
-    object Verdetalhes1: TMenuItem
-      Caption = 'Ver detalhes '
-    end
-    object VerdetalhesdaCRUCbaseadonanota1: TMenuItem
-      Caption = 'Ver detalhes da CRUC  (baseado na nota)'
-      OnClick = VerdetalhesdaCRUCbaseadonanota1Click
-    end
-  end
-  object QrCredores: TADOQuery
-    Parameters = <>
-    Left = 10
-    Top = 233
   end
 end

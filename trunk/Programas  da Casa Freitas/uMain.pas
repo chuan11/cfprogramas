@@ -12,7 +12,7 @@ uses
   IdTCPConnection, Sockets, ScktComp, DBCtrls,
   AppEvnts, RpRender, RpRenderPDF, RpRenderCanvas, RpRenderPrinter,
   OleCtrls, AcroPDFLib_TLB, shellAPI, adLabelCheckListBox, IdBaseComponent,
-  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox;
+  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox, mxExport;
 
 
 type
@@ -93,8 +93,8 @@ type
     ApplicationEvents1: TApplicationEvents;
     Produtostransferidos1: TMenuItem;
 
-    function isTelaRequerSenha( codTela:smallInt ):boolean;
 
+    function isTelaRequerSenha( codTela:smallInt ):boolean;
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
     function executeTelnetCmd(uo, comando:String):boolean;
@@ -114,6 +114,7 @@ type
     function isPermiteAbrirTela( codTela:smallInt ): boolean;
     function setParamBD(nParametro, loja, valor: String):boolean;
     function telaAutWell(Grupos,cd_usu:string ):String;
+    procedure ajustaValoresCategorias(var descCat01, descCat02, descCat03, numNivel, vlNivel:String);
     procedure abeladePreos2Click(Sender: TObject);
     procedure abreFormRequisicao(mostraMsg:Boolean; perfil:integer);
     procedure Ajustedenotas1Click(Sender: TObject);
@@ -147,7 +148,6 @@ type
     procedure getTelasPermDoGrupo(grupo:String);
     procedure impressaoRave(tb:TADOTable; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveQr(qr:TADOQuery; nRelatorio:String; params:Tstrings);
-    procedure impressaoRaveQr2(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveQr4(qr, qr2, qr3, qr4:TDataSet; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveTbQr(tb: TADOTable; qr:TADOQuery; nRelatorio:String; params:Tstrings);
     procedure impressaoRavePDF(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings;nmArquivo:String);
@@ -161,7 +161,7 @@ type
     procedure obterDetalhesEntrada(is_ref:String);
     procedure obterDetalhesSaida(is_ref, uo:String; dtInicio:Tdate);
     procedure obterResumoEstoque(is_ref, is_disponivel:String);
-    procedure obterResumoEntSai(isref:String);
+    procedure obterResumoEntSai(isref, uo: String);
     procedure parmetrosDoSistema1Click(Sender: TObject);
     procedure permisses2Click(Sender: TObject);
     procedure precosalteradosporperodo2Click(Sender: TObject);
@@ -200,6 +200,9 @@ type
     procedure Geraestoque1Click(Sender: TObject);
     procedure Processarinventrio1Click(Sender: TObject);
     procedure Produtostransferidos1Click(Sender: TObject);
+    procedure getDadosCRUC(is_ref:String);
+    procedure getPedidosFornecedor(is_ref, uo:String);
+
   private
     { Private declarations }
     DS_PERMISSOES:TdataSet;
@@ -212,7 +215,7 @@ type
   end;
 CONST
    VERSAO = '11.07.01';
-   SUB_VERSAO = ' ';
+   SUB_VERSAO = ' C';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -223,7 +226,6 @@ CONST
 var
   fmMain: TfmMain;
   TIME_OUT_PROGRAMA_DEFAULT, TIME_OUT_PROGRAMA:integer;
-
   RESP_TELNET:String;
 
 implementation
@@ -236,7 +238,8 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
      uClassificaProd, uCompFornecedor, fmAbrirAvarias, uParametros,
      uRemoveRegTEF, uCadastrarNCM, uListaFornecedores, uAjustaSPED,
      uCustoPorPedido, uCF, Math, funcDatas, uObterSaldoFiscal,
-  uAjusteModPag, uGeraEstoque, uEentSai, uRelInventario;
+     uAjusteModPag, uGeraEstoque, uRelInventario, uSelCat, uTotalEntSai,
+     uDetalhesCRUC, uPedidosFornecedor;
 {$R *.dfm}
 
 
@@ -258,7 +261,6 @@ end;
 function TfmMain.isTelaRequerSenha( codTela:smallInt ):boolean;
 begin
    DS_PERMISSOES.Locate('codTela', intToStr(codTela),[]);
-   gravaLog( 'getTelasPermDoGrupo()' +    boolToStr((DS_PERMISSOES.FieldByName('isPedeAutorizacao').asString = '1') , true) );
    result := (DS_PERMISSOES.FieldByName('isPedeAutorizacao').asString = '1');
 end;
 
@@ -628,23 +630,14 @@ var
   i:integer;
 begin
    gravaLog('Impressao de relatorio:' + nRelatorio);
-
-   if params <> nil then
+   if (params <> nil) then
       for i:=0 to params.Count-1 do
          RvProject1.SetParam(intToStr(i), params[i]);
-
-  RvProject1.ExecuteReport(nRelatorio);
+   RvProject1.ExecuteReport(nRelatorio);
 end;
 
 procedure TfmMain.impressaoRaveQr(qr:TADOQuery; nRelatorio:String; params:Tstrings);
 begin
-   RvDSConn.DataSet := qr;
-   chamaImpressaoRave(nRelatorio, params);
-end;
-
-procedure TfmMain.impressaoRaveQr2(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings);
-begin
-   RvDSConn2.DataSet := qr2;
    RvDSConn.DataSet := qr;
    chamaImpressaoRave(nRelatorio, params);
 end;
@@ -666,7 +659,7 @@ begin
    RvSystem1.RenderObject:= rvRenderPDF1;
    RvSystem1.OutputFileName:=  nmArquivo;
 
-   impressaoRaveQr2(qr, qr2, nRelatorio, params);
+   impressaoRaveQr4(qr, qr2, nil, nil, nRelatorio, params);
    RvSystem1.SystemSetups := RvSystem1.SystemSetups + [ssAllowSetup];
    RvSystem1.DefaultDest := rdPrinter;
    RvSystem1.DoNativeOutput:= true;
@@ -734,7 +727,7 @@ begin
    if fmDetEntrada  = nil then
    begin
       Application.CreateForm( TfmDetEntrada , fmDetEntrada );
-      fmDetEntrada.ConsultaDetalhesEntrada(is_ref);
+      fmDetEntrada.consultaDetalhesEntrada(is_ref);
       fmDetEntrada.showModal;
    end;
 end;
@@ -858,7 +851,7 @@ end;
 
 procedure TfmMain.Requisiodereposio1Click(Sender: TObject);
 begin
-   abreFormRequisicao( false,2);
+   abreFormRequisicao( false, 2);
 end;
 
 
@@ -1430,12 +1423,33 @@ begin
    end;
 end;
 
-procedure TfmMain.obterResumoEntSai(isref: String);
+procedure TfmMain.obterResumoEntSai(isref, uo: String);
 begin
-   if (fmEntSai = nil) then
+   if (fmTotalEntSai = nil) then
    begin
-      Application.CreateForm(TfmEntSai, fmEntSai);
-      fmEntSai.show();
+      Application.CreateForm(TfmTotalEntSai, fmTotalEntSai);
+      fmTotalEntSai.show();
+      fmTotalEntSai.calculaTotalEntSai(isref, uo, UO_CD);
+   end;
+end;
+
+procedure TfmMain.getDadosCRUC(is_ref: String);
+begin
+   if (fmDetalhesCRUC = nil) then
+   begin
+      Application.CreateForm(TfmDetalhesCRUC, fmDetalhesCRUC);
+      fmDetalhesCRUC.show();
+      fmDetalhesCRUC.getDadosCRUC(is_ref);
+   end;
+end;
+
+procedure TfmMain.getPedidosFornecedor(is_ref, uo: String);
+begin
+   if (fmPedidosFornecedor  = nil) then
+   begin
+      Application.CreateForm(TfmPedidosFornecedor , fmPedidosFornecedor );
+      fmPedidosFornecedor.show();
+      fmPedidosFornecedor.getPedidosProduto(is_ref, uo);
    end;
 end;
 
@@ -1457,6 +1471,47 @@ begin
      fmRelGeral.setPerfil(ProdutosTransferidos1.Tag);
   end;
 end;
+
+
+
+
+
+procedure TfmMain.ajustaValoresCategorias(var descCat01, descCat02,
+  descCat03, numNivel, vlNivel: String);
+begin
+   descCat01:= '--------------------';
+   descCat02:= '--------------------';
+   descCat03:= '--------------------';
+   numNivel := '0';
+   vlNivel := '0000';
+
+   application.CreateForm( TfmSelCat, fmSelCat);
+   fmSelCat.ShowModal();
+
+   if (fmSelCat.ModalResult = mrOK) then
+   begin
+      numNivel := fmSelCat.lbnivel.Caption;
+      vlNivel := fmSelCat.lbValorNivel.Caption;
+      if (numNivel= '3') then
+      begin
+         descCat01 := fmSelCat.qrClasse1.fieldByName('ds_vcampo').asString;
+         descCat02 := fmSelCat.qrClasse2.fieldByName('ds_vcampo').asString;
+         descCat03 := fmSelCat.qrClasse3.fieldByName('ds_vcampo').asString;
+      end;
+      if (numNivel= '2') then
+      begin
+         descCat01 := fmSelCat.qrClasse1.fieldByName('ds_vcampo').asString;
+         descCat02 := fmSelCat.qrClasse2.fieldByName('ds_vcampo').asString;
+      end;
+
+      if (numNivel= '1') then
+         descCat01 := fmSelCat.qrClasse1.fieldByName('ds_vcampo').asString;
+   end;
+   fmSelCat := nil;
+end;
+
+
+
 
 end.
 

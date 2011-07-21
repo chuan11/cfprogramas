@@ -334,7 +334,6 @@ begin
    travaGrid(nil);
 end;
 
-
 procedure TfmOsDeposito.criaTabela(Sender: Tobject; var table:TADOTable);
 var
    cmd:String;

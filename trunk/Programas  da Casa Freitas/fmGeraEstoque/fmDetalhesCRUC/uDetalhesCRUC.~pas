@@ -1,0 +1,50 @@
+unit uDetalhesCRUC;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Grids, DBGrids, SoftDBGrid;
+
+type
+  TForm2 = class(TForm)
+     grid: TSoftDBGrid;
+
+
+     procedure getDadosCRUC(is_ref:String);
+
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form2: TForm2;
+
+implementation
+
+{$R *.dfm}
+
+   if qrCustoPorNota{ TForm2 }
+
+procedure TForm2.getDadosCRUC(is_ref: String);
+begin
+
+
+   DataSource1.DataSet := qrCustoPorNota;
+
+   grid.Columns[0].width := 30;
+   grid.Columns[1].width := 45;
+   grid.Columns[2].width := 200;
+   grid.Columns[3].width := 65;
+   grid.Columns[4].width := 75;
+   grid.Columns[5].width := 30;
+   grid.Columns[6].width := 65;
+   grid.Columns[7].width := 40;
+   grid.Columns[8].width := 60;
+   grid.Columns[9].width := 100;
+   grid.Columns[10].width := 100;
+
+end.

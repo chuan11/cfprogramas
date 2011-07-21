@@ -1,9 +1,9 @@
 object Form2: TForm2
-  Left = 385
-  Top = 211
+  Left = 270
+  Top = 22
   BorderStyle = bsSingle
   Caption = ' Cadastro de Listas '
-  ClientHeight = 576
+  ClientHeight = 624
   ClientWidth = 758
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,7 +22,7 @@ object Form2: TForm2
   OnResize = FormResize
   DesignSize = (
     758
-    576)
+    624)
   PixelsPerInch = 96
   TextHeight = 13
   object DBText1: TDBText
@@ -86,7 +86,7 @@ object Form2: TForm2
   end
   object DBGrid1: TSoftDBGrid
     Left = 0
-    Top = 280
+    Top = 328
     Width = 758
     Height = 296
     Align = alBottom
@@ -470,9 +470,9 @@ object Form2: TForm2
     Colors.WhenEnterFocus.BackColor = clInfoBk
   end
   object dbEdTpLista: TadLabelDBEdit
-    Left = 398
+    Left = 294
     Top = 18
-    Width = 75
+    Width = 35
     Height = 19
     Ctl3D = False
     DataSource = DataSource1
@@ -537,7 +537,7 @@ object Form2: TForm2
   end
   object pnBusca: TPanel
     Left = 324
-    Top = 165
+    Top = 167
     Width = 339
     Height = 37
     Anchors = [akTop, akRight]
@@ -619,9 +619,9 @@ object Form2: TForm2
       NumGlyphs = 2
     end
   end
-  object Panel1: TPanel
-    Left = 230
-    Top = 106
+  object pnIncluiItens: TPanel
+    Left = 342
+    Top = 10
     Width = 344
     Height = 406
     BevelInner = bvLowered
@@ -946,16 +946,9 @@ object Form2: TForm2
     Left = 32
     Top = 251
   end
-  object Query2: TADOQuery
-    Connection = Form1.ADOConnection1
-    CommandTimeout = 60
-    Parameters = <>
-    Left = 110
-    Top = 273
-  end
   object PopupMenu1: TPopupMenu
-    Left = 200
-    Top = 336
+    Left = 176
+    Top = 480
     object Adicionarpessoasrelacioandas1: TMenuItem
       Caption = 'Pessoas relacionadas '#224' lista'
       OnClick = Adicionarpessoasrelacioandas1Click
@@ -971,6 +964,10 @@ object Form2: TForm2
     object Imprimirotermodeconcordncia1: TMenuItem
       Caption = 'Imprimir o termo de concord'#226'ncia'
       OnClick = Imprimirotermodeconcordncia1Click
+    end
+    object Incluirosprodutosnalista1: TMenuItem
+      Caption = 'Incluir os produtos na lista.'
+      OnClick = Incluirosprodutosnalista1Click
     end
   end
 end

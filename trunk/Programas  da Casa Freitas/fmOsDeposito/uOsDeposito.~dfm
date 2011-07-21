@@ -1,6 +1,6 @@
 object fmOsDeposito: TfmOsDeposito
-  Left = 511
-  Top = 360
+  Left = 476
+  Top = 196
   Width = 645
   Height = 417
   Caption = 'Requisi'#231#245'es para  dep'#243'sito'

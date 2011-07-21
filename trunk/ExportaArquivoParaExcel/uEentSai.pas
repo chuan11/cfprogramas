@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, funcsql, funcoes,ExtCtrls;
+  Dialogs, StdCtrls, {funcsql, } funcoes,ExtCtrls;
 
 type
   TfmEntSai = class(TForm)
@@ -75,7 +75,7 @@ var
   total:integer;
 begin
    total := 0 ;
-   uo := funcsql.getCodUo(form1.cbLoja);
+   uo := 10033674;//funcsql.getCodUo(form1.cbLoja);
    form1.qrEnt.First;
    while form1.qrEnt.Eof = false do
    begin
@@ -98,8 +98,8 @@ end;
 procedure TfmEntSai.ObtertotalVendas(Sender: Tobject);
 begin
    shortdateformat := 'dd/MM/yyyy';
-   form1.CalculaVendaNoPeriodo(  
-                                 funcSQl.getCodUo(form1.cbLoja) ,
+   form1.CalculaVendaNoPeriodo(
+                                 funcSQl.getCodUo(FORM1.cbLoja) ,
                                  lbis_ref.Caption,
                                  lbPrimEnt.Caption,
                                  dateToStr( now),
