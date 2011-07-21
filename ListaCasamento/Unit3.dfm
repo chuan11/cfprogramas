@@ -1,6 +1,6 @@
 object Form3: TForm3
-  Left = 590
-  Top = 244
+  Left = 481
+  Top = 197
   BorderIcons = []
   BorderStyle = bsNone
   ClientHeight = 515

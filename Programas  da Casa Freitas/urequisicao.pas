@@ -269,8 +269,8 @@ end;
 
 procedure TfmReqLojas.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  action := cafree;
-  fmReqLojas := nil;
+   action := cafree;
+   fmReqLojas := nil;
 end;
 
 end.

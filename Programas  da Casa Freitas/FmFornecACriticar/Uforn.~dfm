@@ -1,6 +1,6 @@
 object fmForn: TfmForn
-  Left = 323
-  Top = 173
+  Left = 668
+  Top = 335
   Width = 526
   Height = 341
   Caption = 'fmForn'

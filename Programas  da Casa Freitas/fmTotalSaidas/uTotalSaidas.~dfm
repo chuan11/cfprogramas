@@ -1,6 +1,6 @@
 object fmTotalSaidas: TfmTotalSaidas
-  Left = 386
-  Top = 194
+  Left = 398
+  Top = 149
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Venda total no per'#237'odo'
@@ -152,9 +152,8 @@ object fmTotalSaidas: TfmTotalSaidas
     object lbDados: TLabel
       Left = 63
       Top = 6
-      Width = 33
+      Width = 5
       Height = 13
-      Caption = '--------'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -11

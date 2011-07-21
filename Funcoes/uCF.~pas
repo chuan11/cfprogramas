@@ -7,6 +7,8 @@ interface
         IdBaseComponent, IdComponent, IdRawBase, IdRawClient, IdIcmpClient, IdTelnet, SoftDBGrid,
         uMain, funcsql, uListaFornecedores, funcDatas, funcoes, uSelecionaUo;
 
+
+   procedure listaTabelaPrecos(tipoPesquisa, tpEstoque:smallInt; ds_ref, cd_ref, uo, pc01, pc02, numNivel, vlNivel:String; qr:TADOQuery);
    function ajustaCodigoNCM(isRef, ncm_sh:String):boolean;
    function alterarModPagamento(uo, seqtransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String):boolean;
    function getAutorizadoresPorTela(codTela:smallInt; grupoUser:String):String;
@@ -20,7 +22,8 @@ interface
    function getDadosPedidoDeCompra(conexao: TADOconnection; numPedido:String):TdataSet;
    function getDadosProd(uo, codigo, preco:String; mostraMsg:boolean):TdataSet;
    function getDescCaixas(uo:String; mostraTodos:boolean):TStrings;
-   function getEntradasPorItem(is_ref:String):TdataSet;
+   function getEntradasPorItem(is_ref, uo:String):TdataSet;
+   function getEstoqueProduto(uo, is_ref, tipoSaldo:String; data:Tdate):String;
    function getFileFromACBR(server, dirRemoto, dirLocal, arquivo: String): boolean;
    function getFmDadosPessoa(codPerfil: String):String;
    function getIsUo(mostraEscritorio:boolean):String;
@@ -29,10 +32,10 @@ interface
    function getNomeImpressoraNFe():String;
    function getPcProd(uo, codigo, preco:String):String;
    function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
-   function getListaProdutosTransferidos(uo:String; di, df:Tdate):TdataSet;
    function getTotaisVendaAvaria(lojas:TadLabelComboBox; datai, dataf:Tdate; tabela:String):String;
    function getTotalCartaoPorModo(tb:TADOTable):TStringlist;
    function getVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate):String;
+   function getVendaProdutoDLEST(is_ref, is_uo, uocd:String; datai, dataf:Tdate):String;
    function getVdItemDetPorLojaPeriodo(is_ref, uo, uocd:String; di, df:Tdate):TdataSet;
    function insereModPagamento (uo, seqTransacao, codNovaModalidade, valor, numParcelas,  dataTrans:String):boolean;
    function insereRegistroTEF(uo, seqTransacao, seqModalidade, tp_mve, valor, numParcelas, dataTrans:String):boolean;
@@ -47,6 +50,7 @@ interface
    procedure carregaListarUosPorPreco(var clb: TadLabelCheckListBox; TpPreco:String);
    procedure criaTabelaDosTotaisDeAvarias(var tb: TADOTable);
    procedure getCRUCBaseNota(conexao:TADOConnection; var query:TADOquery; is_ref:String);
+   procedure getListaProdutosTransferidos(tb:TADOTable; uo:String; di, df:Tdate);
    procedure getModalidadesCaixa(tb, tbDestino :TADOTable; cd_tpm, tp_mve: String);
    procedure getOperadoresPorCaixa(tb:TADOTable; uo, caixa:String; dti: TDateTimePicker; conexao:TADOConnection);
    procedure getProdAvariadosParaVenda(tb:TADOTAble; grid:TSoftDBGrid; numPedido:String);
@@ -58,7 +62,11 @@ interface
    procedure listaRecebimentosCaixa(tb:TADOTAble; uo, caixa:String; dti, dtf: TDateTimePicker; listaSoCartao, removeTrocos, listaSangria:boolean);
    procedure listarPrecosAlteradosPoPeriodo(qr:TADOQuery; uo,preco:String; data:Tdate);
    procedure logAlteracoesBD(conexao:TADOConnection; tela, usuario, alteracao:String);
+   function getDadosUltEntItem(is_ref, uo:String):TdataSet;
+   function getDetalhesCRUC(is_ref:String):TdataSet;
 
+   procedure calculaRRANA(is_refs:TStringlist; uo:String; dti, dtf:Tdate);
+   function getRRANAItem(is_ref, uo:String; dti, dtf:Tdate):TdataSet;
 
 implementation
 
@@ -681,7 +689,7 @@ begin
    if (removeTrocos = true) then
    begin
       tb.close;
-      funcSQl.execSQL('delete from ' + tb.tableName + ' where valor <=0', fmMain.conexao);
+      funcSQl.execSQL('delete from ' + tb.tableName + ' where valor < 0', fmMain.conexao);
       tb.open();
    end;
    screen.cursor:= crDefault;
@@ -853,19 +861,19 @@ function alterarModPagamento(uo, seqTransacao, seqModalidade, codNovaModalidade,
 var
    dsTEF:TdataSet;
    cmd:String;
-//   is_venda_cartao:boolean;
+
 begin
    dsTEF:= getDataSetQ('Select * from dsmve where cd_mve = ' + codNovaModalidade, fmMain.conexao);
-
 // remova o sequencial TEF antigp, se tiver
    if (seqTEFTransCaixa <> '0') then
       removeRegistroTef(seqTEFTransCaixa);
 
-// determinar se a nova modalidade é em cartão
+// determinar se a nova modalidade é em cartão, se sim, insere o registro TEF
    if (dsTEF.fieldByName('tp_mve').asString = 'B') or (dsTEF.fieldByName('tp_mve').asString = 'T') then
       insereRegistroTEF(uo, seqTransacao, seqModalidade, dsTEF.fieldByName('tp_mve').asString, valor, numParcelas, dataTrans);
-
    dsTEF.free();
+
+   
 
    cmd := '  update ModalidadesPagtoPorTransCaixa'+
           '  set codModalidadePagto = ' + codNovaModalidade +
@@ -1006,7 +1014,7 @@ begin
    gravaLog('funcao getVdItemDetPorLojaPeriodo()');
 
    cmd :=
-   'Select UO.ds_uo as Loja, sum(qt_mov) as Quantidade from zcf_dsdsi V with(nolock) '+
+   'Select UO.ds_uo as Loja, sum(qt_mov) as qt_mov from zcf_dsdsi V with(nolock) '+
    'inner join zcf_tbuo UO (nolock) on V.is_estoque = UO.Is_uo '+
    'where ' +
    'V.dt_mov between '+
@@ -1030,8 +1038,40 @@ begin
    if ( ds.IsEmpty = true) then
       result := '0'
    else
-      result :=  floatTostrf(  funcSQL.somaColunaTable(ds,'Quantidade') , ffNumber, 18, 0);
+      result :=  floatTostrf(  funcSQL.somaColunaTable(ds,'qt_mov') , ffgeneral, 18, 0);
 end;
+
+function getVendaProdutoDLEST(is_ref, is_uo, uocd:String; datai, dataf:Tdate):String;
+var
+   ds:TDataSet;
+   cmd:String;
+begin
+   cmd :=
+   '  select dlest.is_estoque '+#13+
+   ', DLEST.is_ref '+#13+
+   ', dlest.is_lanc '+#13+
+   ', case  '+#13+
+   '     when  toper.codTransacao in ( 09, 26, 43 ) then   ( QT_MOV * -1 ) '+#13+
+   '     when  toper.codTransacao in ( 23, 24, 25, 44 , 46 ) then  ( QT_MOV ) '+#13+
+   ' end as qt_mov '+#13+
+   ' from dlest (nolock) '+#13+
+   ' inner join toper (NOLOCK) on dlest.is_oper = toper.is_oper '+#13+
+   ' where dlest.dt_mov between '+#13+
+   funcDatas.dateTimeToSqlDateTime(dataI, ' 00:00:01') + ' and ' +#13+
+   funcDatas.dateTimeToSqlDateTime(dataF, ' 23:59:00') +#13+
+   ' and dlest.is_estoque = ' + is_uo +#13+
+   ' and toper.codTransacao in ( 09, 23, 24, 25, 26, 43, 44 , 46 ) '+#13+
+   ' and dlest.st_mov = '''' '+#13+
+   ' and dlest.is_ref = ' + is_ref;
+
+   ds:=  getDataSetQ(cmd, fmMain.conexao);
+
+   if (ds.isEmpty = true )then
+     result := '0'
+   else
+      result :=  floatTostrf(  funcSQL.somaColunaTable(ds, 'qt_mov'), ffNumber, 18, 0);
+end;
+
 
 function getDadosEntProduto(uo, isRef:String):TDataSet;
 var
@@ -1049,10 +1089,39 @@ begin
   result := funcSQL.getDataSetq( cmd, fmMain.conexao);
 end;
 
-function getEntradasPorItem(is_ref:String):TdataSet;
+function getDadosUltEntItem(is_ref, uo:String):TdataSet;
+var
+  cmd:String;
+  ds:Tdataset;
+begin
+// define a data da ultima entrada
+   cmd := ' select top 01 * from zcf_dsdei' +
+          ' where '+
+          ' is_ref= ' + is_ref +
+          ' and is_estoque= '+ uo +
+          ' and codTransacao=1'+
+          ' order by dt_mov desc';
+
+   ds:= funcSQL.getDataSetQ(cmd, fmMain.conexao);
+   if (ds.isEmpty = false) then
+   begin
+      cmd := ' select dt_mov, sum(qt_mov) as qt_Mov from zcf_dsdei' +
+             ' where '+
+             ' is_ref= ' + is_ref +
+             ' and is_estoque= '+ uo +
+             ' and codTransacao=1' +
+             ' and dt_mov = ' + funcDatas.DateToSqlDate(ds.fieldByName('dt_mov').asString) +
+             ' group by dt_mov';
+      ds:= funcSQL.getDataSetQ(cmd, fmMain.conexao);
+   end;
+   result := ds;
+end;
+
+function getEntradasPorItem(is_ref, uo:String):TdataSet;
 var
    cmd:String;
 begin
+ // entradas por itens constam a apartir de  2010-06-16
    cmd :=
    'select '+
    'dnota.nr_docf as [NumNota], '+#13+
@@ -1066,8 +1135,12 @@ begin
    'inner join zcf_tbuo with(NoLock) on dnota.is_estoque = zcf_tbuo.Is_uo '+#13+
    'where zcf_dsdei.is_ref = '+ is_ref +
    'and  zcf_dsdei.codTransacao  = 1 '+#13+
-   'and DNOTA.st_nf = '''' '+#13+
-   'order by  zcf_dsdei.dt_mov desc';
+   'and DNOTA.st_nf = '''' ';
+
+   if (uo <> '') then
+      cmd := cmd + ' and uo= ' + uo;
+
+   cmd := cmd + ' order by  zcf_dsdei.dt_mov desc';
    result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
 end;
 
@@ -1101,21 +1174,196 @@ begin
    result := cmd;
 end;
 
-function getListaProdutosTransferidos(uo:String; di, df:Tdate):TdataSet;
+procedure getListaProdutosTransferidos(tb:TADOTable; uo:String; di, df:Tdate);
 var
    cmd:String;
 begin
+   if (tb.tableName <> '') then
+      tb.close();
    cmd:=
-   'select crefe.cd_ref, crefe.ds_ref, sum(dlest.qt_mov)as QtTransferida from dlest (nolock) ' +
-   'inner join toper (nolock) on toper.is_oper = dlest.is_oper and toper.codTransacao = 2 ' +
-   'inner join crefe (nolock) on dlest.is_ref = crefe.is_ref '+
-   'where '+
-   'dlest.is_estoque = '+ uo +
-   'and dlest.is_tpcte = 6 '  +
-   'and toper.dt_trab between '+ funcDatas.dateToSqlDate(di) + ' and ' + funcDatas.dateToSqlDate(df) +
-   'group by dlest.is_ref, crefe.cd_ref, crefe.ds_ref '+
+   'insert ' + tb.TableName +
+   ' select crefe.cd_ref, crefe.ds_ref, sum(dlest.qt_mov)as QtTransferida from dlest (nolock) ' +#13+
+   'inner join toper (nolock) on toper.is_oper = dlest.is_oper and toper.codTransacao = 2 ' +#13+
+   'inner join crefe (nolock) on dlest.is_ref = crefe.is_ref '+#13+
+   'where '+#13+
+   'dlest.is_estoque = '+ uo +#13+
+   'and dlest.is_tpcte = 6 '  +#13+
+   'and toper.dt_trab between '+ funcDatas.dateTimeToSqlDateTime(di, ' 00:00:01') + ' and ' + funcDatas.dateTimeToSqlDateTime(df, ' 23:59:00') +#13+
+   'group by dlest.is_ref, crefe.cd_ref, crefe.ds_ref '+#13+
    'order by cd_ref ';
+   funcSQL.execSQL(cmd, fmMain.conexao);
+end;
+
+procedure listaTabelaPrecos(tipoPesquisa, tpEstoque:smallInt; ds_ref, cd_ref, uo, pc01, pc02, numNivel, vlNivel:String; qr:TADOQuery);
+var
+   cmd:String;
+begin
+  cmd :=
+  ' Select crefe.cd_ref as codigo '+#13+
+  ' ,crefe.ds_ref as descricao '+#13+
+  ' ,Crefe.qt_emb '+#13+
+  ' ,dbo.Z_CF_EstoqueNaLoja( is_ref, 10033674, 1 ) as estoqueAtual '+#13+
+  ' ,dbo.Z_CF_FunObterPrecoProduto_CF( '+pc01+ ', is_ref, ' +uo+ ', 0 ) as [Preco 01] '+#13+
+  ' ,dbo.Z_CF_FunObterPrecoProduto_CF( '+pc02+ ', is_ref, ' +uo+ ', 0 ) as [Preco 02] '+#13+
+  ' ,CREFE.cd_pes '+#13+
+  ' from crefe with(NoLock) ';
+
+  if (numNivel <> '0') then
+  cmd := cmd + 'inner join cccom on crefe.is_ref = cccom.cd_chave ' +#13+
+               ' and cccom.cd_campo= '+ numNivel +#13+
+               ' and cccom.cd_vcampo= '+ vlNivel +#13;
+
+  cmd := cmd +  ' where crefe.cd_ref like '+ quotedStr(cd_ref + '%') +#13 ;
+
+  if ( ds_ref <> '') then
+  begin
+     if (tipoPesquisa = 1) then
+       cmd := cmd + ' and crefe.ds_ref like '+quotedStr(ds_ref +'%')+#13;
+
+     if (tipoPesquisa = 2) then
+       cmd := cmd + ' and crefe.ds_ref like '+quotedStr('%' + ds_ref+ '%')+#13;
+  end;
+
+  if (tpEstoque = 1) then
+     cmd := cmd +  ' and dbo.Z_CF_EstoqueNaLoja( is_ref, '+uo +', 1) <> 0 '+#13;
+
+  if (tpEstoque = 2) then
+     cmd := cmd + ' and dbo.Z_CF_EstoqueNaLoja( is_ref, '+uo +', 1 ) > 0 '+#13;
+
+  if (tpEstoque = 3) then
+     cmd := cmd + ' and dbo.Z_CF_EstoqueNaLoja( is_ref, '+uo +', 1 ) < 0 '+#13;
+
+  cmd := cmd +' order by  crefe.ds_ref';
+
+  funcSQL.getQuery2(fmMain.Conexao, qr, cmd);
+end;
+
+function getEstoqueProduto(uo, is_ref, tipoSaldo:String; data:Tdate):String;
+var
+   ds:TdataSet;
+   strTpSaldo, saldo, cmd:String;
+begin
+   { contas
+     1           Pendências de fornecimento
+     2           Distribuição aguardando fornecimento
+     3           Reservado para distribuição
+     4           A receber de distribuição e reservado no depósito
+     5           A receber de distribuição Aguardando Fornecimento
+     6           Estoque
+     8           Reservado para venda
+     9           Mercadoria avariada
+    12           Em trânsito
+  10000004       Auditoria da distribuição
+}
+   saldo := '0';
+   funcoes.gravaLog('DataBD:' + dateToStr(funcSQL.getDateBd(fmMain.conexao)) );
+
+   if (data >= funcSQL.getDateBd(fmMain.conexao) )then
+   begin
+      if (upperCase(tipoSaldo) = 'D') then
+         strTpSaldo:= 'qtSaldoDisponivel'
+      else
+         strTpSaldo:= 'SaldoFisico';
+
+      cmd := 'select ' + strTpsaldo + ' from viwestoque with(nolock) where is_ref= '+
+             is_ref + ' and is_estoque=' + uo;
+      ds := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+
+      if ( ds.isEmpty = false) then
+        saldo := ds.fieldByName(strTpSaldo).asString;
+   end
+   else
+      funcoes.gravaLog('DataBD dif da atual: ' + dateToStr(data) + ' ' + dateToStr(funcSQL.getDateBd(fmMain.conexao))  );
+
+   result := saldo;
+end;
+
+
+function getDetalhesCRUC(is_ref:String):TdataSet;
+var
+   cmd:String;
+begin
+   cmd :=
+   ' Select top 01 '+#13 +
+   ' zcf_tbuo.ds_uo as [Loja], '+#13 +
+   ' dnota.dt_entsai as [Data entrada], '+#13 +
+   ' dnota.sr_docf as [Sr Nota], '+#13 +
+   ' dnota.Nr_docf as [Nr Nota], '+#13 +
+   ' dmovi.pr_tabela  as [Vl de Nota], '+#13 +
+   ' dmovi.PC_IPI as [% IPI], '+#13 +
+   ' (dmovi.pR_TABELA * (PC_IPI/100)) as [(+) Vl IPI], '+#13 +
+   ' dmovi.Pc_icm  as[ %ICMS], '+#13 +
+   ' dmovi.pR_TABELA * (PC_ICM/100) as [(-) Vl ICMS], '+#13 +
+   ' (SELECT top 01 is_pedf FROM DSIPE with (nolock) WHERE IS_REF= '+is_ref+' AND qt_Ped <> qt_Pend order BY IS_MOVPF desc ) as [Ult Pedido], '+#13 +
+   ' dbo.Z_CF_funObterPrecoProduto_CF ( 6 , dlest.is_ref, 0, 0) as [Pc Ultima Compra], '+#13 +
+   ' dbo.Z_CF_funObterPrecoProduto_CF ( 7 , dlest.is_ref, 0, 0) as [Pc CRUC] '+#13 +
+   ' from dlest (nolock) '+#13 +
+   ' inner join toper (nolock) on dlest.is_oper = toper.is_oper and toper.codtransacao = 1 '+#13 +
+   ' inner join dnota (noLock) on toper.is_oper = dnota.is_oper '+#13 +
+   ' inner join dmovi (noLock) on dnota.is_nota = dmovi.is_nota and dmovi.is_ref = dlest.is_ref '+#13 +
+   ' inner join zcf_tbuo on dlest.is_estoque= zcf_tbuo.is_uo '+#13 +
+   ' and dlest.is_ref = '+is_ref+ #13 +
+   ' order by dlest.is_movi desc';
    result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
 end;
 
+
+function getRRANAItem(is_ref, uo:String; dti, dtf:Tdate):TdataSet;
+var
+   cmd:String;
+begin
+   cmd:= '';
+
+end;
+
+procedure calculaRRANA(is_refs:TStringlist; uo:String; dti, dtf:Tdate);
+var
+   i:integer;
+   tbItens, tbMov:TADOTable;
+   cmd:String;
+   ds:TdataSet;
+begin
+   tbItens := TADOTable.create(nil);
+   cmd := ' is_ref int, cd_ref varchar(08), ds_ref varchar(50), saldoAnterior int';
+   funcsql.getTable(fmMain.Conexao, tbItens, cmd);
+//   tbItens.tableName:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
+
+{   tbMov := TADOTable.create(nil);
+   cmd := 'dt_mov  smallDateTime, ds_res varchar(50), nm_usu varchar(50), qt_mov int, qt_sldatu int, ' +
+          'TipoMovEstoque varchar(1), is_fildest varchar(08),  ds_uo varchar(50)';
+   tbMov.tableName:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
+
+}
+   for i:= 0 to is_refs.count -1 do
+   begin
+      ds := uCF.getDadosProd(uo, is_refs[i], '101', false);
+      tbItens.open();
+      tbItens.appendRecord([
+                              ds.fieldByName('is_ref').asString,
+                              ds.fieldByName('codigo').asString,
+                              ds.fieldByName('descricao').asString,
+                              '0'
+                           ]);
+      ds.free;
+
+      ds:= uCF.getRRANAItem(is_refs[i], uo, dti, dtf);
+
+      if (ds.isEmpty = false) then
+      begin
+
+
+
+
+
+      end;
+      ds.free();
+   end;
+end;
+
+
+
+
+
+
 end.
+

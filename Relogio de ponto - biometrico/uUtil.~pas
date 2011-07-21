@@ -809,6 +809,7 @@ begin
    uUtil.getTable(tb, cmd);
 
    ds:= getCadastroDeEmpregados(localizacao);
+
    ds.first();
    while( ds.Eof = false ) do
    begin

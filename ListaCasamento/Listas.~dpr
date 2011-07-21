@@ -16,6 +16,7 @@ uses
   sysUtils, funcoes, windows;
 {$R *.res}
 
+
 begin
    if (length(ParamStr(1)) = 0) and ( FileExists('upgrade.exe') ) then
    begin

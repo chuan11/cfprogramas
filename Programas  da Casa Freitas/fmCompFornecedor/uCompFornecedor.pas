@@ -122,7 +122,7 @@ begin
       params.Add(dateToStr(dti.Date));
       params.Add(dateToStr(dtf.Date) );
       params.Add(fmMain.getNomeUsuario() );
-      fmMain.impressaoRaveQr2(qrCredores, tbFichas, 'rpParcFornFicha', params );
+      fmMain.impressaoRaveQr4(qrCredores, tbFichas, nil, nil, 'rpParcFornFicha', params );
    end
    else
       msgTela('','Não contrei nenhum compromisso que satisfaça esses critérios.', MB_ICONERROR + mb_ok);

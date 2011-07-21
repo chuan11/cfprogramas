@@ -21,7 +21,7 @@ type
     Dbedit8: TadLabelDBEdit;
     Dbedit11: TadLabelDBEdit;
     dbEdNumLista: TadLabelDBEdit;
-    Panel1: TPanel;
+    pnIncluiItens: TPanel;
     Lb1: TadLabelListBox;
     lb2: TadLabelListBox;
     BitBtn7: TBitBtn;
@@ -36,7 +36,6 @@ type
     BitBtn6: TFlatButton;
     bitBtn1: TFlatButton;
     bitbtn2: TFlatButton;
-    Query2: TADOQuery;
     DBGrid1: TSoftDBGrid;
     dBDT1: TadLabelDBDateTimePicker;
     DBText1: TDBText;
@@ -56,6 +55,7 @@ type
     cbLojas: TadLabelComboBox;
     btBusca: TfsBitBtn;
     Adicionarpessoasrelacioandas1: TMenuItem;
+    Incluirosprodutosnalista1: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure bitBtn1Click(Sender: TObject);
     function verificaPreenchimento(sender: tobject):string;
@@ -88,6 +88,10 @@ type
     procedure btBuscaClick(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure Adicionarpessoasrelacioandas1Click(Sender: TObject);
+    procedure ajustaComboTipoLista();
+    procedure abreJanelaInclusaoItens();
+    procedure Incluirosprodutosnalista1Click(Sender: TObject);
+
   private
     { Private declarations }
   public
@@ -96,11 +100,32 @@ type
 var
   Form2: TForm2;
   EhInclusaoDeLista:boolean;
-  NmLista,tplista:string[10];
+  NUMERO_LISTA, TIPO_LISTA:string[10];
 implementation
 
 {$R *.dfm}
 uses unit1, unit4, uPRelacionadas;
+
+procedure TForm2.abreJanelaInclusaoItens();
+var
+   ds:TdataSet;
+begin
+   ds:= funcSQL.getADODataSetQ( 'Select numLista from produtos where numLista = '+ NUMERO_LISTA, form1.ADOConnection1);
+   if (ds.RecordCount < 5) then
+   begin
+      ds:= funcSQL.getADODataSetQ( 'exec stoListaSugestao '+ TIPO_LISTA, form1.ADOConnection1);
+      while ds.Eof = false do
+      begin
+         lb1.Items.Add(' ' + trim(ds.Fields[0].AsString) + ' - '+  copy(ds.Fields[1].AsString, 01, 25) );
+         ds.Next;
+      end;
+      pnIncluiItens.Visible := true;
+   end
+   else
+      funcoes.msgTela('', 'Os itens da lista já foram incluídos', MB_ICONERROR + MB_OK);
+end;
+
+
 
 procedure TForm2.CarregaDadosdaslistas(sender: tobject);
 var
@@ -115,8 +140,8 @@ begin
             );
    form1.query1.sql.add(cmd);
    form1.query1.Open;
-   panel1.top:= 03;
-   panel1.Left := form2.Width - panel1.Width - 10;
+   pnIncluiItens.top:= 03;
+   pnIncluiItens.Left := form2.Width - pnIncluiItens.Width - 10;
 
    dbedit1.DataField := 'noiva';
    dbedit2.DataField := 'noivo';
@@ -136,11 +161,11 @@ begin
    DBDT1.DataField := 'DataCasamento' ;
    DBDT1.MinDate :=  form1.dp1.mindate;
 
-   if form1.RParReg('loja') = '00' then
-
+   if (form1.RParReg('loja') = '00') then
       dbedit13.visible := true;
+      
     // pegar os valores dos tipos de listas
-    cbTpLista.Items := funcSQL.OpenQuery(form1.ADOConnection1, 0, 2, 'select  descricao, aceitaNoivo,CodLista from tipoListas (nolock) where codLista > 0 order by CodLista');
+    cbTpLista.Items := funcSQL.OpenQuery( form1.ADOConnection1, 0, 2, 'select  descricao, aceitaNoivo, CodLista from tipoListas (nolock) where codLista > 0 order by CodLista');
     cbTpLista.ItemIndex := 0;
 
     form1.LerColunasDbgrid(form2.name,Dbgrid1);
@@ -250,36 +275,6 @@ begin
    action := Cafree;
 end;
 
-procedure TForm2.bitBtn1Click(Sender: TObject);
-begin
-   screen.Cursor := crHourGlass;
-   if ehinclusaoDeLista=true then
-   begin
-      if verificaPreenchimento(sender) = '' then
-      begin
-         TpLista:= dbEdTpLista.Text;
-         form1.query1.Post;
-         nmlista := dbEdNumLista.text;
-         dbgrid1.Enabled := false;
-         ChamaInclusaiDeItens(sender);
-         CarregaDadosdaslistas(Sender);
-      end
-      else
-        form1.MsgTela(verificaPreenchimento(sender),mb_iconerror+mb_ok);
-   end
-   else
-   begin
-      if verificaPreenchimento(sender) = '' then
-      begin
-         form1.query1.Post;
-         desabilitaEdits(sender);
-      end
-      else
-         form1.MsgTela(verificaPreenchimento(sender),mb_iconerror+mb_ok)
-   end;
-   screen.Cursor := crDefault;   
-end;
-
 procedure TForm2.BitBtn4Click(Sender: TObject);
 begin
    if form1.EhlistaDaloja(dbgrid1.fields[0].asString,true)  = true then
@@ -287,6 +282,7 @@ begin
       form1.query1.Edit;
       habilitaEdits(sender);
       dbgrid1.Enabled := false;
+      ajustaComboTipoLista();
    end
 end;
 
@@ -308,20 +304,8 @@ end;
 
 procedure TForm2.ChamaInclusaiDeItens(sender: tobject);
 begin
-   if form1.MsgTela('A lista foi incuida.'+ #13+' Gostaria de incluir os itens agora??',mb_iconquestion+mb_Yesno) = mrYes then
-   begin
-      query2.SQL.Clear;
-      query2.SQL.add('exec stoListaSugestao ' +tplista);
-      query2.Open;
-
-      query2.First;
-      while query2.Eof = false do
-      begin
-         lb1.Items.Add(' ' + trim(query2.Fields[0].AsString) + ' - '+  copy(query2.Fields[1].AsString,01,25)  );
-         query2.Next;
-      end;
-      panel1.Visible := true;
-   end
+   if form1.MsgTela('A lista foi incuida.'+ #13+' Gostaria de incluir os itens agora??' +#13+ 'Se escolher não poderá inclui-ilos posteriormente' ,mb_iconquestion+mb_Yesno) = mrYes then
+      abreJanelaInclusaoItens()
    else
       BitBtn2Click(Sender);
 end;
@@ -386,7 +370,7 @@ procedure TForm2.BitBtn12Click(Sender: TObject);
 begin
    lb1.Items.Clear;
    lb2.Items.Clear;
-   panel1.Visible := false;
+   pnIncluiItens.Visible := false;
    BitBtn2Click(Sender);
 end;
 
@@ -394,18 +378,21 @@ procedure TForm2.BitBtn11Click(Sender: TObject);
 var
   aux:string;
   i:integer;
+  comandos:TStringlist;
 begin
-   query2.SQL.Clear;
+   comandos := TSTringlist.create();
+
    for i:=0 to lb2.items.count - 1 do
    begin
        aux := lb2.items[i];
-       query2.SQL.add('insert into produtos ( numlista,codigo,nomeProduto, Tipo,convidado, isPromocao ) values( '  + quotedStr(nmlista) + ' ,  ' +quotedStr('0000000')         + ' ,  ' + quotedStr(copy(aux,pos(' - ',aux)+3,length(aux)))  + ' ,  ' + quotedStr( copy(aux,pos(' ',aux)+1,pos(' - ',aux)-pos(' ',aux)-1 ) ) + ' ,  ' +quotedstr('')+ ', 0 )');
+       comandos.add('insert into produtos ( numlista,codigo,nomeProduto, Tipo,convidado, isPromocao ) values( '  + quotedStr(NUMERO_LISTA) + ' ,  ' +quotedStr('0000000')         + ' ,  ' + quotedStr(copy(aux,pos(' - ',aux)+3,length(aux)))  + ' ,  ' + quotedStr( copy(aux,pos(' ',aux)+1,pos(' - ',aux)-pos(' ',aux)-1 ) ) + ' ,  ' +quotedstr('')+ ', 0 )');
    end;
-   query2.ExecSql;
 
+   if (comandos.Count  > 0) then
+      for i:=0 to comandos.Count -1 do
+         funcSQL.execSQL( comandos[i], form1.ADOConnection1);
 
-   form1.atualizaDadosItensLista( inttostr(lb2.items.count),'0','0', nmlista);
-
+   form1.atualizaDadosItensLista( inttostr(lb2.items.count),'0','0', NUMERO_LISTA);
    form1.MsgTela('Itens incluidos com Sucesso...',mb_iconexclamation+mb_ok);
    BitBtn12Click(Sender);
 end;
@@ -472,12 +459,15 @@ var
    param:TStringList;
 begin
    funcsql.getQuery( Form1.ADOConnection1, qr, 'Select top 01 * from listas where numLista = '  + numLista ) ;
+
    param := TStringList.Create();
    param.Add( trim(form1.GetParamBD('horarioTrocas', form1.RParReg('loja'))));
    param.Add( qr.fieldByName('cpf').asString  );
    param.Add( qr.fieldByName('cep').asString  );
 
+
    Form1.impressaoRave( qr, nRelatorio, param );
+   qr.Close();
 end;
 
 
@@ -523,6 +513,57 @@ begin
    Application.CreateForm( TfmPRelacionadas, fmPRelacionadas);
    fmPRelacionadas.CarregaPessoasRelacionadas(nil, Form1.Query1.fieldByname('numLista').asString);
    fmPRelacionadas.ShowModal();
+end;
+
+procedure TForm2.ajustaComboTipoLista;
+var
+  i:integer;
+begin
+   for i:=0 to cbTpLista.Items.Count-1 do
+      if (trim(copy(cbTpLista.Items[i],42,10)) = dbEdTpLista.Text) then
+      begin
+         cbTpLista.ItemIndex := i;
+         break;
+      end;
+end;
+
+procedure TForm2.bitBtn1Click(Sender: TObject);
+begin
+   screen.Cursor := crHourGlass;
+   if ehinclusaoDeLista=true then
+   begin
+      if verificaPreenchimento(sender) = '' then
+      begin
+         TIPO_lISTA := dbEdTpLista.Text;
+         form1.query1.Post;
+         NUMERO_LISTA := dbEdNumLista.text;
+         dbgrid1.Enabled := false;
+         chamaInclusaiDeItens(sender);
+         CarregaDadosdaslistas(Sender);
+      end
+      else
+        form1.MsgTela(verificaPreenchimento(sender),mb_iconerror+mb_ok);
+   end
+   else
+   begin
+      if verificaPreenchimento(sender) = '' then
+      begin
+         form1.query1.Post;
+         desabilitaEdits(sender);
+      end
+      else
+         form1.MsgTela(verificaPreenchimento(sender),mb_iconerror+mb_ok)
+   end;
+   screen.Cursor := crDefault;
+end;
+
+
+
+procedure TForm2.Incluirosprodutosnalista1Click(Sender: TObject);
+begin
+   NUMERO_LISTA := form1.Query1.fieldByName('numLista').asString;
+   TIPO_LISTA := form1.Query1.fieldByName('tipo').asString;
+   abreJanelaInclusaoItens();
 end;
 
 end.

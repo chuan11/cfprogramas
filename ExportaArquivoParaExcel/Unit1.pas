@@ -124,7 +124,7 @@ var
   UO_CD:string;
   IsOrderDesc:byte;
 implementation
-uses unit2, Unit4,unit3, unMapa, uEentSai, UNIT5, Uforn, unit7, unit6;
+uses  {NTsAIuEentSai, }unit2, Unit4,unit3, unMapa, UNIT5, Uforn, unit7, unit6;
 
 {$R *.dfm}
 
@@ -146,7 +146,6 @@ begin
    stBar.Panels[1].Text := 'Calculando Produto : '+ table.fieldByName('Codigo').asString + ' ' +table.fieldByName('descricao').asString;
    form1.Refresh;
 end;
-
 
 
 procedure TForm1.ListarItensPorFaixaCodigo(Sender: Tobject);
@@ -310,7 +309,7 @@ begin
 
 
    cb1.items := funcsQL.getListaPrecos( ADOConnection1, true, true, true, '13' ); // getListaPrecos (sender);
-   cbLoja.items := funcsQL.GetNomeLojas(ADOConnection1, false, false,'','' );
+   cbLoja.items := funcsQL.getNomeLojas2(ADOConnection1, false, false,'');
    form1.Top := 50;
    form1.left := 200;
 
@@ -642,11 +641,12 @@ procedure TForm1.FlatButton6Click(Sender: TObject);
 begin
     if table.IsEmpty = false then
     begin
-       Application.CreateForm(TfmEntSai, fmEntSai);
+{       Application.CreateForm(TfmEntSai, fmEntSai);
        fmEntSai.lbDesc.caption := table.fieldByName('codigo').asString +'  '+copy(table.fieldByName('descricao').asString,01,30);
        fmEntSai.lbis_ref.Caption := table.fieldByName('is_ref').asString;
        fmEntSai.Show;
        fmEntSai.ListarEntrada(nil);
+}
     end;
 end;
 

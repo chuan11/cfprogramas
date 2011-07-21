@@ -113,7 +113,13 @@ var
 begin
    arq := tStringList.Create();
    i:=0;
+   margem01 := 0;
+   margem02 := 0;   
    tbPedido.First;
+
+   arq.add('Pedido número:' + edNumPedido.Text );
+   arq.add('');
+
    while (tbPedido.Eof = false) do
    begin
       ipi := (( ( tbPedido.FieldByName('IPI').asFloat ) *( tbPedido.fieldByName('PRECO UND').asFloat  ) ) / 100) * (edPercNota.Value/100);
@@ -130,24 +136,23 @@ begin
 
       vlVenda := vlVenda + margem02;
 
-//      FloatToStrF(vlvenda, ffFixed, 18, 02);
-
-      arq.add( IntToStr(i+1)+ '- '+ tbPedido.fieldByName('codigo').AsString+' '+tbPedido.fieldByName('descricao').AsString );
-      arq.add( '     PC Ped: ' + FloatToStrF( tbPedido.fieldByName('PRECO UND').asFloat ,ffFixed,18,02)  );
+      inc(i);
+      arq.add( IntToStr(i)+ '- '+ tbPedido.fieldByName('codigo').AsString+' '+tbPedido.fieldByName('descricao').AsString );
+      arq.add( '     PC Ped: ' + FloatToStrF( tbPedido.fieldByName('PRECO UND').asFloat ,ffFixed, 18, 02)  );
       arq.add( '     IPI '+ tbPedido.FieldByName('IPI').asString +'%: '+ floatToStr(ipi) + '     %nota: ' + edPercNota.Text );
       arq.add( '     Frete: '+ floatToStr(frete) );
       arq.add( '     Margem01: '+ floatToStr(margem01) );
       arq.add( '     Margem02: '+ floatToStr(margem02) );
-      arq.add( '     PC Gerado: '+FloatToStrF(vlvenda,ffFixed,18,02));
+      arq.add( '     PC Gerado: '+FloatToStrF(vlvenda,ffFixed, 18, 02));
       arq.add( '');
 
       fmLancaPrecos.Table.AppendRecord([
                                 tbPedido.fieldByName('codigo').AsString,
                                 tbPedido.fieldByName('DESCRICAO').AsString,
                                 funcSQL.GetValorWell('O','Select dbo.funObterPrecoProduto('+ fmLancaPrecos.getCodigoPreco+ ' , '+ tbPedido.FieldByname('is_ref').AsString+ ' , ' +  funcoes.getNumUO(fmLancaPrecos.cbLoja)   + ' , 0   ) as pco ', 'pco', fmMain.Conexao),
-                                FloatToStrF(vlvenda,ffFixed,18,02),
-                                fmLancaPrecos.AjustaPreco( FloatToStrF(vlvenda,ffFixed,18,02) , '1,'+ fmLancaPrecos.edVlMrg02.TEXT, false ),
-                                fmLancaPrecos.AjustaPreco( FloatToStrF(vlvenda,ffFixed,18,02) , '1,'+ fmLancaPrecos.edVlMrg03.TEXT, false ),
+                                FloatToStrF(vlvenda,ffFixed, 18, 02),
+                                fmLancaPrecos.AjustaPreco( FloatToStrF(vlvenda,ffFixed, 18, 02) , '1,'+ fmLancaPrecos.edVlMrg02.TEXT, false ),
+                                fmLancaPrecos.AjustaPreco( FloatToStrF(vlvenda,ffFixed, 18, 02) , '1,'+ fmLancaPrecos.edVlMrg03.TEXT, false ),
                                 tbPedido.fieldByName('is_ref').AsString,
                                 tbPedido.fieldByName('PRECO UND').AsString
                                ]);
@@ -161,55 +166,6 @@ begin
    end;
    fmPcporPedido.Close;
 
-{   arq := tStringList.Create();
-   i:=0;
-   tbPedido.First;
-   while tbPedido.Eof = false do
-   begin
-      desconto :=  ( StrtoFloat(edPercNota.text)   * ( tbPedido.fieldByName('PRECO UND').asFloat ) / 100  );
-      frete :=    ( ( StrtoFloat(edFrete.text)  * ( tbPedido.fieldByName('PRECO UND').asFloat - desconto ) ) / 100  );
-      ipi := ( ( tbPedido.FieldByName('IPI').asFloat )  * ( tbPedido.fieldByName('PRECO UND').asFloat - desconto ) ) / 100  ;
-
-      margem01 :=   ( ( StrtoFloat(edMargem01.text)  * ( tbPedido.fieldByName('PRECO UND').asFloat - desconto + frete ) ) / 100  );
-
-      if StrtoFloat(edMargem2.text) <> 0 then
-         margem02 :=   ( ( edMargem2.Value * ( tbPedido.fieldByName('PRECO UND').asFloat - desconto + margem01 + frete ) ) / 100  );
-
-
-      VlVenda := ( tbPedido.fieldByName('PRECO UND').asFloat - desconto ) + frete + ipi + margem01 + margem02  ;
-
-      FloatToStrF(vlvenda,ffFixed,18,02);
-
-      arq.add( IntToStr(i+1)+ '- '+ tbPedido.fieldByName('codigo').AsString+' '+tbPedido.fieldByName('descricao').AsString );
-      arq.add( '     PC Ped: ' + FloatToStrF( tbPedido.fieldByName('PRECO UND').asFloat ,ffFixed,18,02)  );
-      arq.add( '     Desc: '+floatToStr(desconto) );
-      arq.add( '     Frete: '+ floatToStr(frete) );
-      arq.add( '     Margem01: '+ floatToStr(margem01) );
-      arq.add( '     Margem02: '+ floatToStr(margem02) );
-      arq.add( '     IPI: '+floatToStr(ipi)  );
-      arq.add( '     PC Gerado: '+FloatToStrF(vlvenda,ffFixed,18,02));
-      arq.add( '');
-
-      fmLancaPrecos.Table.AppendRecord([
-                                tbPedido.fieldByName('codigo').AsString,
-                                tbPedido.fieldByName('DESCRICAO').AsString,
-                                funcSQL.GetValorWell('O','Select dbo.funObterPrecoProduto('+ fmLancaPrecos.getCodigoPreco+ ' , '+ tbPedido.FieldByname('is_ref').AsString+ ' , ' +  funcoes.getNumUO(fmLancaPrecos.cbLoja)   + ' , 0   ) as pco ', 'pco', fmMain.Conexao),
-                                FloatToStrF(vlvenda,ffFixed,18,02),
-                                fmLancaPrecos.AjustaPreco( FloatToStrF(vlvenda,ffFixed,18,02) , '1,'+fmLancaPrecos.edVlMrg02.TEXT, false ),
-                                fmLancaPrecos.AjustaPreco( FloatToStrF(vlvenda,ffFixed,18,02) , '1,'+fmLancaPrecos.edVlMrg03.TEXT, false ),
-                                tbPedido.fieldByName('is_ref').AsString,
-                                tbPedido.fieldByName('PRECO UND').AsString
-                               ]);
-      tbPedido.Next;
-   end;
-
-   if checkBox1.Checked = true then
-   begin
-      arq.SaveToFile(getDirLogs()+'memDeCaculo.txt');
-      Winexec(pchar('notepad.exe '+getDirLogs()+ 'memDeCaculo.txt'),sw_normal);
-   end;
-   fmPcporPedido.Close;
-}
 end;
 
 procedure TfmPcporPedido.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -220,7 +176,7 @@ end;
 
 procedure TfmPcporPedido.edNumPedidoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-   if key = VK_return then
+   if (key = VK_return) then
       FlatButton3Click(Sender);
 end;
 

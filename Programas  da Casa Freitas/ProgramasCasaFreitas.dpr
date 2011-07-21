@@ -66,8 +66,12 @@ uses
   uAlteraModalidadePagto in 'fmRemoveRegTEF\uAlteraModalidadePagto.pas' {fmAlteraModPagto},
   uSelecionaUo in 'fmSelecionaUo\uSelecionaUo.pas' {fmSelecionaUo},
   uGeraEstoque in 'fmGeraEstoque\uGeraEstoque.pas' {fmGeraEstoque},
-  uEentSai in 'fmGeraEstoque\uEentSai.pas' {fmEntSai},
-  uRelInventario in 'fmRelInventario\uRelInventario.pas' {fmRelInventario};
+  uRelInventario in 'fmRelInventario\uRelInventario.pas' {fmRelInventario},
+  uSelCat in 'fmCategorias\uSelCat.pas' {fmSelCat},
+  uTotalEntSai in 'fmGeraEstoque\fmTotalEntSai\uTotalEntSai.pas' {fmTotalEntSai},
+  uDetalhesCRUC in 'fmGeraEstoque\fmDetalhesCRUC\uDetalhesCRUC.pas' {fmDetalhesCRUC},
+  uPedidosFornecedor in 'fmGeraEstoque\fmPedidosFornecedor\uPedidosFornecedor.pas' {fmPedidosFornecedor},
+  uExportaTable in 'fmGeraEstoque\fmExportacao\uExportaTable.pas' {fmExportaTable};
 
 {$R *.res}
 

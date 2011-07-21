@@ -157,7 +157,7 @@ begin
    if (cbExportaWell.Checked = true) then
       exportaContagemWell(tb.TableName);
 
-    fmMain.impressaoRaveQr2( tb, tb2, 'rpInvContagem', params );
+    fmMain.impressaoRaveQr4( tb, tb2, nil, nil, 'rpInvContagem', params );
     tb.close();
     tb2.close();
 end;
@@ -299,7 +299,7 @@ begin
          funcoes.gravaLog('terminei as divergencias');
 
          fmMain.msgStatus('');
-         fmMain.impressaoRaveQr2(tbDirvg, nil, 'rpInvDivergencias', params);
+         fmMain.impressaoRaveQr4(tbDirvg, nil, nil, nil, 'rpInvDivergencias', params);
 
       end
       else

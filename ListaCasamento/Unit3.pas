@@ -234,7 +234,7 @@ var
    cmd:String;
    ds:TdataSet;
 begin
-   ds:= funcsql.getDataSetQ('Select noiva, noivo, loja , dataCasamento, codWell, dataCasamento from listas where numLista = ' + num , Form1.ADOConnection1);
+   ds:= funcsql.getDataSetQ('Select noiva, noivo, loja , dataCasamento, codWell, dataCasamento, ehModelo from listas where numLista = ' + num , Form1.ADOConnection1);
 
    if form3.tag = 0 then
        cmd :=(' Exec ListaProdDeUmaLista_02 ' + quotedstr(num) )
@@ -329,32 +329,34 @@ procedure TForm3.btCompradorClick(Sender: TObject);
 var
   isJaBaixado:boolean;
 begin
-   isJaBaixado := true;
-   if length(dbedit3.text) > 3 then
-      if form1.MsgTela(' Já existe comprador para esse produto. '+ #13 + '    Deseja alterar o item ou incluir outro comprador?  ', mb_iconquestion+mb_yesno) = mrNo then
-         isJaBaixado := false;
-
-   if isJaBaixado = true then
+   if (form1.RParReg('Loja') <> '00') or (form1.RParReg('Loja') <> '0') then
    begin
+      isJaBaixado := true;
+      if length(dbedit3.text) > 3 then
+         if form1.MsgTela(' Já existe comprador para esse produto. '+ #13 + '    Deseja alterar o item ou incluir outro comprador?  ', mb_iconquestion+mb_yesno) = mrNo then
+            isJaBaixado := false;
 
-      EhCompra := true;
-      PdQuery.Edit;
-      panel2.visible := true;
-      panel3.visible := false;
-      bitbtn1.Visible := true;
-      btCancela.Visible := true;
-      dbedit3.Enabled:= true;
+      if isJaBaixado = true then
+      begin
+         EhCompra := true;
+         PdQuery.Edit;
+         panel2.visible := true;
+         panel3.visible := false;
+         bitbtn1.Visible := true;
+         btCancela.Visible := true;
+         dbedit3.Enabled:= true;
 
-      edCodProd.SetFocus;
-      dbgrid1.enabled:= false;
-      dbedit1.Text := '';
-      dbedit2.Enabled:= false;
-      edPcProduto.Enabled:= true;
-
-      dblcbox.Enabled := false;
-
-      edDesc.Visible := ( form1.GetParamBD('CampoDesconto', form1.RParReg('Loja') ) = '1' );
-   end;
+         edCodProd.SetFocus;
+         dbgrid1.enabled:= false;
+         dbedit1.Text := '';
+         dbedit2.Enabled:= false;
+         edPcProduto.Enabled:= true;
+         dblcbox.Enabled := false;
+         edDesc.Visible := ( form1.GetParamBD('CampoDesconto', form1.RParReg('Loja') ) = '1' );
+      end;
+   end
+   else
+   form1.msgTela( ' Essa loja não pode registrar compras', MB_ICONERROR + MB_OK);
 end;
 
 procedure TForm3.btCancelaClick(Sender: TObject);
@@ -386,7 +388,18 @@ begin
    if (PdQuery.IsEmpty = true) then
       isAutorizado := false
    else
-      isAutorizado := ( VerificaSenhas.TelaAutorizacao2(form1.ConexaoWell, form1.GetParamBD('gruposAutorizadores', '99') , '') <> '');
+   begin
+      if (length(dbedit3.text) < 3) then
+         isAutorizado := true
+      else
+         isAutorizado := (
+              VerificaSenhas.TelaAutorizacao2(
+                 form1.ConexaoWell,
+                 form1.GetParamBD('gruposAutorizadores', '99'),
+                 form1.GetParamBD('comum.autLista','99') )
+
+         <> '');
+   end;
 
    if (isAutorizado = true) then
       if length(dbedit3.text) > 3 then
@@ -460,10 +473,8 @@ begin
    itensComprados := 0;
    totalComprado := 0;
 
-
    itensPromo := 0 ;
    totalPromo := 0 ;
-
 
    pdQuery.First;
    while not(pdQuery.Eof) do
@@ -485,7 +496,6 @@ begin
    end;
 
    lbComprados.Caption := funcoes.preencheCampo(03,'0','e', inttostr(itensComprados));
-//   lbCompPromo.Caption := funcoes.preencheCampo(03,'0','e', inttostr(itensPromo));
 
    lbTotalComprado.Caption := floattostrf( totalComprado ,ffNumber,18,2);
 
@@ -517,7 +527,6 @@ begin
   else
      result := true;
 end;
-
 
 procedure TForm3.PopupMenu1Popup(Sender: TObject);
 var
@@ -672,7 +681,7 @@ begin
    if funcSql.openSQL('Select gerouCredito from listas where numLista = ' + num, 'gerouCredito' , form1.ADOConnection1  )  <> '' then
       MsgTela('','Essa lista já gerou crédito e não pode ser editada', MB_OK +  MB_ICONERROR)
    else
-      carregalista( num);
+   carregalista(num);
 end;
 
 

@@ -14,6 +14,7 @@ object fmTotalSaidas: TfmTotalSaidas
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
@@ -152,9 +153,8 @@ object fmTotalSaidas: TfmTotalSaidas
     object lbDados: TLabel
       Left = 63
       Top = 6
-      Width = 33
+      Width = 5
       Height = 13
-      Caption = '--------'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -11

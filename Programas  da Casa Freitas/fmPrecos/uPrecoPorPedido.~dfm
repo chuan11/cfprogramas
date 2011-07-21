@@ -1,6 +1,6 @@
 object fmPcporPedido: TfmPcporPedido
-  Left = 287
-  Top = 51
+  Left = 417
+  Top = 176
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'Gera'#231#227'o de pre'#231'os a partir de pedido de compra.'
@@ -19,7 +19,7 @@ object fmPcporPedido: TfmPcporPedido
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Edit1: TadLabelEdit
+  object edNumPedido: TadLabelEdit
     Left = 1
     Top = 25
     Width = 145
@@ -40,16 +40,16 @@ object fmPcporPedido: TfmPcporPedido
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 0
-    OnKeyDown = Edit1KeyDown
+    OnKeyDown = edNumPedidoKeyDown
   end
-  object edit2: TadLabelNumericEdit
-    Left = 1
-    Top = 272
+  object edPercNota: TadLabelNumericEdit
+    Left = 4
+    Top = 270
     Width = 77
     Height = 22
-    LabelDefs.Width = 57
+    LabelDefs.Width = 34
     LabelDefs.Height = 13
-    LabelDefs.Caption = '% Desconto'
+    LabelDefs.Caption = '% Nota'
     Colors.Active = False
     Colors.WhenEnterFocus.BackColor = clWindow
     Colors.WhenExitFocus.BackColor = clInfoBk
@@ -62,11 +62,12 @@ object fmPcporPedido: TfmPcporPedido
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 1
+    TabOrder = 5
+    Value = 100.000000000000000000
   end
-  object edit4: TadLabelNumericEdit
-    Left = 184
-    Top = 272
+  object edMargem1: TadLabelNumericEdit
+    Left = 212
+    Top = 270
     Width = 77
     Height = 22
     LabelDefs.Width = 64
@@ -84,11 +85,11 @@ object fmPcporPedido: TfmPcporPedido
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 7
   end
-  object edit3: TadLabelNumericEdit
-    Left = 89
-    Top = 272
+  object edFrete: TadLabelNumericEdit
+    Left = 90
+    Top = 270
     Width = 77
     Height = 22
     LabelDefs.Width = 35
@@ -106,7 +107,7 @@ object fmPcporPedido: TfmPcporPedido
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 3
+    TabOrder = 6
   end
   object edIPI: TadLabelNumericEdit
     Left = 374
@@ -129,9 +130,9 @@ object fmPcporPedido: TfmPcporPedido
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     ParentFont = False
-    TabOrder = 4
+    TabOrder = 2
   end
-  object FlatButton1: TFlatButton
+  object btCalcula: TFlatButton
     Left = 390
     Top = 265
     Width = 74
@@ -152,12 +153,12 @@ object fmPcporPedido: TfmPcporPedido
       03333373FFFFFFFF733333700000000073333337777777773333}
     Layout = blGlyphLeft
     NumGlyphs = 2
-    TabOrder = 5
-    OnClick = FlatButton1Click
+    TabOrder = 9
+    OnClick = btCalculaClick
   end
   object FlatButton3: TFlatButton
     Left = 151
-    Top = 23
+    Top = 22
     Width = 40
     Height = 28
     Glyph.Data = {
@@ -175,12 +176,12 @@ object fmPcporPedido: TfmPcporPedido
       00337777FFFF77FF7733EEEE0000000003337777777777777333}
     Layout = blGlyphLeft
     NumGlyphs = 2
-    TabOrder = 6
+    TabOrder = 1
     OnClick = FlatButton3Click
   end
   object FlatButton4: TFlatButton
     Left = 475
-    Top = 23
+    Top = 22
     Width = 40
     Height = 28
     Glyph.Data = {
@@ -198,12 +199,12 @@ object fmPcporPedido: TfmPcporPedido
       05555777775555557F5555000555555505555577755555557555}
     Layout = blGlyphLeft
     NumGlyphs = 2
-    TabOrder = 7
+    TabOrder = 3
     OnClick = FlatButton4Click
   end
-  object Edit5: TadLabelNumericEdit
-    Left = 270
-    Top = 272
+  object edMargem2: TadLabelNumericEdit
+    Left = 292
+    Top = 270
     Width = 77
     Height = 22
     Hint = 'Percentual sobre o  Valor da Margem 01'
@@ -231,10 +232,11 @@ object fmPcporPedido: TfmPcporPedido
     Top = 54
     Width = 552
     Height = 197
+    TabStop = False
     Ctl3D = False
     DataSource = DataSource1
     ParentCtl3D = False
-    TabOrder = 9
+    TabOrder = 4
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
@@ -250,14 +252,14 @@ object fmPcporPedido: TfmPcporPedido
     Width = 157
     Height = 17
     Caption = 'Exibir a mem'#243'ria de c'#225'lculo'
-    TabOrder = 10
+    TabOrder = 11
     FlatFont.Charset = DEFAULT_CHARSET
     FlatFont.Color = clWindowText
     FlatFont.Height = -11
     FlatFont.Name = 'MS Sans Serif'
     FlatFont.Style = []
   end
-  object FlatButton2: TFlatButton
+  object btCancela: TFlatButton
     Left = 477
     Top = 265
     Width = 74
@@ -278,8 +280,8 @@ object fmPcporPedido: TfmPcporPedido
       99DDDDDDDDDDDDDDDDDDD9999DDDDDDDDDDDDDDDDDDDD999DDDDDDDDDDDDDDDD
       DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD}
     Layout = blGlyphLeft
-    TabOrder = 11
-    OnClick = FlatButton2Click
+    TabOrder = 10
+    OnClick = btCancelaClick
   end
   object tbPedido: TADOTable
     Connection = fmMain.Conexao

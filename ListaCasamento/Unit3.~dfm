@@ -1,6 +1,6 @@
 object Form3: TForm3
-  Left = 590
-  Top = 244
+  Left = 481
+  Top = 197
   BorderIcons = []
   BorderStyle = bsNone
   ClientHeight = 515
@@ -186,12 +186,13 @@ object Form3: TForm3
       Caption = 'lbNumCli'
       Visible = False
     end
-    object Label1: TLabel
+    object lbtotaisTitulo: TLabel
       Left = 519
       Top = 11
       Width = 118
       Height = 13
       Caption = 'Total de compras na lista'
+      Visible = False
     end
     object lbTotaisLista: TLabel
       Left = 528
@@ -205,6 +206,7 @@ object Form3: TForm3
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
+      Visible = False
     end
     object edNmNoiva: TadLabelEdit
       Left = 7
@@ -249,7 +251,7 @@ object Form3: TForm3
       Layout = blGlyphLeft
       NumGlyphs = 2
       TabOrder = 2
-      OnClick = btIncluirClick
+      OnClick = FlatButton1Click
     end
   end
   object Panel2: TPanel

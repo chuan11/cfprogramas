@@ -25,7 +25,7 @@ begin
    end
    else begin
       Application.Initialize;
-      Application.Title := 'Programas Loja';
+      Application.Title := 'Listas';
       Application.CreateForm(TForm1, Form1);
       Application.Run;
    end;

@@ -1,6 +1,6 @@
 object fmEntSai: TfmEntSai
-  Left = 2124
-  Top = 270
+  Left = 856
+  Top = 315
   Width = 446
   Height = 213
   BorderIcons = [biSystemMenu]
