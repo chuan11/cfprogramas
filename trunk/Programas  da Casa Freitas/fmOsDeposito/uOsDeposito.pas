@@ -636,6 +636,9 @@ begin
    nGerados := '';
    tb.First();
 
+// ajustar esse laco para criar uma requisicao de produtos apenas da tramonina
+
+
    while tb.Eof = false do
    begin
       tbAux := TADOTable.Create(nil);
@@ -655,6 +658,7 @@ begin
       if (aux <> '') then
          nGerados := nGerados  + aux + ' ';
    end;
+
    if (nGerados <> '') then
    begin
       msgTela('',' Foram geradas as requisições: ' + nGerados + #13+' Vou mandar um email para a loja, avisando.', MB_OK + MB_ICONWARNING );

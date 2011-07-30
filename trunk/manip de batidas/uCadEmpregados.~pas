@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, adLabelEdit, adLabelComboBox, Db, Buttons,
-  fCtrls, DBGrids, funcsql, FUNCOES, ADODB, Grids, SoftDBGrid;
+  fCtrls, DBGrids, funcsql, FUNCOES, ADODB, Grids, SoftDBGrid,
+  TFlatCheckBoxUnit, Menus;
 
 type
   TfmCadEmpregados = class(TForm)
@@ -32,6 +33,9 @@ type
     qr: TADOQuery;
     edLocEmp: TadLabelEdit;
     cbLojas: TComboBox;
+    cbBatePonto: TFlatCheckBox;
+    PopupMenu1: TPopupMenu;
+    RemoveEmpregadodocadastro1: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure cbEmpClick(Sender: TObject);
     procedure btCarregaHorarioClick(Sender: TObject);
@@ -44,6 +48,7 @@ type
     procedure edLocEmpKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure carregaCadastro();
     procedure cbLojasChange(Sender: TObject);
+    procedure RemoveEmpregadodocadastro1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -70,6 +75,7 @@ procedure TfmCadEmpregados.cbEmpClick(Sender: TObject);
 var
    ds:TdataSet;
 begin
+   gpEmp.Visible := false; 
    ds := uUtil.getDetalheEmpregado( qr.fieldByname('cartaoPonto').asString);
    edMatricula.Text := ds.FieldByName('matricula').AsString;
    edCartaoPonto.Text := ds.FieldByName('cartaoPonto').AsString;
@@ -80,6 +86,8 @@ begin
    lbLocalizacao.caption := ds.FieldByName('localizacao').AsString;
    lbDataAdmissao.Caption := ds.FieldByName('dataAdmissao').AsString;
    lbEmpresa.Caption := ds.FieldByName('empresa').AsString;
+
+   cbBatePonto.Checked := (ds.FieldByName('dataDemissao').AsString = '');
 
    edHorario.Text := ds.FieldByName('descricao').AsString;
    lbHorario.Caption := ds.FieldByName('horario_num').AsString;
@@ -115,13 +123,20 @@ begin
 end;
 
 procedure TfmCadEmpregados.fsBitBtn3Click(Sender: TObject);
+var
+  dataDemissao:String;
 begin
+  if (cbBatePonto.Checked= false) then
+     dataDemissao := '01/01/1900'
+  else
+     dataDemissao := '';
+
   if( uUtil.deletaEmpregado(edCartaoPonto.Text) = true) and
     (
    uUtil.insereEmpregado( lbEmpresa.Caption, edMatricula.Text, edCartaoPonto.Text,
                           edNome.Text, edFuncao.Text, lbDataAdmissao.Caption,
                           intToStr(rgHoraFlexivel.ItemIndex), lbHorario.Caption,
-                          lbLocalizacao.Caption ) ) then
+                          lbLocalizacao.Caption, dataDemissao ) ) then
    MsgTela('','Dados Salvos com sucesso.', MB_OK + MB_ICONEXCLAMATION);
   fsBitBtn2Click(nil);
 end;
@@ -168,6 +183,9 @@ begin
    cbLojas.Items := uUtil.getNomeLojasPonto(True, true);
    cbLojas.ItemIndex := 0 ;
    carregaCadastro();
+
+   cbBatePonto.Hint := 'Se estiver desmarcado, o empregado '+#13+'não aparece no relógio de ponto';
+   cbBatePonto.ShowHint := true;
 end;
 
 procedure TfmCadEmpregados.gridEmpTitleClick(Column: TColumn);
@@ -190,6 +208,19 @@ end;
 procedure TfmCadEmpregados.cbLojasChange(Sender: TObject);
 begin
    carregaCadastro();
+end;
+
+procedure TfmCadEmpregados.RemoveEmpregadodocadastro1Click(Sender: TObject);
+var
+   cmd:String;
+begin
+   cmd:= ' Se você remover o funcionário ele não aparecerá mais no cadastro, continua ?';
+   if (funcoes.msgTela('',cmd, MB_ICONWARNING + MB_YESNO) = mr_Ok) then
+   begin
+      cmd := 'Delete from 
+
+
+   end;
 end;
 
 end.

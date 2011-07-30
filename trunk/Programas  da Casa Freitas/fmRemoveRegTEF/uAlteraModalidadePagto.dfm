@@ -28,6 +28,8 @@ object fmAlteraModPagto: TfmAlteraModPagto
     Colors.WhenEnterFocus.BackColor = clInfoBk
     Ctl3D = False
     ParentCtl3D = False
+    Decimals = -1
+    Format = nfStandard
     TabOrder = 0
   end
   object cbModalidades: TadLabelComboBox

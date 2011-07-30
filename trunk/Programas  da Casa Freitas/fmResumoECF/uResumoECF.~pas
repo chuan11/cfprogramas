@@ -1,0 +1,52 @@
+unit uResumoECF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, fCtrls, ComCtrls, adLabelComboBox, Grids,
+  DBGrids, SoftDBGrid, DB;
+
+type
+  TfmResumoECF = class(TForm)
+    cbLojas: TadLabelComboBox;
+    datai: TfsDateTimePicker;
+    cbECF: TadLabelComboBox;
+    fsBitBtn3: TfsBitBtn;
+    DataSource1: TDataSource;
+    SoftDBGrid1: TSoftDBGrid;
+    procedure fsBitBtn3Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormActivate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmResumoECF: TfmResumoECF;
+
+implementation
+{$R *.dfm}
+uses uMain, uCF, funcoes;
+
+procedure TfmResumoECF.fsBitBtn3Click(Sender: TObject);
+begin
+   DataSource1.DataSet := uCF.listaCuponsPorLojaData(funcoes.getCodUO(cbLojas), cbECF.Items[cbECF.itemIndex], datai.Date, datai.Date);
+end;
+
+procedure TfmResumoECF.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+    Action := CaFree;
+    fmResumoECF := nil;
+end;
+
+procedure TfmResumoECF.FormActivate(Sender: TObject);
+begin
+   fmMain.getListaLojas( cbLojas, false, false, fmMain.getCdPesLogado() );
+   datai.Date := now;
+end;
+
+end.

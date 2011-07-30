@@ -111,7 +111,6 @@ object fmAjustaNota: TfmAjustaNota
       Width = 45
       Height = 13
       Caption = 'lbCodPes'
-      Visible = False
     end
     object Label2: TLabel
       Left = 8

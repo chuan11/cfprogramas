@@ -5,6 +5,7 @@ interface
         funcDatas, mxExport, adLabelComboBox, windows, QStdCtrls, DB, Controls, messages;
 
    function criaTabelaTemporaria(conexao:TADOConnection; camposTabela:String):String;
+   function delParamBD(nParametro, loja: String; conexao : TADOConnection):boolean;
    function devolucaoDeProduto(is_ref,uo,usuario,codCli,is_emp,nLista,sq_opf,tipoPreco, srNota:string; valor:real; Conexao:TADOConnection):boolean;
    function execSQL(comando:string; connection: TADOConnection):boolean; overload
    function executeSQL(comando:string; connection: TADOConnection):String;
@@ -17,7 +18,7 @@ interface
    function getCustoPorData(uo,is_ref, data:String; conexao:TADOconnection):String;
    function getDataBd(conexao:TADOConnection ; diasARecuar:integer):String; overload;
    function getDataBd(conexao:TADOConnection):String;  overload;
-   function getDateBd(conexao:TADOConnection):TDate;  
+   function getDateBd(conexao:TADOConnection):TDate;
    function getDataSetQ(comando:String; conexao:TADOConnection):TDataSet;
    function getEmail(loja:string; conexao:TADOConnection):string;
    function getEmpregadosPonto(conexao:TadoConnection):TStrings;
@@ -43,12 +44,14 @@ interface
    function inserirToper(usuario,sq_opf,codTransacao,fl_entrada:string;conexao:TADOConnection):string;
    function isGrupoComRestricao(grupo:String; codTela:integer; conexao: TADOConnection):boolean;
    function isHoraPermitida(conexao:TADOConnection; tela:integer; grupo:String):boolean;
+   function insertParamBD(nParametro, loja, valor, descricao: String; conexao : TADOConnection):boolean;
    function openQuery  (Conexao :TADOConnection; CampoInicio,CampoFim:Smallint; Comando:String):TStringList;
    function openSQL(comando, retorno:string; Connection : TADOConnection):String;
    function setParamBD(parametro, uo, valor:String; conexao:TADOConnection):boolean;
    function somaColQuery(Query:TADOQuery;Coluna:String; nDecimais:integer):String;
    function somaColTable(Table:TDataSet;Coluna:String):String; overload;
    function somaColunaTable(Table:TDataSet;Coluna:String):real; overload;
+   function updateParamBD(nParametro, loja, valor, descricao: String; conexao : TADOConnection):boolean;
    procedure abrirQuery(var query:TADOQuery; conexao:TADOConnection; comando:String);
    procedure acertaQuantidadeItens(uo,usuario:String;qrItens:TADOQuery; conexao:TADOConnection);
    procedure doQuery(conexao:TADOConnection; var qr:TADOQUery; cmd:String);
@@ -77,13 +80,20 @@ begin
    result := '#' + funcoes.SohNumeros(dateTimeToStr(now) + inttostr(i));
 end;
 
-
+function isReqPendProduto(conexao:TADoConnection; uo, is_ref:String; QT_DIAS_PEND:integer ): TDataSet;
+var
+  cmd:String;
+begin
+   cmd :=  'Select top 01 * from dspdi (nolock) where is_ref = '+is_ref +
+           ' and is_estoque = '+ uo +' and qtdtransferida <> qt_ped' +
+           ' and dt_movpd > ' + funcDatas.dateToSqlDate(now -QT_DIAS_PEND);
+   result := getDataSetQ(cmd, Conexao );
+end;
 
 function getContadorWell(conexao:TADOConnection; campo:String):String;
 begin
 { Exemplo de alguns contadores
  pagamento:  SeqModPagtoPorTransCaixa
-
 }
    result:=
    funcSql.GetValorWell( 'O',
@@ -114,6 +124,16 @@ begin
          funcoes.gravaLog(#13+'Parametro ' + nParametro + ' nao existe.' +#13 );
          result := '';
       end;
+end;
+
+function delParamBD(nParametro, loja: String; conexao : TADOConnection):boolean;
+var
+   cmd:String;
+begin
+   cmd := 'delete from zcf_paramGerais where nm_param = ' + quotedStr(nParametro);
+   if (loja <> '') then
+      cmd := cmd + ' and uo = ' + quotedStr(loja);
+   result := execSQL(cmd, conexao);
 end;
 
 function isGrupoComRestricao(grupo:String; codTela:integer; conexao: TADOConnection):boolean;
@@ -655,8 +675,7 @@ begin
 
    while qrItens.Eof = false do
    begin
-      qtAtual := 0;
-      qtAtual := StrToInt( funcSql.openSQL('Select dbo.Z_CF_EstoqueNaLoja ('+ qrItens.fieldByName('is_ref').AsString +' , '+ uo  +' , 1 ) as quant ', 'quant', conexao) );
+      qtAtual := StrToInt( funcSql.openSQL('Select dbo.Z_CF_EstoqueNaLoja ('+ qrItens.fieldByName('is_ref').AsString +', '+ uo +', 1 ) as quant', 'quant', conexao) );
       if qrItens.FieldByName('quant').AsInteger >  qtAtual then
       begin
          qtAtual := qrItens.FieldByName('quant').AsInteger - qtAtual;
@@ -1260,24 +1279,21 @@ begin
 end;
 
 
-function gerarRequisicao(Conexao:TADOConnection; tb:TADOTable; uo,usuario:String;mostraNumero, ehReqDeVenda :Boolean; var ocoItens:TStringList ;QT_DIAS_PEND:integer):String;
+function gerarRequisicao(Conexao:TADOConnection; tb:TADOTable; uo,usuario:String;
+                         mostraNumero, ehReqDeVenda:Boolean; var ocoItens:TStringList;
+                         QT_DIAS_PEND:integer):String;
 var
   cd_pes,is_planod,cmd, codTransacao,sq_opf,is_oper:String;
   lista:TStringList;
   is_movpd:integer;
   nItensReq, i:integer;
   UO_CD:String;
-//  gravaItens:boolean;
+  incluiItem:boolean;
   estReqCD:integer;
 begin
-//   if funcSQL.lerParamBD('salvaItensReqPastaLog','', Conexao) = '1' then
-//      gravaItens:= true
-//   else
-//      gravaItens:= false;
-
    nItensReq := 0;
    // pegar o is_uo do cd
-   UO_CD := openSQL('Select valor from zcf_paramGerais where nm_param = ''uocd'' ', 'valor', Conexao);
+   UO_CD := getParamBD('uocd', '', Conexao);
 
    lista:= Tstringlist.Create();
    sq_opf := '10000031'; // cod daTransacao integrada de requisicao
@@ -1305,19 +1321,28 @@ begin
 
        tb.First;
        i:=1;
-       while tb.Eof = false do
+       while (tb.Eof = false) do
        begin
           estReqCD :=  funcSQL.getEstoqueParaRequisicao(tb.fieldByname('is_ref').AsString, UO_CD, Conexao);
+          incluiItem := true;
 
           if (tb.FieldByName('Qt Pedida').AsInteger >  estReqCD ) and ( ehReqDeVenda = false ) then
-             ocoItens.Add(tb.fieldByName('codigo').AsString +' '+ tb.fieldByName('descricao').AsString  +  '  -  Não possui estoque disponível.')
-          else if (ehReqDeVenda = false) and (isReqPendProduto( conexao,  uo, tb.fieldByname('is_ref').AsString, QT_DIAS_PEND).IsEmpty = false ) then
-             ocoItens.Add(tb.fieldByName('codigo').AsString +' '+ tb.fieldByName('descricao').AsString  +  '  -  Existem requisições pendentes.')
+          begin
+             ocoItens.Add(tb.fieldByName('codigo').AsString +' '+ tb.fieldByName('descricao').AsString  +  '  -  Não possui estoque disponível.');
+             incluiItem := false;
+          end;
 
-          else
+          if (ehReqDeVenda = false) and (isReqPendProduto( conexao,  uo, tb.fieldByname('is_ref').AsString, QT_DIAS_PEND).IsEmpty = false ) then
+          begin
+             ocoItens.Add(tb.fieldByName('codigo').AsString +' '+ tb.fieldByName('descricao').AsString  +  '  -  Existem requisições pendentes.');
+             incluiItem := false;
+          end;
+
+          if ( incluiItem = true) then
           begin
 //             if gravaItens = true then
 //                funcoes.GravaLinhaEmUmArquivo( extractFilePath(paramStr(0)) +'\logs\'+ application.Name +'_Requisicoes.txt',' req '+ is_planod+ ': '+' Item: ' + intToStr(tb.RecNo) + tb.fieldByName('codigo').asString +' qt: '+ tb.fieldByName('qt pedida').asString );
+
              inc(is_movpd);
              is_movpd := StrToInt( funcSql.GetValorWell( 'O', ' begin declare @P1 int  set @P1=0 exec zcf_stoObterContadorCF ''IS_movpd'' , @P1 output, @qt = '+ intToStr(tb.RecordCount) +   ' select @P1 as ''IS_movpd''  end', 'IS_movpd', conexao ));
              cmd := ' exec StoInsertItensPlanoDistribuição' +
@@ -1340,12 +1365,15 @@ begin
           end;
           tb.Next;
        end;
-      if nItensReq > 0 then
+
+      if (nItensReq > 0) then
       begin
          for i:=0 to lista.Count-1 do
             execSQL(lista[i], Conexao);
+
          if mostraNumero = true then
            msgTela('',' Gerada a requisição: ' + is_planod, MB_ICONASTERISK + MB_ok);
+
          result := is_planod;
       end
       else
@@ -1389,7 +1417,7 @@ begin
 
    qr := TADOQuery.Create(nil);
    qr.Connection := conexao;
-   qr.sql.add('Select codTela, codgrupo, horI, horF from  zcf_horBloqRel (nolock) where codTela = ' + intToStr(tela)  + ' and codGrupo = ' + grupo);
+   qr.sql.add('Select codTela, codgrupo, horI, horF from  74 (nolock) where codTela = ' + intToStr(tela)  + ' and codGrupo = ' + grupo);
    qr.Open;
 
    if qr.IsEmpty  = false then
@@ -1667,15 +1695,24 @@ begin
    result := cmd;
 end;
 
-function isReqPendProduto(conexao:TADoConnection; uo, is_ref:String; QT_DIAS_PEND:integer ): TDataSet;
+
+function insertParamBD(nParametro, loja, valor, descricao: String; conexao : TADOConnection):boolean;
 var
-  cmd:String;
+   cmd:String;
 begin
-   cmd :=  'Select top 01 * from dspdi (nolock) where is_ref = '+is_ref +
-           ' and is_estoque = '+ uo +' and qtdtransferida <> qt_ped' +
-           ' and dt_movpd > ' + funcDatas.dateToSqlDate(now -QT_DIAS_PEND);
-   result := getDataSetQ(cmd, Conexao );
+   cmd := 'insert zcf_paramGerais values(' + quotedStr(nParametro) +', '+
+          quotedStr(loja) +', '+
+          (valor)   +', '+
+          quotedStr(descricao) +')';
+   result := execSQL(cmd, Conexao);
 end;
+
+function updateParamBD(nParametro, loja, valor, descricao: String; conexao : TADOConnection):boolean;
+begin
+   delParamBD(nParametro,loja,conexao);
+   insertParamBD( nParametro,loja,valor,descricao,conexao);
+end;
+
 end.
 
 

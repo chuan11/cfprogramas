@@ -1,7 +1,7 @@
 object fmFaturamento: TfmFaturamento
   Tag = 402
-  Left = 417
-  Top = 396
+  Left = 340
+  Top = 127
   Width = 850
   Height = 498
   Anchors = [akTop]
@@ -20,44 +20,12 @@ object fmFaturamento: TfmFaturamento
   WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
+  OnResize = FormResize
   DesignSize = (
     834
     460)
   PixelsPerInch = 96
   TextHeight = 13
-  object Label2: TLabel
-    Left = 194
-    Top = 15
-    Width = 50
-    Height = 13
-    Caption = 'Data inicio'
-  end
-  object Label3: TLabel
-    Left = 309
-    Top = 15
-    Width = 39
-    Height = 13
-    Caption = 'Data fim'
-  end
-  object datai: TfsDateTimePicker
-    Left = 193
-    Top = 30
-    Width = 95
-    Height = 22
-    Date = 39906.649664583330000000
-    Time = 39906.649664583330000000
-    TabOrder = 0
-    OnChange = dataiChange
-  end
-  object dataf: TfsDateTimePicker
-    Left = 307
-    Top = 30
-    Width = 95
-    Height = 22
-    Date = 39906.649664583330000000
-    Time = 39906.649664583330000000
-    TabOrder = 1
-  end
   object grid: TSoftDBGrid
     Left = 8
     Top = 74
@@ -69,7 +37,7 @@ object fmFaturamento: TfmFaturamento
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit]
     ParentCtl3D = False
     PopupMenu = PopupMenu1
-    TabOrder = 2
+    TabOrder = 0
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
@@ -81,7 +49,7 @@ object fmFaturamento: TfmFaturamento
   end
   object cbLojas: TadLabelComboBox
     Left = 10
-    Top = 29
+    Top = 25
     Width = 164
     Height = 21
     BevelInner = bvLowered
@@ -94,7 +62,7 @@ object fmFaturamento: TfmFaturamento
     ItemHeight = 13
     ParentBiDiMode = False
     ParentCtl3D = False
-    TabOrder = 3
+    TabOrder = 1
     LabelDefs.Width = 23
     LabelDefs.Height = 13
     LabelDefs.Caption = 'Loja:'
@@ -102,13 +70,13 @@ object fmFaturamento: TfmFaturamento
   end
   object cbListaVdMaracanau: TfsCheckBox
     Left = 10
-    Top = 54
+    Top = 56
     Width = 263
     Height = 17
     Caption = 'Listar as vendas feitas para as lojas Maracanau'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 4
+    TabOrder = 2
     FlatFont.Charset = DEFAULT_CHARSET
     FlatFont.Color = clWindowText
     FlatFont.Height = -11
@@ -117,12 +85,12 @@ object fmFaturamento: TfmFaturamento
   end
   object btExportar: TfsBitBtn
     Left = 595
-    Top = 23
+    Top = 22
     Width = 70
     Height = 30
     Anchors = [akTop]
     Caption = 'Exportar'
-    TabOrder = 5
+    TabOrder = 3
     OnClick = btExportarClick
     Glyph.Data = {
       B2050000424DB205000000000000360400002800000013000000130000000100
@@ -174,12 +142,12 @@ object fmFaturamento: TfmFaturamento
   end
   object btImprime: TfsBitBtn
     Left = 504
-    Top = 23
+    Top = 22
     Width = 70
     Height = 30
     Anchors = [akTop]
     Caption = '&Imprimir'
-    TabOrder = 6
+    TabOrder = 4
     OnClick = FlatButton2Click
     Glyph.Data = {
       66010000424D6601000000000000760000002800000014000000140000000100
@@ -196,13 +164,13 @@ object fmFaturamento: TfmFaturamento
       DDDDDDDDDDDDDDDD0000}
   end
   object fsBitBtn3: TfsBitBtn
-    Left = 418
-    Top = 23
+    Left = 424
+    Top = 22
     Width = 70
     Height = 30
     Anchors = [akTop]
     Caption = '&Gerar'
-    TabOrder = 7
+    TabOrder = 5
     OnClick = FlatButton1Click
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -222,6 +190,40 @@ object fmFaturamento: TfmFaturamento
       333A333333333333333338330000333333333333333333333333333333333333
       0000}
     NumGlyphs = 2
+  end
+  object GroupBox1: TGroupBox
+    Left = 179
+    Top = 9
+    Width = 232
+    Height = 48
+    Caption = ' Periodo '
+    TabOrder = 6
+    object lbAte: TLabel
+      Left = 112
+      Top = 22
+      Width = 15
+      Height = 13
+      Caption = 'at'#233
+    end
+    object datai: TfsDateTimePicker
+      Left = 10
+      Top = 17
+      Width = 95
+      Height = 22
+      Date = 39906.649664583330000000
+      Time = 39906.649664583330000000
+      TabOrder = 0
+      OnChange = dataiChange
+    end
+    object dataf: TfsDateTimePicker
+      Left = 132
+      Top = 17
+      Width = 95
+      Height = 22
+      Date = 39906.649664583330000000
+      Time = 39906.649664583330000000
+      TabOrder = 1
+    end
   end
   object tb: TADOTable
     Connection = fmMain.Conexao
@@ -284,8 +286,8 @@ object fmFaturamento: TfmFaturamento
     Top = 96
   end
   object PopupMenu1: TPopupMenu
-    Left = 352
-    Top = 136
+    Left = 240
+    Top = 96
     object Detalhar1: TMenuItem
       Caption = 'Detalhar faturamento para clientes'
     end

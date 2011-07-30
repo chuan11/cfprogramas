@@ -97,6 +97,7 @@ object Form2: TForm2
         ParentBiDiMode = False
         ParentColor = False
         ParentFont = False
+        OnDblClick = Label1DblClick
       end
       object Label12: TLabel
         Left = 1
@@ -271,7 +272,7 @@ object Form2: TForm2
       end
       object Button9: TButton
         Left = 154
-        Top = 466
+        Top = 442
         Width = 78
         Height = 25
         Caption = 'Pegar horario'
@@ -279,13 +280,22 @@ object Form2: TForm2
         OnClick = Button9Click
       end
       object Button11: TButton
-        Left = 154
+        Left = 239
         Top = 441
         Width = 144
         Height = 25
         Caption = 'Dia normal com esse horario'
         TabOrder = 12
         OnClick = Button11Click
+      end
+      object Button1: TButton
+        Left = 154
+        Top = 497
+        Width = 144
+        Height = 25
+        Caption = 'Dia normal '
+        TabOrder = 13
+        OnClick = Button1Click
       end
     end
   end

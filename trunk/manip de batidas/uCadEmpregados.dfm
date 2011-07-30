@@ -1,8 +1,8 @@
 object fmCadEmpregados: TfmCadEmpregados
-  Left = 488
-  Top = 298
+  Left = 379
+  Top = 197
   Width = 645
-  Height = 570
+  Height = 541
   Caption = 'Cadastro de empregados.'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,30 +19,31 @@ object fmCadEmpregados: TfmCadEmpregados
   OnClose = FormClose
   DesignSize = (
     629
-    532)
+    503)
   PixelsPerInch = 96
   TextHeight = 13
   object gpListaEmp: TGroupBox
     Left = 0
     Top = 216
     Width = 629
-    Height = 151
+    Height = 122
     Anchors = [akLeft, akTop, akRight, akBottom]
     Caption = ' Empregados '
     TabOrder = 0
     DesignSize = (
       629
-      151)
+      122)
     object gridEmp: TSoftDBGrid
       Left = 2
       Top = 40
       Width = 623
-      Height = 107
+      Height = 78
       Anchors = [akLeft, akTop, akRight, akBottom]
       Ctl3D = False
       DataSource = DataSource1
       Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgConfirmDelete, dgCancelOnExit]
       ParentCtl3D = False
+      PopupMenu = PopupMenu1
       ReadOnly = True
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
@@ -341,5 +342,13 @@ object fmCadEmpregados: TfmCadEmpregados
     Parameters = <>
     Left = 56
     Top = 346
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 152
+    Top = 288
+    object RemoveEmpregadodocadastro1: TMenuItem
+      Caption = 'Remove Empregado do  cadastro.'
+      OnClick = RemoveEmpregadodocadastro1Click
+    end
   end
 end

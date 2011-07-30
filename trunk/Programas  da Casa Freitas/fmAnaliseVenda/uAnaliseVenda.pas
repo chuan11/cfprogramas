@@ -10,10 +10,6 @@ uses
 
 type
   TfmFaturamento = class(TForm)
-    datai: TfsDateTimePicker;
-    dataf: TfsDateTimePicker;
-    Label2: TLabel;
-    Label3: TLabel;
     DataSource1: TDataSource;
     grid: TSoftDBGrid;
     tb: TADOTable;
@@ -34,6 +30,10 @@ type
     btExportar: TfsBitBtn;
     btImprime: TfsBitBtn;
     fsBitBtn3: TfsBitBtn;
+    GroupBox1: TGroupBox;
+    datai: TfsDateTimePicker;
+    dataf: TfsDateTimePicker;
+    lbAte: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure CriarTabela(Sender: Tobject);
     procedure FlatButton1Click(Sender: TObject);
@@ -47,6 +47,8 @@ type
     procedure dataiChange(Sender: TObject);    procedure memoEnter(Sender: TObject);
     procedure SomaColunas(Sender:Tobject);
     procedure btExportarClick(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    function permiteExecutarAVL():boolean;
   private
     { Private declarations }
   public
@@ -56,6 +58,7 @@ type
 var
   fmFaturamento: TfmFaturamento;
   colunas:  array[1..10]of string;
+  isAcessoRestrito:boolean;
 implementation
 
 uses uMain, uCF;
@@ -70,13 +73,26 @@ end;
 
 procedure TfmFaturamento.FormCreate(Sender: TObject);
 begin
-//   cbLojas.items := funcsQL.GetNomeLojas( fmMain.Conexao, true, false, fmMain.lbPes.caption,'' ); // getListaPrecos (sender);
-
-   cbLojas.ItemIndex := 3;
-
+   funcSQL.getDateBd(fmMain.Conexao);
+   isAcessoRestrito := fmMain.isGrupoRestrito(fmMain.AnaliseVLC1.Tag);
+   fmMain.getListaLojas( cbLojas, not(isAcessoRestrito), false, fmMain.getCdPesLogado() );
    fmMain.getParametrosForm(fmFaturamento);
 
-   fmMain.getListaLojas(cbLojas, true, false, fmMain.getCdPesLogado() );
+
+   btExportar.Visible := not(isAcessoRestrito);
+   btImprime.Visible := not(isAcessoRestrito);
+   lbAte.Visible := not(isAcessoRestrito);
+   dataf.Visible := not(isAcessoRestrito);
+
+   if (isAcessoRestrito = true) then
+   begin
+      GroupBox1.Width := datai.Width  + 20;
+      btExportar.Visible := false;
+      btImprime.Visible := false;
+      lbAte.Visible := false;
+      dataf.Visible := false;
+      cbListaVdMaracanau.Visible := false;
+   end;
 end;
 
 procedure TfmFaturamento.CriarTabela(Sender: Tobject);
@@ -97,12 +113,11 @@ begin
       colunas[9] := 'Devolucoes';
       colunas[10] := 'Venda menos devolucao';
 
-
       ntb := '#' + funcoes.SohLetras( funcoes.GetNomeDoMicro()) + funcoes.SohNumeros( DateTimeToStr(now));
 
       cmd := 'Create table ' + ntb +
       '( is_uo int, Loja varchar(30), ['+colunas[6]+'] money , ' +
-      '['+colunas[7]+'] money, ' +
+      '[Venda cred cliente] money, ' +
       '['+colunas[8]+'] money, ' +
       '['+colunas[1]+'] money, ' +
       '['+colunas[2]+'] money, ' +
@@ -131,7 +146,6 @@ end;
 procedure TfmFaturamento.obterFaturamentoVenda(Sender: Tobject);
 var
   tbFat:TADOTable;
-//  strSrCupomFiscal,strSrNotaFiscal, str:string;
   cmd:String;
 begin
    MostraMSG('Obtendo faturamento da loja: ' + tb.fieldByname('Loja').asString );
@@ -143,16 +157,22 @@ begin
                     ' varchar(03), vl_basICM money, aliq_ICM money, vl_ICM money'   );
    tbFat.Close();
 
+
 // popular a tabela das notas fiscais
-   cmd := 'insert ' + tbFat.TableName +
-          ' exec zcf_stoListarRegistroSaida_cf ''('+ tb.fieldByname('is_uo').asString + ')'', ' + tb.fieldByname('is_uo').asString + ', '+ funcDatas.dateToSqlDate(datai.Date) + ', '
-          + funcDatas.dateToSqlDate(dataF.Date) + ',0 ';
+   if (dateToStr(datai.Date) <> dateToStr(funcSQL.getDateBd(fmMain.Conexao))) then
+   begin
+   funcoes.gravaLog('executar o livro de saidas');
 
-   gravaLog('vou executar: ' + cmd);
-
-   funCSQL.execSQL(cmd, fmMain.Conexao);
-
-
+      cmd := 'insert ' + tbFat.TableName +
+             ' exec zcf_stoListarRegistroSaida_cf ''('+ tb.fieldByname('is_uo').asString + ')'', ' + tb.fieldByname('is_uo').asString + ', '+ funcDatas.dateToSqlDate(datai.Date) + ', '
+             + funcDatas.dateToSqlDate(dataF.Date) + ',0 ';
+      funCSQL.execSQL(cmd, fmMain.Conexao);
+   end
+   else
+   begin
+      funcoes.gravaLog('metodo listaNotasVendaDia()');
+      listaNotasVendaDia(tbFat.TableName, tb.fieldByname('is_uo').asString, datai.Date, dataf.Date);
+   end;
 
 // obter o valor do faturado para clientes
    cmd := ' select isnull(sum(vl_nota),0)as valor from ' + tbFat.TableName +
@@ -186,7 +206,6 @@ procedure TfmFaturamento.ObterVendaLoja(Sender: Tobject);
 var
    qr:TDataSet;
    vVenda,vCartao,vCredito:real;
-   i:byte;
    dsModalidadeCartao:TStringList;
 begin
    MostraMSG('Obtendo vendas loja: ' + tb.fieldByName('Loja').AsString +'   -  ' );
@@ -261,7 +280,7 @@ begin
    //preencher a tabela com os dados das lojas
       ListarLojas(Sender);
 
-   if (cbLojas.ItemIndex = 0) then
+   if (cbLojas.ItemIndex = 0) {todas as lojas } then
    begin
       tb.First;
       while (tb.Eof = false) do
@@ -361,17 +380,77 @@ begin
 end;
 
 procedure TfmFaturamento.FlatButton1Click(Sender: TObject);
+var
+   canExecute:Boolean;
 begin
+   canExecute := true;
    if ( (dataf.Date < datai.Date) or ( (dataf.Date - datai.Date) > 30 ) ) then
-      MsgTela('', 'Intervalo de data inválido.', MB_ICONERROR + MB_OK)
-   else
-      CalcularVendasLoja(Sender);
+   begin
+      funcoes.msgTela('', 'Intervalo de data inválido.', MB_ICONERROR + MB_OK);
+      canExecute := false;
+   end;
+
+   if (canExecute = true) then
+      if (isAcessoRestrito = true) then
+        if (permiteExecutarAVL = false) then
+           canExecute := false;
+
+   if( canExecute = true) then
+      calcularVendasLoja(Sender);
 end;
 
 procedure TfmFaturamento.btExportarClick(Sender: TObject);
 begin
    if tb.IsEmpty = false then
      funcsql.exportaTable(tb);
+end;
+
+procedure TfmFaturamento.FormResize(Sender: TObject);
+begin
+   grid.Width := fmFaturamento.Width - 30;
+   grid.Height := fmFaturamento.Height - grid.Top - 50;
+end;
+
+function TfmFaturamento.permiteExecutarAVL():boolean;
+var
+  ds: TdataSet;
+  data, hora, intervExec, nmParam, cmd:String;
+begin
+   nmParam := 'AVL.dtUltExecGr' + fmMain.getGrupoLogado();
+   intervExec := fmMain.getParamBD('AVL.tempointerv', '');
+
+   cmd := 'select datediff (minute, coalesce((select valor from zcf_paramgerais '+
+          'where nm_param = '+ quotedStr(nmParam) +
+          ' and uo= ' + funcoes.getCodUO(cbLojas) +
+          '), ''2005-01-01 00:00:01'' ), getdate() ) as minutos, ' +
+          ' coalesce((select valor from zcf_paramgerais '+
+          ' where nm_param = '+ quotedStr(nmParam) +
+          ' and uo= ' + funcoes.getCodUO(cbLojas) +
+          '), ''2005-01-01 00:00:01'' ) as Data ' +
+          ', dateadd(minute, '+ intervExec   +', (coalesce((select valor from zcf_paramgerais '+
+          ' where nm_param = '+ quotedStr(nmParam) +
+          ' and uo= ' + funcoes.getCodUO(cbLojas) +
+          '), ''2005-01-01 00:00:01'' ) ) ) as proxExecucao, getDate() as dataHoraAtual';
+   ds:= getDataSetQ(cmd, fmMain.Conexao);
+
+   if ( ds.fieldByname('minutos').AsFloat < strToFloat(IntervExec) ) then
+   begin
+      cmd := 'Só posso liberar a execução as ' +
+             ds.fieldByName('proxExecucao').AsString +#13+
+             '(Esse relatório é trabalhoso para calcular, e fazê-lo muitas vezes vai deixar o sistema lento)';
+      funcoes.msgTela('',cmd, MB_ICONWARNING+MB_OK);
+      result := false;
+   end
+   else
+   begin
+      data := copy(ds.fieldByName('dataHoraAtual').asString, 01, 10);
+      hora := copy(ds.fieldByName('dataHoraAtual').asString, 12, 08);
+      fmMain.updateParamBD(nmParam,
+                           funcoes.getCodUO(cbLojas),
+                           funcDatas.dateTimeToSqlDateTime(data,hora),
+                           'data Hora da ultima execucao do AVL');
+      result := true;
+   end
 end;
 
 end.

@@ -61,7 +61,6 @@ uses printers,windows,dialogs,SysUtils,classes,MaskUtils,Registry,   unMsgTela2,
        function gravaArqParam(sessao,parametro,valor:String):boolean;
        function GravaLinhaEmUmArquivo(nomeArq,texto:string):boolean;
        function gravaLog(cmd:String):Boolean;
-       function gravaLogErros(cmd:String):Boolean;
        function gravaParam(nomeArq,Str:string;numParam:integer):boolean;
        function horaToInt(hora:string):integer;
        function intToHora(x:integer):String;
@@ -142,7 +141,7 @@ end;
 
 function getDirLogs():String;
 begin
-   ExtractFilePath(paramStr(0) + 'logs\');
+  result :=  ExtractFilePath(paramStr(0)) + 'logs\';
 end;
 
 
@@ -635,16 +634,12 @@ begin
    result := GravaLinhaEmUmArquivo( dir +'logs\' + ExtractFilename(ParamStr(0))  + '_log.txt', cmd);
 end;
 
+{
 function gravaLogErros(cmd:String):Boolean;
-var
-  dir:String;
 begin
-//   dir := ExtractFilePath(paramStr(0));
-//   ForceDirectories(dir +'logs' );
    result := gravaLog(cmd);
-   //GravaLinhaEmUmArquivo( dir +'logs\' + Application.Title + '_Erros.txt', cmd);
 end;
-
+}
 function GravaLinhaEmUmArquivo(nomeArq,texto:string):boolean;
 var
    arq:textfile;
@@ -1009,9 +1004,17 @@ function GetDadosConecxao(Arq:string):String;
 begin
 end;
 
+function MsgTela2(titulo, Msg: string; iconeBotao: integer): integer;
+begin
+   application.CreateForm(TfmMsgTela2, fmMsgTela2);
+   fmMsgTela2.preparaParaExibir(titulo, Msg, iconeBotao);
+   fmMsgTela2.ShowModal;
+   result := fmMsgTela2.ModalResult;
+end;
+
 function msgTela(titulo, Msg: string; iconeBotao: integer): integer;
 begin
-   if titulo = '' then
+   if (titulo = '') then
       titulo := application.Title;
    result := application.MessageBox(pchar(msg),pchar(titulo), iconeBotao );
 end;
@@ -1327,14 +1330,6 @@ begin
    finally
       Free;
    end;
-end;
-
-function MsgTela2(titulo, Msg: string; iconeBotao: integer): integer;
-begin
-   application.CreateForm(TfmMsgTela2, fmMsgTela2);
-   fmMsgTela2.preparaParaExibir(titulo, Msg, iconeBotao);
-   fmMsgTela2.ShowModal;
-   result := fmMsgTela2.ModalResult;
 end;
 
 

@@ -15,6 +15,7 @@ interface
    function getUltimoDiaMes(str:String):String; overload;
    function nomeDoDia(data:String; isDataAbreviada:boolean):String;
    function strToSqlDate(Str:string):string;
+   function SQLDateTimeToStrDateTime(strSQLDateTime:String):String;
 
 implementation
 
@@ -104,8 +105,6 @@ begin
    result := StrToSqlDate(data);
 end;
 
-
-
 function DateTimeToSqlDateTime(data,hora:string):string; OverLoad;
 var
    aux:String;
@@ -115,6 +114,7 @@ begin
    insert(' '+hora, aux, length(aux));
    Result := aux;
 end;
+
 
 function DateTimeToSqlDateTime(data:Tdate; hora:string):string; Overload;
 var
@@ -181,7 +181,14 @@ begin
    result := copy(dataSql,10,02) +'/'+ copy(dataSql,07,02)+'/'+ copy(dataSql,02,04);
 end;
 
-
-
+function SQLDateTimeToStrDateTime(strSQLDateTime:String):String;
+begin
+//2005-01-01 00:00:01
+   funcoes.gravaLog(strSQLDateTime);
+   result := copy(strSQLDateTime, 09, 02) +'/'+
+             copy(strSQLDateTime, 06, 02) +'/'+
+             copy(strSQLDateTime, 01, 04) +' '+
+             copy(strSQLDateTime, 12, 08);
+end;
 
 end.

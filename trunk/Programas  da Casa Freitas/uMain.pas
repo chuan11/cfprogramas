@@ -92,9 +92,13 @@ type
     Processarinventrio1: TMenuItem;
     ApplicationEvents1: TApplicationEvents;
     Produtostransferidos1: TMenuItem;
+    Log1: TMenuItem;
+    ListaCuponspordia1: TMenuItem;
+    RazoAnalticoRRANA1: TMenuItem;
 
 
     function isTelaRequerSenha( codTela:smallInt ):boolean;
+    function delParamBD(nParametro, loja: String):boolean;
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
     function executeTelnetCmd(uo, comando:String):boolean;
@@ -110,7 +114,7 @@ type
     function getUOCD():String;
     function getUserLogado:String;
     function getParamBD(nParametro, loja: String):String;
-    function isGrupoPermitido(codTela: integer):boolean;
+    function isGrupoRestrito(codTela: integer): boolean;
     function isPermiteAbrirTela( codTela:smallInt ): boolean;
     function setParamBD(nParametro, loja, valor: String):boolean;
     function telaAutWell(Grupos,cd_usu:string ):String;
@@ -202,6 +206,14 @@ type
     procedure Produtostransferidos1Click(Sender: TObject);
     procedure getDadosCRUC(is_ref:String);
     procedure getPedidosFornecedor(is_ref, uo:String);
+    procedure Log1Click(Sender: TObject);
+    procedure ListaCuponspordia1Click(Sender: TObject);
+
+    function insertParamBD(nParametro, loja, valor, descricao: String):boolean;
+    function updateParamBD(nParametro, loja, valor, descricao: String):boolean;
+    procedure RazoAnalticoRRANA1Click(Sender: TObject);
+
+
 
   private
     { Private declarations }
@@ -214,8 +226,8 @@ type
     { Public declarations }
   end;
 CONST
-   VERSAO = '11.07.01';
-   SUB_VERSAO = ' C';
+   VERSAO = '11.07.02';
+   SUB_VERSAO = ' ';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -239,17 +251,17 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
      uRemoveRegTEF, uCadastrarNCM, uListaFornecedores, uAjustaSPED,
      uCustoPorPedido, uCF, Math, funcDatas, uObterSaldoFiscal,
      uAjusteModPag, uGeraEstoque, uRelInventario, uSelCat, uTotalEntSai,
-     uDetalhesCRUC, uPedidosFornecedor;
+     uDetalhesCRUC, uPedidosFornecedor, umColetor, uResumoECF, uRRANA;
 {$R *.dfm}
 
 
-function TfmMain.isGrupoPermitido(codTela: integer): boolean;
+function TfmMain.isGrupoRestrito(codTela: integer): boolean;
 var
    aux:boolean;
 begin
    DS_PERMISSOES.Locate('codTela', intToStr(codTela),[]);
-   aux := (DS_PERMISSOES.FieldByName('isAcessoRestrito').AsString <> '1') ;
-   funcoes.gravaLog('funcao isGrupoPermitido(), cod tela:'+ intToStr(codTela)+ ' result: '+ BoolToStr(aux,true));
+   aux := (DS_PERMISSOES.FieldByName('isAcessoRestrito').AsString <> '0') ;
+   funcoes.gravaLog('funcao isGrupoPermitido(), cod tela:'+ intToStr(codTela)+ ' result: '+ BoolToStr(aux, true));
    result := aux;
 end;
 
@@ -267,12 +279,12 @@ end;
 function TfmMain.isPermiteAbrirTela( codTela:smallInt ): boolean;
 begin
    if (isTelaRequerSenha(codTela) = true) then
-      result := (verificaSenhas.TelaAutorizacao2( fmMain.Conexao, ucf.getAutorizadoresPorTela(codTela, fmMain.getGrupoLogado()), '' ) <> '')
+      result := (verificaSenhas.TelaAutorizacao2( fmMain.Conexao, ucf.getAutorizadoresPorTela(codTela, fmMain.getGrupoLogado()), '') <> '')
    else
       result := true;
 end;
 
-procedure TfmMain.verificaPermissao(item:TmenuItem {; telas: Tstrings });
+procedure TfmMain.verificaPermissao(item:TmenuItem);
 var
    i:integer;
 begin
@@ -300,21 +312,17 @@ begin
    begin
       PARAMS_APLICACAO.Values['IS_UO'] := is_uo;
       PARAMS_APLICACAO.Values['CD_USU'] := is_usu;
-
       PARAMS_APLICACAO.Values['cd_pes'] := funcSQl.GetValorWell( 'O','select cd_pes from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_pes', Conexao);
       PARAMS_APLICACAO.Values['CD_GRUSU'] :=  funcSQl.GetValorWell( 'O','select cd_grusu from dsusu with(nolock)where cd_usu = '+ getUserLogado(),'cd_grusu', Conexao);
       PARAMS_APLICACAO.Values['uocd'] :=  fmMain.getParamBD('uocd','');
 
       StatusBar1.Panels[0].Text := nomeloja;
       StatusBar1.Panels[1].Text := nomeUsuario;
-
       getTelasPermDoGrupo(getGrupoLogado() );
     end;
 
    for i:=0 to fmMain.Menu.Items.Count -1 do
-   begin
       verificaPermissao(fmMain.Menu.Items[i]);
-   end;
 end;
 
 
@@ -325,7 +333,7 @@ begin
    fmMain.Caption := VERSAO + SUB_VERSAO + ' - Programas da loja.  ';
 
 // monta o menu com todas as opcoes quando estiver desenvolvendo
-   if ExisteParametro('-nl') then
+   if (funcoes.ExisteParametro('-nl') = true)  then
    begin
       fmMain.WindowState := wsNormal;
       is_logado := true;
@@ -338,6 +346,19 @@ begin
       fmMain.Height := 700;
       fmMain.Left := 100;
       fmMain.top := 10;
+   end;
+
+   if (funcoes.existeParametro('-wms') = true ) then
+   begin
+      montarMenu('Matriz', 'walter', '10033674','10000592');
+      fmMain.Menu := nil;
+      fmMain.Top := 0;
+      fmMain.Left := 0;
+      fmMain.Width:= screen.Width;
+      fmMain.Height:= screen.Height;
+
+      application.CreateForm(TfmColetor, fmColetor);
+      fmColetor.show();
    end;
 
    if (is_logado = false) then
@@ -370,8 +391,24 @@ var
   str:String;
 begin
   str := funcSQl.getParamBD(nParametro,loja, Conexao);
-  funcoes.gravaLog('Lendo parametro: ' + nParametro + ' loja: ' + loja +' Resultado: '+ str );
+  funcoes.gravaLog('parametro: ' + nParametro + ' loja: ' + loja +' Resultado: '+ str );
   result := str;
+end;
+
+function TfmMain.delParamBD(nParametro, loja: String): boolean;
+begin
+   result := funcSQL.delParamBD(nParametro, loja, conexao);
+end;
+
+function TfmMain.insertParamBD(nParametro, loja, valor,
+  descricao: String): boolean;
+begin
+   result := funcSQL.insertParamBD(nParametro, loja, valor, descricao, Conexao);
+end;
+
+function TfmMain.updateParamBD(nParametro, loja, valor, descricao: String): boolean;
+begin
+   result := funcSQl.updateParamBD(nParametro, loja, valor, descricao, Conexao);
 end;
 
 function TFmMain.setParamBD(nParametro, loja, valor: String):boolean;
@@ -464,7 +501,7 @@ begin
       if (fileexists(funcoes.getDirExe()+ 'CF.ico') = true) then
          Application.Icon.LoadFromFile(funcoes.getDirExe()+ 'CF.ico')
        else
-         funcoes.gravaLog('Não acjei o arquivo de icone da aplicação');
+         funcoes.gravaLog('Não achei o arquivo de icone da aplicação');
 
       conexao.Connected := false;
       conexao.ConnectionString := funcoes.getDadosConexaoUDL(extractFilePath(ParamStr(0)) +  'ConexaoAoWell.ini');
@@ -474,6 +511,7 @@ begin
 
       PARAMS_APLICACAO := TStringlist.Create();
       RvProject1.ProjectFile := 'C:\ProgramasDiversos\RelatoriosPCF.rav';
+      funcoes.gravaLog('Conectado ao banco, String:'+ conexao.ConnectionString);
    except
       on e:Exception do
       begin
@@ -848,6 +886,7 @@ function TfmMain.getUOCD: String;
 begin
    result := PARAMS_APLICACAO.Values['uocd'];
 end;
+
 
 procedure TfmMain.Requisiodereposio1Click(Sender: TObject);
 begin
@@ -1507,11 +1546,40 @@ begin
       if (numNivel= '1') then
          descCat01 := fmSelCat.qrClasse1.fieldByName('ds_vcampo').asString;
    end;
+   fmSelCat.close();
    fmSelCat := nil;
 end;
 
 
 
+
+procedure TfmMain.Log1Click(Sender: TObject);
+var
+  cmd:String;
+begin
+   cmd := funcoes.getDirLogs() + 'baretail.exe ' + funcoes.getDirLogs() +
+          ExtractFilename(ParamStr(0))+ '_log.txt';
+   winexec(pChar(cmd), sw_normal);
+end;
+
+procedure TfmMain.ListaCuponspordia1Click(Sender: TObject);
+begin
+   if (fmResumoECF = nil) then
+   begin
+      application.CreateForm(TfmResumoECF, fmResumoECF);
+      fmResumoECF.show();
+   end;
+end;
+
+
+procedure TfmMain.RazoAnalticoRRANA1Click(Sender: TObject);
+begin
+   if (fmRelGeral1 = nil) then
+   begin
+      application.CreateForm(TfmRelGeral1, fmRelGeral1);
+      fmRelGeral1.show();
+   end;
+end;
 
 end.
 

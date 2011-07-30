@@ -71,7 +71,9 @@ uses
   uTotalEntSai in 'fmGeraEstoque\fmTotalEntSai\uTotalEntSai.pas' {fmTotalEntSai},
   uDetalhesCRUC in 'fmGeraEstoque\fmDetalhesCRUC\uDetalhesCRUC.pas' {fmDetalhesCRUC},
   uPedidosFornecedor in 'fmGeraEstoque\fmPedidosFornecedor\uPedidosFornecedor.pas' {fmPedidosFornecedor},
-  uExportaTable in 'fmGeraEstoque\fmExportacao\uExportaTable.pas' {Form2};
+  uExportaTable in 'fmGeraEstoque\fmExportacao\uExportaTable.pas' {fmExportaTable},
+  umColetor in 'fmColetor\umColetor.pas' {fmColetor},
+  uResumoECF in 'fmResumoECF\uResumoECF.pas' {fmResumoECF};
 
 {$R *.res}
 
@@ -85,7 +87,6 @@ begin
       Application.Initialize;
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
-  Application.CreateForm(TForm2, Form2);
   Application.Run;
    end;
 end.

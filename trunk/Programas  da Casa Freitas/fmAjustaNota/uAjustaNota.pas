@@ -251,7 +251,7 @@ end;
 procedure TfmAjustaNota.FormCreate(Sender: TObject);
 begin
   cbOperIntegrada.Items := funcsql.getOperIntegradasFiscais(fmMain.Conexao);
-  IS_GRUPO_PERMITIDO := fmMain.isGrupoPermitido( fmMain.Ajustedenotas1.Tag );
+  IS_GRUPO_PERMITIDO := not( fmMain.isGrupoRestrito( fmMain.Ajustedenotas1.Tag ));
 end;
 
 procedure TfmAjustaNota.btOkClick(Sender: TObject);

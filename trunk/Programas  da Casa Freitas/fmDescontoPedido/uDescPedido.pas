@@ -133,7 +133,7 @@ var
 begin
    tpDescontoClick(Sender);
 
-   IS_TELA_RESTRITA :=  not(fmMain.isGrupoPermitido(fmMain.Descontodepedido1.Tag));
+   IS_TELA_RESTRITA :=  fmMain.isGrupoRestrito(fmMain.Descontodepedido1.Tag);
 
    fmDescPed.Caption := TITULO;
 
