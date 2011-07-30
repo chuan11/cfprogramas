@@ -71,7 +71,10 @@ uses
   uTotalEntSai in 'fmGeraEstoque\fmTotalEntSai\uTotalEntSai.pas' {fmTotalEntSai},
   uDetalhesCRUC in 'fmGeraEstoque\fmDetalhesCRUC\uDetalhesCRUC.pas' {fmDetalhesCRUC},
   uPedidosFornecedor in 'fmGeraEstoque\fmPedidosFornecedor\uPedidosFornecedor.pas' {fmPedidosFornecedor},
-  uExportaTable in 'fmGeraEstoque\fmExportacao\uExportaTable.pas' {fmExportaTable};
+  uExportaTable in 'fmGeraEstoque\fmExportacao\uExportaTable.pas' {fmExportaTable},
+  umColetor in 'fmColetor\umColetor.pas' {fmColetor},
+  uResumoECF in 'fmResumoECF\uResumoECF.pas' {fmResumoECF},
+  uRRANA in 'fmRRANA\uRRANA.pas' {fmRelGeral1};
 
 {$R *.res}
 
@@ -85,6 +88,6 @@ begin
       Application.Initialize;
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
-      Application.Run;
+  Application.Run;
    end;
 end.

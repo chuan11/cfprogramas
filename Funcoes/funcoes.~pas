@@ -142,7 +142,7 @@ end;
 
 function getDirLogs():String;
 begin
-   ExtractFilePath(paramStr(0) + 'logs\');
+  result :=  ExtractFilePath(paramStr(0)) + 'logs\';
 end;
 
 
@@ -759,7 +759,9 @@ begin
    cxDialogo.Options:= [ofAllowMultiSelect];
 
    if cxDialogo.Execute then
-      result := CxDialogo.Files;
+      result := CxDialogo.Files
+   else
+      result := nil;
 end;
 
 function dialogAbrArq(tpArquivo,DirInicial:string):string;

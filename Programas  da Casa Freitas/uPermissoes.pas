@@ -93,7 +93,9 @@ begin
    if Column.Field.FieldName = 'Menu' then
       column.Font.Style := [fsbold];
 
-   if (Column.Field.FieldName = 'Acessa')  or  (Column.Field.FieldName = 'isAcessoRestrito') then
+   if (Column.Field.FieldName = 'Acessa')
+   or (Column.Field.FieldName = 'isAcessoRestrito')
+   or (Column.Field.FieldName = 'isPedeAutorizacao')then
    begin
       column.Font.Style := [fsbold];
       Column.Font.Color := clred;
@@ -169,8 +171,17 @@ begin
          begin
             tb.Edit;
             tb.FieldByName('Acessa').asString := 'X';
+
             if (ds.FieldByName('isAcessoRestrito').asInteger <> 0) then
-               tb.FieldByName('isAcessoRestrito').asString := 'X';
+               tb.FieldByName('isAcessoRestrito').asString := 'X'
+            else
+               tb.FieldByName('isAcessoRestrito').asString := '';
+
+            if (ds.FieldByName('isPedeAutorizacao').asInteger <> 0) then
+               tb.FieldByName('isPedeAutorizacao').asString := 'X'
+            else
+               tb.FieldByName('isPedeAutorizacao').asString := '';
+
             tb.post;
             break;
          end;
@@ -210,8 +221,8 @@ begin
    tb.Close();
    tb.open();
 
-   grid.Columns[ tb.FieldByName('isPedeAutorizacao').Index ].Title.Caption := 'Acesso restrito';
-   grid.Columns[ tb.FieldByName('isAcessoRestrito').Index ].Title.Caption := 'Pede autorização';
+   grid.Columns[ tb.FieldByName('isPedeAutorizacao').Index ].Title.Caption := 'Pede autorização';
+   grid.Columns[ tb.FieldByName('isAcessoRestrito').Index ].Title.Caption := 'Acesso restrito';
    grid.Columns[ tb.FieldByName('seq').Index ].Visible := false;
    grid.Columns[ tb.FieldByName('Codgrupo').Index ].Visible := false;
    grid.Columns[ tb.FieldByName('grupo').Index ].Width := 150;
@@ -248,26 +259,6 @@ begin
    dsuser.DataSet := funcSql.getDataSetQ(cmd, fmMain.Conexao);
 end;
 
-procedure TfmPermissoes.gridCellClick(Column: TColumn);
-var
-   cmd:String;
-begin
-   if (tb.IsEmpty = false) and (tree.Selected <> nil) then
-   begin
-      if (Column.FieldName = 'Acessa') or (Column.FieldName = 'isAcessoRestrito') or (Column.FieldName = 'isPedeAutorizacao') then
-      begin
-          if (Column.FieldName = 'Acessa')then
-              ajustaPermisssaoAcessoTela();
-
-          if (tb.FieldByName('Acessa').asString = 'X') and (Column.FieldName = 'isAcessoRestrito') then
-             ajustaPermisaoAcessoRestrito();
-
-          if (tb.FieldByName('Acessa').asString = 'X') and (Column.FieldName = 'isPedeAutorizacao') then
-             ajustaPermissaoSolicitaSenha();
-      end;
-   end;
-end;
-
 procedure TfmPermissoes.ajustaPermisssaoAcessoTela();
 begin
    tb.Edit();
@@ -297,7 +288,7 @@ begin
   tb.Edit();
    cmd := ' update zcf_telasPermitidas '+
           ' set '+
-          ' ' + campo +'= ' + boolToStr((tb.fieldByname(campo).asString <> '')) +
+          ' ' + campo +'= ' + boolToStr( not(tb.fieldByname(campo).asString <> '') ) +
           ' where '+
           ' codTela= '+ menuSelecionado + ' and ' +
           ' grupo= ' + tb.fieldByname('codGrupo').asString;
@@ -320,6 +311,24 @@ end;
 procedure TfmPermissoes.ajustaPermissaoSolicitaSenha();
 begin
    ajustaPermissaoCampo('isPedeAutorizacao');
+end;
+
+procedure TfmPermissoes.gridCellClick(Column: TColumn);
+begin
+   if (tb.IsEmpty = false) and (tree.Selected <> nil) then
+   begin
+      if (Column.FieldName = 'Acessa') or (Column.FieldName = 'isAcessoRestrito') or (Column.FieldName = 'isPedeAutorizacao') then
+      begin
+          if (Column.FieldName = 'Acessa')then
+             ajustaPermisssaoAcessoTela();
+
+          if (tb.FieldByName('Acessa').asString = 'X') and (Column.FieldName = 'isAcessoRestrito') then
+             ajustaPermisaoAcessoRestrito();
+
+          if (tb.FieldByName('Acessa').asString = 'X') and (Column.FieldName = 'isPedeAutorizacao') then
+             ajustaPermissaoSolicitaSenha();
+      end;
+   end;
 end;
 
 

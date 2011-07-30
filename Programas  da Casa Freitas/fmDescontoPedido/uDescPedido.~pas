@@ -647,10 +647,12 @@ begin
       tbAvarias.First();
       while (tbAvarias.Eof = false) do
       begin
+
          if (tbItens.FieldByName('is_ref').asString = tbAvarias.FieldByName('is_ref').asString) and
-            (tbAvarias.FieldByName('qtParaVenda').asString <> '0') and
-            (tbAvarias.FieldByName('pcoSugerido').asString <> '0') then
-             vDesc := vDesc+ (tbItens.FieldByName('und').AsFloat - tbAvarias.FieldByName('pcoSugerido').AsFloat) ; //* tbAvarias.FieldByName('qtParaVenda').AsFloat;
+            (tbAvarias.FieldByName('qtParaVenda').asString <> '0')                              and
+            (tbAvarias.FieldByName('pcoSugerido').asString <> '0')                              then
+             vDesc := vDesc+ (tbItens.FieldByName('und').AsFloat - tbAvarias.FieldByName('pcoSugerido').AsFloat) * tbAvarias.FieldByName('qtParaVenda').AsFloat;
+
          tbAvarias.next();
       end;
       tbItens.Next();

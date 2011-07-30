@@ -1,6 +1,6 @@
 object fmPermissoes: TfmPermissoes
-  Left = 480
-  Top = 135
+  Left = 482
+  Top = 137
   Width = 686
   Height = 555
   Caption = 'Controle de permiss'#245'es'

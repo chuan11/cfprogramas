@@ -7,7 +7,7 @@ uses
   StdCtrls, ExtCtrls, Mask, Buttons, ComCtrls, Gauges, Grids,
   DBGrids,  mxExport, Db, DBTables, DBCtrls, Menus, CheckLst,clipbrd,
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, ADODB, IdFTP,
-  adLabelEdit, adLabelNumericEdit, adLabelSpinEdit,funcoes, FileCtrl, funcsql,
+  adLabelEdit, adLabelNumericEdit, adLabelSpinEdit, funcoes, FileCtrl, funcsql,
   SoftDBGrid;//, IdExplicitTLSClientServerBase;
 
 
@@ -49,6 +49,7 @@ type
     Cadastrodeempregados2: TMenuItem;
     Funcoes1: TMenuItem;
     N1: TMenuItem;
+    Button1: TButton;
     procedure FormShow(Sender: TObject);
     procedure MaskEdit1Click(Sender: TObject);
     procedure BitBtn9Click(Sender: TObject);
@@ -103,6 +104,8 @@ type
     procedure Cadastrodeempregados2Click(Sender: TObject);
     function carregaCbox(str:string; cbox:TComboBox):integer;
     procedure N1Click(Sender: TObject);
+    procedure Label1DblClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -812,7 +815,7 @@ end;
 
 procedure TForm2.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-{   case( key) of
+   case( key) of
       vk_F6 : salvarmemo2(sender);
       70:begin
             if Shift = [ssCtrl] then
@@ -820,7 +823,6 @@ begin
          end;
    end;
    statusbar1.Panels[1].Text := IntToStr(key);
-}
 end;
 procedure TForm2.organizerpornome1Click(Sender: TObject);
 begin
@@ -829,7 +831,7 @@ end;
 
 procedure TForm2.qq1Click(Sender: TObject);
 begin
-showmessage('');
+   showmessage('');
 end;
 
 {
@@ -1108,6 +1110,17 @@ end;
 procedure TForm2.N1Click(Sender: TObject);
 begin
     PageControl1.Visible := not (PageControl1.Visible);
+end;
+
+procedure TForm2.Label1DblClick(Sender: TObject);
+begin
+   label1.Caption := funcoes.DialogAbrArq('txt','c:\');
+end;
+
+procedure TForm2.Button1Click(Sender: TObject);
+begin
+   Button9Click(nil);
+   Button11Click(nil);
 end;
 
 end.

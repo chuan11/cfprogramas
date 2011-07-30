@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 360
-  Top = 157
+  Left = 450
+  Top = 269
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -115,6 +115,11 @@ object fmMain: TfmMain
           Caption = 'Relatorio de invent'#225'rio'
           OnClick = Processarinventrio1Click
         end
+        object RazoAnalticoRRANA1: TMenuItem
+          Tag = 114
+          Caption = 'Raz'#227'o Anal'#237'tico RRANA'
+          OnClick = RazoAnalticoRRANA1Click
+        end
       end
     end
     object compras1: TMenuItem
@@ -214,17 +219,13 @@ object fmMain: TfmMain
           Caption = 'Enviar DANFE por e-mail'
           OnClick = EnviarespelhoPDFdeNFeparaemail1Click
         end
-        object ImprimirNFe1: TMenuItem
-          Tag = 305
-          Caption = 'Visualizar DANFE'
-          OnClick = ImprimirNFe1Click
-        end
-        object Saldofiscalpormes1: TMenuItem
-          Tag = 306
-          Caption = 'Saldo fiscal por mes'
-          OnClick = Saldofiscalpormes1Click
+        object ListaCuponspordia1: TMenuItem
+          Tag = 310
+          Caption = 'Lista Cupons por dia'
+          OnClick = ListaCuponspordia1Click
         end
         object ImprimirDANFE1: TMenuItem
+          Tag = 309
           Caption = 'Imprimir DANFE'
           OnClick = ImprimirDANFE1Click
         end
@@ -232,6 +233,16 @@ object fmMain: TfmMain
           Tag = 308
           Caption = 'Registro SCAN'
           OnClick = RegistroSCAN1Click
+        end
+        object Saldofiscalpormes1: TMenuItem
+          Tag = 306
+          Caption = 'Saldo fiscal por mes'
+          OnClick = Saldofiscalpormes1Click
+        end
+        object ImprimirNFe1: TMenuItem
+          Tag = 305
+          Caption = 'Visualizar DANFE'
+          OnClick = ImprimirNFe1Click
         end
       end
     end
@@ -314,6 +325,11 @@ object fmMain: TfmMain
         Tag = 507
         Caption = 'Par'#226'metros do sistema'
         OnClick = parmetrosdosistema1Click
+      end
+      object Log1: TMenuItem
+        Tag = 508
+        Caption = 'Log'
+        OnClick = Log1Click
       end
     end
     object rocardeUsuario1: TMenuItem

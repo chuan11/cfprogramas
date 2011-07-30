@@ -75,7 +75,7 @@ type
     procedure CriarTabela(Sender:Tobject);
     procedure ListaProdutosPorFornecedor(Sender:Tobject);
     procedure rgTpBuscaClick(Sender: TObject);
-    function  listarItensPorFaixaCodigo():TdataSet;
+//    function  listarItensPorFaixaCodigo():TdataSet;
     procedure ProgressoDaExecucao(Sender:Tobject;nItem:integer);
     procedure GeraEstoque(Sender:TObject);
     procedure gridCellClick(Column: TColumn);
@@ -161,25 +161,6 @@ begin
 end;
 
 
-function TfmGeraEstoque.ListarItensPorFaixaCodigo():TdataSet;
-var
-  cmd:String;
-begin
-   cmd := 'Select is_ref from crefe (nolock)';
-
-   if (lbNivel.Caption <> '0') then
-      cmd := cmd + 'inner join cccom with(nolock) on crefe.is_ref = cccom.cd_chave ' +
-      ' and cd_campo = '+ quotedstr(lbNivel.caption) +
-      ' and cd_vcampo  = ' + quotedstr(lbVlCat.caption);
-
-   cmd := cmd + ' where crefe.cd_ref like ' + quotedStr( edit1.Text + '%');
-
-   if (cbProdAtivos.Checked = true) then
-      cmd := cmd + ' and crefe.fl_ativo = ''1''  order by cd_ref ';
-
-   result := funcsql.getDataSetQ(cmd, fmMain.Conexao);
-end;
-
 procedure TfmGeraEstoque.preencheDadosDosProdutos;
 var
    ds, dsItens:TdataSet;
@@ -190,7 +171,7 @@ begin
    fmMain.msgStatus('Obtendo lista de itens....');
 
    case (rgTpBusca.ItemIndex) of
-      0:dsItens:= listarItensPorFaixaCodigo();
+      0:dsItens:= uCF.getIsrefPorFaixaCodigo(edit1.Text, lbNivel.Caption, lbVlCat.Caption, cbProdAtivos.Checked);
       1:dsItens:= listaProdutoPorPedido();
       2:dsItens:= listaProdPorFornecedor();
    end;
@@ -219,8 +200,8 @@ begin
          end;
          dsItens.Next;
       end;
+      ds.free;
    end;
-   ds.free;
 end;
 
 
@@ -331,6 +312,7 @@ end;
 
 procedure TfmGeraEstoque.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+   tbge.Close();
    funcoes.salvaCampos(fmGeraEstoque);
    Action := caFree;
    fmGeraEstoque := nil;
@@ -566,8 +548,8 @@ var
   data:Tdate;
 begin
    fmMain.msgStatus('Obtendo estoques cod CD');
-
    data:= now;
+
    tbGE.First();
    while (tbGE.Eof = false) do
    begin
@@ -625,6 +607,7 @@ begin
          tbge.FieldByName('Quant Ultima Ent').AsString := ds.fieldByName('qt_mov').asString;
          tbGE.post();
       end;
+      ds.free;
       tbGE.Next();
    end;
 end;
@@ -652,7 +635,6 @@ begin
 
 // pega os Dados das entradas dos produtos
    getDadosEntrada();
-
 
 // remove os itens sem entrada se for solicitado
    if (cbSoEntrada.Checked = true) then
@@ -695,7 +677,7 @@ begin
       geraEstoque(Sender);
 
       screen.Cursor := crDefault;
-      grid.Columns[ tbGE.FieldByName('pv').Index ].Title.Caption := copy(cbPrecos.Items[cbPrecos.itemindex],01,20);
+      grid.Columns[ tbGE.FieldByName('pv').Index ].Title.Caption := copy(cbPrecos.Items[cbPrecos.itemindex], 01, 20);
    end
    else
       funcoes.msgTela('','Erro:'+#13+ erro, MB_ICONERROR);
@@ -734,6 +716,8 @@ procedure TfmGeraEstoque.Vermovimentodoestoque1Click(Sender: TObject);
 var
    di,df:Tdate;
    itens:TStringList;
+   tbItens, tbMov:TADOTable;
+   params:TStringList;
 begin
    if (tbGE.IsEmpty = false) then
    begin
@@ -741,11 +725,33 @@ begin
         di := strToDate(tbGE.fieldByName('Data Ultima Ent').AsString)
      else
         di := GetIniDtVen();
-    df := now;
+
+    df:= now;
 
     itens := TSTringlist.Create();
     itens.Add(tbGE.fieldByName('is_ref').AsString);
-    uCF.calculaRRANA(itens, funcoes.getCodUO(cbLoja), di, df);
+
+    tbItens := TADOTable.create(nil);
+    tbItens.Connection := fmMain.Conexao;
+
+    tbMov := TADOTable.create(nil);
+    tbMov.Connection := fmMain.Conexao;
+
+    uCF.calculaRRANA(tbItens, tbMov, itens, funcoes.getCodUO(cbLoja), di, df);
+
+    Params:= TStringlist.create();
+    params.Add(dateToStr(di));
+    params.Add(dateToStr(df));
+    params.Add(funcoes.getNomeUO(cbLoja));
+    params.Add(fmMain.getNomeUsuario()) ;
+
+    if (tbMov.IsEmpty = false) then
+       fmMain.impressaoRaveQr4(tbItens, tbMov, nil, nil, 'rpRRANA', params)
+    else
+       msgTela('','Sem movimentação no período.', MB_ICONERROR + MB_OK);
+
+    tbItens.Close();
+    tbMov.Close();
    end;
 end;
 

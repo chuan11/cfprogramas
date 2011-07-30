@@ -238,7 +238,7 @@ begin
    label1.Visible := false;
    cbDetAvaForn.Visible := false;
 
-   IS_GRUPO_PERMITIDO_CARTAO :=  fmMain.isGrupoPermitido(PERFIL);
+   IS_GRUPO_PERMITIDO_CARTAO :=  not(fmMain.isGrupoRestrito(PERFIL));
 
    if (IS_GRUPO_PERMITIDO_CARTAO = false) then
    begin
@@ -320,9 +320,12 @@ end;
 
 procedure TfmRelGeral.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-   funcoes.salvaCampos(fmRelGeral);
-   action := CaFree;
-   fmRelGeral := nil;
+   if (fmRelGeral <> nil) then
+   begin
+      funcoes.salvaCampos(fmRelGeral);
+      action := CaFree;
+      fmRelGeral := nil;
+   end;   
 end;
 
 procedure TfmRelGeral.produtosTransferidosGeraLista;

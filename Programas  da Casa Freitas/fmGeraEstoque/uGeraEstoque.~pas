@@ -54,6 +54,7 @@ type
     btAddForn: TFlatButton;
     btRemoveForn: TFlatButton;
     lbForn: TadLabelListBox;
+    Vermovimentodoestoque1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FlatButton1Click(Sender: TObject);
     procedure FlatButton2Click(Sender: TObject);
@@ -95,6 +96,7 @@ type
     procedure btRemoveFornClick(Sender: TObject);
     function  listaProdPorFornecedor():TDataSet;
     procedure FlatButton3Click(Sender: TObject);
+    procedure Vermovimentodoestoque1Click(Sender: TObject);
 
 
 
@@ -199,7 +201,7 @@ begin
    while (dsItens.Eof = false) do
    begin
       insereItem:= true;
-      ds := uCF.getDadosProd(funcoes.getCodUO(cbLoja), dsItens.fieldByname('is_ref').AsString, fmMain.getCodPreco(cbPrecos), true );
+      ds := uCF.getDadosProd( funcoes.getCodUO(cbLoja), dsItens.fieldByname('is_ref').AsString, fmMain.getCodPreco(cbPrecos), true );
       if (ds.IsEmpty = false) then
       begin
          if (cbEstoque.ItemIndex = 0 ) and ( ds.fieldByName('EstoqueDisponivel').asString = '0'  ) then
@@ -217,8 +219,8 @@ begin
          end;
          dsItens.Next;
       end;
+      ds.free;
    end;
-   ds.free;
 end;
 
 
@@ -329,6 +331,7 @@ end;
 
 procedure TfmGeraEstoque.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+   tbge.Close();
    funcoes.salvaCampos(fmGeraEstoque);
    Action := caFree;
    fmGeraEstoque := nil;
@@ -564,8 +567,8 @@ var
   data:Tdate;
 begin
    fmMain.msgStatus('Obtendo estoques cod CD');
-
    data:= now;
+
    tbGE.First();
    while (tbGE.Eof = false) do
    begin
@@ -623,6 +626,7 @@ begin
          tbge.FieldByName('Quant Ultima Ent').AsString := ds.fieldByName('qt_mov').asString;
          tbGE.post();
       end;
+      ds.free;
       tbGE.Next();
    end;
 end;
@@ -650,7 +654,6 @@ begin
 
 // pega os Dados das entradas dos produtos
    getDadosEntrada();
-
 
 // remove os itens sem entrada se for solicitado
    if (cbSoEntrada.Checked = true) then
@@ -693,7 +696,7 @@ begin
       geraEstoque(Sender);
 
       screen.Cursor := crDefault;
-      grid.Columns[ tbGE.FieldByName('pv').Index ].Title.Caption := copy(cbPrecos.Items[cbPrecos.itemindex],01,20);
+      grid.Columns[ tbGE.FieldByName('pv').Index ].Title.Caption := copy(cbPrecos.Items[cbPrecos.itemindex], 01, 20);
    end
    else
       funcoes.msgTela('','Erro:'+#13+ erro, MB_ICONERROR);
@@ -726,6 +729,49 @@ begin
        Application.CreateForm(TfmExportaTable, fmExportaTable);
        fmExportaTable.show();
     end;
+end;
+
+procedure TfmGeraEstoque.Vermovimentodoestoque1Click(Sender: TObject);
+var
+   di,df:Tdate;
+   itens:TStringList;
+   tbItens, tbMov:TADOTable;
+   params:TStringList;
+begin
+   if (tbGE.IsEmpty = false) then
+   begin
+     if (tbGE.fieldByName('Data Ultima Ent').AsString <> '') then
+        di := strToDate(tbGE.fieldByName('Data Ultima Ent').AsString)
+     else
+        di := GetIniDtVen();
+
+    df:= now;
+
+    itens := TSTringlist.Create();
+    itens.Add(tbGE.fieldByName('is_ref').AsString);
+
+    tbItens := TADOTable.create(nil);
+    tbItens.Connection := fmMain.Conexao;
+
+    tbMov := TADOTable.create(nil);
+    tbMov.Connection := fmMain.Conexao;
+
+    uCF.calculaRRANA(tbItens, tbMov, itens, funcoes.getCodUO(cbLoja), di, df);
+
+    Params:= TStringlist.create();
+    params.Add(dateToStr(di));
+    params.Add(dateToStr(df));
+    params.Add(funcoes.getNomeUO(cbLoja));
+    params.Add(fmMain.getNomeUsuario()) ;
+
+    if (tbMov.IsEmpty = false) then
+       fmMain.impressaoRaveQr4(tbItens, tbMov, nil, nil, 'rpRRANA', params)
+    else
+       msgTela('','Sem movimentação no período.', MB_ICONERROR + MB_OK);
+
+    tbItens.Close();
+    tbMov.Close();
+   end;
 end;
 
 end.

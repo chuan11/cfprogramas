@@ -1,6 +1,6 @@
 object fmPcporPedido: TfmPcporPedido
-  Left = 417
-  Top = 176
+  Left = 391
+  Top = 184
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'Gera'#231#227'o de pre'#231'os a partir de pedido de compra.'

@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, adLabelEdit, adLabelComboBox, Db, Buttons,
   fCtrls, DBGrids, funcsql, FUNCOES, ADODB, Grids, SoftDBGrid,
-  TFlatCheckBoxUnit;
+  TFlatCheckBoxUnit, Menus;
 
 type
   TfmCadEmpregados = class(TForm)
@@ -34,6 +34,8 @@ type
     edLocEmp: TadLabelEdit;
     cbLojas: TComboBox;
     cbBatePonto: TFlatCheckBox;
+    PopupMenu1: TPopupMenu;
+    RemoveEmpregadodocadastro1: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure cbEmpClick(Sender: TObject);
     procedure btCarregaHorarioClick(Sender: TObject);
@@ -46,6 +48,7 @@ type
     procedure edLocEmpKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure carregaCadastro();
     procedure cbLojasChange(Sender: TObject);
+    procedure RemoveEmpregadodocadastro1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -180,6 +183,9 @@ begin
    cbLojas.Items := uUtil.getNomeLojasPonto(True, true);
    cbLojas.ItemIndex := 0 ;
    carregaCadastro();
+
+   cbBatePonto.Hint := 'Se estiver desmarcado, o empregado '+#13+'não aparece no relógio de ponto';
+   cbBatePonto.ShowHint := true;
 end;
 
 procedure TfmCadEmpregados.gridEmpTitleClick(Column: TColumn);
@@ -202,6 +208,19 @@ end;
 procedure TfmCadEmpregados.cbLojasChange(Sender: TObject);
 begin
    carregaCadastro();
+end;
+
+procedure TfmCadEmpregados.RemoveEmpregadodocadastro1Click(Sender: TObject);
+var
+   cmd:String;
+begin
+   cmd:= ' Se você remover o funcionário ele não aparecerá mais no cadastro, continua ?';
+   if (funcoes.msgTela('',cmd, MB_ICONWARNING + MB_YESNO) = mrOk) then
+   begin
+      cmd := 'Delete from  zcf_PontoCadDigitais  wher id =  ' + 
+
+
+   end;
 end;
 
 end.
