@@ -11,7 +11,7 @@ interface
 
 
 implementation
-uses uDestinoEmail;
+uses uMain, uDestinoEmail;
 
 
 procedure enviarEmail( para,assunto,anexo:String; corpoMsg:Tstringlist; conexao:TADOConnection);
@@ -80,7 +80,10 @@ var
    str:String;
 begin
    application.CreateForm(TfmDestEmail, fmDestEmail);
-   fmDestEmail.cbLoja.Items := funcsql.GetNomeLojas(conexao, false,false,'','');
+//   fmDestEmail.cbLoja.Items := funcsql.GetNomeLojas(conexao, false,false,'','');
+
+   fmMain.getListaLojas(fmDestEmail.cbLoja, false, false, '' );
+
    fmDestEmail.cbLoja.ItemIndex := 0;
    fmDestEmail.ShowModal;
 

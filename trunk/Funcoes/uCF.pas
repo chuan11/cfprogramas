@@ -376,10 +376,8 @@ begin
    ' dnota.cd_cfo,' +#13+
    ' dnota.dt_entsai as [Entrada/Saida],' +#13+
    ' dnota.VL_DSPEXTRA,' +#13+
-   ' case when is_fildest > 0 then is_fildest else dnota.cd_pes end as cd_pes, '+#13+
-   ' case when is_fildest > 0 then ( select nm_pes from dspes D where d.cd_pes = dnota.is_fildest) ' +
-   ' else ( select nm_pes from dspes D where d.cd_pes = dnota.cd_pes) end as [Emissor/Destino],'+#13+   ' vl_nota as Valor,' +#13+
-   ' dnota.codigo_nfe,' +#13+
+   ' case when is_fildest = is_estoque then dnota.cd_pes else dnota.is_fildest end as cd_pes, '+#13+
+   ' case when is_fildest = is_estoque then ( select nm_pes from dspes D where d.cd_pes = dnota.cd_pes)' +   ' else ( select ds_uo from zcf_tbuo D where d.is_uo = dnota.is_fildest) end as [Emissor/Destino],'  +#13+   ' vl_nota as Valor,' +#13+   ' dnota.codigo_nfe,' +#13+
    ' zcf_tbuo.ds_uo as Loja,' +#13+
    ' dnota.dt_emis,'+#13+
    ' dnota.is_estoque,'+#13+
@@ -732,7 +730,6 @@ begin
 
    result :=  funcSQL.getDataSetQ(cmd, fmMain.conexao);
 end;
-
 
 procedure cargaDadosConciliacao(tb:TADOTable; dti, dtf: TDateTimePicker);
 var

@@ -82,8 +82,7 @@ begin
       panel1.Caption := titulo;
       fmEnviaEmail.Refresh();
 
-      nmRemetente := funcSQL.openSQL('Select ds_email from dsusu (nolock) where cd_pes = '+ pesSender, 'ds_email', conexao);
-
+//      nmRemetente := funcSQL.openSQL('Select ds_email from dsusu (nolock) where cd_pes = '+ pesSender, 'ds_email', conexao);
       if (pos('@', nmRemetente) = 0 ) then
          nmRemetente := funcsql.getEmail(uo, conexao);
 
@@ -98,6 +97,7 @@ begin
          if corpoMsg <> nil then
             for i:=0 to corpoMsg.Count -1 do
                Body.Add(corpoMsg[i]);
+
          From.Address := nmRemetente;
          From.Name := nmRemetente;
          Recipients.Add;
@@ -106,7 +106,7 @@ begin
          Subject := assunto
       end;
 
-      if anexo <> '' then
+      if (anexo <> '' )then
          TIdAttachment.create(msg.MessageParts, TFileName(anexo));
       try
          idsmtp.Connect();

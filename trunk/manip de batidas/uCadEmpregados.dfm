@@ -1,7 +1,7 @@
 object fmCadEmpregados: TfmCadEmpregados
   Left = 379
   Top = 197
-  Width = 645
+  Width = 766
   Height = 541
   Caption = 'Cadastro de empregados.'
   Color = clBtnFace
@@ -17,26 +17,27 @@ object fmCadEmpregados: TfmCadEmpregados
   WindowState = wsMaximized
   OnActivate = FormActivate
   OnClose = FormClose
+  OnResize = FormResize
   DesignSize = (
-    629
+    750
     503)
   PixelsPerInch = 96
   TextHeight = 13
   object gpListaEmp: TGroupBox
     Left = 0
     Top = 216
-    Width = 629
+    Width = 750
     Height = 122
     Anchors = [akLeft, akTop, akRight, akBottom]
     Caption = ' Empregados '
     TabOrder = 0
     DesignSize = (
-      629
+      750
       122)
     object gridEmp: TSoftDBGrid
       Left = 2
       Top = 40
-      Width = 623
+      Width = 742
       Height = 78
       Anchors = [akLeft, akTop, akRight, akBottom]
       Ctl3D = False
@@ -94,7 +95,7 @@ object fmCadEmpregados: TfmCadEmpregados
   object gpEmp: TGroupBox
     Left = 8
     Top = 11
-    Width = 617
+    Width = 738
     Height = 193
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Dados dos empregados '

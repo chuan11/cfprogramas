@@ -215,9 +215,9 @@ var
    cmd:String;
 begin
    cmd:= ' Se você remover o funcionário ele não aparecerá mais no cadastro, continua ?';
-   if (funcoes.msgTela('',cmd, MB_ICONWARNING + MB_YESNO) = mr_Ok) then
+   if (funcoes.msgTela('',cmd, MB_ICONWARNING + MB_YESNO) = mrOk) then
    begin
-      cmd := 'Delete from 
+      cmd := 'Delete from  zcf_PontoCadDigitais  wher id =  ' + 
 
 
    end;

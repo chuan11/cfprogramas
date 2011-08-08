@@ -28,6 +28,7 @@ interface
    function getEstoqueProduto(uo, is_ref, tipoSaldo:String; data:Tdate):String;
    function getFileFromACBR(server, dirRemoto, dirLocal, arquivo: String): boolean;
    function getFmDadosPessoa(codPerfil: String):String;
+   function getIsrefPorFaixaCodigo(cd_ref, numNivel, codCat:String; soAtivos:boolean):TdataSet;
    function getIsUo(mostraEscritorio:boolean):String;
    function getItensDeUmaNota(isNota:String):TDataSet;
    function getItensParaCadastroNCM(var tabela:TADOTable; isNota:String):boolean;
@@ -375,10 +376,8 @@ begin
    ' dnota.cd_cfo,' +#13+
    ' dnota.dt_entsai as [Entrada/Saida],' +#13+
    ' dnota.VL_DSPEXTRA,' +#13+
-   ' case when is_fildest > 0 then is_fildest else dnota.cd_pes end as cd_pes, '+#13+
-   ' case when is_fildest > 0 then ( select nm_pes from dspes D where d.cd_pes = dnota.is_fildest) ' +
-   ' else ( select nm_pes from dspes D where d.cd_pes = dnota.cd_pes) end as [Emissor/Destino],'+#13+   ' vl_nota as Valor,' +#13+
-   ' dnota.codigo_nfe,' +#13+
+   ' case when is_fildest = is_estoque then dnota.cd_pes else dnota.is_fildest end as cd_pes, '+#13+
+   ' case when is_fildest = is_estoque then ( select nm_pes from dspes D where d.cd_pes = dnota.cd_pes)' +   ' else ( select ds_uo from zcf_tbuo D where d.is_uo = dnota.is_fildest) end as [Emissor/Destino],'  +#13+   ' vl_nota as Valor,' +#13+   ' dnota.codigo_nfe,' +#13+
    ' zcf_tbuo.ds_uo as Loja,' +#13+
    ' dnota.dt_emis,'+#13+
    ' dnota.is_estoque,'+#13+
@@ -1464,6 +1463,25 @@ begin
    '      (dnota.cd_cfo >=5000 and dnota.cd_cfo <=8000)) ' +#13+
    ' and dnota.st_nf not in (''C'',''E'')';
    funCSQL.execSQL(cmd, fmMain.Conexao);
+end;
+
+function getIsrefPorFaixaCodigo(cd_ref, numNivel, codCat:String; soAtivos:boolean):TdataSet;
+var
+  cmd:String;
+begin
+   cmd := 'Select is_ref from crefe (nolock)';
+
+   if ( numNivel <> '0') then
+      cmd := cmd + 'inner join cccom with(nolock) on crefe.is_ref = cccom.cd_chave ' +
+      ' and cd_campo = '+ quotedstr(numNivel) +
+      ' and cd_vcampo  = ' + quotedstr(codCat);
+
+   cmd := cmd + ' where crefe.cd_ref like ' + quotedStr( cd_ref + '%');
+
+   if (soAtivos = true) then
+      cmd := cmd + ' and crefe.fl_ativo = ''1''  order by cd_ref ';
+
+   result := funcsql.getDataSetQ(cmd, fmMain.Conexao);
 end;
 
 

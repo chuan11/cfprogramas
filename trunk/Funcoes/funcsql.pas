@@ -1417,7 +1417,7 @@ begin
 
    qr := TADOQuery.Create(nil);
    qr.Connection := conexao;
-   qr.sql.add('Select codTela, codgrupo, horI, horF from  74 (nolock) where codTela = ' + intToStr(tela)  + ' and codGrupo = ' + grupo);
+   qr.sql.add('Select codTela, codgrupo, horI, horF from  zcf_horBloqRel (nolock) where codTela = ' + intToStr(tela)  + ' and codGrupo = ' + grupo);
    qr.Open;
 
    if qr.IsEmpty  = false then

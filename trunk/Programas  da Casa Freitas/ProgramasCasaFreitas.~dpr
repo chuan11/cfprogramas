@@ -73,7 +73,10 @@ uses
   uPedidosFornecedor in 'fmGeraEstoque\fmPedidosFornecedor\uPedidosFornecedor.pas' {fmPedidosFornecedor},
   uExportaTable in 'fmGeraEstoque\fmExportacao\uExportaTable.pas' {fmExportaTable},
   umColetor in 'fmColetor\umColetor.pas' {fmColetor},
-  uResumoECF in 'fmResumoECF\uResumoECF.pas' {fmResumoECF};
+  uResumoECF in 'fmResumoECF\uResumoECF.pas' {fmResumoECF},
+  uRRANA in 'fmRRANA\uRRANA.pas' {fmRelGeral1},
+  uLiberaNaDoca in 'WMS\uLiberaNaDoca.pas' {fmRecebeNota},
+  uInternaNota in 'WMS\uInternaNota.pas' {fmInternaNota};
 
 {$R *.res}
 

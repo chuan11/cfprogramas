@@ -95,6 +95,9 @@ type
     Log1: TMenuItem;
     ListaCuponspordia1: TMenuItem;
     RazoAnalticoRRANA1: TMenuItem;
+    WMS1: TMenuItem;
+    RecebeNotanadoca1: TMenuItem;
+    InternarNotaEntrada1: TMenuItem;
 
 
     function isTelaRequerSenha( codTela:smallInt ):boolean;
@@ -212,6 +215,7 @@ type
     function insertParamBD(nParametro, loja, valor, descricao: String):boolean;
     function updateParamBD(nParametro, loja, valor, descricao: String):boolean;
     procedure RazoAnalticoRRANA1Click(Sender: TObject);
+    procedure RecebeNotanadoca1Click(Sender: TObject);
 
 
 
@@ -251,7 +255,8 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
      uRemoveRegTEF, uCadastrarNCM, uListaFornecedores, uAjustaSPED,
      uCustoPorPedido, uCF, Math, funcDatas, uObterSaldoFiscal,
      uAjusteModPag, uGeraEstoque, uRelInventario, uSelCat, uTotalEntSai,
-     uDetalhesCRUC, uPedidosFornecedor, umColetor, uResumoECF, uRRANA;
+     uDetalhesCRUC, uPedidosFornecedor, umColetor, uResumoECF, uRRANA,
+  uLiberaNaDoca;
 {$R *.dfm}
 
 
@@ -329,6 +334,7 @@ end;
 procedure TfmMain.FormActivate(Sender: TObject);
 var
    versao_BD:String;
+   i:integer;
 begin
    fmMain.Caption := VERSAO + SUB_VERSAO + ' - Programas da loja.  ';
 
@@ -351,14 +357,23 @@ begin
    if (funcoes.existeParametro('-wms') = true ) then
    begin
       montarMenu('Matriz', 'walter', '10033674','10000592');
-      fmMain.Menu := nil;
+//      fmMain.Menu := nil;
       fmMain.Top := 0;
       fmMain.Left := 0;
       fmMain.Width:= screen.Width;
       fmMain.Height:= screen.Height;
 
-      application.CreateForm(TfmColetor, fmColetor);
-      fmColetor.show();
+//      application.CreateForm(TfmColetor, fmColetor);
+//      fmColetor.show();
+      for i:=0 to menuPrincipal.Items.Count -1 do
+         menuPrincipal.Items[i].Visible := false;
+
+      wms1.Visible := true;
+//      fmMain.WindowState := wsMaximized;
+      fmMain.Left :=0;
+      fmMain.Width := 248;
+      fmMain.Height :=300;
+//      funcoes.gravaLog('heigth:' +intToStr(fmMain.Height) + ' width:' +  intToStr(fmMain.Width)  )
    end;
 
    if (is_logado = false) then
@@ -789,7 +804,6 @@ end;
 
 procedure TfmMain.N1Click(Sender: TObject);
 begin
-   // recarregar o menu
    montarMenu( fmMain.getNomeLojaLogada(),  fmMain.getNomeUsuario(), fmMain.getUoLogada(), getUserLogado());
 end;
 
@@ -804,7 +818,7 @@ end;
 
 procedure TfmMain.mostraDetalhesNota(Sender: Tobject; is_nota: String);
 begin
-   if fmDetEntrada = nil then
+   if (fmDetEntrada = nil) then
    begin
       application.CreateForm(TfmDetalhesNota,fmDetalhesNota);
       fmDetalhesNota.show;
@@ -890,7 +904,7 @@ end;
 
 procedure TfmMain.Requisiodereposio1Click(Sender: TObject);
 begin
-   abreFormRequisicao( false, 2);
+   abreFormRequisicao(false, 2);
 end;
 
 
@@ -1003,7 +1017,9 @@ begin
           if application.Components[i].InheritsFrom(Tform) = true then
             inc(nFormsAbertos);
 
-       if (pos(fmMain.getUserLogado(), fmMain.GetParamBD('comum.usrSemTimeOut','') ) = 0 ) and (nFormsAbertos <= 1) then
+       if (pos(fmMain.getUserLogado(), fmMain.GetParamBD('comum.usrSemTimeOut','') ) = 0 ) and
+          (nFormsAbertos <= 1) and
+          ( funcoes.existeParametro('-wms') = true) then
           Application.Terminate()
        else
           TIME_OUT_PROGRAMA := TIME_OUT_PROGRAMA_DEFAULT;
@@ -1202,14 +1218,15 @@ begin
       screen.Cursor := crHourglass;
 
       cmd := GetPDFNFe(cmd);
-      msgEmail := TStringlist.Create();
-      msgEmail.add( 'Segue o XML da nota fiscal ' +  ds.FieldByName('Num').asString);
-      msgEmail.add( 'Emitida pela loja: '+ ds.FieldByName('loja').asString );
-      enviarEmail('', 'Envio de PDF, nota fiscal eletrônica', cmd,  msgEmail, 'Envio de XML');
-      ds.Free();
-
       if (fileExists(cmd)= true) then
+      begin
+         msgEmail := TStringlist.Create();
+         msgEmail.add( 'Segue o XML da nota fiscal ' +  ds.FieldByName('Num').asString);
+         msgEmail.add( 'Emitida pela loja: '+ ds.FieldByName('loja').asString );
+         enviarEmail('', 'Envio de PDF, nota fiscal eletrônica', cmd,  msgEmail, 'Envio de XML');
+         ds.Free();
          deleteFile(cmd);
+      end;
    end;
    screen.Cursor := crDefault;
 end;
@@ -1578,6 +1595,15 @@ begin
    begin
       application.CreateForm(TfmRelGeral1, fmRelGeral1);
       fmRelGeral1.show();
+   end;
+end;
+
+procedure TfmMain.RecebeNotanadoca1Click(Sender: TObject);
+begin
+   if (fmRecebeNota = nil) then
+   begin
+       Application.CreateForm(TfmRecebeNota, fmRecebeNota);
+       fmRecebeNota.show();
    end;
 end;
 
