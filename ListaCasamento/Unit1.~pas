@@ -203,6 +203,7 @@ begin
         break;
      end;
 end;
+ 
 function TForm1.EhlistaDaloja(num:string;MostraMensagem:boolean): boolean;
 begin
    if (num = funcoes.RParReg('listas','loja') ) or ( funcoes.RParReg('listas','loja') = '00' )  then

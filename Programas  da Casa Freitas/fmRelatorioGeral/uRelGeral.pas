@@ -311,6 +311,7 @@ begin
          param.Add(totais[i]);
       fmMain.msgStatus('');
       fmMain.impressaoRaveQr4( tbOperadores, tbTotRec, tbSangrias, tbVendasCartao, 'rpPreviaCx', param);
+      MSGtELA('','',0);
       totais.Free;
       param.Free;
    end

@@ -188,20 +188,23 @@ function tform1.HaParametroInvalido(sender:Tobject):boolean;
 var
   par:Tstringlist;
   i:integer;
+  res:boolean;
 begin
   par := Tstringlist.Create();
   par.add('Versao');  par.add('Loja');  par.add('PortaImp');
   par.add('TitRel');    par.add('MostraErros');  par.add('HostFTP');   par.add('User');
   par.add('TipoImp');      par.add('IPServer');  par.add('DBName');
 
+  res:= false;
   for i:=0 to par.count-1 do
      if funcoes.RParReg('listas',par[i]) = '' then
      begin
         msgtela('Falta o parâmetro: ' + par[i], mb_Ok + MB_iconError);
-        result := true;
+        res := true;
         PAR.Destroy;
         break;
      end;
+   result := res;
 end;
  
 function TForm1.EhlistaDaloja(num:string;MostraMensagem:boolean): boolean;

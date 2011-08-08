@@ -392,7 +392,13 @@ begin
       if (length(dbedit3.text) < 3) then
          isAutorizado := true
       else
-         isAutorizado := ( VerificaSenhas.TelaAutorizacao2(form1.ConexaoWell, form1.GetParamBD('gruposAutorizadores', '99') , '') <> '');
+         isAutorizado := (
+              VerificaSenhas.TelaAutorizacao2(
+                 form1.ConexaoWell,
+                 form1.GetParamBD('gruposAutorizadores', '99'),
+                 form1.GetParamBD('comum.autLista','99') )
+
+         <> '');
    end;
 
    if (isAutorizado = true) then

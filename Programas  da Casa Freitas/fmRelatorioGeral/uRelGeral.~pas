@@ -311,6 +311,7 @@ begin
          param.Add(totais[i]);
       fmMain.msgStatus('');
       fmMain.impressaoRaveQr4( tbOperadores, tbTotRec, tbSangrias, tbVendasCartao, 'rpPreviaCx', param);
+      MSGtELA('','',0);
       totais.Free;
       param.Free;
    end
@@ -320,9 +321,12 @@ end;
 
 procedure TfmRelGeral.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-   funcoes.salvaCampos(fmRelGeral);
-   action := CaFree;
-   fmRelGeral := nil;
+   if (fmRelGeral <> nil) then
+   begin
+      funcoes.salvaCampos(fmRelGeral);
+      action := CaFree;
+      fmRelGeral := nil;
+   end;   
 end;
 
 procedure TfmRelGeral.produtosTransferidosGeraLista;

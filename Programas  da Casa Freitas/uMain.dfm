@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 450
-  Top = 269
+  Left = 245
+  Top = 137
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -288,6 +288,17 @@ object fmMain: TfmMain
           Caption = 'Pagamentos em cart'#227'o - pr'#233'via de caixa'
           OnClick = PagamentosEmCartao1Click
         end
+      end
+    end
+    object WMS1: TMenuItem
+      Caption = 'WMS'
+      object RecebeNotanadoca1: TMenuItem
+        Tag = 601
+        Caption = 'Receber Nota na doca'
+        OnClick = RecebeNotanadoca1Click
+      end
+      object InternarNotaEntrada1: TMenuItem
+        Caption = 'Internar NF Entrada'
       end
     end
     object administrao1: TMenuItem

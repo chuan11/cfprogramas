@@ -107,7 +107,7 @@ type
     procedure incluirProduto(Sender:Tobject);
     procedure incluirProdutoAvulso(Sender:Tobject);
     function obterDadosDoProduto(Sender:Tobject; codigo : String):TdataSet;
-    procedure geraGuiaListaNormal(SenDer:Tobject);
+    procedure geraGuiaListaNormal();
     procedure chamadevolucaoDeProduto(Sender:Tobject);
     procedure btVoltarClick(Sender: TObject);
     procedure chamaCarregamentoDeLista(num:String);
@@ -609,7 +609,7 @@ begin
 end;
 
 
-procedure TForm3.geraGuiaListaNormal(SenDer: Tobject);
+procedure TForm3.geraGuiaListaNormal();
 var
   params:TStringList;
 begin
@@ -626,7 +626,7 @@ end;
 
 procedure TForm3.GerarGuiadeentrega1Click(Sender: TObject);
 begin
-   geraGuiaListaNormal(nil);
+   geraGuiaListaNormal();
 end;
 
 

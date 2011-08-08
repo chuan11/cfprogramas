@@ -49,6 +49,7 @@ type
     procedure carregaCadastro();
     procedure cbLojasChange(Sender: TObject);
     procedure RemoveEmpregadodocadastro1Click(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
     { Private declarations }
   public
@@ -214,13 +215,24 @@ procedure TfmCadEmpregados.RemoveEmpregadodocadastro1Click(Sender: TObject);
 var
    cmd:String;
 begin
-   cmd:= ' Se você remover o funcionário ele não aparecerá mais no cadastro, continua ?';
+   cmd:= ' Se você remover o funcionário ele não aparecerá mais no cadastro do ponto, continua ?';
    if (funcoes.msgTela('',cmd, MB_ICONWARNING + MB_YESNO) = mrOk) then
    begin
-      cmd := 'Delete from  zcf_PontoCadDigitais  wher id =  ' + 
+      cmd := 'Delete from  zcf_PontoCadDigitais where id =  ' +
+      funcSQL.executeSQL(cmd, Form2.Conexao);
 
+      cmd := 'delete from zcf_pontoEmpregados where matricula= ' +
+             qr.fieldByName('Matricula').AsString;
+      funcSQL.executeSQL(cmd, Form2.Conexao);
 
+      carregaCadastro();
    end;
+end;
+
+procedure TfmCadEmpregados.FormResize(Sender: TObject);
+begin
+   gpListaEmp.Width := fmCadEmpregados.Width - 20;
+   gpListaEmp.Height := fmCadEmpregados.Height - (gpListaEmp.Top + 50);
 end;
 
 end.
