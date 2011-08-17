@@ -20,17 +20,14 @@ object fmOsDeposito: TfmOsDeposito
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnKeyDown = FormKeyDown
-  DesignSize = (
-    629
-    379)
   PixelsPerInch = 96
   TextHeight = 13
   object grid: TSoftDBGrid
-    Left = 2
-    Top = 50
-    Width = 624
-    Height = 273
-    Anchors = [akLeft, akTop, akRight, akBottom]
+    Left = 0
+    Top = 45
+    Width = 629
+    Height = 334
+    Align = alClient
     Ctl3D = False
     DataSource = DataSource1
     ParentCtl3D = False

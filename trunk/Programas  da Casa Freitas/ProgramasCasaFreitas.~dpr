@@ -75,8 +75,10 @@ uses
   umColetor in 'fmColetor\umColetor.pas' {fmColetor},
   uResumoECF in 'fmResumoECF\uResumoECF.pas' {fmResumoECF},
   uRRANA in 'fmRRANA\uRRANA.pas' {fmRelGeral1},
-  uLiberaNaDoca in 'WMS\uLiberaNaDoca.pas' {fmRecebeNota},
-  uInternaNota in 'WMS\uInternaNota.pas' {fmInternaNota};
+  uListaNotaWMS in 'WMS\uListaNotaWMS.pas' {fmRecebeNota},
+  uInternaNota in 'WMS\uInternaNota.pas' {fmInternaNota},
+  uCEP in 'fmCEP\uCEP.pas' {fmCep},
+  fmMudaSerieNota in 'fmMudaSerieNota\fmMudaSerieNota.pas' {fmAjustaSerie};
 
 {$R *.res}
 
@@ -91,5 +93,5 @@ begin
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
   Application.Run;
-   end;
+  end;
 end.

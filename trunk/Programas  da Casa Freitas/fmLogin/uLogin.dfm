@@ -1,6 +1,6 @@
 object fmLogin: TfmLogin
-  Left = 585
-  Top = 398
+  Left = 768
+  Top = 522
   BorderIcons = []
   BorderStyle = bsSingle
   ClientHeight = 179

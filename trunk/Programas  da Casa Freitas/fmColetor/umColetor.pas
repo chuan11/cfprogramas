@@ -15,6 +15,7 @@ type
     procedure edCodigoKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure consultaProduto();
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
   public
@@ -61,6 +62,12 @@ begin
    edCodigo.Text := '';
 
    edCodigo.SetFocus();
+end;
+
+procedure TfmColetor.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+   action := CaFree;
+   fmColetor := nil;
 end;
 
 end.

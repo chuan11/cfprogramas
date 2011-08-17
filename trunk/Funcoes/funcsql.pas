@@ -275,10 +275,10 @@ begin
    aux := TstringList.create();
 
    if IncluirLinhaTodas = true then
-     aux.Add(' Todas ');
+     aux.Add(funcoes.preencheCampo(50,' ','D',' Todas') + '999');
 
    if IncluiNenhuma = true then
-     aux.Add(' Nenhuma ');
+     aux.Add( funcoes.preencheCampo(50,' ','D',' Nenhuma ' ) + '-1');
 
    ds.First;
    while ds.Eof = false do
@@ -1275,7 +1275,7 @@ begin
    else
       cmd := cmd + ' , @FL_ENTRADA=''1''' ;
    funcSql.execSQL( cmd , Conexao);
-   result := is_oper;        {}
+   result := is_oper;
 end;
 
 
@@ -1296,14 +1296,14 @@ begin
    UO_CD := getParamBD('uocd', '', Conexao);
 
    lista:= Tstringlist.Create();
-   sq_opf := '10000031'; // cod daTransacao integrada de requisicao
+   sq_opf := getParamBD('osDeposito.sq_opfRequisicao', '', Conexao); //10000031  cod daTransacao integrada de requisicao
    codTransacao := '4';  // tipo de transacao
 
    try
       // obter o cd_pes
       cd_pes := funcSql.GetValorWell( 'O', 'select cd_pes from dsusu where cd_usu = '+ usuario, 'cd_pes', conexao );
 
-      is_oper := inserirToper( usuario, sq_opf, codTransacao ,'', Conexao  );
+      is_oper := inserirToper( usuario, sq_opf, codTransacao, '', Conexao);
 
       //obter o plano
       cmd := ' begin declare @P1 int  set @P1=0 exec zcf_stoObterContadorCF ''is_planod'' , @P1 output, @qt = 1  select @P1 as is_planod end';
@@ -1338,7 +1338,7 @@ begin
              incluiItem := false;
           end;
 
-          if ( incluiItem = true) then
+          if (incluiItem = true) then
           begin
 //             if gravaItens = true then
 //                funcoes.GravaLinhaEmUmArquivo( extractFilePath(paramStr(0)) +'\logs\'+ application.Name +'_Requisicoes.txt',' req '+ is_planod+ ': '+' Item: ' + intToStr(tb.RecNo) + tb.fieldByName('codigo').asString +' qt: '+ tb.fieldByName('qt pedida').asString );

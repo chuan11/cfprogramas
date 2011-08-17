@@ -464,8 +464,10 @@ begin
       gravaLog(str);
       emailParaCD(str, fmMain.getUoLogada() );
    end;
-   while tb.IsEmpty = false do
+
+   while (tb.IsEmpty = false) do
       tb.Delete;
+
    tb.close;
    cbCritica.enabled := false;
    ocoItens.free;

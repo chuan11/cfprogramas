@@ -160,51 +160,6 @@ begin
    end;
 end;
 
-
-procedure TfmGeraEstoque.preencheDadosDosProdutos;
-var
-   ds, dsItens:TdataSet;
-   insereItem:boolean;
-begin
-   dsItens := TDataSet.Create(nil);
-   ds := TDataSet.Create(nil);
-   fmMain.msgStatus('Obtendo lista de itens....');
-
-   case (rgTpBusca.ItemIndex) of
-      0:dsItens:= uCF.getIsrefPorFaixaCodigo(edit1.Text, lbNivel.Caption, lbVlCat.Caption, cbProdAtivos.Checked);
-      1:dsItens:= listaProdutoPorPedido();
-      2:dsItens:= listaProdPorFornecedor();
-   end;
-
-   if (dsItens.IsEmpty = false ) then
-     dsItens.first;
-
-   while (dsItens.Eof = false) do
-   begin
-      insereItem:= true;
-      ds := uCF.getDadosProd( funcoes.getCodUO(cbLoja), dsItens.fieldByname('is_ref').AsString, fmMain.getCodPreco(cbPrecos), true );
-      if (ds.IsEmpty = false) then
-      begin
-         if (cbEstoque.ItemIndex = 0 ) and ( ds.fieldByName('EstoqueDisponivel').asString = '0'  ) then
-            insereItem:= false;
-
-         if  (insereItem = true ) then
-         begin
-            tbGE.Append;
-            tbGE.FieldByName('codigo').AsString := ds.fieldByName('codigo').asString;
-            tbGE.FieldByName('descricao').AsString := ds.fieldByName('descricao').asString;
-            tbGE.FieldByName('is_ref').AsString   := ds.fieldByName('is_ref').asString;
-            tbGE.FieldByName('Estoque').AsString   := ds.fieldByName('EstoqueDisponivel').asString;
-            tbGE.FieldByName('pv').AsString   := ds.fieldByName('preco').asString;
-            tbGE.Post;
-         end;
-         dsItens.Next;
-      end;
-      ds.free;
-   end;
-end;
-
-
 procedure TfmGeraEstoque.ListaProdutosPorFornecedor(Sender: Tobject);
 var
   Query:TadoQuery;
@@ -213,7 +168,7 @@ var
 begin
    strDisponivel := '0';
 
-   strEstoque := ' dbo.Z_CF_EstoqueNaLoja (crefe.is_ref , '+ copy(cbLoja.Items[cbLoja.itemIndex],51,08) + ' , '+ strDisponivel + ')';
+   strEstoque := ' dbo.Z_CF_EstoqueNaLoja (crefe.is_ref , '+ copy(cbLoja.Items[cbLoja.itemIndex], 51, 08) + ' , '+ strDisponivel + ')';
 
    
    query := TadoQuery.Create(fmGeraEstoque);
@@ -571,9 +526,11 @@ var
   i:integer;
 begin
    for i:=0 to lbForn.Items.Count -1 do
-      strForn := strForn + trim( copy(lbForn.Items[i],101,20)) + ', ';
-   delete(strForn, length(strForn)-2, 02);
-
+   begin
+      strForn := strForn + trim( copy(lbForn.Items[i], 101, 20));
+      if (i < lbForn.Items.Count -1) then
+         strForn := strForn + ', ';
+   end;
 
    cmd := 'Select is_ref from crefe (nolock)';
    if (lbNivel.Caption <> '0') then
@@ -616,6 +573,49 @@ procedure TfmGeraEstoque.VerdetalhesdaCMU1Click(Sender: TObject);
 begin
    if (tbGe.IsEmpty = false) then
       fmMain.getDadosCRUC(tbGE.fieldByName('is_ref').asString);
+end;
+
+procedure TfmGeraEstoque.preencheDadosDosProdutos;
+var
+   ds, dsItens:TdataSet;
+   insereItem:boolean;
+begin
+   dsItens := TDataSet.Create(nil);
+   ds := TDataSet.Create(nil);
+   fmMain.msgStatus('Obtendo lista de itens....');
+
+   case (rgTpBusca.ItemIndex) of
+      0:dsItens:= uCF.getIsrefPorFaixaCodigo(edit1.Text, lbNivel.Caption, lbVlCat.Caption, cbProdAtivos.Checked);
+      1:dsItens:= listaProdutoPorPedido();
+      2:dsItens:= listaProdPorFornecedor();
+   end;
+
+   if (dsItens.IsEmpty = false ) then
+     dsItens.first;
+
+   while (dsItens.Eof = false) do
+   begin
+      insereItem:= true;
+      ds := uCF.getDadosProd( funcoes.getCodUO(cbLoja), dsItens.fieldByname('is_ref').AsString, fmMain.getCodPreco(cbPrecos), true );
+      if (ds.IsEmpty = false) then
+      begin
+         if (cbEstoque.ItemIndex = 0 ) and ( ds.fieldByName('EstoqueDisponivel').asString = '0'  ) then
+            insereItem:= false;
+
+         if  (insereItem = true ) then
+         begin
+            tbGE.Append;
+            tbGE.FieldByName('codigo').AsString := ds.fieldByName('codigo').asString;
+            tbGE.FieldByName('descricao').AsString := ds.fieldByName('descricao').asString;
+            tbGE.FieldByName('is_ref').AsString   := ds.fieldByName('is_ref').asString;
+            tbGE.FieldByName('Estoque').AsString   := ds.fieldByName('EstoqueDisponivel').asString;
+            tbGE.FieldByName('pv').AsString   := ds.fieldByName('preco').asString;
+            tbGE.Post;
+         end;
+         dsItens.Next;
+      end;
+      ds.free;
+   end;
 end;
 
 procedure TfmGeraEstoque.GeraEstoque(Sender: TObject);

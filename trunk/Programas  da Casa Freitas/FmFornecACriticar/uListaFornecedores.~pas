@@ -37,7 +37,7 @@ var
   PERFIL:String;
 implementation
 
-uses funcoes , uCF, uMain, funcSQL;
+uses funcoes , uCF, {uMain, } funcSQL;
 
 {$R *.dfm}
 
@@ -50,7 +50,7 @@ begin
 
    if dsPes.DataSet.IsEmpty = false then
    begin
-      fnGrid.Columns[  dspes.DataSet.FieldByName('fornecedor').Index ].Width := 150;
+      fnGrid.Columns[  dspes.DataSet.FieldByName('Nome').Index ].Width := 150;
    end;
 end;
 

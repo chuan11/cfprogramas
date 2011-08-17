@@ -278,6 +278,7 @@ procedure TfmRelGeral.listaVendasEmCartao;
 var
    totais, param:Tstringlist;
    i:integer;
+   ds:TdataSet;
 begin
    param := TStringlist.Create();
 
@@ -302,6 +303,9 @@ begin
       ucf.getRecebimentosEmCartao(tbPreviaDeCaixa, tbVendasCartao);
       totais := uCF.getTotalCartaoPorModo(tbVendasCartao);
 
+// listar as vendas estornadas
+      ds:= uCF.getVendasEstornadas( funcoes.getCodUO(cblojas), funcoes.getCodCaixa(cbCaixas), dti.Date, dtf.Date);
+
       param.add( funcoes.getNomeUO(cbLojas) );
       param.add( funcoes.getNomeDoCx(cbCaixas) );
       param.add( dateToStr(dti.date) + ' a ' +  dateToStr(dtf.date) );
@@ -310,10 +314,12 @@ begin
       for i:=0 to Totais.Count-1 do
          param.Add(totais[i]);
       fmMain.msgStatus('');
-      fmMain.impressaoRaveQr4( tbOperadores, tbTotRec, tbSangrias, tbVendasCartao, 'rpPreviaCx', param);
-      MSGtELA('','',0);
+      fmMain.impressaoRaveQr5( tbOperadores, tbTotRec, tbSangrias, tbVendasCartao, ds, 'rpPreviaCx', param);
+
       totais.Free;
       param.Free;
+
+      ds.Free();
    end
    else
      funcoes.msgTela('', MSG_SEM_DADOS, mb_ok + MB_ICONERROR);

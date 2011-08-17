@@ -24,6 +24,7 @@ type
     procedure setPerfil(codPerfil:String);
     procedure ajustBuscaDefornecedor();
     procedure ajustBuscaDeCliente();
+    procedure listaUF();
 
 
   private
@@ -40,6 +41,14 @@ implementation
 uses funcoes , uCF, {uMain, } funcSQL;
 
 {$R *.dfm}
+
+procedure TfmListaFornecedores.listaUF();
+begin
+   edit1.Visible := false;
+   btBusca.Visible := false;
+
+   dsPes.DataSet := uCF.getListaUfs();
+end;
 
 procedure TfmListaFornecedores.listarFornecedor();
 begin
@@ -88,7 +97,6 @@ begin
 end;
 
 
-
 procedure TfmListaFornecedores.ajustBuscaDefornecedor;
 begin
    edit1.LabelDefs.Caption := 'Digite o nome do fornecedor para buscar:';
@@ -105,8 +113,12 @@ procedure TfmListaFornecedores.btBuscaClick(Sender: TObject);
 begin
   if ( Perfil = 'Fornecedor') then
       listarFornecedor();
+
   if ( Perfil = 'Cliente') then
       listarCliente();
+
+  if ( Perfil = 'UF') then
+     listaUF();
 end;
 
 procedure TfmListaFornecedores.setPerfil(codPerfil: String);
@@ -118,6 +130,7 @@ begin
       ajustBuscaDeCliente();
    PERFIL := codPerfil;
 end;
+
 
 
 

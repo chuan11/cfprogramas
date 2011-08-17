@@ -22,28 +22,35 @@ object fmColetor: TfmColetor
   object lbCodigo: TLabel
     Left = 8
     Top = 48
-    Width = 41
+    Width = 3
     Height = 13
-    Caption = 'lbCodigo'
+    Caption = ' '
   end
   object lbDesc: TLabel
     Left = 10
     Top = 69
-    Width = 33
+    Width = 3
     Height = 13
-    Caption = 'lbDesc'
+    Caption = ' '
   end
   object edCodigo: TadLabelEdit
     Left = 6
     Top = 18
     Width = 171
-    Height = 19
+    Height = 22
     LabelDefs.Width = 80
     LabelDefs.Height = 13
     LabelDefs.Caption = 'Consulta produto'
+    Colors.WhenEnterFocus.BackColor = clWindow
     Ctl3D = False
     ParentCtl3D = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
     MaxLength = 13
+    ParentFont = False
     TabOrder = 0
     OnKeyDown = edCodigoKeyDown
   end

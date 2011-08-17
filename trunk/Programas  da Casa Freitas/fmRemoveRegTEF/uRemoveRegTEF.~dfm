@@ -1,6 +1,6 @@
 object fmRemRegTEF: TfmRemRegTEF
-  Left = 369
-  Top = 212
+  Left = 480
+  Top = 278
   Width = 800
   Height = 469
   BorderIcons = [biSystemMenu, biMinimize]
@@ -172,6 +172,7 @@ object fmRemRegTEF: TfmRemRegTEF
   end
   object tb: TADOTable
     Connection = fmMain.Conexao
+    TableName = 'A1008201115323286379'
     Left = 174
     Top = 208
     object tbcodLoja: TIntegerField
@@ -181,10 +182,10 @@ object fmRemRegTEF: TfmRemRegTEF
       FieldName = 'descEstacao'
     end
     object tbcd_mve: TIntegerField
-      FieldName = 'cd_mve'
+      FieldName = 'cd_mveReal'
     end
     object tbds_mve: TStringField
-      FieldName = 'ds_mve'
+      FieldName = 'ds_mveReal'
       Size = 30
     end
     object tbdataSessaoCaixa: TDateTimeField
