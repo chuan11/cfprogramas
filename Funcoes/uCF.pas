@@ -32,12 +32,14 @@ interface
    function getIsUo(mostraEscritorio:boolean):String;
    function getItensDeUmaNota(isNota:String):TDataSet;
    function getItensParaCadastroNCM(var tabela:TADOTable; isNota:String):boolean;
+   function getListaUfs():TdataSet;
    function getNomeImpressoraNFe():String;
    function getPcProd(uo, codigo, preco:String):String;
    function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
    function getRRANAItem(is_ref, uo:String; dti, dtf:Tdate):TdataSet;
    function getTotaisVendaAvaria(lojas:TadLabelComboBox; datai, dataf:Tdate; tabela:String):String;
    function getTotalCartaoPorModo(tb:TADOTable):TStringlist;
+   function getUF():String;
    function getVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate):String;
    function getVendaProdutoDLEST(is_ref, is_uo, uocd:String; datai, dataf:Tdate):String;
    function getVdItemDetPorLojaPeriodo(is_ref, uo, uocd:String; di, df:Tdate):TdataSet;
@@ -68,9 +70,8 @@ interface
    function listaCuponsPorLojaData(uo, ecf:String; dti, dtf:Tdate):TdataSet;
    procedure listarPrecosAlteradosPoPeriodo(qr:TADOQuery; uo,preco:String; data:Tdate);
    procedure logAlteracoesBD(conexao:TADOConnection; tela, usuario, alteracao:String);
-
    procedure listaNotasVendaDia(tabela, uo:String; di, df:Tdate);
-
+   function getVendasEstornadas(uo, caixa:String; dti, dtf:Tdate):TdataSet;
 
 implementation
 
@@ -552,7 +553,6 @@ begin
    funcSQL.execSQL( cmd, fmMain.conexao);
 end;
 
-
 procedure logAlteracoesBD(conexao:TADOConnection; tela, usuario, alteracao:String);
 var
    cmd:String;
@@ -562,8 +562,7 @@ begin
           quotedStr(usuario)+ ', '+
           quotedStr(alteracao)+')';
    funcSQl.ExecSQL(cmd, conexao);
-end;
-
+end;    
 
 function getDescCaixas(uo:String; mostraTodos:boolean):TStrings;
 var
@@ -660,7 +659,9 @@ begin
           'tefMagnetico varchar(1), ' +
           'seqTefTransCaixa int, ' +
           'cd_tpm varchar(01), '+
-          'tp_mve varchar(01) ';
+          'tp_mve varchar(01), '+
+          'cd_mveReal int, '+
+          'ds_mveReal varchar(30)';
 
    tb.tablename:= funcSQL.criaTabelaTemporaria(fmMain.conexao, cmd);
 
@@ -672,8 +673,8 @@ begin
       tb.AppendRecord([
                        ds.fieldByname('codLoja').AsString
                        ,ds.fieldByname('descEstacao').AsString
-                       ,ds.fieldByname('cd_mve').AsString
-                       ,ds.fieldByname('ds_mve').AsString
+                       ,ds.fieldByname('cd_mveReal').AsString
+                       ,ds.fieldByname('ds_mveReal').AsString
                        ,ds.fieldByname('dataSessaoCaixa').AsString
                        ,ds.fieldByname('seqTransacaoCaixa').AsString
                        ,ds.fieldByname('seqModPagtoPorTransCaixa').AsString
@@ -696,7 +697,6 @@ begin
    end;
    screen.cursor:= crDefault;
 end;
-
 
 function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
 var
@@ -1284,7 +1284,6 @@ begin
    result := saldo;
 end;
 
-
 function getDetalhesCRUC(is_ref:String):TdataSet;
 var
    cmd:String;
@@ -1481,6 +1480,48 @@ begin
       cmd := cmd + ' and crefe.fl_ativo = ''1''  order by cd_ref ';
 
    result := funcsql.getDataSetQ(cmd, fmMain.Conexao);
+end;
+
+function getVendasEstornadas(uo, caixa:String; dti, dtf:Tdate):TdataSet;
+var
+   cmd:String;
+begin
+  cmd :=
+  ' select S.dataSessaoCaixa, T.CodLoja, C.codCaixa, C.DescEstacao, dsmve.ds_mve,'+
+  ' T.valorTransacao  from  sessoesdecaixa S'+
+  ' inner join transacoesdocaixa T WITH(NOLOCK)'+
+  ' on S.seqsessaocaixa = T.seqsessaocaixa and S.codloja = T.codloja'+
+  ' inner join caixas C on s.codCaixa = C.codCaixa and S.codLoja = C.codLoja'+
+  ' inner join modalidadespagtoportranscaixa M on M.seqTransacaoCaixa = T.seqtransacaoCaixa' +
+  '       and m.entradaouSaida = ''S'''+
+  ' inner join dsmve  on cd_mve = M.codModalidadePagto '+
+  ' where' +
+  ' S.dataSessaoCaixa between ' + funcDatas.dateToSqlDate(dti)+ ' and '
+  + funcDatas.dateToSqlDate(dtf) + ' and T.tipotransacaoCaixa= ''E''';
+
+  if ( uo <> '') then
+     cmd := cmd +' and S.codLoja= '+ uo ;
+
+  if ( caixa <> '') then
+     cmd := cmd + ' and C.codCaixa= ' + caixa;
+  result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+end;
+
+function getUF():String;
+var
+   cmd:String;
+begin
+   Application.CreateForm(TfmListaFornecedores, fmListaFornecedores);
+   fmListaFornecedores.setPerfil('UF');
+   fmListaFornecedores.ShowModal;
+
+   if (fmListaFornecedores.ModalResult = mrOk) then
+      result := fmListaFornecedores.dsPes.DataSet.fieldByName('cd_uf').asString
+end;
+
+function getListaUfs():TdataSet;
+begin
+   result :=  funcSQL.getDataSetQ('Select * from Tuf order by nm_uf', fmMain.conexao);
 end;
 
 

@@ -1,68 +1,49 @@
-object Form2: TForm2
-  Left = 759
-  Top = 234
-  Width = 344
-  Height = 750
-  Caption = 'Form2'
+object fmInternaNota: TfmInternaNota
+  Left = 520
+  Top = 270
+  Width = 250
+  Height = 359
+  Caption = 'fmInternaNota'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  FormStyle = fsMDIChild
+  KeyPreview = True
   OldCreateOrder = False
+  Position = poDefault
+  Visible = True
+  WindowState = wsMaximized
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
+  object lbDesc: TLabel
+    Left = 94
+    Top = 76
+    Width = 33
+    Height = 13
+    Caption = 'lbDesc'
+  end
+  object lbIsRef: TLabel
+    Left = 96
+    Top = 58
+    Width = 32
+    Height = 13
+    Caption = 'Label1'
+  end
   object GroupBox1: TGroupBox
     Left = 0
     Top = 0
-    Width = 328
-    Height = 49
+    Width = 234
+    Height = 57
     Align = alTop
     Caption = ' Nota '
     TabOrder = 0
-    object lbSerie: TLabel
-      Left = 45
-      Top = 10
-      Width = 22
-      Height = 13
-      Caption = '001'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object lbBarra: TLabel
-      Left = 71
-      Top = 10
-      Width = 7
-      Height = 13
-      Caption = '/'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object Label1: TLabel
-      Left = 83
-      Top = 10
-      Width = 43
-      Height = 13
-      Caption = '000000'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
     object lbfornecedor: TLabel
-      Left = 45
-      Top = 26
+      Left = 88
+      Top = 17
       Width = 65
       Height = 13
       Caption = 'Fornecedor'
@@ -73,50 +54,134 @@ object Form2: TForm2
       Font.Style = [fsBold]
       ParentFont = False
     end
-    object fsBitBtn1: TfsBitBtn
+    object Label1: TLabel
+      Left = 6
+      Top = 40
+      Width = 65
+      Height = 13
+      Caption = 'Fornecedor'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object lbSerie: TLabel
+      Left = 192
+      Top = 8
+      Width = 32
+      Height = 13
+      Caption = 'lbSerie'
+    end
+    object lbNota: TLabel
+      Left = 194
+      Top = 23
+      Width = 32
+      Height = 13
+      Caption = 'lbSerie'
+    end
+    object lbPessoa: TLabel
+      Left = 194
+      Top = 37
+      Width = 32
+      Height = 15
+      Caption = 'lbSerie'
+    end
+    object edSerie: TadLabelEdit
       Left = 5
       Top = 15
-      Width = 35
-      Height = 25
+      Width = 25
+      Height = 19
+      LabelDefs.Width = 36
+      LabelDefs.Height = 13
+      LabelDefs.Caption = 'edSerie'
+      LabelPosition = adLeft
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      Ctl3D = False
+      ParentCtl3D = False
+      MaxLength = 3
       TabOrder = 0
-      OnClick = fsBitBtn1Click
-      Glyph.Data = {
-        76010000424D7601000000000000760000002800000020000000100000000100
-        04000000000000010000130B0000130B00001000000000000000000000000000
-        800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
-        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
-        33033333333333333F7F3333333333333000333333333333F777333333333333
-        000333333333333F777333333333333000333333333333F77733333333333300
-        033333333FFF3F777333333700073B703333333F7773F77733333307777700B3
-        33333377333777733333307F8F8F7033333337F333F337F3333377F88F88F773
-        3333373337F3373F3333078FF8F8870333337F33F7FFF37F333307F87F8FF703
-        33337F377777337F3333078F87F88703333373F337F33373333377F7F8F8F773
-        333337F3373337F33333307F8F8F70333333373FF333F7333333330777770333
-        333333773FF77333333333370007333333333333777333333333}
-      NumGlyphs = 2
+      Text = '1'
+      OnKeyDown = edSerieKeyDown
+    end
+    object edNum: TadLabelEdit
+      Left = 38
+      Top = 15
+      Width = 44
+      Height = 19
+      LabelDefs.Width = 5
+      LabelDefs.Height = 13
+      LabelDefs.Caption = '/'
+      LabelPosition = adLeft
+      Colors.WhenEnterFocus.BackColor = clInfoBk
+      Ctl3D = False
+      ParentCtl3D = False
+      MaxLength = 6
+      TabOrder = 1
+      Text = '334'
+      OnKeyDown = edNumKeyDown
     end
   end
-  object SoftDBGrid1: TSoftDBGrid
-    Left = 0
-    Top = 49
-    Width = 328
-    Height = 96
-    Align = alTop
+  object edCodigo: TadLabelEdit
+    Left = 4
+    Top = 73
+    Width = 85
+    Height = 19
+    LabelDefs.Width = 33
+    LabelDefs.Height = 13
+    LabelDefs.Caption = 'Codigo'
+    Colors.WhenEnterFocus.BackColor = clInfoBk
     Ctl3D = False
-    DataSource = DataSource1
     ParentCtl3D = False
+    MaxLength = 13
     TabOrder = 1
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'MS Sans Serif'
-    TitleFont.Style = []
-    AlternateColor = True
-    ColorLow = clInfoBk
-    ColorHigh = clWindow
+    Text = '1234567890123'
+    OnKeyDown = edCodigoKeyDown
   end
-  object DataSource1: TDataSource
-    Left = 88
-    Top = 56
+  object edQuant: TadLabelEdit
+    Left = 4
+    Top = 116
+    Width = 107
+    Height = 19
+    LabelDefs.Width = 46
+    LabelDefs.Height = 13
+    LabelDefs.Caption = 'Endere'#231'o'
+    Colors.WhenEnterFocus.BackColor = clInfoBk
+    Ctl3D = False
+    ParentCtl3D = False
+    MaxLength = 15
+    TabOrder = 2
+    Text = '123456'
+  end
+  object adLabelEdit2: TadLabelEdit
+    Left = 131
+    Top = 116
+    Width = 51
+    Height = 19
+    LabelDefs.Width = 26
+    LabelDefs.Height = 13
+    LabelDefs.Caption = 'Pallet'
+    Colors.WhenEnterFocus.BackColor = clInfoBk
+    Ctl3D = False
+    ParentCtl3D = False
+    MaxLength = 6
+    TabOrder = 3
+    Text = '123456'
+  end
+  object adLabelEdit3: TadLabelEdit
+    Left = 5
+    Top = 156
+    Width = 51
+    Height = 19
+    LabelDefs.Width = 55
+    LabelDefs.Height = 13
+    LabelDefs.Caption = 'Quantidade'
+    Colors.WhenEnterFocus.BackColor = clInfoBk
+    Ctl3D = False
+    ParentCtl3D = False
+    MaxLength = 6
+    TabOrder = 4
+    Text = '123456'
   end
 end

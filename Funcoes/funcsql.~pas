@@ -275,10 +275,10 @@ begin
    aux := TstringList.create();
 
    if IncluirLinhaTodas = true then
-     aux.Add(' Todas ');
+     aux.Add(funcoes.preencheCampo(50,' ','D',' Todas') + '999');
 
    if IncluiNenhuma = true then
-     aux.Add(' Nenhuma ');
+     aux.Add( funcoes.preencheCampo(50,' ','D',' Nenhuma ' ) + '-1');
 
    ds.First;
    while ds.Eof = false do
@@ -1417,7 +1417,7 @@ begin
 
    qr := TADOQuery.Create(nil);
    qr.Connection := conexao;
-   qr.sql.add('Select codTela, codgrupo, horI, horF from  74 (nolock) where codTela = ' + intToStr(tela)  + ' and codGrupo = ' + grupo);
+   qr.sql.add('Select codTela, codgrupo, horI, horF from  zcf_horBloqRel (nolock) where codTela = ' + intToStr(tela)  + ' and codGrupo = ' + grupo);
    qr.Open;
 
    if qr.IsEmpty  = false then

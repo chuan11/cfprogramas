@@ -89,8 +89,8 @@ begin
    grid.Columns[ tb.FieldByName('descEstacao').Index ].visible := true;
    grid.Columns[ tb.FieldByName('descEstacao').Index ].Title.Caption := 'Caixa';
 
-   grid.Columns[ tb.FieldByName('ds_mve').Index ].visible := true;
-   grid.Columns[ tb.FieldByName('ds_mve').Index ].Title.Caption := 'Caixa';
+   grid.Columns[ tb.FieldByName('ds_mveReal').Index ].visible := true;
+   grid.Columns[ tb.FieldByName('ds_mveReal').Index ].Title.Caption := 'Modalidade';
 
    grid.Columns[ tb.FieldByName('valor').Index ].visible := true;
    grid.Columns[ tb.FieldByName('valor').Index ].Title.Caption := 'Valor';
@@ -116,13 +116,8 @@ begin
 
    cbCaixas.ItemIndex:= 0;
    cbModalidade.ItemIndex := 0;
-
-
    uCF.listaRecebimentosCaixa( tb, funcoes.getCodUO(cbLojas), '', dt, dt, false, true, false);
-
    tb.Close();
-//   tb.Filter := 'valor >= 0';
-//   tb.Filtered := true;
    tb.Open();
    ajustaColunas();
 end;
@@ -151,7 +146,7 @@ begin
    fmAlteraModPagto.ShowModal();
    if  (fmAlteraModPagto.ModalResult = mrOk) then
    begin
-      descModAnt := tb.fieldByName('ds_mve').AsString;
+      descModAnt := tb.fieldByName('ds_mveReal').AsString;
       nParcelasAnt := tb.fieldByName('numParcelas').AsString;
       valorAnt := tb.fieldByName('valor').AsString;
 
@@ -161,7 +156,7 @@ begin
       valor := fmAlteraModPagto.edValor.Text;
 
       tb.Edit();
-      tb.FieldByName('ds_mve').AsString := descMod;
+      tb.FieldByName('ds_mveReal').AsString := descMod;
       tb.FieldByName('numParcelas').AsString := nParcelas;
       tb.FieldByName('valor').AsString := valor;
       tb.Post();
@@ -196,7 +191,7 @@ begin
       alteraModalidadeDePagamento();
 end;
 
-procedure TfmRemRegTEF.filtrarTable;
+procedure TfmRemRegTEF.filtrarTable();
 var
   aux:String;
 begin
@@ -208,9 +203,9 @@ begin
 
       if (cbModalidade.itemIndex > 0) then
          if (aux <> '') then
-            aux := aux + ' and cd_mve = ' + quotedStr(funcoes.getCodModPagto(cbModalidade))
+            aux := aux + ' and cd_mveReal = ' + quotedStr(funcoes.getCodModPagto(cbModalidade))
          else
-            aux := ' cd_mve = ' + quotedStr(funcoes.getCodModPagto(cbModalidade));
+            aux := ' cd_mveReal = ' + quotedStr(funcoes.getCodModPagto(cbModalidade));
 
       if (edBusca.value > 0) then
          if (aux <> '') then
@@ -218,6 +213,7 @@ begin
          else
             aux := ' valor = ' + funcoes.valorSql(edBusca.Text)
    end;
+   funcoes.gravaLog('filtro: ' + aux);
    tb.Close();
    tb.Filter := (aux);
    tb.Filtered := true;
@@ -297,17 +293,17 @@ var
 begin
    edbusca.Value := 0;
 
-   descModAnt := tb.fieldByName('ds_mve').AsString;
+   descModAnt := tb.fieldByName('ds_mveReal').AsString;
    nParcelasAnt := tb.fieldByName('numParcelas').AsString;
    valorAnt := tb.fieldByName('valor').AsString;
 
-   codMod := tb.fieldByName('cd_mve').AsString;;
-   descMod := tb.fieldByName('ds_mve').AsString;
+   codMod := tb.fieldByName('cd_mveReal').AsString;;
+   descMod := tb.fieldByName('ds_mveReal').AsString;
    nParcelas := '0';
    valor := '000';
 
    tb.Edit();
-   tb.FieldByName('ds_mve').AsString := descMod;
+   tb.FieldByName('ds_mveReal').AsString := descMod;
    tb.FieldByName('numParcelas').AsString := nParcelas;
    tb.FieldByName('valor').AsString := valor;
    tb.Post();
@@ -334,9 +330,6 @@ begin
    else
       msgTela('','Problemas ao excluir a modalidade de pagamento.', MB_OK  + mb_iconError);
 end;
-
-
-
 
 procedure TfmRemRegTEF.RemoveModalidaDedePagamento1Click(Sender: TObject);
 begin

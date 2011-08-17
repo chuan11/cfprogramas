@@ -382,7 +382,7 @@ begin
       end;
 end;
 
-function TfmAjustaNota.isGrupoprivilegiado: boolean;
+function TfmAjustaNota.isGrupoPrivilegiado: boolean;
 begin
     if (IS_GRUPO_PERMITIDO = false) then
        msgTela('', 'Você não tem acesso a essa função', MB_OK + MB_ICONERROR);

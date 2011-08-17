@@ -33,7 +33,6 @@ type
     Requisicoentreloas1: TMenuItem;
     rocardeUsuario1: TMenuItem;
     Requisicaoparaocd1: TMenuItem;
-    mxOneInstance1: TmxOneInstance;
     Cadastrodeavarias1: TMenuItem;
     Relatorios1: TMenuItem;
     Relacaodenotasdetransferncia1: TMenuItem;
@@ -98,6 +97,11 @@ type
     WMS1: TMenuItem;
     RecebeNotanadoca1: TMenuItem;
     InternarNotaEntrada1: TMenuItem;
+    Consultaestoque1: TMenuItem;
+    CadastrodeCEP1: TMenuItem;
+    mxOneInstance1: TmxOneInstance;
+    ConfiguraSeriesparacontingencia1: TMenuItem;
+    RvDSConn5: TRvDataSetConnection;
 
 
     function isTelaRequerSenha( codTela:smallInt ):boolean;
@@ -156,6 +160,7 @@ type
     procedure impressaoRave(tb:TADOTable; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveQr(qr:TADOQuery; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveQr4(qr, qr2, qr3, qr4:TDataSet; nRelatorio:String; params:Tstrings);
+    procedure impressaoRaveQr5(qr, qr2, qr3, qr4, qr5:TDataSet; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveTbQr(tb: TADOTable; qr:TADOQuery; nRelatorio:String; params:Tstrings);
     procedure impressaoRavePDF(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings;nmArquivo:String);
     procedure imprimirDANFE1Click(Sender:Tobject);
@@ -216,6 +221,13 @@ type
     function updateParamBD(nParametro, loja, valor, descricao: String):boolean;
     procedure RazoAnalticoRRANA1Click(Sender: TObject);
     procedure RecebeNotanadoca1Click(Sender: TObject);
+    procedure InternarNotaEntrada1Click(Sender: TObject);
+    procedure Consultaestoque1Click(Sender: TObject);
+    procedure getWMSDocEntrada(var serie, numero, pessoa:String);
+    procedure mxOneInstance1InstanceExists(Sender: TObject);
+    procedure ConfiguraSeriesparacontingencia1Click(Sender: TObject);
+    procedure CadastrodeCEP1Click(Sender: TObject);
+
 
 
 
@@ -230,8 +242,8 @@ type
     { Public declarations }
   end;
 CONST
-   VERSAO = '11.07.02';
-   SUB_VERSAO = ' ';
+   VERSAO = '11.08.01';
+   SUB_VERSAO = ' A';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -256,7 +268,7 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
      uCustoPorPedido, uCF, Math, funcDatas, uObterSaldoFiscal,
      uAjusteModPag, uGeraEstoque, uRelInventario, uSelCat, uTotalEntSai,
      uDetalhesCRUC, uPedidosFornecedor, umColetor, uResumoECF, uRRANA,
-  uLiberaNaDoca;
+     uInternaNota, uListaNotaWMS, fmMudaSerieNota, uCEP;
 {$R *.dfm}
 
 
@@ -336,6 +348,15 @@ var
    versao_BD:String;
    i:integer;
 begin
+   if (funcoes.existeParametro('-ge') = true ) then
+   begin
+      Application.Name:= 'GeraEstoque';
+      Application.title:= 'GeraEstoque';
+
+      fmMain.Menu := nil;
+      geraEstoque1Click(nil);
+   end;
+
    fmMain.Caption := VERSAO + SUB_VERSAO + ' - Programas da loja.  ';
 
 // monta o menu com todas as opcoes quando estiver desenvolvendo
@@ -343,11 +364,11 @@ begin
    begin
       fmMain.WindowState := wsNormal;
       is_logado := true;
+// monta menu na Casa Freitas
       montarMenu('Matriz', 'walter', '10033674','10000592');
 
 //   montar menu na freitas
-//        montarMenu('Matriz', 'walter', '10001008','10001593');
-
+//       montarMenu('Matriz', 'walter', '10001008','10001593');
       fmMain.Width := 900;
       fmMain.Height := 700;
       fmMain.Left := 100;
@@ -363,20 +384,17 @@ begin
       fmMain.Width:= screen.Width;
       fmMain.Height:= screen.Height;
 
-//      application.CreateForm(TfmColetor, fmColetor);
-//      fmColetor.show();
       for i:=0 to menuPrincipal.Items.Count -1 do
          menuPrincipal.Items[i].Visible := false;
 
       wms1.Visible := true;
-//      fmMain.WindowState := wsMaximized;
       fmMain.Left :=0;
       fmMain.Width := 248;
       fmMain.Height :=300;
-//      funcoes.gravaLog('heigth:' +intToStr(fmMain.Height) + ' width:' +  intToStr(fmMain.Width)  )
+      StatusBar1.Visible := false;
    end;
 
-   if (is_logado = false) then
+   if (is_logado = false) and not (funcoes.existeParametro('-ge') = true ) then
    begin
       fmMain.Menu := nil;
       versao_BD := GetParamBD('comum.versao','');
@@ -704,6 +722,12 @@ begin
    chamaImpressaoRave(nRelatorio, params);
 end;
 
+procedure TfmMain.impressaoRaveQr5(qr, qr2, qr3, qr4, qr5:TDataSet; nRelatorio:String; params:Tstrings);
+begin
+   RvDSConn5.DataSet := qr5;
+   impressaoRaveQr4(qr, qr2, qr3, qr4, nRelatorio, params);
+end;
+
 procedure TfmMain.impressaoRavePDF(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings;nmArquivo:String);
 begin
    RvSystem1.SystemSetups := RvSystem1.SystemSetups - [ssAllowSetup];
@@ -1020,10 +1044,12 @@ begin
        if (pos(fmMain.getUserLogado(), fmMain.GetParamBD('comum.usrSemTimeOut','') ) = 0 ) and
           (nFormsAbertos <= 1) and
           ( funcoes.existeParametro('-wms') = true) then
+       begin
+          funcoes.gravaLog('TimeOut de inatividade finalizando a aplicação.');
           Application.Terminate()
+       end
        else
           TIME_OUT_PROGRAMA := TIME_OUT_PROGRAMA_DEFAULT;
-
     end;
 end;
 
@@ -1183,7 +1209,6 @@ begin
            msgEmail.add( 'Segue o XML da nota fiscal ' +  ds.FieldByName('Num').asString);
            msgEmail.add( 'Emitida pela loja: '+ ds.FieldByName('loja').asString );
            enviarEmail( '', 'Envio de XML nota fiscal eletrônica', dirLocal+'\'+arquivo ,  msgEmail, 'Envio de XML');
-//           deleteFile(dirLocal+'\'+arquivo); // Deleta o arqXML;
          end
        else
          msgTela('', 'Não encontrei o XML dessa nota', MB_OK + MB_ICONERROR);
@@ -1528,10 +1553,6 @@ begin
   end;
 end;
 
-
-
-
-
 procedure TfmMain.ajustaValoresCategorias(var descCat01, descCat02,
   descCat03, numNivel, vlNivel: String);
 begin
@@ -1567,9 +1588,6 @@ begin
    fmSelCat := nil;
 end;
 
-
-
-
 procedure TfmMain.Log1Click(Sender: TObject);
 var
   cmd:String;
@@ -1604,6 +1622,72 @@ begin
    begin
        Application.CreateForm(TfmRecebeNota, fmRecebeNota);
        fmRecebeNota.show();
+   end;
+end;
+
+procedure TfmMain.InternarNotaEntrada1Click(Sender: TObject);
+begin
+   if (fmInternaNota = nil) then
+   begin
+       Application.CreateForm(TfmInternaNota, fmInternaNota);
+       fmInternaNota.show();
+   end;
+end;
+
+procedure TfmMain.Consultaestoque1Click(Sender: TObject);
+begin
+   if ( fmColetor = nil) then
+   begin
+      application.CreateForm(TfmColetor, fmColetor);
+      fmColetor.show();
+   end;
+end;
+
+procedure TfmMain.getWMSDocEntrada(var serie, numero, pessoa: String);
+begin
+   serie := '';
+   numero := '';
+   pessoa := '';
+
+   application.createForm( TfmRecebeNota, fmRecebeNota);
+   fmRecebeNota.showModal;
+
+   if (fmRecebeNota.modalREsult  = mrOK) then
+   begin
+      pessoa :=  fmRecebeNota.qrNotas.FieldByName('str_id_pessoa').asString;
+      serie := fmRecebeNota.qrNotas.FieldByName('str_serie_nfe').asString;
+      numero := fmRecebeNota.qrNotas.FieldByName('int_numero_nfe').asString;
+   end;
+
+   fmRecebeNota.Close();
+   fmRecebeNota := nil;
+end;
+
+procedure TfmMain.mxOneInstance1InstanceExists(Sender: TObject);
+begin
+  if (funcoes.existeParametro('-ge') = true) then
+  begin
+     funcoes.gravaLog('mxOneInstanceDesabilitada pelo parametro -ge');
+     mxOneInstance1.SwitchToPrevious := false;
+     mxOneInstance1.Terminate := false;
+  end;
+end;
+
+procedure TfmMain.ConfiguraSeriesparacontingencia1Click(Sender: TObject);
+begin
+   if (fmAjustaSerie = nil) then
+   begin
+      Application.CreateForm(TfmAjustaSerie, fmAjustaSerie);
+      fmAjustaSerie.show;
+   end;
+end;
+
+procedure TfmMain.CadastrodeCEP1Click(Sender: TObject);
+begin
+   if (fmCep = nil) then
+   begin
+      Application.CreateForm(TfmCep, fmCep);
+      fmCep.show;
    end;
 end;
 

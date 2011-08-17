@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 245
-  Top = 137
+  Left = 383
+  Top = 185
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -41,7 +41,7 @@ object fmMain: TfmMain
       end>
   end
   object menuPrincipal: TMainMenu
-    Left = 49
+    Left = 56
     Top = 128
     object Estoques1: TMenuItem
       Caption = '&Estoques'
@@ -244,6 +244,11 @@ object fmMain: TfmMain
           Caption = 'Visualizar DANFE'
           OnClick = ImprimirNFe1Click
         end
+        object ConfiguraSeriesparacontingencia1: TMenuItem
+          Tag = 311
+          Caption = 'Ativa desativada Emiss'#227'o NF-e em conting'#234'ncia'
+          OnClick = ConfiguraSeriesparacontingencia1Click
+        end
       end
     end
     object Vendas1: TMenuItem
@@ -264,6 +269,11 @@ object fmMain: TfmMain
           Tag = 401
           Caption = 'Propostas da loja'
           OnClick = Propostasdaloja1Click
+        end
+        object CadastrodeCEP1: TMenuItem
+          Tag = 408
+          Caption = 'Cadastro de CEP'
+          OnClick = CadastrodeCEP1Click
         end
       end
       object Relatorios2: TMenuItem
@@ -298,7 +308,14 @@ object fmMain: TfmMain
         OnClick = RecebeNotanadoca1Click
       end
       object InternarNotaEntrada1: TMenuItem
+        Tag = 602
         Caption = 'Internar NF Entrada'
+        OnClick = InternarNotaEntrada1Click
+      end
+      object Consultaestoque1: TMenuItem
+        Tag = 603
+        Caption = 'Consulta estoque'
+        OnClick = Consultaestoque1Click
       end
     end
     object administrao1: TMenuItem
@@ -364,13 +381,6 @@ object fmMain: TfmMain
     Left = 16
     Top = 128
   end
-  object mxOneInstance1: TmxOneInstance
-    SwitchToPrevious = True
-    Terminate = True
-    Version = '1.2'
-    Left = 77
-    Top = 128
-  end
   object RvProject1: TRvProject
     Engine = RvSystem1
     Left = 8
@@ -434,5 +444,18 @@ object fmMain: TfmMain
     OnException = AppException
     Left = 16
     Top = 160
+  end
+  object mxOneInstance1: TmxOneInstance
+    SwitchToPrevious = True
+    Terminate = True
+    Version = '1.2'
+    OnInstanceExists = mxOneInstance1InstanceExists
+    Left = 56
+    Top = 160
+  end
+  object RvDSConn5: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    Left = 80
+    Top = 408
   end
 end

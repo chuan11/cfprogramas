@@ -100,7 +100,7 @@ Conditionals=
 DebugSourceDirs=
 UsePackages=0
 [Parameters]
-RunParams=**** -nl -wms2
+RunParams=**** -nl
 HostApplication=
 Launcher=
 UseLauncher=0

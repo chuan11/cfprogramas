@@ -28,7 +28,7 @@ type
     procedure cbUserEnter(Sender: TObject);
     procedure edSenhaChange(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    PROCEDURE verificaControl(Sender: TObject; var Key: Word; Shift: TShiftState);
+    PROCEDURE verificaControl(var Key: Word; Shift: TShiftState);
     procedure validarLogin(Sender:Tobject);
   private
     { Private declarations }
@@ -97,13 +97,10 @@ end;
 procedure TfmLogin.FormCreate(Sender: TObject);
 var
   tecla:word;
-
 begin
    tecla := 0;
-
    fmMain.getListaLojas( cbLoja,  false, false,'');
-
-   verificaControl(nil,tecla, []);
+   verificaControl(tecla, []);
 end;
 procedure TfmLogin.cbUserEnter(Sender: TObject);
 begin
@@ -140,9 +137,9 @@ var
    arq:String;
 begin
    arq := fmMain.GetParamBD('comum.ArqLogo','');
-   if arq <> '' then
-      if fileExists(extractFilePath(ParamStr(0)) + 'logo.jpg') then
-        Image1.Picture.LoadFromFile(arq);
+   if (arq <> '')then
+      if (fileExists(extractFilePath(ParamStr(0)) + 'logo.jpg')) then
+         Image1.Picture.LoadFromFile(arq);
    cbLoja.SetFocus;
 end;
 
@@ -161,7 +158,10 @@ end;
 procedure TfmLogin.fsBitBtn2Click(Sender: TObject);
 begin
    if (fmLogin.Caption <> 'Mudar a loja ou usuário') then
+   begin
+      funcoes.gravaLog('fmLogin.Caption sem valor, vou encerrar a aplicação');
       application.Terminate
+   end
    else
       fmLogin.Close;
 end;
@@ -173,10 +173,10 @@ end;
 
 procedure TfmLogin.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-   verificaControl(nil, key , Shift);
+   verificaControl( key , Shift);
 end;
 
-procedure TfmLogin.verificaControl(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TfmLogin.verificaControl(var Key: Word; Shift: TShiftState);
 begin
    if (GetKeyState(VK_CAPITAL) AND 1 > 0)  then
       lbErroDeLogin.Caption := '   Maiúsculas ligado! '
