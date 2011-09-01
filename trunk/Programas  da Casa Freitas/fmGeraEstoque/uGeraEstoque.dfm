@@ -239,7 +239,7 @@ object fmGeraEstoque: TfmGeraEstoque
       OnClick = FlatButton2Click
     end
     object rgTpBusca: TadLabelComboBox
-      Left = 292
+      Left = 484
       Top = 1
       Width = 101
       Height = 21
@@ -286,6 +286,21 @@ object fmGeraEstoque: TfmGeraEstoque
       NumGlyphs = 2
       TabOrder = 3
       OnClick = FlatButton3Click
+    end
+    object cbCalculaEntSaiTotal: TfsCheckBox
+      Left = 198
+      Top = 5
+      Width = 179
+      Height = 16
+      Caption = 'Entradas/sa'#237'das totais'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+      FlatFont.Charset = DEFAULT_CHARSET
+      FlatFont.Color = clWindowText
+      FlatFont.Height = -11
+      FlatFont.Name = 'MS Sans Serif'
+      FlatFont.Style = []
     end
   end
   object CheckBox2: TCheckBox
@@ -592,7 +607,7 @@ object fmGeraEstoque: TfmGeraEstoque
     FlatFont.Style = []
   end
   object cbCalEmp: TfsCheckBox
-    Left = 53
+    Left = 40
     Top = 0
     Width = 117
     Height = 16

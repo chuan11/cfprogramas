@@ -49,7 +49,7 @@ interface
    function openSQL(comando, retorno:string; Connection : TADOConnection):String;
    function setParamBD(parametro, uo, valor:String; conexao:TADOConnection):boolean;
    function somaColQuery(Query:TADOQuery;Coluna:String; nDecimais:integer):String;
-   function somaColTable(Table:TDataSet;Coluna:String):String; overload;
+   function somaColTable(Table:TDataSet;Coluna:String; isFormatado:boolean):String; overload;
    function somaColunaTable(Table:TDataSet;Coluna:String):real; overload;
    function updateParamBD(nParametro, loja, valor, descricao: String; conexao : TADOConnection):boolean;
    procedure abrirQuery(var query:TADOQuery; conexao:TADOConnection; comando:String);
@@ -447,7 +447,7 @@ begin
    if qr = nil then
       qr := TADOQuery.Create(nil);
    qr.SQL.Clear();
-   qr.CommandTimeout := 60;
+   qr.CommandTimeout := Connection.CommandTimeout;
    qr.Connection := Connection;
    qr.SQL.Add(ComandoSQL);
    qr.open;
@@ -509,13 +509,16 @@ begin
 end;
 
 
-function somaColTable(Table:TDataSet;Coluna:String):String; overload;
+function somaColTable(Table:TDataSet;Coluna:String; isFormatado:boolean):String; overload;
 var
    aux:real;
 begin
   funcoes.gravaLog('somaColTable (String)');
   aux := funcsql.somaColunaTable(table, Coluna);
-  Result := floattostrf( aux, ffNumber, 18, 2);
+  if isFormatado = true then
+     Result := floattostrf( aux, ffNumber, 18, 2)
+  else
+     Result := floatToStr(aux);
 end;
 
 
@@ -702,7 +705,7 @@ begin
          qrItens.Next();
    end;
    // pega o valor total dos itens
-   auxVitem := funcoes.ValorSql(funcSql.SomaColTable(tbAcerto,'vl_mov') );
+   auxVitem := funcoes.ValorSql(funcSql.SomaColTable(tbAcerto,'vl_mov', true));
 
    tbAcerto.First;
    while tbAcerto.Eof = false do
@@ -1275,7 +1278,7 @@ begin
    else
       cmd := cmd + ' , @FL_ENTRADA=''1''' ;
    funcSql.execSQL( cmd , Conexao);
-   result := is_oper;        {}
+   result := is_oper;
 end;
 
 
@@ -1296,14 +1299,14 @@ begin
    UO_CD := getParamBD('uocd', '', Conexao);
 
    lista:= Tstringlist.Create();
-   sq_opf := '10000031'; // cod daTransacao integrada de requisicao
+   sq_opf := getParamBD('osDeposito.sq_opfRequisicao', '', Conexao); //10000031  cod daTransacao integrada de requisicao
    codTransacao := '4';  // tipo de transacao
 
    try
       // obter o cd_pes
       cd_pes := funcSql.GetValorWell( 'O', 'select cd_pes from dsusu where cd_usu = '+ usuario, 'cd_pes', conexao );
 
-      is_oper := inserirToper( usuario, sq_opf, codTransacao ,'', Conexao  );
+      is_oper := inserirToper( usuario, sq_opf, codTransacao, '', Conexao);
 
       //obter o plano
       cmd := ' begin declare @P1 int  set @P1=0 exec zcf_stoObterContadorCF ''is_planod'' , @P1 output, @qt = 1  select @P1 as is_planod end';
@@ -1338,7 +1341,7 @@ begin
              incluiItem := false;
           end;
 
-          if ( incluiItem = true) then
+          if (incluiItem = true) then
           begin
 //             if gravaItens = true then
 //                funcoes.GravaLinhaEmUmArquivo( extractFilePath(paramStr(0)) +'\logs\'+ application.Name +'_Requisicoes.txt',' req '+ is_planod+ ': '+' Item: ' + intToStr(tb.RecNo) + tb.fieldByName('codigo').asString +' qt: '+ tb.fieldByName('qt pedida').asString );

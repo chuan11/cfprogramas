@@ -367,6 +367,12 @@ begin
    funcSQL.execSQL(cmd, fmMain.Conexao);
 
    pnXml.Visible := false;
+
+// tenta obter o xml da nota
+   if ( funcoes.msgTela('', 'Deseja atualizar o xml da nota ?', MB_OK + MB_ICONERROR) = mrOk) then
+      if (fmMain.executeTelnetCmd(lbIsEstoque.Caption,'nfe.consultarnfe("' + qrXML.fieldByName('chave_acesso_nfe').AsString +'")' ) = false) then
+         msgTela('',' Erro ao obter o XML da nota fiscal', MB_OK + MB_ICONERROR);
+
    edCodNFE.Enabled := true;
 end;
 

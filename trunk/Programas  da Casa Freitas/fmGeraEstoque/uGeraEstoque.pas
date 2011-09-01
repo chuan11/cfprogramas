@@ -55,6 +55,7 @@ type
     btRemoveForn: TFlatButton;
     lbForn: TadLabelListBox;
     Vermovimentodoestoque1: TMenuItem;
+    cbCalculaEntSaiTotal: TfsCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FlatButton1Click(Sender: TObject);
     procedure FlatButton2Click(Sender: TObject);
@@ -77,7 +78,7 @@ type
     procedure rgTpBuscaClick(Sender: TObject);
 //    function  listarItensPorFaixaCodigo():TdataSet;
     procedure ProgressoDaExecucao(Sender:Tobject;nItem:integer);
-    procedure GeraEstoque(Sender:TObject);
+    procedure geraEstoque();
     procedure gridCellClick(Column: TColumn);
     procedure gridTitleClick(Column: TColumn);
     procedure FlatButton6Click(Sender: TObject);
@@ -143,10 +144,15 @@ begin
    tbGE.first();
    while (tbGE.Eof = false) do
    begin
-      if ( tbGE.FieldByName('Data Ultima Ent').AsString = '') then
-         datai := now - (30* spedit.Value)
+      if (cbCalculaEntSaiTotal.Checked = true) then
+         dataI := strToDate('01/01/2005')
       else
-         datai := tbGE.FieldByName('Data Ultima Ent').AsDateTime;
+      begin
+         if ( tbGE.FieldByName('Data Ultima Ent').AsString = '') then
+            datai :=  now - (30* spedit.Value)
+         else
+            datai := tbGE.FieldByName('Data Ultima Ent').AsDateTime;
+      end;
 
       tbGE.edit();
       tbGE.fieldByName('Total venda').asString := uCF.getVendaProduto(
@@ -221,20 +227,36 @@ begin
 end;
 
 procedure TfmGeraEstoque.FlatButton2Click(Sender: TObject);
+var
+   params:TStringList;
+   cmd:String;
+   i:integer;
 begin
    if not(tbGE.IsEmpty) then
    begin
-{      rvproject1.SetParam('loja', copy(cbLoja.Items[cbLoja.itemindex],01,30)) ;
-      rvproject1.SetParam('TpVenda', copy(cb1.Items[cb1.itemindex],01,30)) ;
-      rvproject1.SetParam('TPestoque', cb3.Items[cb3.itemindex]) ;
-      rvproject1.SetParam('Ordenacao', '' ) ;
-      rvproject1.SetParam('codigo', edit1.text) ;
+      params := TStringList.create();
+      params.Add(  funcoes.getNomeUO(cbLoja));
+      params.add(  funcoes.getNomeUO(cbPrecos));
+      params.add(  funcoes.getNomeUO(cbEstoque));
+      params.add(  trim(funcoes.getNomeUO(cbPrecos)));
+      params.add(  trim(funcoes.getNomeUO(rgTpBusca)));
 
+      case(rgTpBusca.ItemIndex) of
+      0,1: params.add(edit1.Text);
+      2:begin
+        for i:=0 to lbForn.Items.Count-1 do
+           cmd := cmd + intToStr(i+1) + ':'+copy( lbForn.Items[i], 01, 30);
+
+           params.add(cmd);
+        end;
+      end;
       if checkBox2.Checked = true then
-         rvproject1.SetParam('estoqueCd', 'Estoque CD') ;
+         params.add('Estoque CD');
 
-      rvproject1.ExecuteReport('Report2');
-}
+      params.add( grid.Columns[ tbGE.FieldByName('Quant Ultima Ent').Index ].Title.Caption );
+
+
+      fmMain.impressaoRave( tbGE, 'rpGeraEstoque', params);
    end;
 end;
 
@@ -255,6 +277,9 @@ begin
    fmMain.getListaLojas( cbLoja, false, false, '' );
 
    carregaCampos(fmGeraEstoque);
+   edit1.Text := '';
+   cbCalculaEntSaiTotal.Checked := false;
+   lbForn.Items.Clear();
 
    cbLojaChange(Sender);
    fmGeraEstoque.CriarTabela(Sender);
@@ -550,22 +575,50 @@ end;
 procedure TfmGeraEstoque.getDadosEntrada();
 var
    ds:TdataSet;
+   uo:String;
 begin
    fmMain.msgStatus('Obtendo dados sobre as entradas...');
 
-   tbGE.First();
-   while (tbGE.Eof = false) do
+
+   if (cbCalEmp.Checked = true) then
+     uo := ''
+   else
+      uo := funcoes.getCodUO(cbLoja);
+
+   if (cbCalculaEntSaiTotal.Checked = false) then
    begin
-      ds:= uCF.getDadosUltEntItem(tbGE.fieldByName('is_ref').AsString, funcoes.getCodUO(cbLoja));
-      if (ds.IsEmpty = false) then
+      tbGE.First();
+      while (tbGE.Eof = false) do
       begin
-         tbge.Edit();
-         tbge.FieldByName('Data Ultima Ent').AsDateTime := ds.fieldByName('dt_mov').AsDateTime;
-         tbge.FieldByName('Quant Ultima Ent').AsString := ds.fieldByName('qt_mov').asString;
-         tbGE.post();
+         ds:= uCF.getDadosUltEntItem(tbGE.fieldByName('is_ref').AsString, funcoes.getCodUO(cbLoja));
+         if (ds.IsEmpty = false) then
+         begin
+            tbge.Edit();
+            tbge.FieldByName('Data Ultima Ent').AsDateTime := ds.fieldByName('dt_mov').AsDateTime;
+            tbge.FieldByName('Quant Ultima Ent').AsString := ds.fieldByName('qt_mov').asString;
+            tbGE.post();
+         end;
+         ds.free;
+         tbGE.Next();
       end;
-      ds.free;
-      tbGE.Next();
+   end
+   else
+   begin
+      tbGE.First();
+      while (tbGE.Eof = false) do
+      begin
+         ds:= uCF.getEntradasPorItem( tbGE.fieldByName('is_ref').AsString, uo);
+
+         if (ds.IsEmpty = false) then
+         begin
+            tbge.Edit();
+            tbge.FieldByName('Data Ultima Ent').AsDateTime :=  strToDate( uCF.getDataEntrada(ds,'U'));
+            tbge.FieldByName('Quant Ultima Ent').AsString := uCF.getTotalDeEntradasProduto(ds, false);
+            tbGE.post();
+         end;
+         ds.free;
+         tbGE.Next();
+      end;
    end;
 end;
 
@@ -618,7 +671,7 @@ begin
    end;
 end;
 
-procedure TfmGeraEstoque.GeraEstoque(Sender: TObject);
+procedure TfmGeraEstoque.GeraEstoque();
 begin
    grid.Visible := false;
    screen.cursor := crHourGlass;
@@ -674,10 +727,15 @@ begin
    begin
       screen.Cursor := crhourglass;
 
-      geraEstoque(Sender);
+      geraEstoque();
 
       screen.Cursor := crDefault;
       grid.Columns[ tbGE.FieldByName('pv').Index ].Title.Caption := copy(cbPrecos.Items[cbPrecos.itemindex], 01, 20);
+
+      if (cbCalculaEntSaiTotal.Checked = true) then
+         grid.Columns[ tbGE.FieldByName('Quant Ultima Ent').Index ].Title.Caption :='Quant total Ent'
+      else
+         grid.Columns[ tbGE.FieldByName('Quant Ultima Ent').Index ].Title.Caption :='Quant Ultima Ent'
    end
    else
       funcoes.msgTela('','Erro:'+#13+ erro, MB_ICONERROR);

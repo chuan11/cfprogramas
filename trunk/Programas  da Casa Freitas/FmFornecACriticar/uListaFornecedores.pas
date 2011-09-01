@@ -24,7 +24,7 @@ type
     procedure setPerfil(codPerfil:String);
     procedure ajustBuscaDefornecedor();
     procedure ajustBuscaDeCliente();
-    procedure listaUF();
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
 
   private
@@ -41,14 +41,6 @@ implementation
 uses funcoes , uCF, {uMain, } funcSQL;
 
 {$R *.dfm}
-
-procedure TfmListaFornecedores.listaUF();
-begin
-   edit1.Visible := false;
-   btBusca.Visible := false;
-
-   dsPes.DataSet := uCF.getListaUfs();
-end;
 
 procedure TfmListaFornecedores.listarFornecedor();
 begin
@@ -116,9 +108,6 @@ begin
 
   if ( Perfil = 'Cliente') then
       listarCliente();
-
-  if ( Perfil = 'UF') then
-     listaUF();
 end;
 
 procedure TfmListaFornecedores.setPerfil(codPerfil: String);
@@ -128,12 +117,20 @@ begin
 
    if ( codPerfil = 'Cliente') then
       ajustBuscaDeCliente();
+
    PERFIL := codPerfil;
 end;
 
-
-
-
+procedure TfmListaFornecedores.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+{   if (fmListaFornecedores <> nil) then
+   begin
+      action := cafree;
+      fmListaFornecedores := nil;
+   end;
+}   
+end;
 
 end.
 

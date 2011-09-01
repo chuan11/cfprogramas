@@ -315,9 +315,6 @@ begin
    ds.close;
 end;
 
-
-
-
 function TDBClass.numRegistros: integer;
 begin
    result := dsTemplates.RecordCount;
@@ -418,7 +415,7 @@ var
 begin
    cmd := ' Select  case jus_tipo when 1 then ''Parcial'' when 2 then ''Total'' end as JUS_TIPO , ' +
           ' j.JUS_DATA1, j.JUS_DATA2, j.JUS_HORA1, j.JUS_HORA2, ' +
-          '  o.oco_descricao, t.opc_descricao, j.JUS_DATAHORA, j.JUS_usuario, j.JUS_OBSERVACAO, j.JUS_REFERENCIA ' +
+          '  o.oco_descricao, t.opc_descricao, j.JUS_DATAHORA, j.JUS_usuario, j.JUS_OBSERVACAO, j.JUS_REFERENCIA, jus_diaGeradorFolga as DiaGeradorFolga' +
           ' From zcf_PontoJustificativas j ' +
           ' inner join zcf_pontoJusTipos T on j.jus_justificativa =  t.opc_codigo '+
           ' inner join zcf_pontoTipoOcorrencia O on o.oco_codigo = j.jus_ocorrencia' +
@@ -548,6 +545,11 @@ function TDBClass.Justificar(mat, just, data1, data2, tipo, hora1,hora2, ocorr,C
 var
    comando :String;
 begin
+   if (diaGeradorFolga <> '') then
+      diaGeradorFolga :=  funcDatas.strToSqlDate(diaGeradorFolga)
+   else
+      diaGeradorFolga := 'null';
+
    comando := 'insert zcf_pontoJustificativas (jus_estabelecimento, jus_matricula, '+
               'jus_justificativa, jus_data1, jus_data2,jus_tipo, jus_hora1, '+
               'jus_hora2, jus_ocorrencia, jus_conteudo, jus_datahora, '+
@@ -566,7 +568,7 @@ begin
         +  #39 + 'LJ: '+ LOJA  +#39  + ', '
         +  #39 + obs          +#39  +', '
         +   quotedstr('S')          +', '
-        +  funcDatas.strToSqlDate(diaGeradorFolga)
+        +  diaGeradorFolga
         + ')' ;
     result := funcSQL.executeSQL(comando, connection);
 end;

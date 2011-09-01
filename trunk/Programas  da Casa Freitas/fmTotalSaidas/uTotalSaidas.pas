@@ -75,7 +75,7 @@ begin
    ds:= uCF.getVdItemDetPorLojaPeriodo(is_ref, uo, fmMain.getUOCD(), inicio, fim);
 
    dataSource1.DataSet := ds;
-   lbTotal.caption := funcSQL.somaColTable(ds, 'qt_mov');
+   lbTotal.caption := funcSQL.somaColTable(ds, 'qt_mov', true);
 
    grid.Columns[ ds.FieldByName('qt_mov').Index ].Title.Caption := 'Quantidade';
 end;
@@ -85,7 +85,6 @@ procedure TfmTotalSaidas.FlatButton1Click(Sender: TObject);
 begin
    calcularVenda( fmIS_REF, funcoes.getCodUO(cbLoja), dt01.Date, dt02.date);
 end;
-
 
 procedure TfmTotalSaidas.ajustaDataInicio(data: Tdate);
 begin

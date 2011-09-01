@@ -626,7 +626,7 @@ end;
 procedure TfmOsDeposito.geraRequisicaoReabastecimento(Sender: Tobject);
 var
   tbAux:TADOTable;
-  uo, aux,nGerados:String;
+  cmd, uo, aux,nGerados:String;
   i:integer;
   ocoReq, msgDeReq:Tstringlist;
 begin
@@ -661,6 +661,7 @@ begin
          nGerados := nGerados  + aux + ' ';
    end;
 
+
    if (nGerados <> '') then
    begin
       msgTela('',' Foram geradas as requisições: ' + nGerados + #13+' Vou mandar um email para a loja, avisando.', MB_OK + MB_ICONWARNING );
@@ -670,6 +671,17 @@ begin
       msgDeReq.add('geradas em: ' + funcDatas.dataSqlToData(funcsql.getDataBd(fmMain.Conexao,0))    );
       msgDeReq.Add('Os numero são: ' + nGerados);
       msgDeReq.Add('As requisições foram liberadas por: ' + fmMain.getNomeUsuario() );
+
+      if (ocoReq.Count > 0) then
+      begin
+         msgDeReq.Add('');
+         msgDeReq.Add('');
+         msgDeReq.Add('Alguns produtos não foram pedidos, segue a lista:');
+
+         for i:=0 to ocoReq.Count-1 do
+            msgDeReq.Add(ocoReq[i]);
+      end;
+
 
       if (ocoReq.Count > 0) then
       begin

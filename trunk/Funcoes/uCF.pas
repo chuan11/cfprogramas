@@ -11,7 +11,9 @@ interface
    procedure listaTabelaPrecos(tipoPesquisa, tpEstoque:smallInt; ds_ref, cd_ref, uo, pc01, pc02, numNivel, vlNivel:String; qr:TADOQuery);
    function ajustaCodigoNCM(isRef, ncm_sh:String):boolean;
    function alterarModPagamento(uo, seqtransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String):boolean;
+   function excluirCEP(cep:String):boolean;
    function getAutorizadoresPorTela(codTela:smallInt; grupoUser:String):String;
+   function getCEP(nr_CEP:String):TdataSet;
    function getCodModalidadesCartao():TStringList;
    function getCodModalidadesPagamento(mostraTodos:boolean):TStringList;
    function getDadosCliente(cd_pes, nm_pes:String):TDataSet;
@@ -22,6 +24,7 @@ interface
    function getDadosPedidoDeCompra(conexao: TADOconnection; numPedido:String):TdataSet;
    function getDadosProd(uo, codigo, preco:String; mostraMsg:boolean):TdataSet;
    function getDadosUltEntItem(is_ref, uo:String):TdataSet;
+   function getDataEntrada(entradas:TdataSet; primOuUlt:String):String;
    function getDescCaixas(uo:String; mostraTodos:boolean):TStrings;
    function getDetalhesCRUC(is_ref:String):TdataSet;
    function getEntradasPorItem(is_ref, uo:String):TdataSet;
@@ -32,17 +35,21 @@ interface
    function getIsUo(mostraEscritorio:boolean):String;
    function getItensDeUmaNota(isNota:String):TDataSet;
    function getItensParaCadastroNCM(var tabela:TADOTable; isNota:String):boolean;
-   function getListaUfs():TdataSet;
+   function getLstaBairros(uf, cd_cid, nm_bai:String):TdataSet;
+   function getListaCidades(UF, cidade:String):TdataSet;
    function getNomeImpressoraNFe():String;
    function getPcProd(uo, codigo, preco:String):String;
    function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
    function getRRANAItem(is_ref, uo:String; dti, dtf:Tdate):TdataSet;
+   function getTiposLogradouro():TStringlist;
+   function getTotalDeEntradasProduto(Entradas:TdataSet; isFormatado:boolean):String;
    function getTotaisVendaAvaria(lojas:TadLabelComboBox; datai, dataf:Tdate; tabela:String):String;
    function getTotalCartaoPorModo(tb:TADOTable):TStringlist;
-   function getUF():String;
+   function getUFS():TdataSet;
    function getVendaProduto(is_ref, uo,  uocd :String;  datai, dataf:Tdate):String;
    function getVendaProdutoDLEST(is_ref, is_uo, uocd:String; datai, dataf:Tdate):String;
    function getVdItemDetPorLojaPeriodo(is_ref, uo, uocd:String; di, df:Tdate):TdataSet;
+   function incluirCEP(CEP, cd_uf, cd_cid, cd_bai, tp_lograd, nm_log:String):boolean;
    function insereModPagamento (uo, seqTransacao, codNovaModalidade, valor, numParcelas,  dataTrans:String):boolean;
    function insereRegistroTEF(uo, seqTransacao, seqModalidade, tp_mve, valor, numParcelas, dataTrans:String):boolean;
    function recalcularCmuItem(is_ref:String):String;
@@ -176,7 +183,7 @@ var
 begin
     if (tb.Active = true) then
        tb.Close();
-    cmd := 'is_uo varchar(08), ds_uo varchar(30), TipoAvaria varchar(20), qtItens int, valorTotalCusto money, valorTotalPcVarejo money,  TotalVendido money, Fornecedor varchar(30)';
+    cmd := 'is_uo varchar(08), ds_uo varchar(30), TipoAvaria varchar(20), qtItens int, valorTotalCusto money, valorTotalPcVarejo money,  TotalVendido money, Fornecedor varchar(60)';
     funcsql.getTable(fmMain.Conexao, tb, cmd);
 end;
 
@@ -186,12 +193,12 @@ var
 begin
    if (tbTotais.Active = true) then
        tbTotais.Close();
-   cmd := 'tipoAvaria varchar(30), qtItens int, valorTotalCusto money, valorTotalVenda money, fornecedor varchar(30) ';
+   cmd := 'tipoAvaria varchar(30), qtItens int, valorTotalCusto money, valorTotalVenda money, fornecedor varchar(60) ';
    getTable(fmMain.Conexao, tbtotais, cmd);
 
    cmd :=
       ' insert ' + tbTotais.TableName +
-      ' select Fornecedor, sum(qtItens), sum(valorTotalCusto) as valorTotalCusto, sum(ValorTotalPcVarejo)as ValorTotalPcVarejo, '''' from ' + nmTabela +' group by fornecedor ';
+      ' select '''', sum(qtItens), sum(valorTotalCusto) as valorTotalCusto, sum(ValorTotalPcVarejo)as ValorTotalPcVarejo, Fornecedor from ' + nmTabela +' group by fornecedor ';
 
    funcsql.execSQL(cmd, fmMain.Conexao);
    tbTotais.Close();
@@ -255,7 +262,7 @@ begin
    'left join zcf_paramGerais Par on Par.uo = A.TipoAvaria  and par.nm_Param = ''avarias.tpOrigem''  '+#13+
    'where a.data between ' + funcDatas.dateToSqlDate(datai) +' and '+ funcDatas.dateToSqlDate(dataf) +#13;
 
-   if (uo <> '') then
+   if (uo <> '999') then
    cmd :=  cmd + ' and I.loja = ' + uo;
 
    cmd := cmd +   ' group by UO.is_uo, UO.ds_uo, P.cd_pes, F.nm_fantasi, A.tipoAvaria, Par.Valor ' +
@@ -278,7 +285,7 @@ begin
     cmd := ' insert ' + tb.TableName +
     ' select A.loja, UO.ds_uo,  P.valor as TipoAvaria, ' +#13+
     'sum(i.quant) as qtItens, ' +#13+
-    'sum(i.quant*I.pco) as [valorCusto Total], '+#13+
+    'sum(i.pcoTotal) as [valorCusto Total], '+#13+
     'sum(i.quant*I.pcoVarejo) as [valorVenda Total], '+#13+
     'totalVenda = ( select isNull(sum(qt*und),0) as valorVenda from zcf_avariasDescontos D (nolock) where D.is_uo = A.loja and data between ' + funcDatas.dateToSqlDate(datai) +' and '+ funcDatas.dateToSqlDate(dataf) + '), '+#13+
     ' '''' as fornecedor ' + #13+
@@ -288,7 +295,7 @@ begin
     'left join zcf_paramGerais P (noLock) on P.nm_Param = ''avarias.tpOrigem'' and A.tipoAvaria = p.uo ' +#13+
     'where a.data between ' + funcDatas.dateToSqlDate(datai) +' and '+ funcDatas.dateToSqlDate(dataf) +#13;
 
-    if (uo <> '' )then
+    if (uo <> '999' )then
       cmd := cmd + ' and A.Loja = ' + uo;
 
     cmd := cmd +
@@ -377,8 +384,11 @@ begin
    ' dnota.cd_cfo,' +#13+
    ' dnota.dt_entsai as [Entrada/Saida],' +#13+
    ' dnota.VL_DSPEXTRA,' +#13+
-   ' case when is_fildest = is_estoque then dnota.cd_pes else dnota.is_fildest end as cd_pes, '+#13+
-   ' case when is_fildest = is_estoque then ( select nm_pes from dspes D where d.cd_pes = dnota.cd_pes)' +   ' else ( select ds_uo from zcf_tbuo D where d.is_uo = dnota.is_fildest) end as [Emissor/Destino],'  +#13+   ' vl_nota as Valor,' +#13+   ' dnota.codigo_nfe,' +#13+
+   ' case ' +#13+
+   ' when DNOTA.is_fildest = -1 then ( select cd_pes from dsdoc (nolock) where dnota.is_doc = dsdoc.is_doc )' +#13+
+   ' when is_fildest = is_estoque then dnota.cd_pes '+#13+
+   ' else dnota.is_fildest end as cd_pes, '+#13+
+   ' case '+#13+   ' when DNOTA.is_fildest = -1 then ( select nm_pes from dspes (nolock) inner join dsdoc on dspes.cd_pes = dsdoc.cd_pes where dnota.is_doc = dsdoc.is_doc )'+#13+   ' when is_fildest = is_estoque then ( select nm_pes from dspes D where d.cd_pes = dnota.cd_pes)' +   ' else ( select ds_uo from zcf_tbuo D where d.is_uo = dnota.is_fildest) end as [Emissor/Destino],'  +#13+   ' vl_nota as Valor,' +#13+   ' dnota.codigo_nfe,' +#13+
    ' zcf_tbuo.ds_uo as Loja,' +#13+
    ' dnota.dt_emis,'+#13+
    ' dnota.is_estoque,'+#13+
@@ -447,15 +457,20 @@ end;
 
 
 function getFmDadosPessoa(codPerfil: String):String;
+var
+  res:String;
 begin
    Application.CreateForm(TfmListaFornecedores, fmListaFornecedores);
    fmListaFornecedores.setPerfil(codPerfil);
    fmListaFornecedores.ShowModal;
 
    if (fmListaFornecedores.ModalResult = mrOk) then
-      result := fmListaFornecedores.dsPes.DataSet.fieldByName('codigo').asString
+      res := fmListaFornecedores.dsPes.DataSet.fieldByName('codigo').asString
    else
-      result := '';
+      res := '';
+
+   fmListaFornecedores.free();
+   result := res;
 end;
 
 function getDadosPedidoDeCompra(conexao: TADOconnection; numPedido:String):TdataSet;
@@ -1507,21 +1522,124 @@ begin
   result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
 end;
 
-function getUF():String;
+function getUFS():TdataSet;
 var
    cmd:String;
 begin
-   Application.CreateForm(TfmListaFornecedores, fmListaFornecedores);
-   fmListaFornecedores.setPerfil('UF');
-   fmListaFornecedores.ShowModal;
-
-   if (fmListaFornecedores.ModalResult = mrOk) then
-      result := fmListaFornecedores.dsPes.DataSet.fieldByName('cd_uf').asString
+   cmd := 'Select cd_uf, nm_uf from TUF order by nm_uf';
+   result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
 end;
 
-function getListaUfs():TdataSet;
+function getTotalDeEntradasProduto(entradas:TdataSet; isFormatado:boolean):String;
 begin
-   result :=  funcSQL.getDataSetQ('Select * from Tuf order by nm_uf', fmMain.conexao);
+   result := funcSQL.somaColTable(entradas, 'quant', isFormatado);
+end;
+
+function getDataEntrada(entradas:TdataSet; primOuUlt:String):String;
+var
+   aux:String;
+begin
+   aux := '';
+   if (entradas <> nil) and (entradas.isEmpty = false) then
+   begin
+      if ( upperCase(primOuUlt) = 'P') then
+         entradas.last()
+      else
+         entradas.first();
+
+      aux := entradas.fieldByName('data').AsString;
+   end;
+   result := aux;
+end;
+
+function getListaCidades(UF, cidade:String):TdataSet;
+var
+   cmd:String;
+begin
+   cmd := ' select nm_cid, cd_cid from tcid '  +
+          ' where cd_uf = ' + quotedStr(uf) +
+          ' and nm_cid like ' + quotedStr(cidade+ '%');
+   result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+end;
+
+function getLstaBairros(uf, cd_cid, nm_bai:String):TdataSet;
+var
+   cmd:String;
+begin
+   cmd := ' Select cd_bai, nm_bai from tbai where' +
+//          ' cd_uf = ' + quotedStr(uf)+ ' and  ' +
+          ' cd_cid = '+ cd_cid +
+          ' and nm_bai like ' + quotedStr(nm_bai + '%') +
+          ' order by nm_bai';
+   result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+end;
+
+function excluirCEP(cep:String):boolean;
+var
+   cmd:String;
+begin
+   cmd := 'delete from tlog where nr_cep = ' + cep;
+   result := funcSQL.execSQL(cmd, fmMain.conexao);
+end;
+
+
+function incluirCEP(CEP, cd_uf, cd_cid, cd_bai, tp_lograd, nm_log:String):boolean;
+var
+   cmd :String;
+begin
+   cmd :=
+   'insert tlog values (' +
+   cd_bai  + ', ' +
+   '0'     + ', ' +
+   cd_cid  + ', ' +
+   quotedStr(nm_log)  + ', ' +
+   quotedStr(cd_uf)   + ', ' +
+   cep     + ', ' +
+   quotedStr(tp_lograd)   + ', ' +
+   'null'   + ', ' +
+   '''A'''     + ', ' +
+   '''A'''     + ')';
+   result := funcSQL.execSQL(cmd, fmMain.conexao);
+end;
+
+function getCEP(nr_CEP:String):TdataSet;
+var
+   cmd:String;
+begin
+   nr_CEP := funcoes.SohNumeros(nr_CEP);
+   if (nr_cep = '') then
+      nr_CEP := '-1';
+   cmd :=
+   ' select * from tlog (nolock)' +
+   ' left join tbai (nolock) on tbai.cd_bai = tlog.cd_bai1 and tlog.cd_uf = tbai.cd_uf '+
+   ' and tlog.cd_cid = tbai.cd_cid ' +
+   ' left join tcid (nolock) on tcid.cd_cid = tlog.cd_cid and tcid.cd_uf = tcid.cd_uf '+
+   ' where tlog.nr_cep='+ nr_cep;
+   result := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+end;
+
+
+function getTiposLogradouro():TStringlist;
+var
+   cmd:String;
+   ds:TdataSet;
+   lst:TStringlist;
+begin
+   cmd := 'select ds_chv, cd_chv  from dstab where cd_tab = ''10'' '+
+          'order by  cd_chv ' ;
+
+   ds := funcSQL.getDataSetQ(cmd, fmMain.conexao);
+
+   lst := TStringlist.create();
+   ds.first();
+   while (ds.eof = false ) do
+   begin
+      lst.add( funcoes.preencheCampo(50, ' ', 'D', ds.fieldByname('ds_chv').asString) +
+               ds.fieldByname('cd_chv').asString);
+      ds.next;
+   end;
+   ds.free;
+   result := lst;
 end;
 
 

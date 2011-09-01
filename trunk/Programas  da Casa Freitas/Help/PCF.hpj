@@ -1,0 +1,7 @@
+[OPTIONS]
+LCID=0x416 0x0 0x0 ; Português (Brasil)
+REPORT=Yes
+HLP=PCF.hlp
+
+[FILES]
+..\..\..\Users\cpd\CPD\Documents\Documento.rtf

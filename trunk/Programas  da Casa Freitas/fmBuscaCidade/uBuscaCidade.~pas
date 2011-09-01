@@ -1,0 +1,80 @@
+unit uBuscaCidade;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uListaFornecedores, DB, StdCtrls, Buttons, fCtrls, adLabelEdit,
+  Grids, DBGrids, SoftDBGrid;
+
+type
+  TfmBuscaDiversas = class(TfmListaFornecedores)
+    edFiltro: TEdit;
+    procedure btBuscaClick(Sender: TObject);
+    procedure setPerfil(strPerfil:String);
+    procedure ajustaPerfilUF();
+    procedure ajustaPerfilCidade();
+    procedure buscaCidade();
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmBuscaDiversas: TfmBuscaDiversas;
+  PERFIL:String;
+implementation
+
+uses UCF;
+
+{$R *.dfm}
+
+procedure TfmBuscaDiversas.ajustaPerfilCidade;
+begin
+   fmBuscaDiversas.Caption := 'Busca Cidade';
+   edit1.LabelDefs.Caption := 'Busca a cidade';
+   edFiltro.Visible := false;
+end;
+
+procedure TfmBuscaDiversas.ajustaPerfilUF;
+begin
+    fmBuscaDiversas.Caption := 'Busca UF';
+    edit1.Visible := false;
+    edit1.LabelDefs.Caption := '';
+    edFiltro.Visible := false;
+    btBusca.Visible := false;
+    dspes.DataSet := uCF .getUFS();
+    fnGrid.Columns[ dsPes.DataSet.FieldByName('maint').Index  ].Visible := false;
+    fnGrid.Columns[ dsPes.DataSet.FieldByName('id_registro').Index  ].Visible := false;
+end;
+
+procedure TfmBuscaDiversas.buscaCidade;
+begin
+   dspes.DataSet := uCF.getListaCidades(edFiltro.text, edit1.text);
+end;
+
+procedure TfmBuscaDiversas.btBuscaClick(Sender: TObject);
+begin //
+   if (PERFIL = 'cidade') then
+      buscaCidade();
+
+
+end;
+
+
+procedure TfmBuscaDiversas.setPerfil(strPerfil: String);
+begin
+   PERFIL := strPerfil;
+
+   if (PERFIL = 'uf') then
+      ajustaPerfilUF();
+
+   if (PERFIL = 'cidade') then
+      ajustaPerfilCidade();
+
+
+
+end;
+
+end.

@@ -49,7 +49,7 @@ interface
    function openSQL(comando, retorno:string; Connection : TADOConnection):String;
    function setParamBD(parametro, uo, valor:String; conexao:TADOConnection):boolean;
    function somaColQuery(Query:TADOQuery;Coluna:String; nDecimais:integer):String;
-   function somaColTable(Table:TDataSet;Coluna:String):String; overload;
+   function somaColTable(Table:TDataSet;Coluna:String; isFormatado:boolean):String; overload;
    function somaColunaTable(Table:TDataSet;Coluna:String):real; overload;
    function updateParamBD(nParametro, loja, valor, descricao: String; conexao : TADOConnection):boolean;
    procedure abrirQuery(var query:TADOQuery; conexao:TADOConnection; comando:String);
@@ -275,7 +275,7 @@ begin
    aux := TstringList.create();
 
    if IncluirLinhaTodas = true then
-     aux.Add(funcoes.preencheCampo(50,' ','D',' Todas') + '999');
+     aux.Add(funcoes.preencheCampo(50,' ','D','  Todas') + '999');
 
    if IncluiNenhuma = true then
      aux.Add( funcoes.preencheCampo(50,' ','D',' Nenhuma ' ) + '-1');
@@ -447,7 +447,7 @@ begin
    if qr = nil then
       qr := TADOQuery.Create(nil);
    qr.SQL.Clear();
-   qr.CommandTimeout := 60;
+   qr.CommandTimeout := Connection.CommandTimeout;
    qr.Connection := Connection;
    qr.SQL.Add(ComandoSQL);
    qr.open;
@@ -509,13 +509,16 @@ begin
 end;
 
 
-function somaColTable(Table:TDataSet;Coluna:String):String; overload;
+function somaColTable(Table:TDataSet;Coluna:String; isFormatado:boolean):String; overload;
 var
    aux:real;
 begin
   funcoes.gravaLog('somaColTable (String)');
   aux := funcsql.somaColunaTable(table, Coluna);
-  Result := floattostrf( aux, ffNumber, 18, 2);
+  if isFormatado = true then
+     Result := floattostrf( aux, ffNumber, 18, 2)
+  else
+     Result := floatToStr(aux);
 end;
 
 
@@ -702,7 +705,7 @@ begin
          qrItens.Next();
    end;
    // pega o valor total dos itens
-   auxVitem := funcoes.ValorSql(funcSql.SomaColTable(tbAcerto,'vl_mov') );
+   auxVitem := funcoes.ValorSql(funcSql.SomaColTable(tbAcerto,'vl_mov', true));
 
    tbAcerto.First;
    while tbAcerto.Eof = false do

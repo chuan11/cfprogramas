@@ -24,6 +24,7 @@ type
     procedure setPerfil(codPerfil:String);
     procedure ajustBuscaDefornecedor();
     procedure ajustBuscaDeCliente();
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
 
   private
@@ -88,7 +89,6 @@ begin
 end;
 
 
-
 procedure TfmListaFornecedores.ajustBuscaDefornecedor;
 begin
    edit1.LabelDefs.Caption := 'Digite o nome do fornecedor para buscar:';
@@ -105,6 +105,7 @@ procedure TfmListaFornecedores.btBuscaClick(Sender: TObject);
 begin
   if ( Perfil = 'Fornecedor') then
       listarFornecedor();
+
   if ( Perfil = 'Cliente') then
       listarCliente();
 end;
@@ -116,11 +117,19 @@ begin
 
    if ( codPerfil = 'Cliente') then
       ajustBuscaDeCliente();
+
    PERFIL := codPerfil;
 end;
 
-
-
+procedure TfmListaFornecedores.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+   if (fmListaFornecedores <> nil) then
+   begin
+      action := cafree;
+      fmListaFornecedores := nil;
+   end;
+end;
 
 end.
 

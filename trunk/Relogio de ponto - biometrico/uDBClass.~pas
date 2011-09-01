@@ -88,7 +88,7 @@ type
     procedure deletajustificativa(numJustificativa:String);
     procedure getQuery(var qr:TADOQuery; ComandoSQL:string);
     procedure getTable(var tb:TADOTable; tbFields:string);
-    procedure getTemplates();
+    function getTemplates():boolean;
     procedure organizarQuery(var query:TADOQuery;Coluna:Tcolumn);
     procedure preencheListaDosDias(var tabela:TADOTable; dti,dtf:Tdate);
     procedure Connection1WillExecute(Connection: TADOConnection;  var CommandText: WideString; var CursorType: TCursorType;  var LockType: TADOLockType; var CommandType: TCommandType; var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;  const Command: _Command; const Recordset: _Recordset);
@@ -200,19 +200,27 @@ var
 {}
 end;
 
-
 // Start fetching all enrolled templates from database.
-procedure TDBClass.getTemplates();
+function TDBClass.getTemplates():boolean;
 begin
-   gravaLog('TDBClass.getTemplates()');
-   dsTemplates.CacheSize := 15000;
-   dsTemplates.CursorLocation := clUseClient;
-   dsTemplates.CursorType := ctOpenForwardOnly;
-   dsTemplates.LockType := ltReadOnly;
-//   dsTemplates.Connection := connection;
-   dsTemplates.CommandText := 'SELECT id, template FROM zcf_PontoCadDigitais where isAtivo = 1 order by id'; {zcf_PontoCadDigitais}
-   dsTemplates.Open();
-   dsTemplates.BlockReadSize := 15000;
+   try
+      gravaLog('TDBClass.getTemplates()');
+      dsTemplates.CacheSize := 15000;
+      dsTemplates.CursorLocation := clUseClient;
+      dsTemplates.CursorType := ctOpenForwardOnly;
+      dsTemplates.LockType := ltReadOnly;
+      dsTemplates.CommandText := 'SELECT id, template FROM zcf_PontoCadDigitais where isAtivo = 1 order by id'; {zcf_PontoCadDigitais}
+      dsTemplates.Open();
+      dsTemplates.BlockReadSize := 15000;
+      gravaLog('TDBClass.getTemplates() result = true');
+      result := true;
+   except
+      on  e: exception do
+      begin
+         gravaLog('TDBClass.getTemplates() result = false');
+         result := false;
+      end;
+  end;
 end;
 
 
@@ -410,7 +418,7 @@ var
 begin
    cmd := ' Select  case jus_tipo when 1 then ''Parcial'' when 2 then ''Total'' end as JUS_TIPO , ' +
           ' j.JUS_DATA1, j.JUS_DATA2, j.JUS_HORA1, j.JUS_HORA2, ' +
-          '  o.oco_descricao, t.opc_descricao, j.JUS_DATAHORA, j.JUS_usuario, j.JUS_OBSERVACAO, j.JUS_REFERENCIA ' +
+          '  o.oco_descricao, t.opc_descricao, j.JUS_DATAHORA, j.JUS_usuario, j.JUS_OBSERVACAO, j.JUS_REFERENCIA, jus_diaGeradorFolga as DiaGeradorFolga' +
           ' From zcf_PontoJustificativas j ' +
           ' inner join zcf_pontoJusTipos T on j.jus_justificativa =  t.opc_codigo '+
           ' inner join zcf_pontoTipoOcorrencia O on o.oco_codigo = j.jus_ocorrencia' +
@@ -540,6 +548,11 @@ function TDBClass.Justificar(mat, just, data1, data2, tipo, hora1,hora2, ocorr,C
 var
    comando :String;
 begin
+   if (diaGeradorFolga <> '') then
+      diaGeradorFolga :=  funcDatas.strToSqlDate(diaGeradorFolga)
+   else
+      diaGeradorFolga := 'null';
+
    comando := 'insert zcf_pontoJustificativas (jus_estabelecimento, jus_matricula, '+
               'jus_justificativa, jus_data1, jus_data2,jus_tipo, jus_hora1, '+
               'jus_hora2, jus_ocorrencia, jus_conteudo, jus_datahora, '+
@@ -558,7 +571,7 @@ begin
         +  #39 + 'LJ: '+ LOJA  +#39  + ', '
         +  #39 + obs          +#39  +', '
         +   quotedstr('S')          +', '
-        +  funcDatas.strToSqlDate(diaGeradorFolga)
+        +  diaGeradorFolga
         + ')' ;
     result := funcSQL.executeSQL(comando, connection);
 end;

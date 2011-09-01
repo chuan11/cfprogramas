@@ -122,7 +122,7 @@ begin
 
 //   funcsql.getComboBoxLojas(fmMain.Conexao, false,false, fmMain.lbPes.Caption , cbLojas);
 
-    fmMain.getListaLojas(cbLojas, false, false, fmMain.getCDPESUsuario());
+    fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
 
    grid.Columns[0].Visible := false;
 end;

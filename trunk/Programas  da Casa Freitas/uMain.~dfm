@@ -1,6 +1,6 @@
 object fmMain: TfmMain
-  Left = 292
-  Top = 141
+  Left = 282
+  Top = 142
   Width = 911
   Height = 561
   Caption = 'cf2'
@@ -143,6 +143,10 @@ object fmMain: TfmMain
         Tag = 604
         Caption = 'Cadastrar NCM dos itens de uma nota'
         OnClick = CadastrarNCM1Click
+      end
+      object Cadastrodeimagens1: TMenuItem
+        Caption = 'Cadastro de imagens'
+        OnClick = Cadastrodeimagens1Click
       end
     end
     object Preos1: TMenuItem
@@ -373,6 +377,7 @@ object fmMain: TfmMain
     end
   end
   object Conexao: TADOConnection
+    CommandTimeout = 0
     ConnectionTimeout = 5
     LoginPrompt = False
     Provider = 'SQLOLEDB.1'

@@ -123,6 +123,7 @@ begin
    qrItens.First;
    grid.visible := TRUE;
 end;
+
 procedure TfmCadAvarias.AbreFmPesqLista(tag:integer);
 begin
    DesabilitaItens();

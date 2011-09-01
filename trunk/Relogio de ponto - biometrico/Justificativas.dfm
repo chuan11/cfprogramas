@@ -27,7 +27,7 @@ object Justificativa: TJustificativa
     Top = 0
     Width = 792
     Height = 334
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     TabOrder = 2
     TabStop = False
     OnChange = edBuscaChange

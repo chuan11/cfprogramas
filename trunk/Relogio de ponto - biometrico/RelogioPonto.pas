@@ -122,7 +122,7 @@ type
   end;
 
 const
-   VERSAO = '11.07.01';
+   VERSAO = '11.08.03';
    TITULO = ' ' + VERSAO;
    CH_REG = 'ProgramasCF\Relogio';
    BATIDA_VAZIA = '  :  ';

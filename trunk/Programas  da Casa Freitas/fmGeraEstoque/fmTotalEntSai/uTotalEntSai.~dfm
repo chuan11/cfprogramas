@@ -15,6 +15,7 @@ object fmTotalEntSai: TfmTotalEntSai
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
   object Label7: TLabel

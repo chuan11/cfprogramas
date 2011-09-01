@@ -169,11 +169,10 @@ begin
 
       if (codigo <> '') then
       begin
-          ds := TADODataSet.Create(nil);
-          ds := uCF.getDadosFornecedor(codigo,'');
-          lbCodPes.caption := ds.FieldByName('codigo').asString;
-          edEmitDest.text := ds.FieldByName('nome').asString;
-          ds.Destroy();
+         ds := uCF.getDadosFornecedor(codigo,'');
+         lbCodPes.caption := ds.FieldByName('codigo').asString;
+         edEmitDest.text := ds.FieldByName('nome').asString;
+         ds.Destroy();
       end;
    end;
 end;
@@ -367,6 +366,12 @@ begin
    funcSQL.execSQL(cmd, fmMain.Conexao);
 
    pnXml.Visible := false;
+
+// tenta obter o xml da nota
+   if ( funcoes.msgTela('', 'Deseja atualizar o xml da nota ?', MB_YESNO + MB_ICONERROR) = mrYes) then
+      if (fmMain.executeTelnetCmd(lbIsEstoque.Caption,'nfe.consultarnfe("' + qrXML.fieldByName('chave_acesso_nfe').AsString +'")' ) = false) then
+         msgTela('',' Erro ao obter o XML da nota fiscal', MB_OK + MB_ICONERROR);
+
    edCodNFE.Enabled := true;
 end;
 

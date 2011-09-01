@@ -264,6 +264,7 @@ procedure TJustificativa.btGeraJustificativaClick(Sender: TObject);
 var
    err:String;
    i:integer;
+   diaGeradorFolga:String;
 begin
   if  sg1.RowCount -1 > 1 then
   begin
@@ -411,6 +412,8 @@ begin
 end;
 
 procedure TJustificativa.incluiFuncionario(matricula, nome:String);
+var
+  dataFolga:String;
 begin
 { LAYOUT DO CADASTRO
   NOME INICIO-01 TAM-30
@@ -439,7 +442,12 @@ begin
 
    sg1.Cells[10,sg1.RowCount-1] := edit2.Text; // OBSERVACAO
 
-   sg1.Cells[13, sg1.RowCount-1] := datetostr(dtRefFolga.Date);
+
+   if (getCodJust() = COD_FOLGA) then
+      sg1.Cells[13, sg1.RowCount-1] := dateToStr(dtRefFolga.Date)
+   else
+      sg1.Cells[13, sg1.RowCount-1] := ''; 
+
    SG1.RowCount :=    SG1.RowCount+1;
 end;
 
@@ -465,26 +473,6 @@ begin
       ds.Destroy();
    end;
    Ajustasg1();
-
-
-
-{   if HaErros(sender) = False then
-   Begin
-      if cbLojas.ItemIndex > 0 then
-      begin
-         ds := uUtil.getNomeMatPorLocalizacao(  fmMain.getLocalizacaoLoja(cbLojas) );
-         while (ds.Eof = false) do
-         begin
-            incluiFuncionario(ds.fieldByName('matricula').asString, ds.fieldByName('nome').asString);
-            ds.Next();
-         end;
-         ds.Destroy();
-      end
-      else
-         incluiFuncionario(fmMain.getNome(fmMain.getMatricula(cbEmp.items[cbEMp.itemIndex])), fmMain.getNome(cbEmp.items[cbEMp.itemIndex]) );
-   end;
-   Ajustasg1(sender);
-}
 end;
 
 procedure TJustificativa.sg1DblClick(Sender: TObject);
