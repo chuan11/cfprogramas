@@ -507,7 +507,12 @@ end;
 procedure AbrirCadastroDigitais();
 begin
    gravaLog('Abrindo Cadastro de digitais');
-   db.getTemplates();
+   if (db.getTemplates() = false )then
+   begin
+      funcoes.msgTela('', 'Houve um problema ao obtger o cadastro de digitais ' +#13+
+                          'reinicie o programa e tente de novo', MB_OK + mb_iconError);
+      application.Terminate();
+   end;
 end;
 
 function registraPonto(data,Hora,cartao,loja:string):boolean;

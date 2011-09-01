@@ -1,6 +1,6 @@
 object fmGeraEstoque: TfmGeraEstoque
-  Left = 419
-  Top = 162
+  Left = 550
+  Top = 213
   Width = 861
   Height = 607
   Caption = 'Gera Estoque'

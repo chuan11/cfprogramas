@@ -78,7 +78,9 @@ uses
   uListaNotaWMS in 'WMS\uListaNotaWMS.pas' {fmRecebeNota},
   uInternaNota in 'WMS\uInternaNota.pas' {fmInternaNota},
   uCEP in 'fmCEP\uCEP.pas' {fmCep},
-  fmMudaSerieNota in 'fmMudaSerieNota\fmMudaSerieNota.pas' {fmAjustaSerie};
+  fmMudaSerieNota in 'fmMudaSerieNota\fmMudaSerieNota.pas' {fmAjustaSerie},
+  uBuscaCidade in 'fmBuscaCidade\uBuscaCidade.pas' {fmBuscaDiversas},
+  uCadImagem in 'fmCadImagem\uCadImagem.pas' {fmCadastro};
 
 {$R *.res}
 
@@ -92,6 +94,6 @@ begin
       Application.Initialize;
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
-      Application.Run;
+  Application.Run;
   end;
 end.

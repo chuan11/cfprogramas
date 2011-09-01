@@ -144,6 +144,8 @@ end;
 
 procedure tfmTabela.PesquisaCodigos(sender:tobject);
 begin
+//  fmMain.Conexao.CommandTimeout := 0;
+
   SCREEN.CURSOR := crhourglass;
   fmMain.MsgStatus('');
   animate.Visible:= true;
@@ -179,6 +181,7 @@ begin
           fmMain.MsgStatus(inttostr(query.RecordCount) + ' Itens');
 
    SCREEN.CURSOR := crDefault;
+//  fmMain.Conexao.CommandTimeout := 30;
 end;
 
 procedure TfmTabela.FormKeyDown(Sender: TObject; var Key: Word;

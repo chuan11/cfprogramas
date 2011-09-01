@@ -28,7 +28,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure calcularVenda(is_ref, uo:String; inicio, fim: Tdate);
     procedure ajustaDataInicio(data:Tdate);
-
+    
   private
     { Private declarations }
   public

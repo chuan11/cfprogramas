@@ -122,9 +122,9 @@ begin
       pnIncluiItens.Visible := true;
    end
    else
-      funcoes.msgTela('', 'Os itens da lista já foram incluídos', MB_ICONERROR + MB_OK);
+      funcoes.msgTela('', 'Os itens da lista já foram incluídos' +#13+
+                          'Se quiser editar a lista, vc pode abrir a lista e editá-la.', MB_ICONERROR + MB_OK);
 end;
-
 
 
 procedure TForm2.CarregaDadosdaslistas(sender: tobject);

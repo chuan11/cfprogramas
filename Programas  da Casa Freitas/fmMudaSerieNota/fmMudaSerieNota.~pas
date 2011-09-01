@@ -1,0 +1,50 @@
+unit fmMudaSerieNota;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, StdCtrls, adLabelComboBox, TFlatButtonUnit;
+
+type
+  TForm3 = class(TForm)
+    cbLoja: TadLabelComboBox;
+    Panel1: TPanel;
+    adLabelComboBox1: TadLabelComboBox;
+    btOk: TFlatButton;
+    FlatButton1: TFlatButton;
+    procedure FormActivate(Sender: TObject);
+    procedure cbLojaChange(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form3: TForm3;
+
+implementation
+
+uses uMain;
+
+{$R *.dfm}
+
+procedure TForm3.FormActivate(Sender: TObject);
+begin
+   fmMain.getListaLojas(cbLoja, false, false, '');
+   cbLoja.ItemIndex := -1;
+end;
+
+procedure TForm3.cbLojaChange(Sender: TObject);
+begin
+   if (cbLoja.ItemIndex > -1 )then
+   begin
+
+
+
+   end;
+end;
+
+end.
+                                      //

@@ -1,0 +1,14 @@
+inherited fmBuscaDiversas: TfmBuscaDiversas
+  Caption = 'fmBuscaDiversas'
+  OldCreateOrder = True
+  PixelsPerInch = 96
+  TextHeight = 13
+  object edFiltro: TEdit [4]
+    Left = 344
+    Top = 21
+    Width = 121
+    Height = 21
+    TabOrder = 5
+    Text = 'edFiltro'
+  end
+end

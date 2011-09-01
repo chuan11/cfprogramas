@@ -14,6 +14,7 @@ object fmTotalSaidas: TfmTotalSaidas
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96

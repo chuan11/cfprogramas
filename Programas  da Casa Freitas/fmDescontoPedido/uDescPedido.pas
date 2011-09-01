@@ -56,6 +56,7 @@ type
     dsAvaItem: TDataSource;
     tbAvarias: TADOTable;
     FlatButton5: TFlatButton;
+    btRetiraDoCaixa: TFlatButton;
     procedure FormCreate(Sender: TObject);
     procedure tpDescontoClick(Sender: TObject);
     procedure btConsultaPedClick(Sender: TObject);
@@ -82,6 +83,7 @@ type
 
 
     function getvDescontoAvarias():Real;
+    procedure btRetiraDoCaixaClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -142,8 +144,6 @@ begin
    else
       fmDescPed.Caption := TITULO + ' - Modo Normal.';
 
-
-
    if (IS_TELA_RESTRITA = true )  then
    begin
       gbDescCusto.Visible := false;
@@ -153,7 +153,6 @@ begin
       gridParcelas.visible := false;
       gridEntrada.visible := false;
       tpdesconto.Enabled := false;
-
    end;
 
    tbParc.TableName := funcSql.getNomeTableTemp();
@@ -163,6 +162,7 @@ begin
    cmd := ' create table ' + tbEnt.TableName + ' ( N int, Valor money)';
    funcSql.GetValorWell('E',cmd,'@@error', fmMain.Conexao);
 
+   fmMain.getParametrosForm(fmDescPed);
 end;
 
 procedure TfmDescPed.carregaItensPedido();
@@ -691,6 +691,16 @@ procedure TfmDescPed.FlatButton5Click(Sender: TObject);
 begin
    if (tbAvarias.IsEmpty = false) then
       edValor.Value:= getvDescontoAvarias();
+end;
+
+procedure TfmDescPed.btRetiraDoCaixaClick(Sender: TObject);
+begin
+   if nmPed.Text<> '' then
+   begin
+      funcSQL.execSQL('update pedidoCliente set codCaixa = null '+
+                      'where numPedido= '+ nmPed.Text, fmMain.Conexao);
+      funcoes.msgTela('','Pedido '+ nmPed.Text +' retirado do caixa...', MB_OK + MB_ICONEXCLAMATION);
+   end;
 end;
 
 end.

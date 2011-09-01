@@ -59,9 +59,8 @@ begin
    ds:= uCF.getEntradasPorItem(is_ref, uo);
    if (ds.isEmpty = false) then
    begin
-      ds.last();
-      lbPrimEnt.Caption := ds.fieldByName('data').AsString;
-      lbTotEnt.Caption :=  funcSQL.somaColTable(ds, 'quant');
+      lbPrimEnt.Caption := uCF.getDataEntrada(ds, 'P');
+      lbTotEnt.Caption :=  uCF.getTotalDeEntradasProduto(ds, true);
    end
    else
    begin
@@ -73,6 +72,8 @@ begin
    datai:= strToDate('01/01/2000');
    strTotSaida := ucf.getVendaProduto(is_ref, uo, UO_CD, dataI, now);
    lbTotVenda.Caption:= floatTostrf(  strToFloat(strTotSaida), ffnumber, 18, 2);
+
+   ds.Free();
 end;
 procedure TfmTotalEntSai.FormClose(Sender: TObject;
   var Action: TCloseAction);

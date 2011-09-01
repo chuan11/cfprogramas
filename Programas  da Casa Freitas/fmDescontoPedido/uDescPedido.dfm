@@ -382,6 +382,17 @@ object fmDescPed: TfmDescPed
     TabOrder = 10
     OnClick = FlatButton5Click
   end
+  object btRetiraDoCaixa: TFlatButton
+    Left = 525
+    Top = 16
+    Width = 116
+    Height = 19
+    Caption = 'Retira pedido do caixa'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 11
+    OnClick = btRetiraDoCaixaClick
+  end
   object Query: TADOQuery
     Connection = fmMain.Conexao
     CursorType = ctStatic

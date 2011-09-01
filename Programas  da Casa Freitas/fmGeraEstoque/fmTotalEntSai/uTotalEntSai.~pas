@@ -21,6 +21,7 @@ type
     lbDados: TLabel;
 
   procedure calculaTotalEntSai(is_ref, uo, uo_cd:String);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
   private
     { Private declarations }
@@ -73,4 +74,11 @@ begin
    strTotSaida := ucf.getVendaProduto(is_ref, uo, UO_CD, dataI, now);
    lbTotVenda.Caption:= floatTostrf(  strToFloat(strTotSaida), ffnumber, 18, 2);
 end;
+procedure TfmTotalEntSai.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+    action := caFree;
+    fmTotalEntSai:= nil;
+end;
+
 end.

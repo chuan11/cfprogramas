@@ -102,6 +102,7 @@ type
     mxOneInstance1: TmxOneInstance;
     ConfiguraSeriesparacontingencia1: TMenuItem;
     RvDSConn5: TRvDataSetConnection;
+    Cadastrodeimagens1: TMenuItem;
 
 
     function isTelaRequerSenha( codTela:smallInt ):boolean;
@@ -227,6 +228,9 @@ type
     procedure mxOneInstance1InstanceExists(Sender: TObject);
     procedure ConfiguraSeriesparacontingencia1Click(Sender: TObject);
     procedure CadastrodeCEP1Click(Sender: TObject);
+    procedure IdTelnet1DataAvailable(Sender: TIdTelnet;
+      const Buffer: String);
+    procedure Cadastrodeimagens1Click(Sender: TObject);
 
 
 
@@ -242,7 +246,7 @@ type
     { Public declarations }
   end;
 CONST
-   VERSAO = '11.08.01';
+   VERSAO = '11.08.02';
    SUB_VERSAO = ' A';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
@@ -268,7 +272,7 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
      uCustoPorPedido, uCF, Math, funcDatas, uObterSaldoFiscal,
      uAjusteModPag, uGeraEstoque, uRelInventario, uSelCat, uTotalEntSai,
      uDetalhesCRUC, uPedidosFornecedor, umColetor, uResumoECF, uRRANA,
-     uInternaNota, uListaNotaWMS, fmMudaSerieNota, uCEP;
+     uInternaNota, uListaNotaWMS, fmMudaSerieNota, uCEP, uCadImagem;
 {$R *.dfm}
 
 
@@ -648,11 +652,11 @@ end;
 
 procedure TfmMain.Mapadeseparao1Click(Sender: TObject);
 begin
-  if (fmMapa = nil) then
-  begin
-     Application.CreateForm(TfmMapa, fmMapa);
-     fmMapa.Show;
-  end
+   if (fmMapa = nil) then
+   begin
+      Application.CreateForm(TfmMapa, fmMapa);
+      fmMapa.Show;
+   end;
 end;
 
 procedure TfmMain.abeladePreos2Click(Sender: TObject);
@@ -1037,12 +1041,12 @@ begin
     TIME_OUT_PROGRAMA := TIME_OUT_PROGRAMA -1;
     if (TIME_OUT_PROGRAMA < 1) then
     begin
-       for i:=0 to Application.ComponentCount-1do
+       for i:=0 to Application.ComponentCount-1 do
           if application.Components[i].InheritsFrom(Tform) = true then
             inc(nFormsAbertos);
 
        if (pos(fmMain.getUserLogado(), fmMain.GetParamBD('comum.usrSemTimeOut','') ) = 0 ) and
-          (nFormsAbertos <= 1) and
+          (nFormsAbertos < 1) and
           ( funcoes.existeParametro('-wms') = true) then
        begin
           funcoes.gravaLog('TimeOut de inatividade finalizando a aplicação.');
@@ -1107,12 +1111,10 @@ begin
    result := trim(funcoes.SohNumeros(copy(str, 01, 08)));
 end;
 
-
 function TfmMain.getDescUO(cb: TCustomComboBox): String;
 begin
    result := copy(cb.Items[cb.itemIndex], 01, 30);
 end;
-
 
 procedure TfmMain.getParametrosForm(form: Tform);
 var
@@ -1120,7 +1122,6 @@ var
 begin
 //   Carrega os hints dos campos
 //  para carregar o hint, marque a propriedade showHint como True
-
    for i:= 0 to form.ComponentCount -1 do
       if GetPropInfo(form.Components[i], 'ShowHint') <> nil then
          if ((form.Components[i] as TControl).ShowHint = true ) then
@@ -1280,7 +1281,7 @@ begin
        msgstatus('Conectando ao servidor ACBR...');
        tn.Connect(2000);
        sleep(1000);
-       funcoes.gravaLog(comando);
+       funcoes.gravaLog('Comando ACBR: '+ comando);
        tn.write( comando + CR_PONTO_LF);
        msgstatus('Solicitando ação...');
        sleep(3000);
@@ -1291,6 +1292,8 @@ begin
        gravaLog('Respostas do servidor:' + RESP_TELNET);
        gravaLog('');
        result := (pos('ERRO: ', RESP_TELNET) = 0)
+
+       
      except
      begin
         screen.Cursor := crDefault;
@@ -1689,6 +1692,21 @@ begin
       Application.CreateForm(TfmCep, fmCep);
       fmCep.show;
    end;
+end;
+
+procedure TfmMain.IdTelnet1DataAvailable(Sender: TIdTelnet;
+  const Buffer: String);
+begin
+   funcoes.gravaLog('buffer idTElnet:' + Buffer);
+end;
+
+procedure TfmMain.Cadastrodeimagens1Click(Sender: TObject);
+begin
+   if (fmCadastro = nil) then
+   begin
+      Application.CreateForm(TfmCadastro, fmCadastro);
+      fmCadastro.show;
+   end
 end;
 
 end.

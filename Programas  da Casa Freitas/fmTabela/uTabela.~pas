@@ -158,7 +158,6 @@ begin
                          funcoes.getCodPc(cbPreco02),
                          lbNivel.caption,
                          lbVlCat.caption, Query);
-
    cbTotalizaClick(Sender);
    animate.Visible:= false;
    Animate.Active:= false;

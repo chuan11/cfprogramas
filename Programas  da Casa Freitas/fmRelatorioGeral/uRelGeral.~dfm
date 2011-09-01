@@ -22,7 +22,7 @@ object fmRelGeral: TfmRelGeral
   object cbLojas: TadLabelComboBox
     Left = 3
     Top = 25
-    Width = 175
+    Width = 167
     Height = 21
     AutoDropDown = True
     BevelInner = bvNone

@@ -14,6 +14,7 @@ object fmListaFornecedores: TfmListaFornecedores
   OldCreateOrder = False
   Position = poMainFormCenter
   OnActivate = FormActivate
+  OnClose = FormClose
   DesignSize = (
     597
     317)

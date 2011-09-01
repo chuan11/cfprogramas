@@ -117,6 +117,9 @@ uses uMain, uCF, funcoes, funcsql;
 
 procedure TfmRelGeral.ajustaTelaParaAvarias;
 begin
+   dti.Date := now;
+   dtf.Date := now;
+
    fmMain.getListaLojas( cbLojas, true, false, fmMain.getCdPesLogado() );
    fmRelGeral.caption := 'Valores totais de avarias.';
    cbDetAvaForn.visible := true;
@@ -140,6 +143,8 @@ procedure TfmRelGeral.calCulaTotalAvariasPorFornecedor();
 var
    params:TStringList;
 begin
+   funcoes.gravaLog('calCulaTotalAvariasPorFornecedor()');
+
 // Lista as avarias
    uCF.calculaTotaisAvariasPorFornecedor( tbValoresAvarias, cbLojas, dti.date, dtf.date);
 
@@ -200,7 +205,9 @@ begin
           ' inner join crefe c (nolock) on z.is_ref = c.is_ref '+
           ' inner join zcf_tbuo l (nolock)  on z.is_uo = l.is_uo  where ' +
           ' z.data between ' + funcoes.DateTimeToSqlDateTime(dti.Date,' 00:00:00') +' and ' + funcoes.DateTimeToSqlDateTime(dtf.Date,' 23:59:00');
+
    if (cbLojas.ItemIndex > 0) then
+
       cmd := cmd + ' and z.is_uo = ' + funcoes.getNumUO(cbLojas);
    cmd := cmd + ' order by z.is_uo, z.data';
 
