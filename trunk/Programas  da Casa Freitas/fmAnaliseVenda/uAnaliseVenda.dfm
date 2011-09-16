@@ -199,7 +199,7 @@ object fmFaturamento: TfmFaturamento
     Caption = ' Periodo '
     TabOrder = 6
     object lbAte: TLabel
-      Left = 112
+      Left = 108
       Top = 22
       Width = 15
       Height = 13

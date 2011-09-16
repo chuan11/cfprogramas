@@ -124,10 +124,13 @@ end;
 
 procedure TfmRemRegTEF.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-   edBusca.Text:='';
-   funcoes.salvaCampos(fmRemRegTEF);
-   action := caFree;
-   fmRemRegTEF := nil;
+   if (fmRemRegTEF <> nil) then
+   begin
+      edBusca.Text:='';
+      funcoes.salvaCampos(fmRemRegTEF);
+      action := caFree;
+      fmRemRegTEF := nil;
+   end;
 end;
 
 procedure TfmRemRegTEF.gridTitleClick(Column: TColumn);
@@ -303,7 +306,7 @@ begin
    valor := '000';
 
    tb.Edit();
-   tb.FieldByName('ds_mve').AsString := descMod;
+   tb.FieldByName('ds_mveReal').AsString := descMod;
    tb.FieldByName('numParcelas').AsString := nParcelas;
    tb.FieldByName('valor').AsString := valor;
    tb.Post();

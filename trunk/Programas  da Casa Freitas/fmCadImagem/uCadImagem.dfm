@@ -44,13 +44,6 @@ object fmCadastro: TfmCadastro
       Stretch = True
       OnDblClick = Image1DblClick
     end
-    object Bevel1: TBevel
-      Left = 1
-      Top = 1
-      Width = 361
-      Height = 271
-      Align = alClient
-    end
   end
   object edCodigo: TadLabelEdit
     Left = 8

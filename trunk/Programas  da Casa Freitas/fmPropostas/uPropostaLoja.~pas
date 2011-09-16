@@ -188,7 +188,7 @@ end;
 procedure TfmProposta.TableAfterPost(DataSet: TDataSet);
 begin
    sbar.Panels[0].Text := 'Quant de itens : ' + inttoStr(table.RecordCount);
-   sbar.Panels[1].Text := funcSQl.SomaColTable(Table,'Total');
+   sbar.Panels[1].Text := funcSQl.SomaColTable(Table,'Total', true);
 end;
 
 procedure TfmProposta.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

@@ -44,9 +44,7 @@ implementation
 
 {$R *.dfm}
 uses funcSQL, funcoes, uMain, uCF;
-
 { TForm2 }
-
 procedure TfmInternaNota.listaItensInternacao(sr_docf, nr_docf, nr_cfg: String);
 var
    cmd:String;

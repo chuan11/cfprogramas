@@ -245,7 +245,7 @@ var
 begin
    MostraMSG('Definindo as lojas que irão ser calculadas');
 
-   if (cbLojas.ItemIndex <> 0 )then
+   if ( fmMain.getCodPreco(cbLojas) <> '999' ) then
    begin
       tb.Append;
       tb.FieldByName('is_uo').AsString :=  funcoes.getCodUO(cbLojas);

@@ -29,7 +29,6 @@ type
     lbTotalArquivos: TLabel;
     Panel2: TPanel;
     Image1: TImage;
-    Bevel1: TBevel;
     procedure btConsultarClick(Sender: TObject);
     procedure Image1DblClick(Sender: TObject);
     procedure edCodigoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -77,7 +76,9 @@ begin
     Bmp := TBitmap.Create;
     try
       Bmp.Assign(JPeg);
-      nArquivo := ChangeFileExt(Arquivo, '.bmp');
+//      nArquivo := SysUtils.ChangeFileExt(Arquivo, '_.bmp');
+      nArquivo := funcoes.getDirLogs() + 'arq.bmp';
+
       Bmp.SaveToFile(nArquivo);
     finally
       Bmp.Free;
@@ -116,8 +117,10 @@ var
   cmd,is_ref:String;
   ds:TdataSet;
 begin
+   image1.Picture.Assign(nil);
+   image1.Refresh();
+
    screen.Cursor := crHourglass;
-   image1.Picture := nil;
    is_ref := getCodProduto(edCodigo.Text);
    if (is_ref <> '') then
    begin
@@ -125,21 +128,21 @@ begin
             ' where c.is_ref = ' + is_ref;
      ds:= funcSQl.getDataSetQ(cmd, fmMain.Conexao);
 
-//     funcsql.execSQL(cmd, fmMain.Conexao);
      edCodigo.Text := ds.fieldByname('cd_ref').asString;
      lbIs_ref.Caption := ds.fieldByname('is_ref').asString;
      edDescricao.Text := ds.fieldByname('ds_ref').asString;
+
      Image1.Picture.Assign( ds.fieldByname('imagem') );
-     ds.Destroy();
    end
    else
    begin
       edDescricao.Text := '';
-      Image1.Picture := nil;
+      lbIs_ref.Caption := '';
    end;
-   edCodigo.SetFocus();
+   if (edCodigo.Visible = true) then
+      edCodigo.SetFocus();
    screen.Cursor := crDefault;
-{}
+   ds.Free();
 end;
 
 procedure TfmCadastro.carregaImagem(nArquivo:String);
@@ -148,11 +151,14 @@ var
 begin
    if (nArquivo <> '') then
    begin
-     if ( pos('.jpg',nArquivo)  > 0) then
+     funcoes.gravaLog('carregando arquivo:' + nArquivo);
+     if ( pos('.JPG', nArquivo)  > 0) then
      begin
+        fmMain.msgStatus('Imagem carregada é jpg, convertendo...');
         nArquivo :=  ConverterJPegParaBmp(nArquivo);
         delTemp := true;
-     end;
+     end
+     else
 
      if ( tamArquivo(nArquivo) > 25000000 ) then
         ajustaDimensaoBitmap(nArquivo);
@@ -163,6 +169,7 @@ begin
            deleteFile(nArquivo);
      end;
   end;
+  fmMain.msgStatus('');  
 end;
 
 procedure TfmCadastro.Image1DblClick(Sender:TObject);
@@ -189,7 +196,8 @@ begin
    edCodigo.Text := '';
    edDescricao.Text := '';
    lbIs_ref.Caption := '';
-   edCodigo.SetFocus();
+   if (edCodigo.Visible = true) then
+      edCodigo.SetFocus();
 end;
 
 procedure TfmCadastro.incluirImgagem(mostraMsg: Boolean);
@@ -225,12 +233,6 @@ begin
    end;
    screen.Cursor := crdefault;
 end;
-
-procedure TfmCadastro.btIncluirClick(Sender:TObject);
-begin
-   incluirImgagem(true);
-end;
-
 
 procedure TfmCadastro.cadastraProduto(is_ref: String);
 var
@@ -295,11 +297,14 @@ begin
    for i:=0 to lbArquivos.Items.Count -1 do
       if (pos('.JPG', UPPERCASE(lbArquivos.Items.Strings[i]) ) > 0) or (pos('.BMP', UPPERCASE(lbArquivos.Items.Strings[i]) ) > 0) then
       begin
+          fmMain.msgStatus('Processando ' + intToStr(i+1) +' de '+ intToStr( lbArquivos.Items.Count) );
           nArquivos := nArquivos+1;
           nArquivo := ExtractFileName(lbArquivos.Items.Strings[i]);
           delete(nArquivo, length(nArquivo)-3,04);
           edCodigo.Text := funcoes.SohNumeros(nArquivo);
+
           btConsultarClick(nil);
+
           if (Image1.Picture.Width <= 1 ) and (edDescricao.Text <> '') then
           begin
              MsgTela('',edCodigo.Text + ' ' + edDescricao.Text + #13+ 'Imagem não cadastrada, incluir', MB_OK + MB_ICONWARNING );
@@ -390,6 +395,11 @@ begin
          (pos('.BMP', UPPERCASE(lbArquivos.Items.Strings[i]) ) > 0) then
          inc(j);
    lbTotalArquivos.Caption := 'Arq bmp/jpg: ' + intToStr(j);
+end;
+
+procedure TfmCadastro.btIncluirClick(Sender:TObject);
+begin
+   incluirImgagem(true);
 end;
 
 end.

@@ -203,6 +203,22 @@ object fmetqClientes: TfmetqClientes
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000}
     end
+    object Edit1: TEdit
+      Left = 136
+      Top = 8
+      Width = 65
+      Height = 21
+      TabOrder = 3
+      Text = '0'
+    end
+    object Edit2: TEdit
+      Left = 216
+      Top = 8
+      Width = 65
+      Height = 21
+      TabOrder = 4
+      Text = '0'
+    end
   end
   object pnDados: TPanel
     Left = 1

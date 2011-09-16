@@ -1,6 +1,6 @@
 object fmCadastro: TfmCadastro
-  Left = 256
-  Top = 279
+  Left = 196
+  Top = 189
   Width = 789
   Height = 581
   ActiveControl = CheckBox1
@@ -44,13 +44,6 @@ object fmCadastro: TfmCadastro
       Stretch = True
       OnDblClick = Image1DblClick
     end
-    object Bevel1: TBevel
-      Left = 1
-      Top = 1
-      Width = 361
-      Height = 271
-      Align = alClient
-    end
   end
   object edCodigo: TadLabelEdit
     Left = 8
@@ -69,7 +62,7 @@ object fmCadastro: TfmCadastro
   end
   object edDescricao: TadLabelEdit
     Left = 9
-    Top = 170
+    Top = 183
     Width = 377
     Height = 19
     LabelDefs.Width = 60
@@ -226,20 +219,20 @@ object fmCadastro: TfmCadastro
     Left = 192
     Top = 0
     Width = 195
-    Height = 160
+    Height = 180
     Caption = 'Panel1'
     TabOrder = 4
     Visible = False
-    object Label1: TLabel
+    object lbTotalArquivos: TLabel
       Left = 8
-      Top = 140
-      Width = 32
+      Top = 161
+      Width = 73
       Height = 13
-      Caption = 'Label1'
+      Caption = 'lbTotalArquivos'
     end
     object lbDiretorios: TDirectoryListBox
       Left = 2
-      Top = 24
+      Top = 45
       Width = 191
       Height = 107
       Ctl3D = False
@@ -250,7 +243,7 @@ object fmCadastro: TfmCadastro
     end
     object cbUnidades: TDriveComboBox
       Left = 3
-      Top = 2
+      Top = 23
       Width = 190
       Height = 19
       Ctl3D = False
@@ -260,7 +253,7 @@ object fmCadastro: TfmCadastro
     end
     object FlatButton1: TFlatButton
       Left = 163
-      Top = 133
+      Top = 154
       Width = 29
       Height = 23
       Hint = 'Excluir'
@@ -289,7 +282,7 @@ object fmCadastro: TfmCadastro
     end
     object FlatButton2: TFlatButton
       Left = 129
-      Top = 133
+      Top = 154
       Width = 29
       Height = 23
       Hint = 'Excluir'

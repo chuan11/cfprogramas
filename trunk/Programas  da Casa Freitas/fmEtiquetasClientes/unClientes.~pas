@@ -64,6 +64,8 @@ type
     PopupMenu1: TPopupMenu;
     Exportarlista1: TMenuItem;
     rgTpPesqCliente: TRadioGroup;
+    Edit1: TEdit;
+    Edit2: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure rgTpPesquisaClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -92,6 +94,8 @@ type
     procedure gridClientesTitleClick(Column: TColumn);
     procedure listarClientes(Sender:Tobject; str:String );
     procedure Exportarlista1Click(Sender: TObject);
+
+    procedure imprimebobina();
   private
     { Private declarations }
   public
@@ -117,7 +121,6 @@ end;
 procedure TfmetqClientes.FormCreate(Sender: TObject);
 begin
    pnPesquisaAvulsa.Top :=1;
-//   cbLojas.Items := funcsql.GetNomeLojas(fmMain.Conexao , false,false,'','');
 
    cbLojaAniversarios.Items := cbLojas.Items;
    fmMain.getParametrosForm(fmetqClientes);
@@ -174,7 +177,7 @@ procedure TfmetqClientes.criarTabela(Sender: Tobject);
 var
    cmd:String;
 begin
-    cmd := 'truncate table zcf_etiquetas';
+//    cmd := 'truncate table zcf_etiquetas';
     funcsql.execSQL(cmd, fmMain.Conexao);
 
     tbEtq.Open;
@@ -193,7 +196,6 @@ end;
 procedure TfmetqClientes.FormActivate(Sender: TObject);
 begin
    criarTabela(nil);
-
 end;
 
 procedure TfmetqClientes.conexaoWWillExecute(Connection: TADOConnection;   var CommandText: WideString; var CursorType: TCursorType;  var LockType: TADOLockType; var CommandType: TCommandType;    var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;  const Command: _Command; const Recordset: _Recordset);
@@ -273,7 +275,7 @@ var
 
  regInicial, regFinal:integer;
 begin
-   verificaCEPinvalido(nil);
+//   verificaCEPinvalido(nil);
 
 // COLOCAR CAMPOS EM BRANCO PARA POSICIONAR  o inicio da impressao
    lin := Floor(edLinha.Value);
@@ -289,7 +291,10 @@ begin
        tbEtq.Post
    end;
 
-   fmMain.impressaoRave(tbEtq,'rpEtqCliente', nil);
+//   fmMain.impressaoRave(tbEtq,'rpEtqCliente', nil);
+
+  imprimebobina();
+
 end;
 
 procedure TfmetqClientes.tbEtqAfterPost(DataSet: TDataSet);
@@ -351,7 +356,7 @@ begin
    cmd  :=   ' select  dspes.cd_pes ' +
              ' from dspes with(NoLock) ' +
              ' inner join ddocv (nolock) on dspes.cd_pes = ddocv.cd_pes ' +
-             ' where ddocv.is_filial = ' + funcsql.getCodUo(cbLojas) +
+             ' where ddocv.is_filial = ' + funcoes.getCodUo(cbLojas) +
              ' and  ddocv.dt_venda between '+  funcoes.DateTimeToSqlDateTime(datai.Date,'') + ' and ' + funcoes.DateTimeToSqlDateTime(dataf.Date,'') +
              ' and ddocv.st_venda = '''' group by dspes.cd_pes  having sum(ddocv.vl_venda) >= ' + floatToStr( edVlVenda.value);
    listarClientes(nil, cmd  );
@@ -438,6 +443,40 @@ end;
 procedure TfmetqClientes.Exportarlista1Click(Sender: TObject);
 begin
   funcSQL.exportaQuery(qr, false, '' );
+end;
+
+procedure TfmetqClientes.imprimebobina;
+var
+   arq, cmd:String;
+   i:integer;
+begin
+   i:=0;
+   tbEtq.First();
+   arq:= funcoes.getArqImpPorta();
+   tbEtq.First();
+
+   while (tbEtq.Eof = false) and (i<  strToInt(Edit1.text)) do
+   begin
+      deleteFile(arq);
+      funcoes.GravaLinhaEmUmArquivo(arq, 'N');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'Q200,24');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'q800' );
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A700,170,2,3,1,1,N,"'+ tbEtq.fieldByName('nome').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A700,150,2,3,1,1,N,"'+ tbEtq.fieldByName('endereco').asString +' '+ tbEtq.fieldByName('numero').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A700,130,2,3,1,1,N,"'+ tbEtq.fieldByName('bairro').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A700,110,2,3,1,1,N,"'+ tbEtq.fieldByName('cidade').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A700,090,2,3,1,1,N," CEP: ' + tbEtq.fieldByName('cep').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A750,220,3,3,1,1,N,"'+ tbEtq.fieldByName('seq').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'P1');
+
+      gravaLog( 'Print /d:'+ 'com2'+' '+arq );
+
+      Winexec( pchar('Print /d:'+ 'com2'+' '+arq ), sw_normal);
+
+      tbEtq.Next();
+      sleep(1200);
+      inc(i);
+   end;
 end;
 
 end.

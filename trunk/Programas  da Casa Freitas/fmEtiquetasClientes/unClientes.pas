@@ -64,6 +64,8 @@ type
     PopupMenu1: TPopupMenu;
     Exportarlista1: TMenuItem;
     rgTpPesqCliente: TRadioGroup;
+    Edit1: TEdit;
+    Edit2: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure rgTpPesquisaClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -92,6 +94,8 @@ type
     procedure gridClientesTitleClick(Column: TColumn);
     procedure listarClientes(Sender:Tobject; str:String );
     procedure Exportarlista1Click(Sender: TObject);
+
+    procedure imprimebobina();
   private
     { Private declarations }
   public
@@ -117,7 +121,6 @@ end;
 procedure TfmetqClientes.FormCreate(Sender: TObject);
 begin
    pnPesquisaAvulsa.Top :=1;
-//   cbLojas.Items := funcsql.GetNomeLojas(fmMain.Conexao , false,false,'','');
 
    cbLojaAniversarios.Items := cbLojas.Items;
    fmMain.getParametrosForm(fmetqClientes);
@@ -175,7 +178,7 @@ var
    cmd:String;
 begin
     cmd := 'truncate table zcf_etiquetas';
-    funcsql.execSQL(cmd, fmMain.Conexao);
+//    funcsql.execSQL(cmd, fmMain.Conexao);
 
     tbEtq.Open;
     gridClientes.DataSource := dsClientes;
@@ -193,7 +196,6 @@ end;
 procedure TfmetqClientes.FormActivate(Sender: TObject);
 begin
    criarTabela(nil);
-
 end;
 
 procedure TfmetqClientes.conexaoWWillExecute(Connection: TADOConnection;   var CommandText: WideString; var CursorType: TCursorType;  var LockType: TADOLockType; var CommandType: TCommandType;    var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;  const Command: _Command; const Recordset: _Recordset);
@@ -226,7 +228,7 @@ begin
           ' from dspes with(NoLock)'+
           ' inner join Tbai with(NoLock) on dspes.cd_bai = tbai.cd_bai'+
           ' inner join tcid with(NoLock) on dspes.CD_CID = tcid.cd_cid and tcid.cd_cid = tbai.cd_cid'+
-          ' where cd_pes in ('+str+') order by dspes.nr_cep ';
+          ' where cd_pes in ('+str+') order by dspes.nr_cep DESC ';
    qr.Connection := fmMain.Conexao;
    funcsql.AbrirQuery(qr,fmMain.Conexao, cmd);
    gRidResult.Columns[0].Visible := false;
@@ -262,8 +264,6 @@ begin
                        trim(qr.FieldByName('cidade').asString),
                        trim(qr.FieldByName('cep').asString)
     ] );
-    gRidResult.SetFocus();
-
 end;
 
 procedure TfmetqClientes.FlatButton6Click(Sender: TObject);
@@ -273,7 +273,7 @@ var
 
  regInicial, regFinal:integer;
 begin
-   verificaCEPinvalido(nil);
+//   verificaCEPinvalido(nil);
 
 // COLOCAR CAMPOS EM BRANCO PARA POSICIONAR  o inicio da impressao
    lin := Floor(edLinha.Value);
@@ -289,7 +289,10 @@ begin
        tbEtq.Post
    end;
 
-   fmMain.impressaoRave(tbEtq,'rpEtqCliente', nil);
+//   fmMain.impressaoRave(tbEtq,'rpEtqCliente', nil);
+
+  imprimebobina();
+
 end;
 
 procedure TfmetqClientes.tbEtqAfterPost(DataSet: TDataSet);
@@ -323,8 +326,12 @@ end;
 
 procedure TfmetqClientes.btRmClienteClick(Sender: TObject);
 begin
+   gRidResult.Visible:=false;
+   gridClientes.Visible := false;
    while tbEtq.IsEmpty = false do
       btRmAllClienteClick(nil);
+   gRidResult.Visible:=TRUE;
+   gridClientes.Visible := true;
 end;
 
 procedure TfmetqClientes.btRmAllClienteClick(Sender: TObject);
@@ -335,12 +342,16 @@ end;
 
 procedure TfmetqClientes.bdAddAllClick(Sender: TObject);
 begin
+    gRidResult.Visible:=false;
+    gridClientes.Visible := false;
     qr.First;
     while qr.Eof = false do
     begin
        btAddClienteClick(Sender);
        qr.Next
     end;
+    gRidResult.Visible:=true;
+    gridClientes.Visible := true;
 end;
 
 
@@ -439,5 +450,83 @@ procedure TfmetqClientes.Exportarlista1Click(Sender: TObject);
 begin
   funcSQL.exportaQuery(qr, false, '' );
 end;
+{
+procedure TfmetqClientes.imprimebobina;
+var
+   arq, cmd:String;
+   i:integer;
+begin
+   i:=0;
+   tbEtq.First();
+   arq:= funcoes.getArqImpPorta();
+   tbEtq.First();
+
+   while (tbEtq.Eof = false) and (i<  strToInt(Edit1.text)) do
+   begin
+      deleteFile(arq);
+      funcoes.GravaLinhaEmUmArquivo(arq, 'N');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'Q200,24');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'q800' );
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A700,170,2,3,1,1,N,"'+ tbEtq.fieldByName('nome').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A700,150,2,3,1,1,N,"'+ tbEtq.fieldByName('endereco').asString +' '+ tbEtq.fieldByName('numero').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A700,130,2,3,1,1,N,"'+ tbEtq.fieldByName('bairro').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A700,110,2,3,1,1,N,"'+ tbEtq.fieldByName('cidade').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A700,090,2,3,1,1,N," CEP: ' + tbEtq.fieldByName('cep').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'A750,220,3,3,1,1,N,"'+ tbEtq.fieldByName('seq').asString +'"');
+      funcoes.GravaLinhaEmUmArquivo(arq, 'P1');
+
+      gravaLog( 'Print /d:'+ 'com2'+' '+arq );
+
+      Winexec( pchar('Print /d:'+ 'com2'+' '+arq ), sw_normal);
+
+      tbEtq.Next();
+      sleep(1200);
+      inc(i);
+   end;
+end;
+}
+
+procedure TfmetqClientes.imprimeBobina;
+var
+  Itens:TstringList;
+  i:integer;
+  cmd,arq:string;
+  x01,x02,y01,y02:string;
+begin
+   arq:=   funcoes.getArqImpPorta();
+   DeleteFile(arq);
+   itens := Tstringlist.Create();
+   i:=0;
+   x01 := '0020';
+   x02 := '0005';
+   y01 := '0085';
+   y02 := '0050';
+
+
+   for i:=0 to strToInt(Edit1.Text)-1 do
+   begin
+      funcoes.GravaLinhaEmUmArquivo(arq,'L');
+      funcoes.GravaLinhaEmUmArquivo(arq,'H15');
+//                                           +----- Orientacao
+//                                           |+-----Fonte
+//                                           ||+-----multiplicador horzontal
+//                                           |||+----- mult verticcal
+//                                           |||| +---subtipo da fonte
+//                                           ||||_|__
+         funcoes.GravaLinhaEmUmArquivo(arq, '1111000'+ '0085' + x01 + tbEtq.fieldByName('nome').asString  ); // descricao
+         funcoes.GravaLinhaEmUmArquivo(arq, '1111000'+ '0070' + x01 + tbEtq.fieldByName('endereco').asString + '  '+
+                                                                      tbEtq.fieldByName('numero').asString); // descricao
+         funcoes.GravaLinhaEmUmArquivo(arq, '1111000'+ '0055' + x01 + tbEtq.fieldByName('compEndereco').asString );
+         funcoes.GravaLinhaEmUmArquivo(arq, '1111000'+ '0040' + x01 + tbEtq.fieldByName('bairro').asString );
+         funcoes.GravaLinhaEmUmArquivo(arq, '1111000'+ '0025' + x01 + tbEtq.fieldByName('cidade').asString );
+         funcoes.GravaLinhaEmUmArquivo(arq, '1111000'+ '0010' + x01 + 'CEP: '+ tbEtq.fieldByName('CEP').asString );
+
+         funcoes.GravaLinhaEmUmArquivo(arq, '2100000'+ '0080' + '0370' + tbEtq.fieldByName('seq').asString  ); // codigo da loja no cantinho
+      funcoes.GravaLinhaEmUmArquivo(arq, 'E');
+      tbEtq.Next();
+   end;
+   funcoes.imprimeArquivoPorta(arq, '\\125.0.2.11\g');
+end;
+
 
 end.

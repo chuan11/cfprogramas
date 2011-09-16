@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, adLabelComboBox, DB, ADODB,funcoes,FuncSQL, Grids,
   DBGrids, SoftDBGrid, adLabelEdit, adLabelNumericEdit, TFlatButtonUnit,
-  TFlatCheckBoxUnit, fCtrls, uGetNotas;
+  TFlatCheckBoxUnit, fCtrls, uGetNotas, adLabelSpinEdit;
 
 type
   TfmPrecoCustos = class(TForm)
@@ -29,8 +29,10 @@ type
     Label2: TLabel;
     edNome: TadLabelEdit;
     cbLancaEstoque: TCheckBox;
-    Button2: TButton;
-    btRecalculaCMUItensNota: TButton;
+    GroupBox1: TGroupBox;
+    FlatButton1: TFlatButton;
+    edAjustaCusto: TadLabelSpinEdit;
+    FlatButton2: TFlatButton;
     procedure edCodigoKeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);
     procedure btAjustaPrecoClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -39,8 +41,6 @@ type
     procedure cbCustoMedioUnicoClick(Sender: TObject);
     procedure ajustaPrecoCusto(Sender:Tobject);
     procedure Button1Click(Sender: TObject);
-    procedure ConnectionWillExecute(Connection: TADOConnection;      var CommandText: WideString; var CursorType: TCursorType;      var LockType: TADOLockType; var CommandType: TCommandType;      var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;      const Command: _Command; const Recordset: _Recordset);
-    procedure ConnectionExecuteComplete(Connection: TADOConnection;      RecordsAffected: Integer; const Error: Error;      var EventStatus: TEventStatus; const Command: _Command;      const Recordset: _Recordset);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure AcertaQuantidades(Sender:Tobject);
     procedure Label1DblClick(Sender: TObject);
@@ -49,10 +49,10 @@ type
     procedure Label2Click(Sender: TObject);
     procedure custosPorNota(is_nota:String);
     procedure efetuaAjustDeNota(TipoAjuste:String);
-    procedure Button2Click(Sender: TObject);
     procedure recalcularCmuNota(isNota:String);
     procedure btRecalculaCMUItensNotaClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FlatButton1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -64,9 +64,13 @@ var
   fmPrecoCustos: TfmPrecoCustos;
 
 implementation
+
 uses uMain, uCF;
 
 {$R *.dfm}
+
+var
+  UO_CD, CD_PES_EMP:String;
 
 function TfmPrecoCustos.AjustaPreco(valor, percentual: string): string;
 var
@@ -97,17 +101,17 @@ begin
          edNome.text := funcSql.GetValorWell('O','Select CD_REF +''  ''+ds_ref AS DS_REF from crefe where cd_ref = ' + QuotedStr(edCodigo.text), 'ds_ref', fmMain.Conexao );
          query.SQL.Clear;
          query.sql.add( ' select is_uo, ds_uo as Loja, ' +
-                        ' dbo.Z_CF_funObterPrecoProduto_CF(1, ' +cod+'  , is_uo , 10033585) VlCusto, ' +
-                        ' dbo.Z_CF_funObterPrecoProduto_CF(5, ' +cod+'  , is_uo , 10033585) VlCMU, ' +
-                        ' dbo.Z_CF_funObterPrecoProduto_CF(103, ' +cod+'  , is_uo , 10033585) VlAtacado, ' +
-                        ' dbo.Z_CF_funObterPrecoProduto_CF(103, ' +cod+'  , is_uo , 10033585) * .07  as [70% de VlAtacado], ' +
+                        ' dbo.Z_CF_funObterPrecoProduto_CF(001, ' +cod+', is_uo, ' +CD_PES_EMP+ ') VlCusto, ' +
+                        ' dbo.Z_CF_funObterPrecoProduto_CF(005, ' +cod+', is_uo, ' +CD_PES_EMP+ ') VlCMU, ' +
+                        ' dbo.Z_CF_funObterPrecoProduto_CF(103, ' +cod+', is_uo, ' +CD_PES_EMP+ ') VlAtacado, ' +
+                        ' dbo.Z_CF_funObterPrecoProduto_CF(103, ' +cod+', is_uo, ' +CD_PES_EMP+ ') * .70  as [70% de VlAtacado], ' +
                         ' dbo.Z_CF_EstoqueNaLoja ( ' +cod+'   , is_uo, 1 ) as Estoque ' +
                         ' from tbuo with(Nolock) where tbuo.tp_estoque in (1,2) ');
 
                         if cbLoja.itemIndex > 0  then
-                           query.sql.add( ' and is_uo in( 10033674, ' +  funcoes.getCodUO(cbLoja)  +')' )
+                           query.sql.add( ' and is_uo in( ' +UO_CD+ ', ' +  funcoes.getCodUO(cbLoja)  +')' )
                         else
-                           query.sql.add( ' and is_uo not in ( 10036710, 10042256, 10034573 ) ');
+                           query.sql.add( ' and is_uo not in (10036710, 10042256, 10034573 ) ');
 
 
          query.sql.add( ' order by tp_estoque, is_uo ');
@@ -248,22 +252,13 @@ begin
 end;
 
 
-procedure TfmPrecoCustos.ConnectionWillExecute(Connection: TADOConnection;  var CommandText: WideString; var CursorType: TCursorType;  var LockType: TADOLockType; var CommandType: TCommandType;  var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;  const Command: _Command; const Recordset: _Recordset);
-begin
-   screen.Cursor := crHourGlass;
-   funcoes.GravaLinhaEmUmArquivo(funcoes.TempDir() + '_Log_'+ application.Title+'.txt', CommandText + #13)
-end;
-
-procedure TfmPrecoCustos.ConnectionExecuteComplete(Connection: TADOConnection;  RecordsAffected: Integer; const Error: Error;  var EventStatus: TEventStatus; const Command: _Command;  const Recordset: _Recordset);
-begin
-   screen.cursor := crDefault;
-end;
-
 procedure TfmPrecoCustos.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+   mmResult.Lines.Clear();
+   memoItens.lines.clear();
    edCodigo.Text := '';
    edPcNovo.Text := '';
-   fmMain.fecharForm(fmPrecoCustos,Action);
+   fmMain.fecharForm(fmPrecoCustos, Action);
    action := CaFree;
    fmPrecoCustos := nil;
 end;
@@ -397,7 +392,8 @@ var
   ds:TDataSEt;
   cmd: String;
 begin
-   cmd := ' select p.cd_ref, dbo.z_cf_funObterprecoproduto_CF( 6, p.is_ref, 0 ,0) as valor ' + 
+   cmd := '/* pegando os custo fiscal dos itens de uma nota */ ' +#13+
+          '  select p.cd_ref, dbo.z_cf_funObterPrecoProduto_CF(1, p.is_ref, dmovi.is_estoque, 0) as custo ' +
           ' from dmovi i (nolock) inner join crefe p (nolock) on i.is_ref = p.is_ref  where i.is_nota = '  + is_nota;
    ds := funcSQL.getDataSetQ( cmd, fmMain.Conexao);
 
@@ -406,11 +402,18 @@ begin
    begin
       edCodigo.Text := ds.fieldByName('cd_ref').AsString;
       btConsultaProdutoClick(nil);
-      edPcNovo.Value := ds.fieldByName('valor').AsFloat;
+
+      cmd := funcoes.floatToDinheiro(ds.FieldByName('custo').AsFloat);
+      if (edAjustaCusto.Value <> 0) then
+         edPcNovo.Value :=  ds.FieldByName('custo').AsFloat + ds.FieldByName('custo').AsFloat * (edAjustaCusto.Value / 100)
+      else
+         edPcNovo.Value :=  ds.FieldByName('custo').AsFloat;
+
+      mmResult.Lines.Add(ds.fieldByName('cd_ref').AsString +' valor antigo: ' + cmd + ' Valor novo: ' + funcoes.floatToDinheiro(edPcNovo.Value) );
       btAjustaPrecoClick(nil);
-      mmResult.Lines.Add('cod: ' +  ds.fieldByName('cd_ref').AsString +' valor: ' + ds.fieldByName('valor').AsString );
       ds.Next();
    end;
+   ds.free();
 end;
 
 procedure TfmPrecoCustos.recalcularCmuNota(isNota: String);
@@ -459,17 +462,18 @@ begin
    efetuaAjustDeNota('2');
 end;
 
-procedure TfmPrecoCustos.Button2Click(Sender: TObject);
-begin
-   efetuaAjustDeNota('1');
-end;
-
-
-
 procedure TfmPrecoCustos.FormCreate(Sender: TObject);
 begin
    fmMain.getParametrosForm(fmPrecoCustos);
-   cbLoja.Items :=  funcsQL.getNomeLojas(  fmMain.Conexao, true , false,'','' );
+   fmMain.getListaLojas(cbLoja, true , false, '');
+
+   UO_CD := fmMain.getParamBD('uoCd','');
+   CD_PES_EMP :=  fmMain.getParamBD('comum.codEmpresa','');
+end;
+
+procedure TfmPrecoCustos.FlatButton1Click(Sender: TObject);
+begin
+   efetuaAjustDeNota('1');
 end;
 
 end.
