@@ -57,6 +57,9 @@ type
     procedure removeRegistroTEF();
     procedure edBuscaKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+
+    procedure carregaCampos(form:TForm);
+
   private
     { Private declarations }
   public
@@ -72,11 +75,17 @@ implementation
 {$R *.dfm}
 uses uMain, funcoes, funcSQL, uCF, uAlteraModalidadePagto;
 
-procedure TfmRemRegTEF.FormCreate(Sender: TObject);
+
+procedure TfmRemRegTEF.carregaCampos(form: TForm);
 begin
    dt.Date := now;
-   funcoes.carregaCampos(fmRemRegTEF);
+   funcoes.carregaCampos(form);
    fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
+end;
+
+procedure TfmRemRegTEF.FormCreate(Sender: TObject);
+begin //
+   carregaCampos(fmRemRegTEF);
 end;
 
 procedure TfmRemRegTEF.ajustaColunas;
@@ -124,10 +133,13 @@ end;
 
 procedure TfmRemRegTEF.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-   edBusca.Text:='';
-   funcoes.salvaCampos(fmRemRegTEF);
-   action := caFree;
-   fmRemRegTEF := nil;
+   if (fmRemRegTEF <> nil) then
+   begin
+      edBusca.Text:='';
+      funcoes.salvaCampos(fmRemRegTEF);
+      action := caFree;
+      fmRemRegTEF := nil;
+   end;
 end;
 
 procedure TfmRemRegTEF.gridTitleClick(Column: TColumn);
@@ -353,5 +365,6 @@ begin
    if (key = VK_RETURN) then
       filtrarTable();
 end;
+
 
 end.

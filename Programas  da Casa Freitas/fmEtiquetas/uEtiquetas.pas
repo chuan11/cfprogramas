@@ -160,15 +160,11 @@ begin
    edCodigo.SetFocus;
 end;
 
-
-
 procedure TfmEtiquetas.edQuantKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
    if key = vk_return then
       FlatButton4Click(Sender);
 end;
-
-
 
 procedure TfmEtiquetas.imprimeDynaPos(sender: Tobject);
 var
@@ -233,7 +229,7 @@ begin
       funcoes.GravaLinhaEmUmArquivo(arq,'P1');
       funcoes.GravaLinhaEmUmArquivo(arq,'N');
    end;
-   Winexec( pchar('cmd.exe /c print /d:'+ EdLocalimp.text+' '+arq)  , sw_normal);
+   funcoes.imprimeArquivoPorta(arq, EdLocalImp.Text);
    lbitens.Clear;
    EdCodigo.SetFocus;
    EDqUANT.SetFocus;

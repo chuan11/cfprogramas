@@ -250,8 +250,11 @@ begin
    if (IS_GRUPO_PERMITIDO_CARTAO = false) then
    begin
       dti.MinDate :=  funcSQL.getDateBd(fmMain.Conexao)-2;
-      dtf.Enabled := false;
-   end;
+      dtf.visible := false;
+      fmRelGeral.Caption := fmRelGeral.Caption + '(restrito)';
+   end
+   else
+      fmRelGeral.Caption := fmRelGeral.Caption + '(Sem restrição)';
 
    dti.Date := funcSQL.getDateBd( fmMain.Conexao);
    dtf.Date := dti.Date;

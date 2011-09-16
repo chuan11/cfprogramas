@@ -1,6 +1,6 @@
 object fmRelGeral: TfmRelGeral
-  Left = 667
-  Top = 357
+  Left = 280
+  Top = 182
   Width = 784
   Height = 337
   Caption = 'Pagamentos em cart'#227'o - pr'#233'via de caixa'

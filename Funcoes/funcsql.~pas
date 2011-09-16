@@ -275,7 +275,7 @@ begin
    aux := TstringList.create();
 
    if IncluirLinhaTodas = true then
-     aux.Add(funcoes.preencheCampo(50,' ','D',' Todas') + '999');
+     aux.Add(funcoes.preencheCampo(50,' ','D','  Todas') + '999');
 
    if IncluiNenhuma = true then
      aux.Add( funcoes.preencheCampo(50,' ','D',' Nenhuma ' ) + '-1');

@@ -43,11 +43,11 @@ object fmAjustaNota: TfmAjustaNota
       Visible = False
     end
     object Label1: TLabel
-      Left = 547
+      Left = 549
       Top = 90
-      Width = 102
+      Width = 62
       Height = 13
-      Caption = 'Emiss'#227'o/recebimento'
+      Caption = 'Data da nota'
     end
     object lbIsEstoque: TLabel
       Left = 74
@@ -131,6 +131,13 @@ object fmAjustaNota: TfmAjustaNota
       Width = 15
       Height = 13
       Caption = '-----'
+    end
+    object Label5: TLabel
+      Left = 548
+      Top = 133
+      Width = 92
+      Height = 13
+      Caption = 'Data saida/entrada'
     end
     object edSerie: TadLabelEdit
       Left = 7
@@ -351,7 +358,7 @@ object fmAjustaNota: TfmAjustaNota
       ParentFont = False
       TabOrder = 13
     end
-    object lbIsNota: TadLabelEdit
+    object edIsNota: TadLabelEdit
       Left = 281
       Top = 6
       Width = 121
@@ -522,6 +529,15 @@ object fmAjustaNota: TfmAjustaNota
         ColorLow = 14936544
         ColorHigh = 15790322
       end
+    end
+    object dtEntSai: TfsDateTimePicker
+      Left = 548
+      Top = 149
+      Width = 97
+      Height = 21
+      Date = 40301.458043576390000000
+      Time = 40301.458043576390000000
+      TabOrder = 20
     end
   end
   object FlatButton1: TFlatButton

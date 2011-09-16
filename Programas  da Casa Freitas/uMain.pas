@@ -12,8 +12,8 @@ uses
   IdTCPConnection, Sockets, ScktComp, DBCtrls,
   AppEvnts, RpRender, RpRenderPDF, RpRenderCanvas, RpRenderPrinter,
   OleCtrls, AcroPDFLib_TLB, shellAPI, adLabelCheckListBox, IdBaseComponent,
-  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox, mxExport;
-
+  IdComponent, IdTCPClient, IdTelnet, adLabelComboBox, mxExport,
+  CoolTrayIcon;
 
 type
   TfmMain = class(TForm)
@@ -103,6 +103,8 @@ type
     ConfiguraSeriesparacontingencia1: TMenuItem;
     RvDSConn5: TRvDataSetConnection;
     Cadastrodeimagens1: TMenuItem;
+    AlteraStatusdoCaixa1: TMenuItem;
+    CoolTrayIcon1: TCoolTrayIcon;
 
 
     function isTelaRequerSenha( codTela:smallInt ):boolean;
@@ -231,6 +233,8 @@ type
     procedure IdTelnet1DataAvailable(Sender: TIdTelnet;
       const Buffer: String);
     procedure Cadastrodeimagens1Click(Sender: TObject);
+    procedure AlteraStatusdoCaixa1Click(Sender: TObject);
+    procedure CoolTrayIcon1Click(Sender: TObject);
 
 
 
@@ -246,8 +250,8 @@ type
     { Public declarations }
   end;
 CONST
-   VERSAO = '11.08.02';
-   SUB_VERSAO = ' A';
+   VERSAO = '11.09.03';
+   SUB_VERSAO = ' ';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -272,7 +276,8 @@ uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upco
      uCustoPorPedido, uCF, Math, funcDatas, uObterSaldoFiscal,
      uAjusteModPag, uGeraEstoque, uRelInventario, uSelCat, uTotalEntSai,
      uDetalhesCRUC, uPedidosFornecedor, umColetor, uResumoECF, uRRANA,
-     uInternaNota, uListaNotaWMS, fmMudaSerieNota, uCEP, uCadImagem;
+     uInternaNota, uListaNotaWMS, fmMudaSerieNota, uCEP, uCadImagem,
+  uManutencaoCX;
 {$R *.dfm}
 
 
@@ -369,7 +374,9 @@ begin
       fmMain.WindowState := wsNormal;
       is_logado := true;
 // monta menu na Casa Freitas
+
       montarMenu('Matriz', 'walter', '10033674','10000592');
+      wms1.Visible := true;
 
 //   montar menu na freitas
 //       montarMenu('Matriz', 'walter', '10001008','10001593');
@@ -528,11 +535,12 @@ begin
    Screen.cursor := crHourGlass;
    funcoes.gravaLog(CommandText);
    timer1.enabled := false;
-   TIME_OUT_PROGRAMA_DEFAULT := 180;
    TIME_OUT_PROGRAMA :=  TIME_OUT_PROGRAMA_DEFAULT;
 end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
+var
+  timeOutProg:String;
 begin
    try
       if (fileexists(funcoes.getDirExe()+ 'CF.ico') = true) then
@@ -549,6 +557,19 @@ begin
       PARAMS_APLICACAO := TStringlist.Create();
       RvProject1.ProjectFile := 'C:\ProgramasDiversos\RelatoriosPCF.rav';
       funcoes.gravaLog('Conectado ao banco, String:'+ conexao.ConnectionString);
+
+      timeOutProg := fmMain.getParamBD('comum.timeoutPCF','');
+      if (timeOutProg = '') then
+         TIME_OUT_PROGRAMA_DEFAULT := 300
+      else
+         TIME_OUT_PROGRAMA_DEFAULT := strToInt(timeOutProg);
+
+      if ( funcoes.ExisteParametro('-tray') = true) then
+      begin
+         CoolTrayIcon1.MinimizeToTray := true;
+         CoolTrayIcon1.IconVisible := true;
+      end;
+
    except
       on e:Exception do
       begin
@@ -1247,7 +1268,7 @@ begin
       if (fileExists(cmd)= true) then
       begin
          msgEmail := TStringlist.Create();
-         msgEmail.add( 'Segue o XML da nota fiscal ' +  ds.FieldByName('Num').asString);
+         msgEmail.add( 'Segue cópia do DANFE da nota fiscal ' +  ds.FieldByName('Num').asString);
          msgEmail.add( 'Emitida pela loja: '+ ds.FieldByName('loja').asString );
          enviarEmail('', 'Envio de PDF, nota fiscal eletrônica', cmd,  msgEmail, 'Envio de XML');
          ds.Free();
@@ -1290,10 +1311,8 @@ begin
        sleep(6000);
 
        gravaLog('Respostas do servidor:' + RESP_TELNET);
-       gravaLog('');
+       fmMain.msgStatus('');
        result := (pos('ERRO: ', RESP_TELNET) = 0)
-
-       
      except
      begin
         screen.Cursor := crDefault;
@@ -1707,6 +1726,21 @@ begin
       Application.CreateForm(TfmCadastro, fmCadastro);
       fmCadastro.show;
    end
+end;
+
+procedure TfmMain.AlteraStatusdoCaixa1Click(Sender: TObject);
+begin
+   if ( fmManutencaoCX = nil) then
+   begin
+      Application.CreateForm(TfmManutencaoCX, fmManutencaoCX);
+      fmManutencaoCX.show();
+   end;
+end;
+
+procedure TfmMain.CoolTrayIcon1Click(Sender: TObject);
+begin
+   Application.Restore();
+   Application.BringToFront();
 end;
 
 end.

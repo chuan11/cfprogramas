@@ -42,21 +42,8 @@ object fmInternaNota: TfmInternaNota
     Caption = ' Nota '
     TabOrder = 0
     object lbfornecedor: TLabel
-      Left = 88
-      Top = 17
-      Width = 65
-      Height = 13
-      Caption = 'Fornecedor'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
-    object Label1: TLabel
-      Left = 6
-      Top = 40
+      Left = 72
+      Top = 33
       Width = 65
       Height = 13
       Caption = 'Fornecedor'
@@ -68,59 +55,41 @@ object fmInternaNota: TfmInternaNota
       ParentFont = False
     end
     object lbSerie: TLabel
-      Left = 192
+      Left = 48
       Top = 8
       Width = 32
       Height = 13
+      Alignment = taRightJustify
       Caption = 'lbSerie'
     end
     object lbNota: TLabel
-      Left = 194
-      Top = 23
-      Width = 32
+      Left = 87
+      Top = 8
+      Width = 31
       Height = 13
-      Caption = 'lbSerie'
+      Caption = 'lbNota'
     end
     object lbPessoa: TLabel
       Left = 194
       Top = 37
       Width = 32
-      Height = 15
+      Height = 13
       Caption = 'lbSerie'
     end
-    object edSerie: TadLabelEdit
-      Left = 5
-      Top = 15
-      Width = 25
-      Height = 19
-      LabelDefs.Width = 36
-      LabelDefs.Height = 13
-      LabelDefs.Caption = 'edSerie'
-      LabelPosition = adLeft
-      Colors.WhenEnterFocus.BackColor = clInfoBk
-      Ctl3D = False
-      ParentCtl3D = False
-      MaxLength = 3
-      TabOrder = 0
-      Text = '1'
-      OnKeyDown = edSerieKeyDown
+    object Label1: TLabel
+      Left = 81
+      Top = 9
+      Width = 5
+      Height = 13
+      Caption = '/'
     end
-    object edNum: TadLabelEdit
-      Left = 38
-      Top = 15
-      Width = 44
-      Height = 19
-      LabelDefs.Width = 5
-      LabelDefs.Height = 13
-      LabelDefs.Caption = '/'
-      LabelPosition = adLeft
-      Colors.WhenEnterFocus.BackColor = clInfoBk
-      Ctl3D = False
-      ParentCtl3D = False
-      MaxLength = 6
-      TabOrder = 1
-      Text = '334'
-      OnKeyDown = edNumKeyDown
+    object fsBitBtn1: TfsBitBtn
+      Left = 6
+      Top = 18
+      Width = 33
+      Height = 26
+      TabOrder = 0
+      OnClick = fsBitBtn1Click
     end
   end
   object edCodigo: TadLabelEdit

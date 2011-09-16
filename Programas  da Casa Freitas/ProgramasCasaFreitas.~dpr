@@ -80,7 +80,8 @@ uses
   uCEP in 'fmCEP\uCEP.pas' {fmCep},
   fmMudaSerieNota in 'fmMudaSerieNota\fmMudaSerieNota.pas' {fmAjustaSerie},
   uBuscaCidade in 'fmBuscaCidade\uBuscaCidade.pas' {fmBuscaDiversas},
-  uCadImagem in 'fmCadImagem\uCadImagem.pas' {fmCadastro};
+  uCadImagem in 'fmCadImagem\uCadImagem.pas' {fmCadastro},
+  uManutencaoCX in 'fmManutencaoCx\uManutencaoCX.pas' {fmManutencaoCX};
 
 {$R *.res}
 

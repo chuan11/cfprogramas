@@ -106,26 +106,72 @@ begin
 end;
 
 
+function getIsref(codigo:String):String;
+var
+  cmd :String;
+begin
+   if (length(codigo) < 7 ) then
+      cmd := ' SELECT TOP 01 IS_REF FROM CREFE with(NoLock) WHERE is_REF= ' + CODIGO
+   else
+      cmd :=
+      ' select ' +
+      ' COALESCE( (SELECT TOP 01 IS_REF FROM CREFE with(NoLock) WHERE CD_REF = @CODIGO ) ' +
+                 ',(SELECT top 01 IS_REF FROM DSCBR with(NoLock) WHERE CD_PESQ = @CODIGO /*AND TP_CDPESQ =1 */) as is_ref';
+   result := funcSQL.openSQL(cmd, 'is_ref', fmMain.conexao);
+end;
+
 function getDadosProd(uo, codigo, preco:String; mostraMsg:boolean):TdataSet;
 var
-   cmd:String;
+   is_ref, cmd:String;
    ds:TDataSet;
 begin
    ds:= TdataSet.Create(nil);
    if(codigo = '') then
-   begin
       msgTela('', 'Digite um código', MB_ICONERROR + mb_ok)
-   end
    else
    begin
-      cmd := 'exec Z_CF_GetInformacoesProduto ' + quotedStr(codigo)  +', '+ uo + ', ' + preco;
-      ds:=  funcSQl.getDataSetQ(cmd, fmMain.Conexao);
+      is_ref := getIsref(codigo);
 
-      if (ds.IsEmpty = true) and (mostraMsg = true) then
-         msgTela('','Produto não cadastrado', MB_ICONERROR + MB_OK);
+      if (is_ref = '') then
+      begin
+         if (mostraMsg = true) then
+            msgTela('','Produto não cadastrado', MB_ICONERROR + MB_OK)
+      end
+      else
+      begin
+        if ( strToint(preco) < 0) then
+           cmd := ' select top 01 crefe.cd_ref AS CODIGO,' +
+                  ' dbo.Z_CF_obterEan(IS_REF)as EAN,'+
+                  ' crefe.ds_ref AS DESCRICAO,'+
+                  ' CREFE.IS_REF,'+
+                  ' 0 AS PRECO,' +
+                  ' dbo.z_cf_estoqueNaLoja('+ is_ref +', '+uo+ ', 1) as EstoqueDisponivel,'+
+                  ' cd_pes as fornecedor,'+
+                  ' qt_emb as Embalagem ,'+
+                  ' categoria= coalesce((Select top 01 cd_vcampo from cccom with(nolock)  where cd_chave = crefe.is_ref and cd_campo = 1),0 ),'+
+                  ' crefe.ncn_sh'+
+                  ' from crefe with(NoLock) WHERE CREFE.is_ref= '+ is_ref
+         else
+            cmd :=
+            ' select top 01' +
+            ' crefe.cd_ref AS CODIGO,'+
+            ' dbo.Z_CF_obterEan(IS_REF)as EAN,'+
+            ' crefe.ds_ref AS DESCRICAO,' +
+            ' CREFE.IS_REF,'+
+            ' dbo.Z_CF_funObterPrecoProduto_CF('+preco +', '+is_ref+' ,'+uo+', 0) AS PRECO,'+
+            ' dbo.z_cf_estoqueNaLoja(' +is_ref+', '+uo +',  1 ) as EstoqueDisponivel,'+
+            ' cd_pes as fornecedor,'+
+            ' qt_emb as Embalagem,'+
+            ' crefe.ncn_sh'+
+            ' categoria = coalesce((Select top 01 cd_vcampo from cccom with(nolock)  where cd_chave = crefe.is_ref and cd_campo = 1),0 ) '+
+            ' from  crefe with(NoLock) '+
+            ' WHERE CREFE.is_ref = '+ is_ref;
+            ds:=  funcSQl.getDataSetQ(cmd, fmMain.Conexao);
+         end;
    end;
    result := ds;
 end;
+
 
 function getFileFromACBR(server, dirRemoto, dirLocal, arquivo: String): boolean;
 var
@@ -391,6 +437,7 @@ begin
    ' case '+#13+   ' when DNOTA.is_fildest = -1 then ( select nm_pes from dspes (nolock) inner join dsdoc on dspes.cd_pes = dsdoc.cd_pes where dnota.is_doc = dsdoc.is_doc )'+#13+   ' when is_fildest = is_estoque then ( select nm_pes from dspes D where d.cd_pes = dnota.cd_pes)' +   ' else ( select ds_uo from zcf_tbuo D where d.is_uo = dnota.is_fildest) end as [Emissor/Destino],'  +#13+   ' vl_nota as Valor,' +#13+   ' dnota.codigo_nfe,' +#13+
    ' zcf_tbuo.ds_uo as Loja,' +#13+
    ' dnota.dt_emis,'+#13+
+   ' dnota.dt_entsai, ' +#13+
    ' dnota.is_estoque,'+#13+
    ' dnota.st_nf,' +#13+
    ' dnota.observacao,' +#13+
@@ -764,7 +811,8 @@ begin
       fmMain.msgStatus('Exportando dados...');
       cmd := ' insert conciliacao..vendas_erp' +
              ' select codLoja, cd_mve, ds_mve, dataSessaoCaixa, seqTransacaoCaixa, valor, numParcelas'+
-             ' from ' + tb.tableName;
+             ' from ' + tb.tableName + ' where valor <> 0';
+
       screen.cursor :=crDefault;
       if (funcSQl.execSQl(cmd, fmMain.conexao) = false) then
          funcoes.msgTela('', 'Houve um erro ao executar a exportacao...', mb_iconError+ mb_ok)

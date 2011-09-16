@@ -109,6 +109,8 @@ uses printers,windows,dialogs,SysUtils,classes,MaskUtils,Registry,   unMsgTela2,
        procedure WParRegDate(folder,NomeParametro:string; valor:Tdate);
        procedure WParRegint(folder,NomeParametro:string; valor:integer);
 
+       function getArqImpPorta():String;
+
 implementation
 var
    i:integer;
@@ -142,6 +144,11 @@ end;
 function getDirLogs():String;
 begin
   result :=  ExtractFilePath(paramStr(0)) + 'logs\';
+end;
+
+function getArqImpPorta():String;
+begin
+   result := getDirLogs() + 'impressao.txt';
 end;
 
 
@@ -824,9 +831,11 @@ begin
    with Reg do
    begin
       rootkey := HKEY_CURRENT_USER;
-      Openkey('SOFTWARE\'+folder+'\',false);
-      S := readString(Key);
-      closekey;
+      if (Openkey('SOFTWARE\'+folder+'\', true) = true) then
+      begin
+         S:= readString(Key);
+         closekey;
+      end;
    end;
    if (s <> '') then
       gravaLog('Lendo registro, chave: ' + folder + ' Parametro: ' + Key + ' Resultado: ' + s)
@@ -1042,13 +1051,9 @@ begin
    end;
 end;
 
-
-
 procedure imprimeArquivoPorta(NomeArq:String; nomePorta:string);
-var
-  cmd:String;
 begin
-   Winexec( pchar('cmd.exe /c print /d:'+ nomePorta +' '+NomeArq)  , sw_Hide);
+   Winexec( pchar('cmd.exe /c print /d:'+ nomePorta +' '+NomeArq), sw_normal);
 end;
 
 function ehParametroInicial(param:String):boolean;

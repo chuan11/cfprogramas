@@ -11,22 +11,18 @@ type
   TfmInternaNota = class(TForm)
     GroupBox1: TGroupBox;
     lbfornecedor: TLabel;
-    edSerie: TadLabelEdit;
-    edNum: TadLabelEdit;
     edCodigo: TadLabelEdit;
     lbDesc: TLabel;
     edQuant: TadLabelEdit;
     adLabelEdit2: TadLabelEdit;
     adLabelEdit3: TadLabelEdit;
     lbIsRef: TLabel;
-    Label1: TLabel;
     lbSerie: TLabel;
     lbNota: TLabel;
     lbPessoa: TLabel;
+    fsBitBtn1: TfsBitBtn;
+    Label1: TLabel;
     procedure listaItensInternacao(sr_docf, nr_docf, nr_cfg:String);
-    procedure fsBitBtn1Click(Sender: TObject);
-    procedure edSerieKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure edNumKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure edCodigoKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -34,6 +30,7 @@ type
     procedure getDadosNotaAInternar();
 
     procedure getDadosItem();
+    procedure fsBitBtn1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -60,25 +57,6 @@ begin
    lbSerie.Caption := serie;
    lbNota.Caption := num;
    lbPessoa.Caption := pessoa;
-end;
-
-procedure TfmInternaNota.fsBitBtn1Click(Sender: TObject);
-begin
-  listaItensInternacao(edSerie.Text, edNum.Text, '');
-end;
-
-procedure TfmInternaNota.edSerieKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-   if (Key = VK_RETurn) then
-     edNUm.SetFocus();
-end;
-
-procedure TfmInternaNota.edNumKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-   if (Key = VK_RETurn) then
-     listaItensInternacao(edSerie.Text, edNum.Text, '');
 end;
 
 procedure TfmInternaNota.FormClose(Sender: TObject;
@@ -157,6 +135,11 @@ begin
 
 }
 
+end;
+
+procedure TfmInternaNota.fsBitBtn1Click(Sender: TObject);
+begin
+   listaItensInternacao('', '', '');
 end;
 
 end.

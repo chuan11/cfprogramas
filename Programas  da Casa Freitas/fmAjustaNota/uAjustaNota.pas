@@ -36,7 +36,7 @@ type
     lbTipo: TLabel;
     Label4: TLabel;
     lbLoja: TLabel;
-    lbIsNota: TadLabelEdit;
+    edIsNota: TadLabelEdit;
     btDadosNFE: TfsBitBtn;
     RadioGroup2: TRadioGroup;
     SoftDBGrid1: TSoftDBGrid;
@@ -51,6 +51,8 @@ type
     Label2: TLabel;
     lbCriador: TLabel;
     btDeleteXML: TfsBitBtn;
+    dtEntSai: TfsDateTimePicker;
+    Label5: TLabel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FlatButton1Click(Sender: TObject);
     procedure btEmisDestClick(Sender: TObject);
@@ -102,7 +104,7 @@ begin
 
      ds:= uCF.getDadosNota(is_nota,'','','');
 
-     lbIsNota.text := ds.fieldByname('is_nota').asString;
+     edIsNota.text := ds.fieldByname('is_nota').asString;
      edSerie.Text := ds.fieldByname('serie').asString;
      edNumero.Text := ds.fieldByname('num').asString;
      lbSerie.Caption := edSerie.Text;
@@ -112,6 +114,7 @@ begin
      edCFO.text := ds.fieldByname('cd_cfo').asString;
      edVlDEspExtra.Value := ds.fieldByname('VL_DSPEXTRA').AsFloat;
      dtEmiss.Date := ds.fieldByname('dt_emis').AsDateTime;
+     dtEntSai.date := ds.fieldByname('dt_entsai').AsDateTime;
      lbIsEstoque.caption := ds.fieldByname('is_estoque').AsString;
      cbCancelada.Checked := ( ds.fieldByname('st_nf').AsString = 'C');
      edObservacao.Text := ds.fieldByname('observacao').AsString;
@@ -150,7 +153,7 @@ begin
         end;
      end;
      ds.Destroy();
-     lbIsNota.text := is_nota;
+     edIsNota.text := is_nota;
      Panel1.Visible := true;
 end;
 
@@ -226,7 +229,7 @@ var
    cmd:String;
 begin
 // exclui os registros antigos
-  cmd := 'delete from dnotc where is_nota = ' + lbIsNota.text;
+  cmd := 'delete from dnotc where is_nota = ' + edIsNota.text;
   funcSQL.execSQL(cmd, fmMain.Conexao);
 
 // insere os novos
@@ -235,7 +238,7 @@ begin
   begin
      cmd := ' insert dnotc (is_estoque, is_nota, nr_item, pc_icm, tp_entSai, tp_ICM, vl_base, vl_basfre, vl_fre, vl_icm, vl_ipi) values (' +
       lbIsEstoque.Caption + ', ' +
-       lbIsNota.text + ', ' +
+       edIsNota.text + ', ' +
        tbICM.FieldByName('seq').AsString + ', ' +
        tbICM.FieldByName('%ICMS').AsString + ', ' +
        quotedStr(copy(lbTipo.Caption, 01, 01)) + ', 2, ' +
@@ -294,16 +297,17 @@ begin
 
          cmd :=   cmd + ' VL_DSPEXTRA = '  +  funcoes.ValorSql( floatToStr(edVlDEspExtra.value) ) + ' , ' +
                 ' dt_emis = ' + funcoes.DateTimeToSqlDateTime(dtEmiss.Date,'') +', '+
+                ' dt_entSai = ' + funcoes.DateTimeToSqlDateTime(dtEntSai.Date,'') +', '+
                 ' st_nf = ' + quotedStr(strStNota) +', '+
                 ' observacao = ' + quotedStr(edObservacao.Text) +
-                ' where is_nota in ( ' + lbIsNota.Text + ' )';
+                ' where is_nota in ( ' + edIsNota.Text + ' )';
          funcsql.execSQL(cmd, fmMain.Conexao);
 
-         cmd := 'update dmovi set st_mov = ' + quotedStr(strStNota) + ' where is_nota = ' + lbIsNota.Text;
+         cmd := 'update dmovi set st_mov = ' + quotedStr(strStNota) + ' where is_nota = ' + edIsNota.Text;
          funcsql.execSQL(cmd, fmMain.Conexao);
 
          cmd := 'update toper set sq_opf = ' + trim(copy(cbOperIntegrada.Items[cbOperIntegrada.itemIndex],101,10)) +
-                ' where is_oper in (select is_oper from dnota (nolock) where is_nota = ' + lbIsNota.Text + ')';
+                ' where is_oper in (select is_oper from dnota (nolock) where is_nota = ' + edIsNota.Text + ')';
          funcsql.execSQL(cmd, fmMain.Conexao);
 
          ajustaDadosICM();
@@ -365,6 +369,10 @@ begin
           funcDatas.StrToSqlDate(qrXML.fieldByName('dt_autorizacao_nfe').AsString) + ' )';
    funcSQL.execSQL(cmd, fmMain.Conexao);
 
+   cmd := 'update dnota set codigo_nfe = ' + edCodNFE.Text +
+          ' where is_nota = ' + edIsNota.Text;
+   funcSQL.execSQL(cmd, fmMain.Conexao);
+
    pnXml.Visible := false;
 
 // tenta obter o xml da nota
@@ -381,7 +389,7 @@ begin
       if ( msgTela('','Deseja realmente remover o registro do XML da NF-e ?', MB_YESNO + MB_ICONQUESTION) = mrYes) then
       begin
          funcSQl.execSQL('delete from nf_eletronica where codigo_nfe = ' + qrXML.fieldByName('codigo_nfe').AsString, fmMain.Conexao  );
-         funcSQl.execSQL('update dnota set codigo_nfe = null where is_nota = ' + lbIsNota.text , fmMain.Conexao  );
+         funcSQl.execSQL('update dnota set codigo_nfe = null where is_nota = ' + edIsNota.text , fmMain.Conexao  );
          pnXml.Visible := false;
          edCodNFE.Enabled := true;
       end;
