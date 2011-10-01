@@ -55,7 +55,7 @@ begin
      dbgrid.Columns[1].Width := 250;
      dbgrid.Columns[2].Width := 80;
 
-     fmMain.getListaLojas(cb2, false, false, fmMain.getCDPESUsuario());
+     fmMain.getListaLojas(cb2, false, false, fmMain.getCdPesLogado() );
 
      cb2.Enabled := true;
      dbgrid.Enabled := true;

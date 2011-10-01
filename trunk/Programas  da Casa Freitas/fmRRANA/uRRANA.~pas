@@ -9,8 +9,10 @@ uses
 
 type
   TfmRelGeral1 = class(TfmRelGeral)
-    edit1: TadLabelEdit;
+    edCodigo: TadLabelEdit;
     procedure FormCreate(Sender: TObject);
+    procedure btOkClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
   public
@@ -23,12 +25,71 @@ var
 implementation
 
 {$R *.dfm}
+uses uMain, uCF, funcoes, funcDatas, funcSQL;
+
 
 procedure TfmRelGeral1.FormCreate(Sender: TObject);
 begin
    inherited;
    cbCaixas.Visible := false;
    cbDetAvaForn.Visible := false;
+   dti.date := funcSQL.getDateBd(fmMain.Conexao);
+   dtf.Date := dti.Date;
+end;
+
+procedure TfmRelGeral1.btOkClick(Sender: TObject);
+var
+  dsItens:TdataSet;
+  tbMov,tbItens:TADOTable;
+  params, itens:TStringList;
+begin
+//  inherited;
+  if ( length(edCodigo.Text) >= 3) then
+  begin
+     itens := TSTringlist.Create();
+     tbItens := TADOTable.create(nil);
+     tbItens.Connection := fmMain.Conexao;
+
+     tbMov := TADOTable.create(nil);
+     tbMov.Connection := fmMain.Conexao;
+     dsItens:= uCF.getIsrefPorFaixaCodigo(edCodigo.Text, '0','0', true);
+
+     if (dsItens.IsEmpty = false) then
+     begin
+        while (dsItens.Eof = false) do
+        begin
+           itens.Add(dsItens.fieldByName('is_ref').AsString);
+           dsItens.Next();
+        end;
+     end;
+     dsItens.free();
+     uCF.calculaRRANA( tbItens, tbMov, itens, funcoes.getCodUO(cbLojas), dti.Date, dtf.Date);
+
+
+
+    if (tbMov.IsEmpty = false) then
+     begin
+        Params:= TStringlist.create();
+        params.Add(dateToStr(dti.Date));
+        params.Add(dateToStr(dtf.date));
+        params.Add(funcoes.getNomeUO(cbLojas));
+        params.Add(fmMain.getNomeUsuario()) ;
+
+        fmMain.impressaoRaveQr4(tbItens, tbMov, nil, nil, 'rpRRANA', params )
+     end
+     else
+        msgTela('','Sem movimentação no período.', MB_ICONERROR + MB_OK);
+     tbItens.Close();
+     tbMov.Close();
+  end;
+end;
+
+procedure TfmRelGeral1.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+   inherited;
+   action := CaFree;
+   fmRelGeral1 := nil;
 end;
 
 end.

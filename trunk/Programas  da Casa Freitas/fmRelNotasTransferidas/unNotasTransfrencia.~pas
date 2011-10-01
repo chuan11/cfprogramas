@@ -23,12 +23,14 @@ type
     cbLojas: TadLabelComboBox;
     PopupMenu1: TPopupMenu;
     Detalhesdanota1: TMenuItem;
+    Reiniciaroprocessoderecebimento1: TMenuItem;
     procedure btOkClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure gridTitleClick(Column: TColumn);
     procedure FlatButton1Click(Sender: TObject);
     procedure Detalhesdanota1Click(Sender: TObject);
+    procedure Reiniciaroprocessoderecebimento1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -102,7 +104,7 @@ begin
       tb.First;
    end
    else
-      msgTela('',' A diferença entre a data inical e a final não pode ser maior que 31 dias ', MB_OK + MB_ICONERROR);
+      msgTela('', MSG_PER_MQ_31D, MB_OK + MB_ICONERROR);
 end;
 
 procedure TfmNotasTransf.FormClose(Sender: TObject;
@@ -119,12 +121,10 @@ begin
    tb.TableName := funcsql.criaTabelaTemporaria(fmMain.Conexao, '( is_nota int primary key, [Data Emissao] varchar(10), [Loja] varchar(40), [Serie] varchar(03), [Nota] varchar(06), [Valor] money, [Data Recebimento] varchar(10)) ');
    tb.Open;
 
-
-//   funcsql.getComboBoxLojas(fmMain.Conexao, false,false, fmMain.lbPes.Caption , cbLojas);
-
-    fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
+   fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
 
    grid.Columns[0].Visible := false;
+   Reiniciaroprocessoderecebimento1.Enabled := not(fmMain.isGrupoRestrito(106));
 end;
 
 
@@ -152,6 +152,23 @@ procedure TfmNotasTransf.Detalhesdanota1Click(Sender: TObject);
 begin
    if tb.IsEmpty = false then
        fmMain.mostraDetalhesNota(nil,tb.fieldByName('is_nota').AsString);
+end;
+
+procedure TfmNotasTransf.Reiniciaroprocessoderecebimento1Click(Sender: TObject);
+var
+   ds:TdataSet;
+   cmd:String;
+begin
+   if (tb.IsEmpty = false) then
+      if (tb.FieldByName('Data Recebimento').asString  = '') then
+      begin
+         cmd := ' delete from notaTransTemp where is_nota= ' +
+                tb.FieldByName('is_nota').asString;
+         funcSQL.execSQL(cmd, fmMain.Conexao);
+         funcoes.msgTela('','Liberei a nota para recebimento...', MB_OK + MB_ICONEXCLAMATION);
+      end
+      else
+         funcoes.msgTela('','Essa nota já foi confirmada.', MB_OK + MB_ICONERROR);
 end;
 
 end.

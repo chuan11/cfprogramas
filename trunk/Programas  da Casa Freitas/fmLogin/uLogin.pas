@@ -38,7 +38,8 @@ type
 var
   fmLogin: TfmLogin;
 implementation
-uses  umain;
+
+uses  umain, uCF;
 {$R *.dfm}
 
 procedure TfmLogin.validarLogin(Sender: Tobject);
@@ -99,7 +100,7 @@ var
   tecla:word;
 begin
    tecla := 0;
-   fmMain.getListaLojas( cbLoja,  false, false,'');
+   uCF.getListaLojas( cbLoja,  false, false,'');
    verificaControl(tecla, []);
 end;
 procedure TfmLogin.cbUserEnter(Sender: TObject);

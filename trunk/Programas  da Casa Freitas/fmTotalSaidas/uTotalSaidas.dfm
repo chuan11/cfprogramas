@@ -106,7 +106,7 @@ object fmTotalSaidas: TfmTotalSaidas
   end
   object cbLoja: TadLabelComboBox
     Left = 26
-    Top = 44
+    Top = 48
     Width = 153
     Height = 21
     AutoCloseUp = True
@@ -139,7 +139,7 @@ object fmTotalSaidas: TfmTotalSaidas
     TabOrder = 4
     object Label4: TLabel
       Left = 6
-      Top = 6
+      Top = 14
       Width = 49
       Height = 13
       Caption = 'Produto:'

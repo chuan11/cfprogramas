@@ -284,7 +284,7 @@ var
 begin
    if (key = VK_RETURN )or(key = VK_TAB) then
    begin
-      ds := uCF.getDadosProd( lbuo.Caption, edCodigo.Text, '5', true );
+      ds := uCF.getDadosProd( lbuo.Caption, edCodigo.Text, '', '5', true );
       if (ds.IsEmpty = false ) then
       begin
          edDesc.Text := ds.fieldByName('codigo').AsString +'-'+ds.fieldByName('descricao').AsString;
@@ -499,7 +499,7 @@ end;
 
 procedure TfmCadAvarias.FormActivate(Sender: TObject);
 begin
-   fmMain.verificaPermissao(fmCadAvarias.Menu.Items, { fmMain.getTelasPermDoGrupo( fmMain.getGrupoLogado() )} );
+   fmMain.verificaPermissao(fmCadAvarias.Menu.Items { fmMain.getTelasPermDoGrupo( fmMain.getGrupoLogado() )} );
 end;
 
 procedure TfmCadAvarias.GridTitleClick(Column: TColumn);

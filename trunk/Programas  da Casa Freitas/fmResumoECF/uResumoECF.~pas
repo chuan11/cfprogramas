@@ -15,9 +15,11 @@ type
     fsBitBtn3: TfsBitBtn;
     DataSource1: TDataSource;
     SoftDBGrid1: TSoftDBGrid;
+    fsBitBtn1: TfsBitBtn;
     procedure fsBitBtn3Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
+    procedure fsBitBtn1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -26,14 +28,15 @@ type
 
 var
   fmResumoECF: TfmResumoECF;
-
+  ds:TdataSet;
 implementation
 {$R *.dfm}
 uses uMain, uCF, funcoes;
 
 procedure TfmResumoECF.fsBitBtn3Click(Sender: TObject);
 begin
-   DataSource1.DataSet := uCF.listaCuponsPorLojaData(funcoes.getCodUO(cbLojas), cbECF.Items[cbECF.itemIndex], datai.Date, datai.Date);
+   ds:= uCF.listaCuponsPorLojaData(funcoes.getCodUO(cbLojas), cbECF.Items[cbECF.itemIndex], datai.Date, datai.Date);
+   DataSource1.DataSet := ds;
 end;
 
 procedure TfmResumoECF.FormClose(Sender: TObject;
@@ -47,6 +50,11 @@ procedure TfmResumoECF.FormActivate(Sender: TObject);
 begin
    fmMain.getListaLojas( cbLojas, false, false, fmMain.getCdPesLogado() );
    datai.Date := now;
+end;
+
+procedure TfmResumoECF.fsBitBtn1Click(Sender: TObject);
+begin
+   fmMain.impressaoRaveQr4(ds, nil, nil, nil, 'rpProCuponsDia', nil);
 end;
 
 end.

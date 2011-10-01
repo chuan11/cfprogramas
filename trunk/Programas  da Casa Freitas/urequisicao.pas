@@ -48,7 +48,8 @@ var
   fmReqLojas: TfmReqLojas;
   FinalizarPrograma:Boolean;
 implementation
-uses umain, uEmail;
+
+uses umain, uEmail, uCF;
 
 {$R *.dfm}
 
@@ -74,7 +75,7 @@ end;
 
 procedure TfmReqLojas.FormCreate(Sender: TObject);
 begin
-   fmMain.getListaLojas( cbOrigem, true, false, '' );
+   uCF.getListaLojas( cbOrigem, false, false, '' );
 end;
 
 procedure TfmReqLojas.edDescricaoEnter(Sender: TObject);
@@ -86,32 +87,19 @@ end;
 
 procedure TfmReqLojas.BuscarDadosProduto(Sender: TObject);
 var
-  Cmd:string;
-  Query:TADOQuery;
+  ds: TdataSet;
 begin
-   cmd := '';
-   cmd := 'exec Z_CF_GetInformacoesProduto ' +
-           QuotedStr( FUNCOES.SohNumeros(EdCodigo.text))  +' , '+
-           funcoes.SohNumeros((copy(cbOrigem.Items[cbOrigem.ItemIndex],40,100))) +' , '+
-           '-1 ';
-   Query := TAdoQUery.Create(query);
-   Query.Connection := fmMain.Conexao;
-   Query.SQL.clear;
-   query.SQL.add(cmd);
-   Query.Open;
+   ds := uCF.getDadosProd(funcoes.getCodUO(cbOrigem), edCodigo.Text, '', '101', true );
 
-   if query.IsEmpty = false then
+   if (ds.IsEmpty = false) then
    begin
-      edDescricao.text := query.fieldByName('descricao').AsString;
-      edSaldo.Text := query.fieldByName('EstoqueDisponivel').AsString;
-      edQuant.SetFocus;
-   end
+      edDescricao.text := ds.fieldByName('codigo').AsString;
+      edSaldo.Text := ds.fieldByName('EstoqueDisponivel').AsString;
+      edQuant.SetFocus
+   end   
    else
-   begin
-      funcoes.MsgTela('', ' Produto não cadastrado' +#13, mb_OK + mb_IconError  );
-      edQuant.SetFocus;
       edCodigo.SetFocus;
-   end;
+   ds.free();
 end;
 
 procedure TfmReqLojas.cbOrigemChange(Sender: TObject);
@@ -259,11 +247,11 @@ begin
    corpoMsg.Add('A partir da loja: ' + fmMain.StatusBar1.Panels[0].text);
 
 // enviar email para a loja requisitada
-   fmMain.EnviarEmail( funcsql.getEmail(funcoes.getNumUO(cbOrigem),fmMain.Conexao) ,  ' Requisicao de mercadorias da loja '+ fmMain.StatusBar1.Panels[0].Text,'',corpoMsg, 'Enviando email para a loja requisitada...');
+   fmMain.EnviarEmail ( funcsql.getEmail(funcoes.getNumUO(cbOrigem),fmMain.Conexao) ,  ' Requisicao de mercadorias da loja '+ fmMain.StatusBar1.Panels[0].Text,'',corpoMsg, 'Enviando email para a loja requisitada...');
    corpoMsg.Add('');
 
 // email para a loja que ta pedindo
-   fmMain.EnviarEmail(  funcsql.getEmail(fmMain.getUoLogada(), fmMain.Conexao),  'Copia da Requisicao de mercadorias da loja '+ fmMain.StatusBar1.Panels[0].Text,'',corpoMsg, 'Copia da requisição para a loja que pediu...');
+   fmMain.EnviarEmail( funcsql.getEmail(fmMain.getUoLogada(), fmMain.Conexao),  'Copia da Requisicao de mercadorias da loja '+ fmMain.StatusBar1.Panels[0].Text,'',corpoMsg, 'Copia da requisição para a loja que pediu...');
    FlatButton1Click(nil);
 end;
 

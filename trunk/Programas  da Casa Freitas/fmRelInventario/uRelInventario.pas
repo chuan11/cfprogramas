@@ -98,14 +98,14 @@ begin
             if  (copy( lst[i], QT_POS_INI, QT_TAM) <> '000000') then
             begin
                // testar no ean 13
-               dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], EAN_POS_INI, EAN_TAM)), '101', false);
+               dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], EAN_POS_INI, EAN_TAM)), '', '101', false);
 
                if ( dsItem.IsEmpty = true ) then
-                  dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 02, 12)), '101', false);
+                  dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 02, 12)), '', '101', false);
                if ( dsItem.IsEmpty = true) then
-                  dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 07, 07)), '101', false);
+                  dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 07, 07)), '', '101', false);
                if ( dsItem.IsEmpty = true) then
-                  dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 06, 08)), '101', false);
+                  dsItem:= uCF.getDadosProd( fmMain.getUoLogada, trim(copy(lst[i], 06, 08)), '', '101', false);
 
                if ( dsItem.IsEmpty = false) then
                   tb.AppendRecord([ dsItem.fieldByName('codigo').asString,

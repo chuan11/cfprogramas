@@ -11,6 +11,7 @@ object fmCadastraNCM: TfmCadastraNCM
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   FormStyle = fsMDIChild
+  KeyPreview = True
   OldCreateOrder = False
   Position = poDefault
   Visible = True
@@ -35,6 +36,7 @@ object fmCadastraNCM: TfmCadastraNCM
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = []
+    OnKeyPress = gRidResultKeyPress
     AlternateColor = True
     ColorLow = clWindow
     ColorHigh = clInfoBk

@@ -77,11 +77,12 @@ procedure TfmProposta.GetDadosProdutos(Sender: Tobject;cod:string);
 var
   ds:TdataSet;
 begin
-   ds:= uCF.getDadosProd(fmMain.getUoLogada(), cod, PRECO, true );
+   ds:= uCF.getDadosProd(fmMain.getUoLogada(), cod, '', PRECO, true );
    if (ds.IsEmpty = false) then
    begin
       table.FieldByName('Descricao').AsString := ds.fieldByName('descricao').AsString;
       table.FieldByName('Und').AsString := ds.fieldByName('preco').AsString;
+      table.FieldByName('NCM_SH').AsString := ds.fieldByName('preco').AsString;
    end;
    ds.Free();
 end;
@@ -95,7 +96,7 @@ begin
    begin
       Table.close;
       nmTable := '#'+ funcoes.GetNomeDoMicro()+'_'+ funcoes.sohNumeros(DateTimeToStr(now) ) ;
-      cmd := 'Create Table '+ nmTable +'( Codigo varchar(13), Descricao varchar(50), Quant int, Und money, Total money) ';
+      cmd := 'Create Table '+ nmTable +'( Codigo varchar(13), Descricao varchar(50), Quant int, Und money, Total money, NCM_SH varchar(10) ) ';
       funcSQl.GetValorWell('E',cmd, '@@error',fmMain.conexao);
 
       Table.TableName := nmTable;

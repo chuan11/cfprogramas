@@ -606,7 +606,7 @@ begin
    PERFIL := 3;
 //   cbLojas.Items := funcsql.GetNomeLojas(fmMain.Conexao, false, false,'','');
 
-   fmMain.getListaLojas(cbLojas, false, false, '');
+   uCF.getListaLojas(cbLojas, false, false, '');
 
    cbLojas.Visible := true;
    btNova.Visible := false;

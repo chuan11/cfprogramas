@@ -17,6 +17,7 @@ object fmColetor: TfmColetor
   Visible = True
   WindowState = wsMaximized
   OnActivate = FormActivate
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
   object lbCodigo: TLabel

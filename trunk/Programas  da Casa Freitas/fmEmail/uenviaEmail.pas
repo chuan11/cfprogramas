@@ -20,7 +20,7 @@ type
     procedure socketStatus(ASender: TObject; const AStatus: TIdStatus; const AStatusText: String);
     function enviarEmailGmail(uo,  para,assunto,anexo:String; corpoMsg:Tstringlist; conexao:TADOConnection; titulo,pesSender:String):boolean;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    function getMailDestino(conexao:TADOConnection; uo:String):String;
+    function getMailDestino(conexao:TADOConnection; uo:String; var para:String; var Texto:TstringList):String;
 
   private
     { Private declarations }
@@ -36,21 +36,34 @@ implementation
 uses uDestinoEmail, uMain;
 {$R *.dfm}
 
-function TfmEnviaEmail.getMailDestino(conexao:TADOConnection; uo:String):String;
+function TfmEnviaEmail.getMailDestino(conexao:TADOConnection; uo:String;
+                                      var para:String; var texto:TstringList):String;
 var
    str:String;
+   i:integer;
 begin
    application.CreateForm(TfmDestEmail, fmDestEmail);
-   fmDestEmail.ShowModal;
+   fmDestEmail.mmCorpoEmail.Lines := Texto;
 
+   fmDestEmail.ShowModal;
    str := '';
    if (fmDestEmail.ModalResult = MROK) then
    begin
       str := fmDestEmail.lbEmail.Caption;
       if pos('@',str) = 0 then
          str := '';
-   end;
-   result := str
+   end
+   else
+      str := '';
+
+   para := str;
+   texto.Clear();
+
+   for i:=0 to fmDestEmail.mmCorpoEmail.Lines.Count -1 do
+      texto.Add(fmDestEmail.mmCorpoEmail.Lines[i]);
+
+   fmDestEmail.Free();
+   fmDestEmail := nil;
 end;
 
 procedure TfmEnviaEmail.IdSMTPStatus(ASender: TObject; const AStatus: TIdStatus; const AStatusText: String);
@@ -69,32 +82,33 @@ function TfmEnviaEmail.enviarEmailGmail(uo, para, assunto, anexo: String; corpoM
 var
   i:integer;
   nmRemetente:String;
-begin
+ begin
+   Application.CreateForm(TfmEnviaEmail, fmEnviaEmail);
    fmEnviaEmail.Show;
+
    if (para  = '') then
-      para := getMailDestino(Conexao, uo);
+      getMailDestino(Conexao, uo, para, corpoMsg);
 
    if (trim(para) <> '') then
    begin
       screen.Cursor := crHourGlass;
 
-      memo1.Lines.add( 'E-mail para :' + para);
-      panel1.Caption := titulo;
+      fmEnviaEmail.memo1.Lines.add('E-mail para :' + 'para');
+      fmEnviaEmail.panel1.Caption := titulo;
       fmEnviaEmail.Refresh();
 
-//      nmRemetente := funcSQL.openSQL('Select ds_email from dsusu (nolock) where cd_pes = '+ pesSender, 'ds_email', conexao);
       if (pos('@', nmRemetente) = 0 ) then
          nmRemetente := funcsql.getEmail(uo, conexao);
 
       if (pos('@', nmRemetente) = 0 ) then
          nmRemetente := uo+'@casafreitas.com.br';
 
-      Memo1.Lines.add('Remetente: ' + nmRemetente );
+      fmEnviaEmail.Memo1.Lines.add('Remetente: ' + nmRemetente );
 
-      with msg do
+      with fmEnviaEmail.msg do
       begin
          Create(nil);
-         if corpoMsg <> nil then
+         if (corpoMsg <> nil) then
             for i:=0 to corpoMsg.Count -1 do
                Body.Add(corpoMsg[i]);
 
@@ -107,14 +121,14 @@ begin
       end;
 
       if (anexo <> '' )then
-         TIdAttachment.create(msg.MessageParts, TFileName(anexo));
+         TIdAttachment.create(fmEnviaEmail.msg.MessageParts, TFileName(anexo));
       try
-         idsmtp.Connect();
-         idsmtp.Send(msg);
-         Memo1.Lines.add('');
-         Memo1.Lines.add('E-mail enviado para: ' + para,   );
-         Memo1.Lines.add('');
-         idsmtp.Disconnect;
+         fmEnviaEmail.idsmtp.Connect();
+         fmEnviaEmail.idsmtp.Send(fmEnviaEmail.msg);
+         fmEnviaEmail.Memo1.Lines.add('');
+         fmEnviaEmail.Memo1.Lines.add('E-mail enviado para: ' + para,   );
+         fmEnviaEmail.Memo1.Lines.add('');
+         fmEnviaEmail.idsmtp.Disconnect;
          sleep(500);
          result := true;
       except
@@ -125,7 +139,6 @@ begin
             result := false;
          end;
       end;
-
     end
     else
     begin
@@ -133,6 +146,7 @@ begin
        result := false;
     end;
    fmEnviaEmail.Close();
+   fmEnviaEmail := nil;
    screen.Cursor := 0;
 end;
 

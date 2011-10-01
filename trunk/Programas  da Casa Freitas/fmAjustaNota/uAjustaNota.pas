@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, funcoes, funcsql,
   Dialogs, StdCtrls, adLabelComboBox, TFlatButtonUnit, ExtCtrls, adodb, db,
   adLabelEdit, adLabelNumericEdit, ComCtrls, fCtrls, Buttons, Grids,
-  DBGrids, SoftDBGrid, Menus, uGetNotas, funcDatas;
+  DBGrids, SoftDBGrid, Menus, funcDatas;
 
 type
   TfmAjustaNota = class(TForm)
@@ -172,10 +172,19 @@ begin
 
       if (codigo <> '') then
       begin
-         ds := uCF.getDadosFornecedor(codigo,'');
-         lbCodPes.caption := ds.FieldByName('codigo').asString;
-         edEmitDest.text := ds.FieldByName('nome').asString;
-         ds.Destroy();
+         if (lbTipo.Caption = 'Entrada') then
+         begin
+            ds := uCF.getDadosFornecedor(codigo, '');
+            lbCodPes.caption := ds.FieldByName('codigo').asString;
+            edEmitDest.text := ds.FieldByName('nome').asString;
+         end
+         else
+         begin
+            ds := uCF.getDadosCliente(codigo, '');
+            lbCodPes.caption := ds.FieldByName('codigo').asString;
+            edEmitDest.text := ds.FieldByName('nome').asString;
+         end;
+         ds.free();
       end;
    end;
 end;
@@ -215,7 +224,7 @@ var
 begin
    btCancelaClick(nil);
    cmd := '';
-   cmd := uGetNotas.getIsNota();
+   cmd := uCF.getIsNota();
 
    if cmd <> '' then
       pesquisaNota(cmd)

@@ -49,7 +49,7 @@ var
 begin
    if (lbDados.Caption = '') then
    begin
-      ds:= uCF.getDadosProd(uo_cd, is_ref, '101', true);
+      ds:= uCF.getDadosProd(uo_cd, '', is_ref, '101', true);
       lbDados.Caption := ds.fieldByName('codigo').AsString + '  '+
                          ds.fieldByName('descricao').AsString;
       ds.free();

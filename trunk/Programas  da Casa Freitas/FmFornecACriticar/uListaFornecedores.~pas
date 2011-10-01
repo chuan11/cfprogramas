@@ -124,11 +124,12 @@ end;
 procedure TfmListaFornecedores.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
-   if (fmListaFornecedores <> nil) then
+{   if (fmListaFornecedores <> nil) then
    begin
       action := cafree;
       fmListaFornecedores := nil;
    end;
+}   
 end;
 
 end.

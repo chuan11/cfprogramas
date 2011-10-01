@@ -1,8 +1,8 @@
 object fmMovDiario: TfmMovDiario
   Left = 459
   Top = 211
-  Width = 727
-  Height = 721
+  Width = 666
+  Height = 512
   Caption = 'fmMovDiario'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object fmMovDiario: TfmMovDiario
   object ToolBar1: TToolBar
     Left = 0
     Top = 0
-    Width = 711
+    Width = 650
     Height = 34
     ButtonHeight = 26
     ButtonWidth = 41
@@ -79,14 +79,14 @@ object fmMovDiario: TfmMovDiario
   object GroupBox2: TGroupBox
     Left = 8
     Top = 56
-    Width = 369
-    Height = 238
+    Width = 440
+    Height = 236
     Caption = ' Valores do Caixa '
     TabOrder = 1
     object SoftDBGrid1: TSoftDBGrid
-      Left = 9
+      Left = 7
       Top = 19
-      Width = 349
+      Width = 424
       Height = 210
       Ctl3D = False
       DataSource = DataSource1

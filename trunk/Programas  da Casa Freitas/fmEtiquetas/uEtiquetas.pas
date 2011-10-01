@@ -97,12 +97,10 @@ begin
    if (ds <> nil) then
       ds.Free();
 
-   ds:= uCF.getDadosProd( funcoes.getCodUo(cbLojas), EdCodigo.Text, fmMain.getCodPreco(cbPrecos), true  );
+   ds:= uCF.getDadosProd( funcoes.getCodUo(cbLojas), EdCodigo.Text, '', fmMain.getCodPreco(cbPrecos), true  );
    if (ds.IsEmpty = false ) then
    begin
       DataSource1.DataSet := ds;
-
-
 
       dbgrid.Columns[0].Width :=  50;
       dbgrid.Columns[1].Width :=  85;
@@ -135,7 +133,7 @@ begin
    if str <> '' then
       edLocalImp.Text := str;
 
-   fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
 end;
 
 

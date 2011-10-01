@@ -2,7 +2,7 @@ unit uComporEstoque;
 interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, funcDatas,
-  Dialogs, StdCtrls, ComCtrls, fCtrls, adLabelComboBox, DB, ADODB, funcoes, funcsql,
+  Dialogs, StdCtrls, ComCtrls, fCtrls, adLabelComboBox, DB, ADODB,
   TFlatButtonUnit, Grids, DBGrids, SoftDBGrid, adLabelEdit, Spin, Mask;
 type
   TfmComporEstoque = class(TForm)
@@ -61,7 +61,8 @@ var
 
 implementation
 
-uses uMain;
+uses uMain, funcoes, funcsql, uCF;
+
 var
    PERFIL:String;
 {$R *.dfm}
@@ -84,7 +85,7 @@ begin
 //   cbLoja.Items :=  funcSql.GetNomeLojas(fmMain.Conexao,true,false, fmMain.lbPes.Caption,'');
    fmMain.getParametrosForm(fmComporEstoque);
 
-   fmMain.getListaLojas(cbLoja, true, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLoja, true, false, fmMain.getCdPesLogado() );
 
 
    if pos(' ',edMesAno.text) > 0 then

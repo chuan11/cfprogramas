@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, adLabelComboBox, DB, ADODB,funcoes,FuncSQL, Grids,
   DBGrids, SoftDBGrid, adLabelEdit, adLabelNumericEdit, TFlatButtonUnit,
-  TFlatCheckBoxUnit, fCtrls, uGetNotas, adLabelSpinEdit;
+  TFlatCheckBoxUnit, fCtrls, {uGetNotas, }adLabelSpinEdit;
 
 type
   TfmPrecoCustos = class(TForm)
@@ -393,7 +393,7 @@ var
   cmd: String;
 begin
    cmd := '/* pegando os custo fiscal dos itens de uma nota */ ' +#13+
-          '  select p.cd_ref, dbo.z_cf_funObterPrecoProduto_CF(1, p.is_ref, dmovi.is_estoque, 0) as custo ' +
+          '  select p.cd_ref, dbo.z_cf_funObterPrecoProduto_CF(1, p.is_ref, i.is_estoque, 0) as custo ' +
           ' from dmovi i (nolock) inner join crefe p (nolock) on i.is_ref = p.is_ref  where i.is_nota = '  + is_nota;
    ds := funcSQL.getDataSetQ( cmd, fmMain.Conexao);
 
@@ -445,7 +445,7 @@ var
   cmd:String;
 begin
    cmd := '';
-   cmd := uGetNotas.getIsNota();
+   cmd := uCF.getIsNota();
    if cmd <> '' then
    begin
       if (TipoAjuste = '1') then
@@ -465,7 +465,7 @@ end;
 procedure TfmPrecoCustos.FormCreate(Sender: TObject);
 begin
    fmMain.getParametrosForm(fmPrecoCustos);
-   fmMain.getListaLojas(cbLoja, true , false, '');
+   uCF.getListaLojas(cbLoja, true , false, '');
 
    UO_CD := fmMain.getParamBD('uoCd','');
    CD_PES_EMP :=  fmMain.getParamBD('comum.codEmpresa','');

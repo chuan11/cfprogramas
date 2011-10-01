@@ -4,10 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DB, ADODB,  funcoes, Grids,
-  DBGrids, SoftDBGrid, RpCon, RpConDS, StdCtrls, ExtCtrls, Buttons, fCtrls,
-  ComCtrls, TFlatButtonUnit, adLabelComboBox, TFlatPanelUnit,
-  TFlatEditUnit, TFlatSpinEditUnit, funcsql, RpConBDE, Mask, adLabelEdit,
+  Dialogs, DB, ADODB,  Grids,DBGrids, SoftDBGrid, RpCon, RpConDS, StdCtrls,
+  ExtCtrls, Buttons, fCtrls,  ComCtrls, TFlatButtonUnit, adLabelComboBox, TFlatPanelUnit,
+  TFlatEditUnit, TFlatSpinEditUnit, RpConBDE, Mask, adLabelEdit,
   adLabelNumericEdit, adLabelSpinEdit, Menus;
 
 type
@@ -105,7 +104,7 @@ var
   fmetqClientes: TfmetqClientes;
 implementation
 
-uses Math,  umain;
+uses math, uMain, uCF, funcoes, funcsql ;
 
 {$R *.dfm}
 
@@ -125,7 +124,7 @@ begin
    cbLojaAniversarios.Items := cbLojas.Items;
    fmMain.getParametrosForm(fmetqClientes);
 
-   fmMain.getListaLojas(cbLojas, false, false, '' );
+   uCF.getListaLojas(cbLojas, false, false, '' );
 end;
 
 procedure TfmetqClientes.rgTpPesquisaClick(Sender: TObject);

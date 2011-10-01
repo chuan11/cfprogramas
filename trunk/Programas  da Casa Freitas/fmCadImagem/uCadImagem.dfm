@@ -1,8 +1,8 @@
 object fmCadastro: TfmCadastro
-  Left = 196
-  Top = 189
+  Left = 217
+  Top = 125
   Width = 789
-  Height = 581
+  Height = 570
   ActiveControl = CheckBox1
   Caption = 'Associar imagem a um produto.'
   Color = clBtnFace

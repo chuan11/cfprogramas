@@ -109,7 +109,7 @@ procedure TfmConReqProduto.FormCreate(Sender: TObject);
 begin
 //   cbLojas.Items := funcSql.GetNomeLojas(fmMain.Conexao,true,false,'','');
 
-   fmMain.getListaLojas(cbLojas, true, false, fmMain.getCDPESUsuario());
+   fmMain.getListaLojas(cbLojas, true, false, fmMain.getCdPesLogado() );
 
    preparaParaConsultar(nil, '');
 end;

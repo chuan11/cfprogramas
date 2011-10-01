@@ -38,7 +38,7 @@ var
   PERFIL:String;
 implementation
 
-uses funcoes , uCF, {uMain, } funcSQL;
+uses funcoes , uCF, funcSQL;
 
 {$R *.dfm}
 

@@ -92,7 +92,7 @@ var
   DS:TdataSet;
 implementation
 
-uses umain, uPrecoPorPedido, uReajuste, uListaItensPorNota, uCF, uGetNotas;
+uses umain, uPrecoPorPedido, uReajuste, uListaItensPorNota, uCF{, uGetNotas};
 
 {$R *.dfm}
 
@@ -164,7 +164,7 @@ begin
       cbPc02.Items := cbpc01.Items;
       cbPc03.Items := cbpc01.Items;
 
-      fmMain.getListaLojas(cbLoja, false, false, '');
+      uCF.getListaLojas(cbLoja, false, false, '');
 
 
       fmMain.getParametrosForm(fmLancaPrecos);
@@ -177,7 +177,7 @@ end;
 
 procedure TfmLancaPrecos.getDadosItens(uo, cd_ref, preco:String);
 begin
-   DS:= uCF.getDadosProd( uo, cd_ref, preco);
+   DS:= uCF.getDadosProd( uo, cd_ref, '', preco, true);
    if  (ds.IsEmpty = false)   then
    begin
       edDesc.text := DS.fieldByName('Descricao').asString;
@@ -603,7 +603,7 @@ procedure TfmLancaPrecos.Gerarprecoapartirdeumanota1Click(Sender: TObject);
 var
    cmd:String;
 begin
-   cmd := uGetNotas.getIsNota();
+   cmd := uCF.getIsNota();
    if (cmd <> '') then
       getPrecosDeUmaNota(cmd);
 end;

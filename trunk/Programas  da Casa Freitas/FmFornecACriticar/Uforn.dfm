@@ -31,7 +31,6 @@ object fmForn: TfmForn
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = []
-    OnDblClick = fnGridDblClick
     AlternateColor = True
     ColorLow = clInfoBk
     ColorHigh = clWhite

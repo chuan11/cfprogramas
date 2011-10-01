@@ -243,5 +243,9 @@ object fmNotasTransf: TfmNotasTransf
       Caption = 'Detalhes da nota'
       OnClick = Detalhesdanota1Click
     end
+    object Reiniciaroprocessoderecebimento1: TMenuItem
+      Caption = 'Reiniciar o processo de recebimento.'
+      OnClick = Reiniciaroprocessoderecebimento1Click
+    end
   end
 end

@@ -68,7 +68,7 @@ procedure TfmInternaNota.getDadosItem;
 var
    ds: TDataSet;
 begin
-   ds:= uCF.getDadosProd( fmMain.getUoLogada(), edCodigo.Text,'101', true);
+   ds:= uCF.getDadosProd( fmMain.getUoLogada(), edCodigo.Text, '', '101', true);
    if ( ds.IsEmpty = false ) then
    begin
       lbIsRef.Caption := ds.fieldByName('is_ref').asString;

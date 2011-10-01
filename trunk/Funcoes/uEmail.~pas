@@ -100,7 +100,7 @@ begin
 end;
 
 
-procedure enviarEmailGmail( para,assunto,anexo:String; corpoMsg:Tstringlist; conexao:TADOConnection;uoSender,pesSender:String);
+procedure enviarEmailGmail( para, assunto, anexo:String; corpoMsg:Tstringlist; conexao:TADOConnection;uoSender,pesSender:String);
 var
   msg:TIdMessage;
   idsmtp : TIdSMTP;

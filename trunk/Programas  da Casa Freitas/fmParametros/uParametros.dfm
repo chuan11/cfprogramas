@@ -37,6 +37,7 @@ object fmParametros: TfmParametros
     TitleFont.Height = -11
     TitleFont.Name = 'MS Sans Serif'
     TitleFont.Style = []
+    OnDblClick = gdParamDblClick
     AlternateColor = True
     ColorLow = clInfoBk
     ColorHigh = 15790322

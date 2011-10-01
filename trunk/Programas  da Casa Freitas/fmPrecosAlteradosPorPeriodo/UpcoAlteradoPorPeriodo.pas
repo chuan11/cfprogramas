@@ -71,7 +71,7 @@ procedure TfmPrecosAlterados.FormActivate(Sender: TObject);
 begin
 //   cbLojas.items :=  funcsql.GetNomeLojas(fmMain.Conexao , False, false, fmMain.lbPes.Caption,'');
 
-   fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdpesLogado() );
+   uCF.getListaLojas(cbLojas, false, false, fmMain.getCdpesLogado() );
 
    cbPreco.items :=  funcsql.getListaPrecos(fmMain.Conexao,false, false, true, fmMain.getGrupoLogado() );
    dp1.Date := now();

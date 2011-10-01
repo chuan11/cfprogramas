@@ -33,7 +33,7 @@ var
   fmForn: TfmForn;
 
 implementation
-uses uMain;
+uses uMain, funcoes;
 {$R *.dfm}
 
 procedure TfmForn.edit1Change(Sender: TObject);
@@ -69,15 +69,22 @@ procedure TfmForn.FlatButton1Click(Sender: TObject);
 var
    cmd:string;
 begin
-   if fsBuscaNumero.Checked = false then
+   if (fsBuscaNumero.Checked = false) then
       cmd := 'Select is_cred, cd_pes as codigo, nm_razsoc as fornecedor from dscre where  nm_razsoc like ' + quotedstr(edit1.text+'%')
    else
-      cmd := 'Select is_cred, cd_pes as codigo, nm_razsoc as fornecedor from dscre where  is_cred = ' +  edit1.text ;
+      if (funcoes.SohNumeros(edit1.Text) <> '') then
+         cmd := 'Select is_cred, cd_pes as codigo, nm_razsoc as fornecedor from dscre where  is_cred = ' +  edit1.text ;
 
-   qrCredores.SQL.Clear;
-   qrCredores.sql.Add(cmd);
-   qrCredores.Open;
+  if (cmd <> '') then
+  begin
+     qrCredores.SQL.Clear;
+     qrCredores.sql.Add(cmd);
+     qrCredores.Open;
 
+     fnGrid.Columns[ qrCredores.FieldByName('codigo').Index  ].Visible := false;
+     fnGrid.Columns[ qrCredores.FieldByName('is_cred').Index  ].Title.Caption := 'Cod fornecedor';
+  end;
+  
 end;
 
 end.

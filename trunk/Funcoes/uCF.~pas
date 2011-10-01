@@ -4,8 +4,8 @@ interface
 
    uses ADODB, Classes, sysutils, Dialogs, forms, DBGrids,
         ComCTRLs, mxExport, adLabelComboBox, windows, QStdCtrls, DB, DBCtrls, Controls, messages, adLabelCheckListBox,
-        IdBaseComponent, IdComponent, IdRawBase, IdRawClient, IdIcmpClient, IdTelnet, SoftDBGrid,
-        uMain, funcsql, uListaFornecedores, funcDatas, funcoes, uSelecionaUo;
+        IdBaseComponent, IdComponent, IdRawBase, IdRawClient, IdIcmpClient, IdTelnet, SoftDBGrid, ExtCtrls,
+        uMain, funcsql, uListaFornecedores, funcDatas, funcoes, uSelecionaUo, uListaImpNFE;
 
 
    procedure listaTabelaPrecos(tipoPesquisa, tpEstoque:smallInt; ds_ref, cd_ref, uo, pc01, pc02, numNivel, vlNivel:String; qr:TADOQuery);
@@ -22,7 +22,7 @@ interface
    function getDadosNota(isNota, is_uo, sr_docf, nr_docf:String):TADOQuery; overload;
    function getDadosNota(isNota, is_uo, sr_docf, nr_docf:String; di, df:Tdate):TADOQuery; overload;
    function getDadosPedidoDeCompra(conexao: TADOconnection; numPedido:String):TdataSet;
-   function getDadosProd(uo, codigo, preco:String; mostraMsg:boolean):TdataSet;
+   function getDadosProd(uo, cd_ref, is_ref, preco:String; mostraMsg:boolean):TdataSet;
    function getDadosUltEntItem(is_ref, uo:String):TdataSet;
    function getDataEntrada(entradas:TdataSet; primOuUlt:String):String;
    function getDescCaixas(uo:String; mostraTodos:boolean):TStrings;
@@ -31,6 +31,7 @@ interface
    function getEstoqueProduto(uo, is_ref, tipoSaldo:String; data:Tdate):String;
    function getFileFromACBR(server, dirRemoto, dirLocal, arquivo: String): boolean;
    function getFmDadosPessoa(codPerfil: String):String;
+   function getImagemProduto(is_ref:String):TdataSet;
    function getIsrefPorFaixaCodigo(cd_ref, numNivel, codCat:String; soAtivos:boolean):TdataSet;
    function getIsUo(mostraEscritorio:boolean):String;
    function getItensDeUmaNota(isNota:String):TDataSet;
@@ -41,6 +42,7 @@ interface
    function getPcProd(uo, codigo, preco:String):String;
    function getPreviaGeralCaixa(uo, caixa:String; dataI, dataF:Tdate; listaVendaPMaracanau, listaSomenteCartao, listaSangria:boolean):TDataSet;
    function getRRANAItem(is_ref, uo:String; dti, dtf:Tdate):TdataSet;
+   function getTelasPrograma():TstringList;
    function getTiposLogradouro():TStringlist;
    function getTotalDeEntradasProduto(Entradas:TdataSet; isFormatado:boolean):String;
    function getTotaisVendaAvaria(lojas:TadLabelComboBox; datai, dataf:Tdate; tabela:String):String;
@@ -51,7 +53,7 @@ interface
    function getVdItemDetPorLojaPeriodo(is_ref, uo, uocd:String; di, df:Tdate):TdataSet;
    function incluirCEP(CEP, cd_uf, cd_cid, cd_bai, tp_lograd, nm_log:String):boolean;
    function insereModPagamento (uo, seqTransacao, codNovaModalidade, valor, numParcelas,  dataTrans:String):boolean;
-   function insereRegistroTEF(uo, seqTransacao, seqModalidade, tp_mve, valor, numParcelas, dataTrans:String):boolean;
+   function insereRegistroTEF(uo, seqTransacao, seqModalidade, tp_mve, valor, numParcelas, dataTrans, nsu:String):boolean;
    function recalcularCmuItem(is_ref:String):String;
    function removeModPagamento(seqModalidade, seqTEFTransCaixa:String):boolean;
    function removeRegistroTef(seqTEFTransCaixa:String):boolean;
@@ -79,8 +81,19 @@ interface
    procedure logAlteracoesBD(conexao:TADOConnection; tela, usuario, alteracao:String);
    procedure listaNotasVendaDia(tabela, uo:String; di, df:Tdate);
    function getVendasEstornadas(uo, caixa:String; dti, dtf:Tdate):TdataSet;
+   function  getNsuTef():String;
+
+   procedure CarregaImagem(is_ref:String; image: TImage);
 
 implementation
+
+function getNsuTef():String;
+var
+  nsuTEF:String;
+begin
+    nsuTEF :=  InputBox('','Informe o número da NSU TEF ( se nao informar vou assumir como zero.','0') ;
+    result := nsuTEF;
+end;
 
 procedure carregaListarUosPorPreco(var clb: TadLabelCheckListBox; TpPreco:String);
 var
@@ -110,31 +123,45 @@ function getIsref(codigo:String):String;
 var
   cmd :String;
 begin
-   if (length(codigo) < 7 ) then
-      cmd := ' SELECT TOP 01 IS_REF FROM CREFE with(NoLock) WHERE is_REF= ' + CODIGO;
-   else
       cmd :=
       ' select ' +
-      ' COALESCE( (SELECT TOP 01 IS_REF FROM CREFE with(NoLock) WHERE CD_REF = @CODIGO ) ' +
-                 ',(SELECT top 01 IS_REF FROM DSCBR with(NoLock) WHERE CD_PESQ = @CODIGO /*AND TP_CDPESQ =1 */) as is_ref';
+      ' COALESCE( (SELECT TOP 01 IS_REF FROM CREFE with(NoLock) WHERE CD_REF = ' +quotedStr(codigo)+ ' ) ' +
+                 ',(SELECT top 01 IS_REF FROM DSCBR with(NoLock) WHERE CD_PESQ = ' +quotedStr(codigo)+ ' /*AND TP_CDPESQ =1 */)  ) as is_ref';
    result := funcSQL.openSQL(cmd, 'is_ref', fmMain.conexao);
 end;
 
-function getDadosProd(uo, codigo, preco:String; mostraMsg:boolean):TdataSet;
+function getImagemProduto(is_ref:String):TdataSet;
 var
-   is_ref, cmd:String;
+   cmd:String;
+begin
+   cmd :=
+   ' select c.is_ref, c.cd_ref, c.ds_ref , i.imagem from crefe c ' +
+   ' left join zcf_crefe_imagens i  on c.is_ref = i.is_ref ' +
+   ' where c.is_ref = ' + is_ref;
+   result := funcSQl.getDataSetQ(cmd, fmMain.Conexao);
+end;
+
+function getDadosProd(uo, cd_ref, is_ref, preco:String; mostraMsg:boolean):TdataSet;
+var
+   cmd:String;
    ds:TDataSet;
 begin
    ds:= TdataSet.Create(nil);
-   if(codigo = '') then
+   if(cd_ref = '') and (mostraMsg =true) then
       msgTela('', 'Digite um código', MB_ICONERROR + mb_ok)
    else
    begin
-      is_ref := getIsref(codigo);
+      if (is_ref = '') then
+        is_ref := getIsref(cd_ref);
 
-      if (is_ref <> '') then
+      if (is_ref = '') then
       begin
-        if (preco < 0) then
+         if (mostraMsg = true) then
+            msgTela('','Produto não cadastrado ('+ is_ref+')', MB_ICONERROR + MB_OK)
+      end
+      else
+      begin
+        if ( strToint(preco) < 0) then
            cmd := ' select top 01 crefe.cd_ref AS CODIGO,' +
                   ' dbo.Z_CF_obterEan(IS_REF)as EAN,'+
                   ' crefe.ds_ref AS DESCRICAO,'+
@@ -142,37 +169,38 @@ begin
                   ' 0 AS PRECO,' +
                   ' dbo.z_cf_estoqueNaLoja('+ is_ref +', '+uo+ ', 1) as EstoqueDisponivel,'+
                   ' cd_pes as fornecedor,'+
-                  ' qt_emb as Embalagem ,
+                  ' qt_emb as Embalagem,'+
                   ' categoria= coalesce((Select top 01 cd_vcampo from cccom with(nolock)  where cd_chave = crefe.is_ref and cd_campo = 1),0 ),'+
-                  ' crefe.ncn_sh'+
-                  ' from crefe with(NoLock) WHERE CREFE.is_ref= '+ is_ref;
+                  ' crefe.ncm_sh'+
+                  ' from crefe with(NoLock) WHERE CREFE.is_ref= '+ is_ref
          else
-         cmd :=
-         'select top 01  crefe.cd_ref AS CODIGO, dbo.Z_CF_obterEan(IS_REF)as EAN, crefe.ds_ref AS DESCRICAO, CREFE.IS_REF,
-      dbo.Z_CF_funObterPrecoProduto_CF( @pc, @Cod_interno, @uo, 0 ) AS PRECO,
-      dbo.z_cf_estoqueNaLoja( @cod_interno, @uo, 1 ) as EstoqueDisponivel, cd_pes as fornecedor, qt_emb as Embalagem,
-      categoria = coalesce((Select top 01 cd_vcampo from cccom with(nolock)  where cd_chave = crefe.is_ref and cd_campo = 1),0 )
-      from  crefe with(NoLock)
-      WHERE CREFE.is_ref = @cod_interno
-
-
-
-      end;
-
-
-      cmd := 'exec Z_CF_GetInformacoesProduto ' + quotedStr(codigo)  +', '+ uo + ', ' + preco;
-      ds:=  funcSQl.getDataSetQ(cmd, fmMain.Conexao);
-
-      if (ds.IsEmpty = true) and (mostraMsg = true) then
-         msgTela('','Produto não cadastrado', MB_ICONERROR + MB_OK);
+            cmd :=
+            ' select top 01' +
+            ' crefe.cd_ref AS CODIGO,'+
+            ' dbo.Z_CF_obterEan(IS_REF)as EAN,'+
+            ' crefe.ds_ref AS DESCRICAO,' +
+            ' CREFE.IS_REF,'+
+            ' dbo.Z_CF_funObterPrecoProduto_CF('+preco +', '+is_ref+' ,'+uo+', 0) AS PRECO,'+
+            ' dbo.z_cf_estoqueNaLoja(' +is_ref+', '+uo +',  1 ) as EstoqueDisponivel,'+
+            ' cd_pes as fornecedor,'+
+            ' qt_emb as Embalagem,'+
+            ' crefe.ncm_sh,'+
+            ' categoria = coalesce((Select top 01 cd_vcampo from cccom with(nolock)  where cd_chave = crefe.is_ref and cd_campo = 1),0 ) '+
+            ' from  crefe with(NoLock) '+
+            ' WHERE CREFE.is_ref = '+ is_ref;
+            ds:=  funcSQl.getDataSetQ(cmd, fmMain.Conexao);
+         end;
    end;
    result := ds;
 end;
+
 
 function getFileFromACBR(server, dirRemoto, dirLocal, arquivo: String): boolean;
 var
    comandos:Tstringlist;
 begin
+   fmMain.MsgStatus('Baixando arquivo:'+ dirRemoto);
+
    funcoes.gravaLog(' server: ' + server +#13+
                     '     arq:Remoto: ' + dirRemoto+arquivo+#13+
                     '     arq:Local: ' + dirLocal +'\'+arquivo );
@@ -201,6 +229,7 @@ begin
    deleteFile( pChar(extractFilePath(paramStr(0))+'logs\'+ 'comandosftp.txt'));
 
    result := fileExists(dirLocal +'\'+ arquivo);
+   fmMain.MsgStatus('');
 end;
 
 procedure calCulaPercentualDoFornecedor(var tb:TADOTable);
@@ -479,9 +508,9 @@ var
    cmd:String;
 begin
    if (cd_pes = '') then
-      cmd := 'Select top 100 is_cred, cd_pes as codigo, nm_razsoc as nome from dscre where  nm_razsoc like ' + quotedstr( nm_pes +'%') + ' order by nome'
+      cmd := 'Select top 50 is_cred, cd_pes as codigo, nm_razsoc as nome from dscre where  nm_razsoc like ' + quotedstr( nm_pes +'%') + ' order by nome'
    else
-      cmd := 'Select top 100 is_cred, cd_pes as codigo, nm_razsoc as nome from dscre where  is_cred = ' +  cd_pes + ' or cd_pes = ' + cd_pes + ' order by nome';
+      cmd := 'Select top 50 is_cred, cd_pes as codigo, nm_razsoc as nome from dscre where  is_cred = ' +  cd_pes + ' or cd_pes = ' + cd_pes + ' order by nome';
    result := funcSQL.getDataSetQ(CMD, fmMain.Conexao);
 end;
 
@@ -490,11 +519,11 @@ var
   cmd:String;
 begin
    if (cd_pes = '') then
-      cmd := 'select top 100 cd_pes as codigo, nm_pes as nome, tp_lograd +'' ''+ rtrim(ds_end) +'' ''+ nr_end +'' ''+ ds_bai +'' ''+  ds_cid as endereco  from dspes ' +
+      cmd := '/*busca pelo nome*/ select top 50 cd_pes as codigo, nm_pes as nome, tp_lograd +'' ''+ rtrim(ds_end) +'' ''+ nr_end +'' ''+ ds_bai +'' ''+  ds_cid as endereco  from dspes ' +
              ' where nm_pes like ' + quotedstr( nm_pes +'%') + 'order by nome'
    else
-      cmd := 'select top 100 cd_pes as codigo, nm_pes as nome, tp_lograd +'' ''+ rtrim(ds_end) +'' ''+ nr_end +'' ''+ ds_bai +'' ''+  ds_cid as endereco  from dspes ' +
-             ' where cd_pes  = ' + quotedstr( nm_pes ) + 'order by nome';
+      cmd := '/*busca pelo cd_ref*/ select top 50 cd_pes as codigo, nm_pes as nome, tp_lograd +'' ''+ rtrim(ds_end) +'' ''+ nr_end +'' ''+ ds_bai +'' ''+  ds_cid as endereco  from dspes ' +
+             ' where cd_pes= ' + quotedstr( cd_pes ) + ' order by nome';
    result := funcSQL.getDataSetQ(CMD, fmMain.Conexao);
 end;
 
@@ -870,10 +899,13 @@ begin
 end;
 
 
-function insereRegistroTEF(uo, seqTransacao, seqModalidade, tp_mve, valor, numParcelas, dataTrans:String):boolean;
+function insereRegistroTEF(uo, seqTransacao, seqModalidade, tp_mve, valor, numParcelas, dataTrans, nsu:String):boolean;
 var
    cmd:String;
 begin
+   if (nsu = '' )then
+     nsu := '0';
+
    cmd :=
    'insert tefTransCaixa( CodLoja, seqTransacaoCaixa, seqModPagtoPorTransCaixa, tp_Mve, valorTEF, numParcelas, '+
    'dataTransacao, nsu, tefMagnetico, flagMvtoProc, fl_tef) values( ' +
@@ -884,7 +916,7 @@ begin
    funcoes.valorSql(valor) +', '+
    numParcelas +', '+
    funcDatas.dateToSqlDate(dataTrans) +', '+
-   '-1' +', '+
+   nsu +', '+
    '0' +', '+
    '''P''' +', '+
    '0'
@@ -894,7 +926,7 @@ end;
 
 function insereModPagamento (uo, seqTransacao, codNovaModalidade, valor, numParcelas,  dataTrans:String):boolean;
 var
-   cmd, seqModPagtoPorTransCaixa:String;
+   nsuTEF, cmd, seqModPagtoPorTransCaixa:String;
 begin
    seqModPagtoPorTransCaixa := funcSQL.getContadorWell(fmMain.conexao, 'seqModPagtoPorTransCaixa');
 
@@ -912,7 +944,10 @@ begin
     funcSQL.ExecSQL(cmd, fmMain.conexao);
 
     if ( funcSQL.OpenSQL(' select cd_mve from dsmve where tp_mve in (''B'', ''T'') and cd_mve = ' + codNovaModalidade, 'cd_mve', fmMain.conexao) = codNovaModalidade ) then
-       insereRegistroTEF(uo, seqTransacao, seqModPagtoPorTransCaixa, codNovaModalidade, valor, numParcelas, dataTrans);
+    begin
+       nsuTEF := getNsuTef();
+       insereRegistroTEF(uo, seqTransacao, seqModPagtoPorTransCaixa, codNovaModalidade, valor, numParcelas, dataTrans, nsuTEf);
+    end;
     result := true;
 end;
 
@@ -920,8 +955,7 @@ end;
 function alterarModPagamento(uo, seqTransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String):boolean;
 var
    dsTEF:TdataSet;
-   cmd:String;
-
+   nsuTEF, cmd:String;
 begin
    dsTEF:= getDataSetQ('Select * from dsmve where cd_mve = ' + codNovaModalidade, fmMain.conexao);
 // remova o sequencial TEF antigp, se tiver
@@ -930,10 +964,13 @@ begin
 
 // determinar se a nova modalidade é em cartão, se sim, insere o registro TEF
    if (dsTEF.fieldByName('tp_mve').asString = 'B') or (dsTEF.fieldByName('tp_mve').asString = 'T') then
-      insereRegistroTEF(uo, seqTransacao, seqModalidade, dsTEF.fieldByName('tp_mve').asString, valor, numParcelas, dataTrans);
+   begin
+      nsuTEF := getNsuTef();
+      insereRegistroTEF(uo, seqTransacao, seqModalidade, dsTEF.fieldByName('tp_mve').asString, valor, numParcelas, dataTrans, nsuTEF);
+   end;
    dsTEF.free();
 
-   
+
 
    cmd := '  update ModalidadesPagtoPorTransCaixa'+
           '  set codModalidadePagto = ' + codNovaModalidade +
@@ -949,7 +986,7 @@ var
    aux:String;
 begin
    aux := '0';
-   ds := getDadosProd(uo, codigo, preco, true);
+   ds := getDadosProd(uo, codigo, '', preco, true);
    if (ds.isEmpty = false) then
       aux := ds.fieldbyName('preco').asString;
    ds.free();
@@ -997,28 +1034,43 @@ begin
    grid.columns[0].readonly := false;
 end;
 
-
 function getIsUo(mostraEscritorio:boolean):String;
 var
    aux:String;
 begin
-  aux := '';
-  Application.CreateForm(TfmSelecionaUo, fmSelecionaUo);
-  fmMain.getListaLojas( fmSelecionaUo.cbLojas, false, false, '');
+   Application.CreateForm(TfmSelecionaUo, fmSelecionaUo);
 
-  if (mostraEscritorio = true) then
-     fmSelecionaUo.cbLojas.Items.add(funcoes.preencheCampo(50,' ','D','Escritorio'));
+   aux := '';
+   fmMain.getListaLojas( fmSelecionaUo.cbLojas, false, false, '');
 
-  fmSelecionaUo.showModal();
-  if (fmSelecionaUo.modalResult = mrOk) then
-     aux:= funcoes.getCodUO(fmSelecionaUo.cbLojas);
+   if (mostraEscritorio = true) then
+      fmSelecionaUo.cbLojas.Items.add(funcoes.preencheCampo(50,' ','D','Escritorio'));
+
+   fmSelecionaUo.showModal();
+
+   if (fmSelecionaUo.modalResult = mrOk) then
+      aux:= funcoes.getCodUO(fmSelecionaUo.cbLojas);
+
   fmSelecionaUo := nil;
   result := aux;
 end;
 
 function getNomeImpressoraNFe():String;
+var
+   aux:String;
 begin
-   result := getParamBD('comum.impNFe', getIsUo(true), fmMain.conexao);
+   application.createForm(TfmListaImpNFE, fmListaImpNFE);
+   fmListaImpNFE.showModal();
+
+   if (fmListaImpNFE.modalResult = mrOk) then
+      aux:= fmListaImpNFE.cbLojas.items[fmListaImpNFE.cbLojas.itemIndex];
+
+   fmListaImpNFE := nil;
+
+   if (aux <> '') then
+      result := getParamBD('comum.impNFe_'+ aux, '', fmMain.conexao)
+   else
+      result :='';
 end;
 
 procedure getModalidadesCaixa(tb, tbDestino :TADOTable; cd_tpm, tp_mve: String);
@@ -1071,16 +1123,16 @@ function getVdItemDetPorLojaPeriodo(is_ref, uo, uocd:String; di, df:Tdate):Tdata
 var
    cmd:String;
 begin
-   gravaLog('funcao getVdItemDetPorLojaPeriodo()');
+   gravaLog('uCF.funcao getVdItemDetPorLojaPeriodo()');
 
    cmd :=
-   'Select UO.ds_uo as Loja, sum(qt_mov) as qt_mov from zcf_dsdsi V with(nolock) '+
-   'inner join zcf_tbuo UO (nolock) on V.is_estoque = UO.Is_uo '+
-   'where ' +
-   'V.dt_mov between '+
-   funcDatas.dateToSqlDate(di) +' and ' +
-   funcDatas.dateToSqlDate(df) +
-   'and V.is_ref =  ' + is_ref ;
+   ' Select UO.ds_uo as Loja, sum(qt_mov) as qt_mov from zcf_dsdsi V with(nolock)'+
+   ' inner join zcf_tbuo UO (nolock) on V.is_estoque = UO.Is_uo'+
+   ' where' +
+   ' V.dt_mov between'+
+   funcDatas.dateTimeToSqlDateTime(di, '00:00:00') + ' and ' +
+   funcDatas.dateTimeToSqlDateTime(df, '23:59:00') +
+   ' and V.is_ref =  ' + is_ref ;
 
    if (uo <> uocd) and (uo <> '') then
       cmd := cmd + ' and V.is_estoque = '+ uo;
@@ -1395,7 +1447,9 @@ begin
          ' where '+#13+
          ' dlest.is_estoque= ' + uo +#13+
          ' and dlest.is_ref = ' + is_ref  +#13+
-         ' and dt_mov between '+ funcDatas.dateToSqlDate(dti) + ' and ' + funcDatas.dateToSqlDate(dtF) + #13+
+         ' and dt_mov between '+
+         funcDatas.dateTimeToSqlDateTime(dti, '00:00:00') + ' and ' +
+         funcDatas.dateTimeToSqlDateTime(dtf, '23:59:00') +
          ' and dlest.is_tpcte= 6 ' +#13+
          ' and st_mov = '''' ' +#13+
          ' order by dlest.dt_mov ';
@@ -1453,7 +1507,7 @@ begin
          end;
          dsMov.free();
       end;
-      dsItem := uCF.getDadosProd(uo, is_refs[i], '101', false);
+      dsItem := uCF.getDadosProd(uo, '', is_refs[i], '101', false);
       tbItens.appendRecord([
                              dsItem.fieldByName('is_ref').asString,
                              dsItem.fieldByName('codigo').asString,
@@ -1526,6 +1580,7 @@ function getIsrefPorFaixaCodigo(cd_ref, numNivel, codCat:String; soAtivos:boolea
 var
   cmd:String;
 begin
+  funcoes.gravaLog('getIsrefPorFaixaCodigo()');
    cmd := 'Select is_ref from crefe (nolock)';
 
    if ( numNivel <> '0') then
@@ -1684,6 +1739,22 @@ begin
    end;
    ds.free;
    result := lst;
+end;
+
+function getTelasPrograma():TstringList;
+begin
+  result := funcSQL.getListagem('select tag from zcf_telas', fmMain.Conexao);
+end;
+
+procedure CarregaImagem(is_ref:String; image: TImage);
+var
+  dsImagem:TdataSet;
+begin
+   image.Picture.Assign(nil);
+   image.Refresh();
+   dsImagem := uCF.getImagemProduto( is_ref );
+   Image.Picture.Assign(dsImagem.FieldByName('imagem'));
+   dsImagem.free();
 end;
 
 

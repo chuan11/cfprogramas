@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, TFlatButtonUnit, StdCtrls, adLabelComboBox, ComCtrls,
-  adLabelDBDateTimePicker, DB, ADODB, Grids, DBGrids, SoftDBGrid,funcsql,funcoes,
+  adLabelDBDateTimePicker, DB, ADODB, Grids, DBGrids, SoftDBGrid,
   fCtrls, ExtCtrls, adLabelEdit;
 
 type
@@ -37,7 +37,8 @@ var
   fmConReqProduto: TfmConReqProduto;
   is_ref:String;
 implementation
-uses uMain;
+
+uses uMain, funcsql,funcoes, uCF;
 
 {$R *.dfm}
 
@@ -109,7 +110,7 @@ procedure TfmConReqProduto.FormCreate(Sender: TObject);
 begin
 //   cbLojas.Items := funcSql.GetNomeLojas(fmMain.Conexao,true,false,'','');
 
-   fmMain.getListaLojas(cbLojas, true, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLojas, true, false, fmMain.getCdPesLogado() );
 
    preparaParaConsultar(nil, '');
 end;

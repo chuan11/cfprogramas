@@ -45,7 +45,7 @@ uses uMain,   funcoes, funcsql, uCF;
 {$R *.dfm}
 procedure TfmTotalSaidas.FormCreate(Sender: TObject);
 begin
-   fmMain.getListaLojas(cbLoja, false, false, '');
+   uCF.getListaLojas(cbLoja, false, false, '');
 end;
 
 procedure TfmTotalSaidas.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -60,7 +60,7 @@ var
 begin
    if (lbDados.Caption = '') then
    begin
-      ds:= uCF.getDadosProd(uo, is_ref, '101', true);
+      ds:= uCF.getDadosProd(uo, '', is_ref, '101', false);
       lbDados.Caption := ds.fieldByName('codigo').AsString + '  '+
                          ds.fieldByName('descricao').AsString;
       ds.free();

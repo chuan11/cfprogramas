@@ -1426,8 +1426,11 @@ end;
 function execFileExternal(form:Tform;  arq:String):Boolean;
 var
   r:String;
+  cmd:String;
 begin
-   r := '';
+  gravaLog('start ' + arq);
+  result := (winexec(pchar('cmd.exe /c start ' + arq), sw_normal) > 31);
+{
    case  (ShellExecute(form.Handle, nil, PChar(arq), nil, nil, SW_SHOWNORMAL) ) of
       ERROR_FILE_NOT_FOUND, ERROR_PATH_NOT_FOUND: r := 'O arquivo não existe.';
       ERROR_BAD_FORMAT: r := 'O arquivo está corrompido.';
@@ -1442,6 +1445,7 @@ begin
     end
     else
        result := true;
+}
 end;
 
 

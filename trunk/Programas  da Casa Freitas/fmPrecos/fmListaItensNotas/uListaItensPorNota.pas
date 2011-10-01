@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, ADODB,
   TFlatButtonUnit, StdCtrls, adLabelEdit, adLabelComboBox,
-  Dialogs, funcoes, funcsql, Buttons, Grids, DBGrids, SoftDBGrid, DB,
+  Dialogs, Buttons, Grids, DBGrids, SoftDBGrid, DB,
   fCtrls, ScktComp;
 
 type
@@ -34,17 +34,16 @@ type
 
 var
   fmListaItensNota: TfmListaItensNota;
-  gravaDadosSocket:boolean;
+
 implementation
 
-uses uMain, Uprecoswell, uCF, Math;
+uses uCF, Math, funcoes, funcsql;
 
 {$R *.dfm}
 
-
 procedure TfmListaItensNota.FormCreate(Sender: TObject);
 begin
-   fmMain.getListaLojas(cbLoja, false, false, '');
+   uCF.getListaLojas(cbLoja, false, false, '');
 end;
 
 procedure TfmListaItensNota.getIsNota;

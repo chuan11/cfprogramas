@@ -79,18 +79,15 @@ begin
    fmMain.getParametrosForm(fmFaturamento);
 
 
-   btExportar.Visible := not(isAcessoRestrito);
-   btImprime.Visible := not(isAcessoRestrito);
-   lbAte.Visible := not(isAcessoRestrito);
-   dataf.Visible := not(isAcessoRestrito);
+//   lbAte.Visible := not(isAcessoRestrito);
+//   dataf.Visible := not(isAcessoRestrito);
 
    if (isAcessoRestrito = true) then
    begin
-      GroupBox1.Width := datai.Width  + 20;
+      btImprime.Visible := false;
+      btExportar.Visible := false;
       btExportar.Visible := false;
       btImprime.Visible := false;
-      lbAte.Visible := false;
-      dataf.Visible := false;
       cbListaVdMaracanau.Visible := false;
    end;
 end;
@@ -384,15 +381,21 @@ var
    canExecute:Boolean;
 begin
    canExecute := true;
-   if ( (dataf.Date < datai.Date) or ( (dataf.Date - datai.Date) > 30 ) ) then
+   if ( (dataf.Date - datai.Date) > 31 ) then
    begin
-      funcoes.msgTela('', 'Intervalo de data inválido.', MB_ICONERROR + MB_OK);
+      funcoes.msgTela('', MSG_PER_MQ_31D, MB_ICONERROR + MB_OK);
+      canExecute := false;
+   end;
+
+   if (dataf.Date < datai.Date)  then
+   begin
+      funcoes.msgTela('', MSG_DATA1_MAIORQ_DATA2, MB_ICONERROR + MB_OK);
       canExecute := false;
    end;
 
    if (canExecute = true) then
       if (isAcessoRestrito = true) then
-        if (permiteExecutarAVL = false) then
+        if (permiteExecutarAVL() = false) then
            canExecute := false;
 
    if( canExecute = true) then
