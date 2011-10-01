@@ -1,0 +1,24 @@
+unit uListaImpNFE;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uSelecionaUo, StdCtrls, Buttons, fCtrls, adLabelComboBox;
+
+type
+  TfmListaImpNFE = class(TfmSelecionaUo)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  fmListaImpNFE: TfmListaImpNFE;
+
+implementation
+
+{$R *.dfm}
+
+end.

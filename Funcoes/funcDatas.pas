@@ -16,6 +16,7 @@ interface
    function nomeDoDia(data:String; isDataAbreviada:boolean):String;
    function strToSqlDate(Str:string):string;
    function SQLDateTimeToStrDateTime(strSQLDateTime:String):String;
+   function getAnoMes(data:String):String;
 
 implementation
 
@@ -78,7 +79,6 @@ begin
    result := mesAno;
 end;
 
-
 function StrToSqlDate(Str:string):string;
 var
    aux:string;
@@ -90,10 +90,10 @@ begin
       aux := copy(Str,07,04) + '-' + copy(Str,04,02) +'-'+ copy(Str,01,02);
       if pos(' ',str) = 0 then
          aux  := quotedStr(aux);
-      result := aux;
+
+       result := aux;
    end;
 end;
-
 
 function DateToSqlDate(data:Tdate):string;
 begin
@@ -105,23 +105,25 @@ begin
    result := StrToSqlDate(data);
 end;
 
-function DateTimeToSqlDateTime(data,hora:string):string; OverLoad;
-var
-   aux:String;
+function DateTimeToSqlDateTime(data, hora:string):string; OverLoad;
 begin
-  if hora = '' then hora := ' 00:00:00';
-   aux := dateToSqldate( StrToDate(data));
-   insert(' '+hora, aux, length(aux));
-   Result := aux;
+  if (hora = '' ) then
+     hora := '00:00:00';
+   data := dateToSqldate(strToDate(data));
+   data := trim(data);
+   hora := trim(hora);
+   Result := data + ' ' + hora + '*';
 end;
 
 
 function DateTimeToSqlDateTime(data:Tdate; hora:string):string; Overload;
 var
-  aux:string;
+   aux:String;
 begin
+   if (hora = '' ) then
+      hora := '00:00:00';
    aux := DateToSqlDate(data);
-   insert( hora, aux, length(aux));
+   insert(' '+ hora, aux, length(aux) );
    result := aux;
 end;
 
@@ -189,6 +191,13 @@ begin
              copy(strSQLDateTime, 06, 02) +'/'+
              copy(strSQLDateTime, 01, 04) +' '+
              copy(strSQLDateTime, 12, 08);
+end;
+
+function getAnoMes(data:String):String;
+begin
+   result :=
+   copy((data), 07, 04)+
+   copy((data), 04, 02);
 end;
 
 end.

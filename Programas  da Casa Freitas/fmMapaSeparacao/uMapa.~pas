@@ -45,7 +45,7 @@ type
     Inserir1: TMenuItem;
 
     function errosDeSeparacao(Sender:Tobject):Boolean;
-    function GeraRequisicoes(Sender:Tobject; autorizador:String):String;
+    function GeraRequisicoes(autorizador:String):String;
     function validaQuantidade(Sender:Tobject; alteraValores,mostraErro:boolean):boolean;
     procedure Abrir1Click(Sender: TObject);
     procedure Aprovar1Click(Sender: TObject);
@@ -105,7 +105,7 @@ begin
    if soma > tb.fieldByName('Estoque').asinteger then
       erro := 'A soma dos separados excede a quantidade disponivel.';
 
-   if alteraValores = true then
+   if (alteraValores = true) then
    begin
       tb.Edit;
       tb.FieldByName('saldo').asInteger := tb.FieldByName('Estoque').asInteger - soma;
@@ -162,7 +162,7 @@ var
    dsItem:TdataSet;
    numMapa,cmd:String;
 begin
-   dsItem :=  uCF.getDadosProd(fmMain.getUoLogada(), codigo, '5', true);
+   dsItem :=  uCF.getDadosProd(fmMain.getUoLogada(), codigo, '', '5', true);
    if ( dsItem.IsEmpty=false ) then
    begin
       numMapa := lbNumMp.Caption;
@@ -468,7 +468,7 @@ begin
          grid.SelectedIndex  := 7;
 end;
 
-function TfmMapa.GeraRequisicoes(Sender: Tobject; autorizador:String):String;
+function TfmMapa.GeraRequisicoes(autorizador:String):String;
 var
    QT_DIAS_PEND, i:integer;
    tbReq:TADOTable;
@@ -539,6 +539,11 @@ begin
        nTbReq := nTbReq + lj + #13;
    end;
 
+   if (ocoItens.Count  > 0) then
+   begin
+       {}
+   end;
+
    ocoItens.free;
    msgTela('','Foram Geradas as requisicoes: ' + #13 + nTbReq, MB_OK + MB_ICONEXCLAMATION );
    result := nTbReq;
@@ -560,12 +565,13 @@ begin
          if errosDeSeparacao(nil) = false then
          begin
             aut := VerificaSenhas.TelaAutorizacao2(fmMain.Conexao, '-1', getParamBD('autorizadoresAvarias','', fmMain.Conexao) + lbCodCriador.Caption);
-            if  aut <> '' then
+            if  (aut <> '') then
             begin
               aut := 'update zcf_mapaSeparacao set ehFinalizada = 1 , aprovador = '+aut+ ' , historico = ' + funcoes.getLinhasMemo(mmObs.Lines) +
-                     ' , requisicoes = ' + quotedStr( GeraRequisicoes(nil, aut) ) +  ' where num = ' + lbNumMp.Caption;
-              funcsql.execSQL(aut,fmMain.Conexao);
-              CarregaMapa( lbNumMp.Caption);
+                     ' , requisicoes = ' + quotedStr( geraRequisicoes(aut) ) +  ' where num = ' + lbNumMp.Caption;
+
+              funcsql.execSQL(aut, fmMain.Conexao);
+              carregaMapa( lbNumMp.Caption);
             end
             else
                fmMain.MsgStatus(lbStatus.Caption);

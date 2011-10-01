@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, funcoes, funcsql,
   Dialogs, StdCtrls, adLabelComboBox, TFlatButtonUnit, ExtCtrls, adodb, db,
   adLabelEdit, adLabelNumericEdit, ComCtrls, fCtrls, Buttons, Grids,
-  DBGrids, SoftDBGrid, Menus, uGetNotas, funcDatas;
+  DBGrids, SoftDBGrid, Menus, {uGetNotas,} funcDatas;
 
 type
   TfmAjustaNota = class(TForm)
@@ -51,6 +51,8 @@ type
     Label2: TLabel;
     lbCriador: TLabel;
     btDeleteXML: TfsBitBtn;
+    dtEntSai: TfsDateTimePicker;
+    Label5: TLabel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FlatButton1Click(Sender: TObject);
     procedure btEmisDestClick(Sender: TObject);
@@ -112,6 +114,7 @@ begin
      edCFO.text := ds.fieldByname('cd_cfo').asString;
      edVlDEspExtra.Value := ds.fieldByname('VL_DSPEXTRA').AsFloat;
      dtEmiss.Date := ds.fieldByname('dt_emis').AsDateTime;
+     dtEntSai.date := ds.fieldByname('dt_entsai').AsDateTime;
      lbIsEstoque.caption := ds.fieldByname('is_estoque').AsString;
      cbCancelada.Checked := ( ds.fieldByname('st_nf').AsString = 'C');
      edObservacao.Text := ds.fieldByname('observacao').AsString;
@@ -169,10 +172,19 @@ begin
 
       if (codigo <> '') then
       begin
-         ds := uCF.getDadosFornecedor(codigo,'');
-         lbCodPes.caption := ds.FieldByName('codigo').asString;
-         edEmitDest.text := ds.FieldByName('nome').asString;
-         ds.Destroy();
+         if (lbTipo.Caption = 'Entrada') then
+         begin
+            ds := uCF.getDadosFornecedor(codigo, '');
+            lbCodPes.caption := ds.FieldByName('codigo').asString;
+            edEmitDest.text := ds.FieldByName('nome').asString;
+         end
+         else
+         begin
+            ds := uCF.getDadosCliente(codigo, '');
+            lbCodPes.caption := ds.FieldByName('codigo').asString;
+            edEmitDest.text := ds.FieldByName('nome').asString;
+         end;
+         ds.free();
       end;
    end;
 end;
@@ -212,7 +224,7 @@ var
 begin
    btCancelaClick(nil);
    cmd := '';
-   cmd := uGetNotas.getIsNota();
+   cmd := uCF.getIsNota();
 
    if cmd <> '' then
       pesquisaNota(cmd)
@@ -294,6 +306,7 @@ begin
 
          cmd :=   cmd + ' VL_DSPEXTRA = '  +  funcoes.ValorSql( floatToStr(edVlDEspExtra.value) ) + ' , ' +
                 ' dt_emis = ' + funcoes.DateTimeToSqlDateTime(dtEmiss.Date,'') +', '+
+                ' dt_entSai = ' + funcoes.DateTimeToSqlDateTime(dtEntSai.Date,'') +', '+
                 ' st_nf = ' + quotedStr(strStNota) +', '+
                 ' observacao = ' + quotedStr(edObservacao.Text) +
                 ' where is_nota in ( ' + edIsNota.Text + ' )';

@@ -63,7 +63,7 @@ uses uAvarias, umain, uMapa, uCF;
 
 procedure TfmAbrirAvaria.FormCreate(Sender: TObject);
 begin
-   fmMain.getListaLojas(cbLojas, true, false, '' );
+   uCF.getListaLojas(cbLojas, true, false, '' );
    dti.Date := strToDate('01/' + copy(dateToStr(now),04,07));
    dtf.Date := now;
 end;

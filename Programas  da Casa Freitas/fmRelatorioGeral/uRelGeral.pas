@@ -120,7 +120,7 @@ begin
    dti.Date := now;
    dtf.Date := now;
 
-   fmMain.getListaLojas( cbLojas, true, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas( cbLojas, true, false, fmMain.getCdPesLogado() );
    fmRelGeral.caption := 'Valores totais de avarias.';
    cbDetAvaForn.visible := true;
    cbCaixas.visible := false;
@@ -229,7 +229,7 @@ end;
 
 procedure TfmRelGeral.FormShow(Sender: TObject);
 begin
-   fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
 end;
 
 

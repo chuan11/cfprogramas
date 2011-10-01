@@ -48,7 +48,7 @@ end;
 
 procedure TfmResumoECF.FormActivate(Sender: TObject);
 begin
-   fmMain.getListaLojas( cbLojas, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas( cbLojas, false, false, fmMain.getCdPesLogado() );
    datai.Date := now;
 end;
 

@@ -75,7 +75,7 @@ end;
 
 procedure TfmCriarMapa.FormCreate(Sender: TObject);
 begin
-   fmMain.getListaLojas( cbLoja, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas( cbLoja, false, false, fmMain.getCdPesLogado() );
 
    cbPreco.Items := funcSQl.getListaPrecos(fmMain.Conexao,true,true,false, fmMain.getGrupoLogado());
    cbPreco.ItemIndex :=0;

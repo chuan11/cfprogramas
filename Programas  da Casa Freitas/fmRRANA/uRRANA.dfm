@@ -1,21 +1,13 @@
 inherited fmRelGeral1: TfmRelGeral1
   Caption = 'Raz'#227'o anal'#237'tico RRANA'
+  OldCreateOrder = True
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   inherited btOk: TFlatButton
     TabOrder = 5
   end
-  inherited GroupBox1: TGroupBox
-    TabOrder = 1
-  end
-  inherited cbDetAvaForn: TfsCheckBox
-    TabOrder = 2
-  end
-  inherited cbCaixas: TadLabelComboBox
-    TabOrder = 3
-  end
-  object edCodigo: TadLabelEdit [5]
+  object edCodigo: TadLabelEdit [2]
     Left = 9
     Top = 98
     Width = 156
@@ -33,6 +25,15 @@ inherited fmRelGeral1: TfmRelGeral1
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 4
+  end
+  inherited GroupBox1: TGroupBox
+    TabOrder = 1
+  end
+  inherited cbDetAvaForn: TfsCheckBox
+    TabOrder = 2
+  end
+  inherited cbCaixas: TadLabelComboBox
+    TabOrder = 3
   end
   inherited qr: TADOQuery
     Top = 160

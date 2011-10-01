@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, adLabelComboBox, Buttons, fCtrls;
+  Dialogs, StdCtrls, adLabelComboBox, Buttons, fCtrls, DB, ADODB, Grids,
+  DBGrids, SoftDBGrid;
 
 type
   TfmSelecionaUo = class(TForm)
@@ -24,5 +25,9 @@ implementation
 uses uCF;
 
 {$R *.dfm}
+
+{ TfmSelecionaUo }
+
+{ TfmSelecionaUo }
 
 end.

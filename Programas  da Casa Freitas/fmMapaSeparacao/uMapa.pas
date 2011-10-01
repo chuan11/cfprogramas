@@ -162,7 +162,7 @@ var
    dsItem:TdataSet;
    numMapa,cmd:String;
 begin
-   dsItem :=  uCF.getDadosProd(fmMain.getUoLogada(), codigo, '5', true);
+   dsItem :=  uCF.getDadosProd(fmMain.getUoLogada(), codigo, '', '5', true);
    if ( dsItem.IsEmpty=false ) then
    begin
       numMapa := lbNumMp.Caption;

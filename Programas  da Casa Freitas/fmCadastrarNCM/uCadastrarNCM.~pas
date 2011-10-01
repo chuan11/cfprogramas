@@ -18,6 +18,7 @@ type
     procedure carregaItensNota(isNota:String);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure fsBitBtn1Click(Sender: TObject);
+    procedure gRidResultKeyPress(Sender: TObject; var Key: Char);
   private
     { Private declarations }
   public
@@ -29,7 +30,7 @@ var
 
 implementation
 
-USES uCF, uGetNotas, uMain;
+USES uCF, uMain;
 
 {$R *.dfm}
 
@@ -44,6 +45,7 @@ begin
    tb.FieldByName('is_ref').Visible := false;
    tb.FieldByName('codigo').ReadOnly := true;
    tb.FieldByName('descricao').ReadOnly := true;
+   gRidResult.Columns[ tb.FieldByName('descricao').Index ].Width := 100;
    tb.First();
 end;
 
@@ -51,7 +53,7 @@ procedure TfmCadastraNCM.FlatButton1Click(Sender: TObject);
 var
    cmd:String;
 begin
-   cmd := uGetNotas.getIsNota();
+   cmd := uCF.getIsNota();
    if (cmd <> '' )then
       carregaItensNota(cmd);
 end;
@@ -73,6 +75,12 @@ begin
          msgTela('', 'O NCM deve ter exatamente 08 caracteres. ', 0 );
       tb.Next;
    end
+end;
+
+procedure TfmCadastraNCM.gRidResultKeyPress(Sender: TObject; var Key: Char);
+begin
+   if key in ['0'..'9'] = false  then
+     key := #0;
 end;
 
 end.

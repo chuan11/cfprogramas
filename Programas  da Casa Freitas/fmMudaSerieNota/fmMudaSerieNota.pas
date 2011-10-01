@@ -30,13 +30,13 @@ var
 
 implementation
 
-uses uMain, funcoes, funcSQL;
+uses uMain, funcoes, funcSQL, uCF;
 
 {$R *.dfm}
 
 procedure TfmAjustaSerie.FormActivate(Sender: TObject);
 begin
-   fmMain.getListaLojas(cbLoja, false, false, '');
+   uCF.getListaLojas(cbLoja, false, false, '');
    cbLoja.ItemIndex := -1;
 end;
 

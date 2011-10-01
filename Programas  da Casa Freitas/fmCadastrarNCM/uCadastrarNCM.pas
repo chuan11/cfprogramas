@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DB, ADODB, Grids, DBGrids, SoftDBGrid, TFlatButtonUnit, funcoes, funcSQL, uUtil,
+  Dialogs, DB, ADODB, Grids, DBGrids, SoftDBGrid, TFlatButtonUnit, funcoes, funcSQL,
   StdCtrls, Buttons, fCtrls;
 
 type
@@ -30,7 +30,7 @@ var
 
 implementation
 
-USES uCF, uGetNotas, uMain;
+USES uCF, uMain;
 
 {$R *.dfm}
 
@@ -53,7 +53,7 @@ procedure TfmCadastraNCM.FlatButton1Click(Sender: TObject);
 var
    cmd:String;
 begin
-   cmd := uGetNotas.getIsNota();
+   cmd := uCF.getIsNota();
    if (cmd <> '' )then
       carregaItensNota(cmd);
 end;

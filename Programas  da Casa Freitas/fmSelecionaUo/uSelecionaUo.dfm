@@ -1,8 +1,8 @@
 object fmSelecionaUo: TfmSelecionaUo
-  Left = 541
-  Top = 270
-  Width = 267
-  Height = 116
+  Left = 652
+  Top = 289
+  Width = 216
+  Height = 130
   BorderIcons = [biSystemMenu]
   Caption = 'Selecione a loja.'
   Color = clBtnFace
@@ -18,7 +18,7 @@ object fmSelecionaUo: TfmSelecionaUo
   object cbLojas: TadLabelComboBox
     Left = 7
     Top = 26
-    Width = 170
+    Width = 186
     Height = 21
     AutoCloseUp = True
     BevelInner = bvNone
@@ -35,15 +35,15 @@ object fmSelecionaUo: TfmSelecionaUo
     ParentCtl3D = False
     ParentFont = False
     TabOrder = 0
-    LabelDefs.Width = 28
+    LabelDefs.Width = 20
     LabelDefs.Height = 13
-    LabelDefs.Caption = '&Preco'
+    LabelDefs.Caption = '&Loja'
     Colors.WhenEnterFocus.BackColor = clWindow
     Colors.WhenExitFocus.BackColor = clInfoBk
   end
   object btIncluiXML: TfsBitBtn
-    Left = 199
-    Top = 25
+    Left = 155
+    Top = 50
     Width = 38
     Height = 24
     Default = True

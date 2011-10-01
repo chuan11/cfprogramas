@@ -41,7 +41,8 @@ var
   fmNotasTransf: TfmNotasTransf;
 
 implementation
-uses uMain;
+
+uses uMain, uCF;
 {$R *.dfm}
 
 procedure TfmNotasTransf.btOkClick(Sender: TObject);
@@ -121,7 +122,7 @@ begin
    tb.TableName := funcsql.criaTabelaTemporaria(fmMain.Conexao, '( is_nota int primary key, [Data Emissao] varchar(10), [Loja] varchar(40), [Serie] varchar(03), [Nota] varchar(06), [Valor] money, [Data Recebimento] varchar(10)) ');
    tb.Open;
 
-   fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
 
    grid.Columns[0].Visible := false;
    Reiniciaroprocessoderecebimento1.Enabled := not(fmMain.isGrupoRestrito(106));

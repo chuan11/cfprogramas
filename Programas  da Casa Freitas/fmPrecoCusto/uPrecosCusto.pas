@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, adLabelComboBox, DB, ADODB,funcoes,FuncSQL, Grids,
   DBGrids, SoftDBGrid, adLabelEdit, adLabelNumericEdit, TFlatButtonUnit,
-  TFlatCheckBoxUnit, fCtrls, uGetNotas, adLabelSpinEdit;
+  TFlatCheckBoxUnit, fCtrls, adLabelSpinEdit;
 
 type
   TfmPrecoCustos = class(TForm)
@@ -445,7 +445,7 @@ var
   cmd:String;
 begin
    cmd := '';
-   cmd := uGetNotas.getIsNota();
+   cmd := uCF.getIsNota();
    if cmd <> '' then
    begin
       if (TipoAjuste = '1') then
@@ -465,7 +465,7 @@ end;
 procedure TfmPrecoCustos.FormCreate(Sender: TObject);
 begin
    fmMain.getParametrosForm(fmPrecoCustos);
-   fmMain.getListaLojas(cbLoja, true , false, '');
+   uCF.getListaLojas(cbLoja, true , false, '');
 
    UO_CD := fmMain.getParamBD('uoCd','');
    CD_PES_EMP :=  fmMain.getParamBD('comum.codEmpresa','');

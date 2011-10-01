@@ -1,22 +1,27 @@
-object Form3: TForm3
+object fmAjustaSerie: TfmAjustaSerie
   Left = 378
-  Top = 330
-  Width = 1142
-  Height = 656
-  Caption = 'Form3'
+  Top = 327
+  Width = 582
+  Height = 335
+  Caption = 'fmAjustaSerie'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  FormStyle = fsMDIChild
   OldCreateOrder = False
+  Position = poDefault
+  Visible = True
+  WindowState = wsMaximized
   OnActivate = FormActivate
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
   object cbLoja: TadLabelComboBox
     Left = 13
-    Top = 29
+    Top = 30
     Width = 164
     Height = 21
     BevelInner = bvLowered
@@ -38,13 +43,15 @@ object Form3: TForm3
   end
   object Panel1: TPanel
     Left = 181
-    Top = 4
+    Top = -1
     Width = 284
     Height = 129
+    BevelOuter = bvNone
     TabOrder = 1
-    object adLabelComboBox1: TadLabelComboBox
+    Visible = False
+    object cbTipoSerie: TadLabelComboBox
       Left = 12
-      Top = 26
+      Top = 30
       Width = 164
       Height = 21
       BevelInner = bvLowered
@@ -69,9 +76,8 @@ object Form3: TForm3
     object btOk: TFlatButton
       Left = 211
       Top = 94
-      Width = 66
+      Width = 50
       Height = 26
-      Caption = '&OK'
       Glyph.Data = {
         96010000424D9601000000000000760000002800000018000000180000000100
         04000000000020010000C40E0000C40E00001000000000000000000000000000
@@ -88,13 +94,13 @@ object Form3: TForm3
         DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD}
       Layout = blGlyphLeft
       TabOrder = 1
+      OnClick = btOkClick
     end
     object FlatButton1: TFlatButton
-      Left = 128
+      Left = 155
       Top = 94
-      Width = 70
+      Width = 50
       Height = 26
-      Caption = '&OK'
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
         0400000000006801000000000000000000001000000000000000000000000000
@@ -115,6 +121,7 @@ object Form3: TForm3
       Layout = blGlyphLeft
       NumGlyphs = 2
       TabOrder = 2
+      OnClick = FlatButton1Click
     end
   end
 end

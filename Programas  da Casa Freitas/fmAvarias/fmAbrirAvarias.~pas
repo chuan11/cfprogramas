@@ -256,7 +256,7 @@ begin
    qrCabeca.open;
    qrCorpo.Open;
    params.Add(boolToStr(cbImpCustoAvaria.Checked,true));
-   fmMain.impressaoRaveQr2( qrCabeca, qrCorpo,'rpAvarias', params )
+   fmMain.impressaoRaveQr4( qrCabeca, qrCorpo, nil, nil, 'rpAvarias', params )
 end;
 
 procedure TfmAbrirAvaria.abrirMapa(Sender: Tobject);

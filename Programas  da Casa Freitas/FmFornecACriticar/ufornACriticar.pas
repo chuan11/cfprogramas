@@ -60,7 +60,7 @@ var
   cod:String;
   ds:TdataSet;
 begin
-   cod := uCF .getFmDadosPessoa('F');
+{   cod := uCF .getFmDadosPessoa('F');
    if ( cod <> '') then
    begin
       ds := uCF.getDadosFornecedor(cod,'');
@@ -71,6 +71,7 @@ begin
                      );
       ds.Destroy();
    end;
+}   
 end;
 
 procedure TfmFornACriticar.fsBitBtn2Click(Sender: TObject);

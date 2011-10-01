@@ -55,10 +55,8 @@ type
     procedure removerModalidadePagamento();
     procedure RemoveModalidaDedePagamento1Click(Sender: TObject);
     procedure removeRegistroTEF();
-    procedure edBuscaKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-
-    procedure carregaCampos(form:TForm);
+    procedure edBuscaKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure cbLojasClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -76,16 +74,11 @@ implementation
 uses uMain, funcoes, funcSQL, uCF, uAlteraModalidadePagto;
 
 
-procedure TfmRemRegTEF.carregaCampos(form: TForm);
-begin
-   dt.Date := now;
-   funcoes.carregaCampos(form);
-   fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
-end;
-
 procedure TfmRemRegTEF.FormCreate(Sender: TObject);
-begin //
-   carregaCampos(fmRemRegTEF);
+begin
+   funcoes.carregaCampos(fmRemRegTEF);
+   uCF.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
+   dt.Date := now;
 end;
 
 procedure TfmRemRegTEF.ajustaColunas;
@@ -114,8 +107,8 @@ end;
 
 procedure TfmRemRegTEF.btConsultaClick(Sender: TObject);
 begin
-   cbCaixas.Items := uCF.getDescCaixas( funcoes.getCodUO(cbLojas) , true);
-   cbCaixas.ItemIndex := -1;
+//   cbCaixas.Items := uCF.getDescCaixas( funcoes.getCodUO(cbLojas) , true);
+//   cbCaixas.ItemIndex := -1;
 
    if (cbModalidade.Items.Count = 0) then
    begin
@@ -123,12 +116,14 @@ begin
       cbModalidade.ItemIndex := -1;
    end;
 
-   cbCaixas.ItemIndex:= 0;
-   cbModalidade.ItemIndex := 0;
+//   cbCaixas.ItemIndex:= 0;
+//   cbModalidade.ItemIndex := 0;
+
    uCF.listaRecebimentosCaixa( tb, funcoes.getCodUO(cbLojas), '', dt, dt, false, true, false);
    tb.Close();
    tb.Open();
    ajustaColunas();
+   filtrarTable();
 end;
 
 procedure TfmRemRegTEF.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -183,13 +178,13 @@ begin
                                    tb.FieldByName('dataSessaoCaixa').asString
                                  )  = true ) then
       begin
-         cmd:= 'Alteração modalidade, loja = ' + tb.FieldByName('codLoja').AsString +
-               ' data: ' + tb.FieldByName('dataSessaoCaixa').asString +
+         cmd:= 'Alt mod, uo=' + tb.FieldByName('codLoja').AsString +
+               ' dt: ' + tb.FieldByName('dataSessaoCaixa').asString +
                ' SeqModPagtoPorTransCaixa: '+ tb.FieldByName('SeqModPagtoPorTransCaixa').AsString +
-               ' Dados: ' + descModAnt +'/'+ valorAnt +' '+ nParcelasAnt+ 'Paracelas' +
-               ' Para: '+ descMod +'/'+ valor +' ' + nParcelas + 'Paracelas';
+               ' De: mod:' + trim(descModAnt) +' vl:'+ valorAnt +'parc: '+ nParcelasAnt +
+               ' Para mod:' +trim(descMod) +' valor:'+ valor +' Parc:' + nParcelas;
 
-         logAlteracoesBD( fmMain.conexao, fmRemRegTEF.Name, fmMain.getNomeUsuario(), cmd);
+         uCF.logAlteracoesBD( fmMain.conexao, fmRemRegTEF.Name, fmMain.getNomeUsuario(), cmd);
          msgTela('','Dados alterados, para ver a alteração gere o dia novamente! ', MB_OK  + MB_ICONEXCLAMATION);
       end
       else
@@ -235,7 +230,8 @@ end;
 
 procedure TfmRemRegTEF.cbCaixasChange(Sender: TObject);
 begin
-   filtrarTable();
+   if (tb.IsEmpty = false) then
+      filtrarTable();
 end;
 
 procedure TfmRemRegTEF.removeRegistroDeTEF1Click(Sender: TObject);
@@ -366,5 +362,10 @@ begin
       filtrarTable();
 end;
 
+
+procedure TfmRemRegTEF.cbLojasClick(Sender: TObject);
+begin
+   cbCaixas.Items := uCF.getDescCaixas( funcoes.getCodUO(cbLojas) , true);
+end;
 
 end.

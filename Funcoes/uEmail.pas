@@ -3,7 +3,7 @@ unit uEmail;
 interface
   uses dialogs, forms, Classes, SysUtils, IdBaseComponent, IdComponent, messages,ADODB,
   IdTCPConnection, IdTCPClient, IdMessageClient, IdSMTP,
-  IdMessage, funcoes, IdIOHandler, IdIOHandlerSocket, IdSSLOpenSSL, funcSQl;
+  IdMessage, IdIOHandler, IdIOHandlerSocket, IdSSLOpenSSL;
 
   procedure enviarEmail( para,assunto,anexo:String; corpoMsg:Tstringlist; conexao:TADOConnection);
   procedure enviarEmailGmail( para,assunto,anexo:String; corpoMsg:Tstringlist; conexao:TADOConnection; uoSender, pesSender:String);
@@ -11,7 +11,7 @@ interface
 
 
 implementation
-uses uMain, uDestinoEmail;
+uses uMain, uDestinoEmail, funcsql, funcoes, uCF;
 
 
 procedure enviarEmail( para,assunto,anexo:String; corpoMsg:Tstringlist; conexao:TADOConnection);
@@ -80,9 +80,8 @@ var
    str:String;
 begin
    application.CreateForm(TfmDestEmail, fmDestEmail);
-//   fmDestEmail.cbLoja.Items := funcsql.GetNomeLojas(conexao, false,false,'','');
 
-   fmMain.getListaLojas(fmDestEmail.cbLoja, false, false, '' );
+   uCF.getListaLojas(fmDestEmail.cbLoja, false, false, '' );
 
    fmDestEmail.cbLoja.ItemIndex := 0;
    fmDestEmail.ShowModal;

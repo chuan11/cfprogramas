@@ -20,6 +20,7 @@ type
     procedure cbParametrosChange(Sender: TObject);
     procedure carregaComboParametros();
     procedure btIncluiXMLClick(Sender: TObject);
+    procedure gdParamDblClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -31,7 +32,7 @@ var
 
 implementation
 
-uses uMain;
+uses uMain, funcoes;
 
 {$R *.dfm}
 
@@ -83,12 +84,18 @@ procedure TfmParametros.btIncluiXMLClick(Sender: TObject);
 var
   str:String;
 begin
-   str := InputBox('','informe o nome do parâmetro','');
+   str := InputBox('', 'informe o nome do parâmetro', '');
    if (str <> '') then
    begin
-      str:= 'insert zcf_paramgerais select ' + quotedStr(str)+', is_uo, '''' , '''' from zcf_tbuo';
+      str:= 'insert zcf_paramgerais select ' + quotedStr(str)+', is_uo, '''' , ds_uo from tbuo where tp_estoque in (1, 2)';
       funcsql.execSQL(str, fmMain.Conexao);
    end;
+end;
+
+procedure TfmParametros.gdParamDblClick(Sender: TObject);
+begin
+   if (funcoes.msgTela('','Remove esse parametro ?' , mb_Iconquestion + Mb_Yesno) = mrYes) then
+      tbParam.Delete();
 end;
 
 end.

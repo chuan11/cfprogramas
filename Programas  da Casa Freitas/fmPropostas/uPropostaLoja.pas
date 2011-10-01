@@ -77,7 +77,7 @@ procedure TfmProposta.GetDadosProdutos(Sender: Tobject;cod:string);
 var
   ds:TdataSet;
 begin
-   ds:= uCF.getDadosProd(fmMain.getUoLogada(), cod, PRECO, true );
+   ds:= uCF.getDadosProd(fmMain.getUoLogada(), cod, '', PRECO, true );
    if (ds.IsEmpty = false) then
    begin
       table.FieldByName('Descricao').AsString := ds.fieldByName('descricao').AsString;

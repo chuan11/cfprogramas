@@ -51,7 +51,7 @@ var
 begin
    lbCodigo.Caption := '';
    lbDesc.Caption := '';
-   ds:= uCF.getDadosProd( fmMain.getUoLogada(), edCodigo.Text,  '101', true );
+   ds:= uCF.getDadosProd( fmMain.getUoLogada(), edCodigo.Text, '', '101', true);
 
    if (ds.IsEmpty = false) then
    begin

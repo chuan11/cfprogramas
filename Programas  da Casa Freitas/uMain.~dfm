@@ -1,9 +1,9 @@
 object fmMain: TfmMain
-  Left = 206
-  Top = 136
-  Width = 911
-  Height = 595
-  Caption = 'cf2'
+  Left = 431
+  Top = 246
+  Width = 800
+  Height = 570
+  Caption = 'fmMain'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,8 +23,8 @@ object fmMain: TfmMain
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 518
-    Width = 895
+    Top = 493
+    Width = 784
     Height = 19
     Panels = <
       item
@@ -44,8 +44,10 @@ object fmMain: TfmMain
     Left = 56
     Top = 128
     object Estoques1: TMenuItem
+      Tag = 100
       Caption = '&Estoques'
       object ConsultaaRequisies1: TMenuItem
+        Tag = -101
         Caption = 'Fun'#231#245'es'
         object Analisedeestoque1: TMenuItem
           Tag = 110
@@ -94,6 +96,7 @@ object fmMain: TfmMain
         end
       end
       object Relatorios1: TMenuItem
+        Tag = -102
         Caption = 'Relat'#243'rios'
         object Relacaodenotasdetransferncia1: TMenuItem
           Tag = 106
@@ -123,6 +126,7 @@ object fmMain: TfmMain
       end
     end
     object compras1: TMenuItem
+      Tag = 600
       Caption = 'Compras'
       object Alterafornpedidodecompra1: TMenuItem
         Tag = 601
@@ -151,8 +155,10 @@ object fmMain: TfmMain
       end
     end
     object Preos1: TMenuItem
+      Tag = 200
       Caption = '&Pre'#231'os'
       object abeladePreos1: TMenuItem
+        Tag = -201
         Caption = 'Funcoes'
         object AjustedePrecos1: TMenuItem
           Tag = 204
@@ -171,7 +177,7 @@ object fmMain: TfmMain
         end
       end
       object Precosalteradosporperodo1: TMenuItem
-        Tag = 202
+        Tag = -202
         Caption = 'Relatorios'
         object Precosalteradosporperodo2: TMenuItem
           Tag = 201
@@ -196,8 +202,10 @@ object fmMain: TfmMain
       end
     end
     object Fiscal1: TMenuItem
+      Tag = 300
       Caption = '&Fiscal'
       object Funcoes2: TMenuItem
+        Tag = -301
         Caption = 'Funcoes'
         object Ajustedenotas1: TMenuItem
           Tag = 302
@@ -247,7 +255,7 @@ object fmMain: TfmMain
         object ImprimirNFe1: TMenuItem
           Tag = 305
           Caption = 'Visualizar DANFE'
-          OnClick = ImprimirNFe1Click
+          OnClick = visualizarDANFE
         end
         object ConfiguraSeriesparacontingencia1: TMenuItem
           Tag = 311
@@ -257,8 +265,10 @@ object fmMain: TfmMain
       end
     end
     object Vendas1: TMenuItem
+      Tag = 400
       Caption = '&Vendas'
       object Funcoes1: TMenuItem
+        Tag = -401
         Caption = 'Funcoes'
         object DeletarRegistrodecartoTEF1: TMenuItem
           Tag = 405
@@ -282,6 +292,7 @@ object fmMain: TfmMain
         end
       end
       object Relatorios2: TMenuItem
+        Tag = -402
         Caption = 'Relatorios'
         object AnaliseVLC1: TMenuItem
           Tag = 402
@@ -306,6 +317,7 @@ object fmMain: TfmMain
       end
     end
     object WMS1: TMenuItem
+      Tag = 600
       Caption = 'WMS'
       Visible = False
       object RecebeNotanadoca1: TMenuItem
@@ -325,15 +337,12 @@ object fmMain: TfmMain
       end
     end
     object administrao1: TMenuItem
+      Tag = 500
       Caption = 'Administra'#231#227'o'
       object Permisses1: TMenuItem
         Tag = 501
         Caption = 'Permiss'#245'es'
         OnClick = Permisses2Click
-      end
-      object RemovevendasregistroTEF1: TMenuItem
-        Tag = 502
-        Caption = 'Remove vendas registro TEF'
       end
       object Fornecedoresaignorarnarequisio1: TMenuItem
         Tag = 503
@@ -366,16 +375,24 @@ object fmMain: TfmMain
         OnClick = Log1Click
       end
       object AlteraStatusdoCaixa1: TMenuItem
+        Tag = 509
         Caption = 'Altera Status do Caixa'
         OnClick = AlteraStatusdoCaixa1Click
       end
+      object ImpressorasNFE1: TMenuItem
+        Tag = 510
+        Caption = 'Impressoras NFE'
+        OnClick = ImpressorasNFE1Click
+      end
     end
     object rocardeUsuario1: TMenuItem
+      Tag = 700
       Caption = 'Trocar de Usu'#225'rio / Loja (F11)'
       ShortCut = 122
       OnClick = rocardeUsuario1Click
     end
     object N1: TMenuItem
+      Tag = 800
       Caption = '  ...  '
       ImageIndex = 0
       ShortCut = 16506

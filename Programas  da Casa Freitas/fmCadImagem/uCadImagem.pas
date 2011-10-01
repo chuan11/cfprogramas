@@ -35,7 +35,6 @@ type
     procedure LimparCampos();
     procedure btIncluirClick(Sender:Tobject);
     procedure incluirImgagem(mostraMsg:Boolean);
-    function getCodProduto(str:String):String;
     procedure cadastraProduto(is_ref:String);
     procedure btAlterarClick(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
@@ -89,50 +88,25 @@ begin
   end;
 end;
 
-function TfmCadastro.getCodProduto(str: String): String;
-var
-  cmd:String;
-  ds:TdataSet;
-begin
-   if (str= '' )then
-   begin
-      msgTela('', 'Informe um código.',MB_ICONERROR+ MB_OK);
-      result := '';
-   end
-   else
-   begin
-      ds:= uCF.getDadosProd(fmMain.getUoLogada(), str,  '101', true );
-      if (ds.IsEmpty = false) then
-         cmd := ds.fieldByName('is_ref').asString
-      else
-        cmd := '';
-   end;
-   ds.Free();
-   result := cmd;
-end;
-
-
 procedure TfmCadastro.btConsultarClick(Sender: TObject);
 var
   cmd,is_ref:String;
-  ds:TdataSet;
+  dsImagem, dsProduto:TdataSet;
 begin
    image1.Picture.Assign(nil);
    image1.Refresh();
 
    screen.Cursor := crHourglass;
-   is_ref := getCodProduto(edCodigo.Text);
-   if (is_ref <> '') then
+   dsProduto := uCF.getDadosProd( fmMain.getUoLogada(), edCodigo.Text, '', '101', true );
+
+   if (dsProduto.IsEmpty = false ) then
    begin
-     cmd := ' select c.is_ref, c.cd_ref, c.ds_ref , i.imagem from crefe c left join zcf_crefe_imagens i  on c.is_ref = i.is_ref' +
-            ' where c.is_ref = ' + is_ref;
-     ds:= funcSQl.getDataSetQ(cmd, fmMain.Conexao);
+     edCodigo.Text := dsProduto.fieldByname('codigo').asString;
+     lbIs_ref.Caption := dsProduto.fieldByname('is_ref').asString;
+     edDescricao.Text := dsProduto.fieldByname('DESCRICAO').asString;
 
-     edCodigo.Text := ds.fieldByname('cd_ref').asString;
-     lbIs_ref.Caption := ds.fieldByname('is_ref').asString;
-     edDescricao.Text := ds.fieldByname('ds_ref').asString;
-
-     Image1.Picture.Assign( ds.fieldByname('imagem') );
+     dsImagem := uCF.getImagemProduto(lbIs_ref.Caption);
+     Image1.Picture.Assign( dsImagem.FieldByName('imagem'));
    end
    else
    begin
@@ -142,7 +116,8 @@ begin
    if (edCodigo.Visible = true) then
       edCodigo.SetFocus();
    screen.Cursor := crDefault;
-   ds.Free();
+   dsProduto.Free();
+
 end;
 
 procedure TfmCadastro.carregaImagem(nArquivo:String);
@@ -198,57 +173,6 @@ begin
    lbIs_ref.Caption := '';
    if (edCodigo.Visible = true) then
       edCodigo.SetFocus();
-end;
-
-procedure TfmCadastro.incluirImgagem(mostraMsg: Boolean);
-var
-  is_ref:String;
-  erro: String;
-begin
-   screen.Cursor := crHourglass;
-   erro := '';
-   is_ref := getCodProduto(edCodigo.Text);
-
-   if  (edCodigo.Text = '') then
-      erro := erro+' - Informe um código.'+#13;
-
-   if (is_ref = '') then
-      erro := erro+' - Esse produto não é cadastrado.'+#13
-   else
-      if (edCodigo.Text <> '') then
-         if ( funcSql.openSQL('Select is_ref from zcf_crefe_imagens where is_ref = ' + is_ref, 'is_ref', fmMain.Conexao ) <> '' )then
-           erro := erro+' - Esse código já tem uma imagem cadastrada.'+#13;
-
-   if (Image1.Picture = nil) then
-      erro := erro+' - Selecione uma imagem.'+#13;
-
-   if erro <> '' then
-      msgTela('', erro,  MB_ICONERROR +  mb_ok)
-   else
-   begin
-     cadastraProduto(is_ref);
-     if (mostraMsg = true) then
-        msgTela('', 'Inclusão efetuada.',MB_OK + MB_ICONEXCLAMATION);
-     LimparCampos();
-   end;
-   screen.Cursor := crdefault;
-end;
-
-procedure TfmCadastro.cadastraProduto(is_ref: String);
-var
-   tb:TADOTable;
-begin
-  tb :=  TADOTable.Create(nil);
-  tb.TableName := 'zcf_crefe_imagens';
-  tb.Filter := 'is_ref = ' + is_ref;
-  tb.Filtered := true;
-  tb.connection := fmMain.Conexao;
-  tb.Open();
-  tb.Append();
-  tb.fieldByName('is_ref').AsString := is_ref;
-  tb.fieldByName('imagem').Assign( Image1.Picture );
-  tb.Post();
-  tb.Close();
 end;
 
 procedure TfmCadastro.btAlterarClick(Sender: TObject);
@@ -307,13 +231,13 @@ begin
 
           if (Image1.Picture.Width <= 1 ) and (edDescricao.Text <> '') then
           begin
-             MsgTela('',edCodigo.Text + ' ' + edDescricao.Text + #13+ 'Imagem não cadastrada, incluir', MB_OK + MB_ICONWARNING );
+             fmMain.msgStatus(edCodigo.Text + ' ' + edDescricao.Text + #13+ 'Imagem não cadastrada, incluir');
              carregaimagem( lbArquivos.Items.Strings[i]  );
              incluirImgagem(true);
           end
           else
           begin
-             MsgTela('',edCodigo.Text + ' ' + edDescricao.Text + #13+ 'Imagem já cadastrada, alterar', MB_OK + MB_ICONEXCLAMATION );
+             fmMain.msgStatus(edCodigo.Text + ' ' + edDescricao.Text + #13+ 'Imagem já cadastrada, alterar' );
              carregaimagem( lbArquivos.Items.Strings[i] );
              btAlterarClick(nil);
           end;
@@ -328,7 +252,7 @@ end;
 procedure TfmCadastro.lbDiretoriosChange(Sender: TObject);
 begin
    lbArquivos.Directory := lbDiretorios.Directory;
-   contaArquivos();   
+   contaArquivos();
 end;
 
 procedure TfmCadastro.ajustaDimensaoBitmap(arq:String);
@@ -397,9 +321,61 @@ begin
    lbTotalArquivos.Caption := 'Arq bmp/jpg: ' + intToStr(j);
 end;
 
+procedure TfmCadastro.cadastraProduto(is_ref: String);
+var
+   tb:TADOTable;
+   cmd:String;
+begin
+   funcSQl.getTable(fmMain.Conexao, tb, 'is_ref int, imagem image');
+   tb.Open();
+   tb.Append();
+   tb.fieldByName('is_ref').AsString := is_ref;
+   tb.fieldByName('imagem').Assign( Image1.Picture );
+   tb.Post();
+   tb.Close();
+   cmd := 'insert zcf_crefe_imagens select is_ref, imagem from ' + tb.TableName;
+   fmMain.execSQL(cmd);
+   tb.Free();
+end;
+
+procedure TfmCadastro.incluirImgagem(mostraMsg: Boolean);
+var
+  is_ref:String;
+  erro: String;
+begin
+   screen.Cursor := crHourglass;
+   erro := '';
+   is_ref := lbIs_ref.Caption;
+
+   if  (edCodigo.Text = '') then
+      erro := erro+' - Informe um código.'+#13;
+
+   if (is_ref = '') then
+      erro := erro+' - Esse produto não é cadastrado.'+#13
+   else
+      if (edCodigo.Text <> '') then
+         if ( funcSql.openSQL('Select is_ref from zcf_crefe_imagens where is_ref = ' + is_ref, 'is_ref', fmMain.Conexao ) <> '' )then
+           erro := erro+' - Esse código já tem uma imagem cadastrada.'+#13;
+
+   if (Image1.Picture = nil) then
+      erro := erro+' - Selecione uma imagem.'+#13;
+
+   if erro <> '' then
+      msgTela('', erro,  MB_ICONERROR +  mb_ok)
+   else
+   begin
+     cadastraProduto(is_ref);
+     if (mostraMsg = true) then
+        msgTela('', 'Inclusão efetuada.',MB_OK + MB_ICONEXCLAMATION);
+     LimparCampos();
+   end;
+   screen.Cursor := crdefault;
+end;
+
 procedure TfmCadastro.btIncluirClick(Sender:TObject);
 begin
    incluirImgagem(true);
 end;
+
 
 end.

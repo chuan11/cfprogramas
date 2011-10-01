@@ -79,7 +79,7 @@ begin
 //   cbLoja.Items :=  funcSQL.getNomeLojas(fmMain.Conexao, false, false, fmMain.getCDPESUsuario(), '');
    fmMain.getParametrosForm(fmObterSaldoFiscal);
 
-   fmMain.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
 end;
 
 procedure TfmObterSaldoFiscal.FlatButton1Click(Sender: TObject);

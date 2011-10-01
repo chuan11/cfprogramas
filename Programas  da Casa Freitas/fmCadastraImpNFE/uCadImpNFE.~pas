@@ -1,0 +1,49 @@
+unit uCadImpNFE;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Grids, DBGrids, SoftDBGrid, DB, ADODB, StdCtrls;
+
+type
+  TForm2 = class(TForm)
+    GroupBox1: TGroupBox;
+    tb: TADOTable;
+    DataSource1: TDataSource;
+    dbgrid: TSoftDBGrid;
+    procedure CarregaDadosImpressoras();
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form2: TForm2;
+
+implementation
+
+uses umain, funcoes, funcSQL;
+
+{$R *.dfm}
+
+{ TForm2 }
+
+procedure TForm2.CarregaDadosImpressoras;
+var
+  cmd:String;
+begin
+   cmd := 'nm_param varchar(35), valor(50)';
+   funcsql.getTable(fmMain.conexao, tb, cmd);
+   tb.Close();
+
+   cmd :=
+   'insert ' + tb.TableName +
+   'select substring(nm_param, 14, 50 ), valor ' +
+   'from zcf_paramGerais where nm_param like ''comum.impNFe_%'' ';
+   funcSQl.execSQL(cmd, fmMain.Conexao);
+   tb.Open();
+end;
+
+end.

@@ -20,7 +20,6 @@ type
     procedure edit1Change(Sender: TObject);
     procedure BitBtn3Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure fnGridDblClick(Sender: TObject);
     procedure fsBuscaNumeroClick(Sender: TObject);
     procedure FlatButton1Click(Sender: TObject);
   private
@@ -53,11 +52,6 @@ end;
 procedure TfmForn.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
    action := caFree;
-end;
-
-procedure TfmForn.fnGridDblClick(Sender: TObject);
-begin
-   //BitBtn2Click(Sender);
 end;
 
 procedure TfmForn.fsBuscaNumeroClick(Sender: TObject);

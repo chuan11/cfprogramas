@@ -3,12 +3,12 @@ unit uGetNotas;
 interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls,funcoes, uListaItensPorNota;
+  Dialogs, StdCtrls;
 
-  function getIsNota():String;
+//  function getIsNota():String;
 
 implementation
-
+{
 function getIsNota():String;
 var
   aux:String;
@@ -21,6 +21,6 @@ begin
    fmListaItensNota := nil;
    result := aux;
 end;
-
+}
 end.
  

@@ -4,7 +4,7 @@ object fmSelecionaUo: TfmSelecionaUo
   Width = 267
   Height = 116
   BorderIcons = [biSystemMenu]
-  Caption = 'Local para impress'#227'o.'
+  Caption = 'Selecione a loja.'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

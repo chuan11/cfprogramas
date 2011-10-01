@@ -1,8 +1,8 @@
 object fmDestEmail: TfmDestEmail
-  Left = 755
-  Top = 318
+  Left = 455
+  Top = 225
   Width = 519
-  Height = 164
+  Height = 374
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Informar o email de destino'
   Color = clBtnFace
@@ -18,8 +18,8 @@ object fmDestEmail: TfmDestEmail
   PixelsPerInch = 96
   TextHeight = 13
   object lbEmail: TLabel
-    Left = 16
-    Top = 96
+    Left = 12
+    Top = 319
     Width = 27
     Height = 13
     Caption = 'email '
@@ -87,12 +87,12 @@ object fmDestEmail: TfmDestEmail
   end
   object pnConfirma: TPanel
     Left = 329
-    Top = 93
+    Top = 299
     Width = 169
     Height = 29
     BevelOuter = bvNone
     TabOrder = 3
-    object BitBtn1: TFlatButton
+    object btOk: TFlatButton
       Left = 19
       Top = 1
       Width = 71
@@ -119,7 +119,7 @@ object fmDestEmail: TfmDestEmail
       NumGlyphs = 2
       TabOrder = 0
       ModalResult = 1
-      OnClick = BitBtn1Click
+      OnClick = btOkClick
     end
     object FlatButton1: TFlatButton
       Left = 96
@@ -149,5 +149,18 @@ object fmDestEmail: TfmDestEmail
       TabOrder = 1
       ModalResult = 2
     end
+  end
+  object mmCorpoEmail: TadLabelMemo
+    Left = 9
+    Top = 114
+    Width = 485
+    Height = 176
+    Ctl3D = False
+    ParentCtl3D = False
+    TabOrder = 4
+    LabelDefs.Width = 97
+    LabelDefs.Height = 13
+    LabelDefs.Caption = 'Mensagem do email:'
+    Colors.WhenEnterFocus.BackColor = clInfoBk
   end
 end

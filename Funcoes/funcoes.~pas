@@ -831,9 +831,11 @@ begin
    with Reg do
    begin
       rootkey := HKEY_CURRENT_USER;
-      Openkey('SOFTWARE\'+folder+'\',false);
-      S := readString(Key);
-      closekey;
+      if (Openkey('SOFTWARE\'+folder+'\', true) = true) then
+      begin
+         S:= readString(Key);
+         closekey;
+      end;
    end;
    if (s <> '') then
       gravaLog('Lendo registro, chave: ' + folder + ' Parametro: ' + Key + ' Resultado: ' + s)

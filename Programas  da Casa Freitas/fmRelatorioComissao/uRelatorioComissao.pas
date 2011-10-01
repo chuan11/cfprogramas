@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, TFlatButtonUnit, StdCtrls, ExtCtrls, ComCtrls, fCtrls,
-  adLabelComboBox, funcoes,funcsql, DB, ADODB, Grids, DBGrids, SoftDBGrid,
+  adLabelComboBox, DB, ADODB, Grids, DBGrids, SoftDBGrid,
   Buttons;
 
 type
@@ -47,7 +47,7 @@ var
   fmRelatorioComissao: TfmRelatorioComissao;
 
 implementation
-uses uMain;
+uses uMain, funcoes,funcsql, uCF;
 {$R *.dfm}
 
 procedure TfmRelatorioComissao.FormClose(Sender: TObject;var Action: TCloseAction);
@@ -64,7 +64,7 @@ end;
 procedure TfmRelatorioComissao.FormCreate(Sender: TObject);
 begin
 //   cbLoja.items := funcsQL.GetNomeLojas( fmMain.Conexao, false, false, fmMain.lbPes.caption,'' ); // getListaPrecos (sender);
-   fmMain.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
 
    fmMain.getParametrosForm(fmRelatorioComissao);
    OpenTempTable( tb,  'is_oper integer, cd_mve int, valor money, TipoPrecoSugerido int, cd_vend int, cd_pes int, seq int identity(01,01) ', fmMain.Conexao);
@@ -150,7 +150,6 @@ procedure TfmRelatorioComissao.ObterVendedoresDasVendasDoDia(Sender: Tobject);
 var
   cmd:String;
   qrDadosVenda:TADOQuery;
-
 begin
    qrDAdosVEnda := TADOQuery.Create(nil);
    qrDadosVenda.Connection := fmMain.Conexao;

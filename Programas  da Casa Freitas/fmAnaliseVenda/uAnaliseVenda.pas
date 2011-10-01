@@ -75,7 +75,7 @@ procedure TfmFaturamento.FormCreate(Sender: TObject);
 begin
    funcSQL.getDateBd(fmMain.Conexao);
    isAcessoRestrito := fmMain.isGrupoRestrito(fmMain.AnaliseVLC1.Tag);
-   fmMain.getListaLojas( cbLojas, not(isAcessoRestrito), false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas( cbLojas, not(isAcessoRestrito), false, fmMain.getCdPesLogado() );
    fmMain.getParametrosForm(fmFaturamento);
 
 

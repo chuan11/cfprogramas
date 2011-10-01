@@ -266,11 +266,11 @@ var
   cod:String;
   ds:TdataSet;
 begin
-   cod := uCF.getFmDadosPessoa('F');
+   cod := uCF.getFmDadosPessoa('Fornecedor');
    if ( cod <> '')then
    begin
       ds := uCF.getDadosFornecedor(cod,'');
-      edForn.Text :=  ds.FieldByName('fornecedor').asString;
+      edForn.Text :=  ds.FieldByName('nome').asString;
       lbForn.caption :=  ds.FieldByName('codigo').asString;
       ds.Destroy();
    end;

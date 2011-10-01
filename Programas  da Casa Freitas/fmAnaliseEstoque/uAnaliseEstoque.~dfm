@@ -1,7 +1,7 @@
 object fmAnaliseEstoque: TfmAnaliseEstoque
   Left = 33
   Top = 10
-  Width = 722
+  Width = 723
   Height = 556
   Caption = 'fmAnaliseEstoque'
   Color = clBtnFace
@@ -18,7 +18,7 @@ object fmAnaliseEstoque: TfmAnaliseEstoque
   OnActivate = FormActivate
   OnClose = FormClose
   DesignSize = (
-    706
+    707
     518)
   PixelsPerInch = 96
   TextHeight = 13
@@ -81,7 +81,7 @@ object fmAnaliseEstoque: TfmAnaliseEstoque
   object grid: TSoftDBGrid
     Left = 5
     Top = 87
-    Width = 644
+    Width = 645
     Height = 271
     TabStop = False
     Anchors = [akLeft, akTop, akRight, akBottom]

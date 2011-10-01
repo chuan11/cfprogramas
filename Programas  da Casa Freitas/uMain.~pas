@@ -8,13 +8,12 @@ uses
   Dialogs, Menus, DB, ADODB, ComCtrls, funcoes, funcsql, verificaSenhas,
   StdCtrls, Buttons, fCtrls, mxOneInstance, uEmail, ExtCtrls, TFlatEditUnit,
   TFlatButtonUnit,  RpCon, RpConDS, RpBase, RpSystem, RpDefine, RpRave,
-  ImgList, ugetNotas, UAlteraForPedido, Grids, DBGrids, SoftDBGrid, Typinfo,
+  ImgList, UAlteraForPedido, Grids, DBGrids, SoftDBGrid, Typinfo,
   IdTCPConnection, Sockets, ScktComp, DBCtrls,
   AppEvnts, RpRender, RpRenderPDF, RpRenderCanvas, RpRenderPrinter,
   OleCtrls, AcroPDFLib_TLB, shellAPI, adLabelCheckListBox, IdBaseComponent,
   IdComponent, IdTCPClient, IdTelnet, adLabelComboBox, mxExport,
   CoolTrayIcon;
-
 
 type
   TfmMain = class(TForm)
@@ -67,7 +66,6 @@ type
     DeletarRegistrodecartoTEF1: TMenuItem;
     CadastrarNCM1: TMenuItem;
     administrao1: TMenuItem;
-    RemovevendasregistroTEF1: TMenuItem;
     Permisses1: TMenuItem;
     Fornecedoresaignorarnarequisio1: TMenuItem;
     Mudafinanceiradeboleto1: TMenuItem;
@@ -106,153 +104,149 @@ type
     Cadastrodeimagens1: TMenuItem;
     AlteraStatusdoCaixa1: TMenuItem;
     CoolTrayIcon1: TCoolTrayIcon;
+    ImpressorasNFE1: TMenuItem;
 
-
-    function isTelaRequerSenha( codTela:smallInt ):boolean;
     function delParamBD(nParametro, loja: String):boolean;
     function ehCampoPermitido(nParam:String): Boolean;
     function ehTelaPermitida(tag:string;  Telas:Tstrings):Boolean;
+    function execSQL(cmd:String):boolean;
     function executeTelnetCmd(uo, comando:String):boolean;
     function getCdPesLogado():String;
     function getCdRef(str:String):String;
     function getCodPreco(cb:TCustomComboBox): String;
-    function getDescUO(cb:TCustomComboBox):String;
     function getDescPreco(cb:TCustomComboBox):String;
+    function getDescUO(cb:TCustomComboBox):String;
     function getGrupoLogado():String;
     function getNomeLojaLogada():String;
     function getNomeUsuario():String;
-    function getUoLogada():String;
-    function getUOCD():String;
-    function getUserLogado:String;
     function getParamBD(nParametro, loja: String):String;
+    function getPDFNFe(isNota:String):String;
+    function getSubPastaXML(strDataEmissao:String):String;
+    function getUOCD():String;
+    function getUoLogada():String;
+    function getUserLogado:String;
+    function insertParamBD(nParametro, loja, valor, descricao: String):boolean;
     function isGrupoRestrito(codTela: integer): boolean;
     function isPermiteAbrirTela( codTela:smallInt ): boolean;
+    function isTelaRequerSenha( codTela:smallInt ):boolean;
     function setParamBD(nParametro, loja, valor: String):boolean;
     function telaAutWell(Grupos,cd_usu:string ):String;
-    procedure ajustaValoresCategorias(var descCat01, descCat02, descCat03, numNivel, vlNivel:String);
+    function updateParamBD(nParametro, loja, valor, descricao: String):boolean;
     procedure abeladePreos2Click(Sender: TObject);
     procedure abreFormRequisicao(mostraMsg:Boolean; perfil:integer);
+    procedure ajustaValoresCategorias(var descCat01, descCat02, descCat03, numNivel, vlNivel:String);
     procedure Ajustedenotas1Click(Sender: TObject);
     procedure AjustedePrecos1Click(Sender: TObject);
+    procedure ajustedoarquivoSPED1Click(Sender: TObject);
     procedure Alterafornpedidodecompra1Click(Sender: TObject);
+    procedure AlteraStatusdoCaixa1Click(Sender: TObject);
     procedure Analisedeestoque1Click(Sender: TObject);
     procedure AnaliseVLC1Click(Sender: TObject);
     procedure AppException(Sender: TObject; E: Exception);
+    procedure applicationEvents1Exception(Sender: TObject; E: Exception);
     procedure Cadastrarcodigodebarrasdeproduto1Click(Sender: TObject);
+    procedure CadastrarNCM1Click(Sender: TObject);
     procedure Cadastrodeavarias1Click(Sender: TObject);
+    procedure CadastrodeCEP1Click(Sender: TObject);
+    procedure Cadastrodeimagens1Click(Sender: TObject);
     procedure Calculodeextranota1Click(Sender: TObject);
+    procedure cargadedadosparaconciliao1Click(Sender: TObject);
     procedure chamaImpressaoRave( nRelatorio:String; params:Tstrings);
     procedure Classificaodepro1Click(Sender: TObject);
     procedure Comporavendafiscal1Click(Sender: TObject);
+    procedure compromissosdefornecedorespordata1Click(Sender: TObject);
     procedure ConexaoExecuteComplete(Connection: TADOConnection; RecordsAffected: Integer; const Error: Error; var EventStatus: TEventStatus; const Command: _Command; const Recordset: _Recordset);
     procedure ConexaoWillExecute(Connection: TADOConnection; var CommandText: WideString; var CursorType: TCursorType; var LockType: TADOLockType; var CommandType: TCommandType;     var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;      const Command: _Command; const Recordset: _Recordset);
+    procedure ConfiguraSeriesparacontingencia1Click(Sender: TObject);
     procedure Consultaarequisies2Click(Sender: TObject);
     procedure ConsultaarequisioCDporproduto1Click(Sender: TObject);
+    procedure Consultaestoque1Click(Sender: TObject);
     procedure consultaRequisicaoPorProduto(Sender:Tobject; str: String);
+    procedure CoolTrayIcon1Click(Sender: TObject);
+    procedure deletarRegistrodecartoTEF1Click(Sender: TObject);
     procedure Descontodepedido1Click(Sender: TObject);
     procedure EnviarEmail(para, assunto, anexo:String; corpoMsg:Tstringlist; titulo:String);
+    procedure enviarespelhoPDFdeNFeparaemail1Click(Sender: TObject);
+    procedure enviarXML1Click(Sender: TObject);
     procedure Etiquetas1Click(Sender: TObject);
     procedure EtiquetasDeClientes1Click(Sender: TObject);
+    procedure exportaXMLNota(is_nota:String);
     procedure fecharForm(form:Tform; var Action:TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure Fornecedoreacriticar1Click(Sender: TObject);
     procedure Geracaopreodecusto1Click(Sender: TObject);
-    procedure getListaLojas(cb:TadLabelComboBox; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario: String);
+    procedure Geraestoque1Click(Sender: TObject);
+    procedure getDadosCRUC(is_ref:String);
+//    procedure getListaLojas(cb:TadLabelComboBox; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario: String);
+    procedure getParametrosForm(form:Tform);
+    procedure getPedidosFornecedor(is_ref, uo:String);
+    procedure getRequisicoesPorProduto(cd_ref:String);
     procedure getTelasPermDoGrupo(grupo:String);
+    procedure getWMSDocEntrada(var serie, numero, pessoa:String);
+    procedure IdTelnet1DataAvailable(Sender: TIdTelnet; const Buffer: String);
     procedure impressaoRave(tb:TADOTable; nRelatorio:String; params:Tstrings);
+    procedure impressaoRavePDF(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings;nmArquivo:String);
     procedure impressaoRaveQr(qr:TADOQuery; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveQr4(qr, qr2, qr3, qr4:TDataSet; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveQr5(qr, qr2, qr3, qr4, qr5:TDataSet; nRelatorio:String; params:Tstrings);
     procedure impressaoRaveTbQr(tb: TADOTable; qr:TADOQuery; nRelatorio:String; params:Tstrings);
-    procedure impressaoRavePDF(qr,qr2:TDataSet; nRelatorio:String; params:Tstrings;nmArquivo:String);
+    procedure ImpressorasNFE1Click(Sender: TObject);
     procedure imprimirDANFE1Click(Sender:Tobject);
+    procedure visualizarDANFE(Sender: TObject);
+    procedure InternarNotaEntrada1Click(Sender: TObject);
+    procedure ListaCuponspordia1Click(Sender: TObject);
+    procedure listarcustodeitensporpedido1Click(Sender: TObject);
+    procedure Log1Click(Sender: TObject);
     procedure mapadeseparao1Click(Sender: TObject);
     procedure montarMenu(nomeloja, nomeUsuario, is_uo, is_usu:string);
     procedure mostraDetalhesNota(Sender:Tobject; is_nota:String);
     procedure msgStatus(msg:String);
     procedure mudarfinanceiradeboleto1Click(Sender: TObject);
+    procedure mxOneInstance1InstanceExists(Sender: TObject);
     procedure n1Click(Sender: TObject);
     procedure obterDetalhesEntrada(is_ref:String);
     procedure obterDetalhesSaida(is_ref, uo:String; dtInicio:Tdate);
-    procedure obterResumoEstoque(is_ref, is_disponivel:String);
     procedure obterResumoEntSai(isref, uo: String);
+    procedure obterResumoEstoque(is_ref, is_disponivel:String);
+    procedure pagamentosEmCartao1Click(Sender: TObject);
     procedure parmetrosDoSistema1Click(Sender: TObject);
     procedure permisses2Click(Sender: TObject);
     procedure precosalteradosporperodo2Click(Sender: TObject);
+    procedure Processarinventrio1Click(Sender: TObject);
+    procedure Produtostransferidos1Click(Sender: TObject);
     procedure propostasdaloja1Click(Sender: TObject);
+    procedure RazoAnalticoRRANA1Click(Sender: TObject);
+    procedure RecebeNotanadoca1Click(Sender: TObject);
+    procedure RegistroSCAN1Click(Sender: TObject);
     procedure relacaodenotasdetransferncia1Click(Sender: TObject);
     procedure relatriodeComisso1Click(Sender: TObject);
     procedure requisicaoparaocd1Click(Sender: TObject);
     procedure requisicoEntreLoas1Click(Sender: TObject);
-    procedure getRequisicoesPorProduto(cd_ref:String);
     procedure requisiodereposio1Click(Sender: TObject);
     procedure requisioParaoCDAbastecimento1Click(Sender: TObject);
-    procedure resunmoMovimentodirio1Click(Sender: TObject);
     procedure rocardeUsuario1Click(Sender: TObject);
+    procedure saldofiscalpormes1Click(Sender: TObject);
     procedure setaAversoNobd1Click(Sender: TObject);
+//    procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
     procedure showGridCol(grid:TSoftDBGrid;qr:TdataSet;col:String;is_visible:Boolean);
     procedure timer1Timer(Sender: TObject);
-    procedure verificaPermissao(item:TmenuItem { ; telas: Tstrings });
-    procedure compromissosdefornecedorespordata1Click(Sender: TObject);
-    procedure CadastrarNCM1Click(Sender: TObject);
-    procedure ajustedoarquivoSPED1Click(Sender: TObject);
-    procedure listarcustodeitensporpedido1Click(Sender: TObject);
-    procedure applicationEvents1Exception(Sender: TObject; E: Exception);
-    procedure enviarXML1Click(Sender: TObject);
-    procedure exportaXMLNota(is_nota:String);
     procedure tnDataAvailable(Sender: TIdTelnet; const Buffer: String);
-    procedure getParametrosForm(form:Tform);
-    procedure ImprimirNFe1Click(Sender: TObject);
-    function  getPDFNFe(isNota:String):String;
-    procedure saldofiscalpormes1Click(Sender: TObject);
-    procedure enviarespelhoPDFdeNFeparaemail1Click(Sender: TObject);
-    procedure pagamentosEmCartao1Click(Sender: TObject);
-    procedure cargadedadosparaconciliao1Click(Sender: TObject);
-    procedure deletarRegistrodecartoTEF1Click(Sender: TObject);
-    procedure RegistroSCAN1Click(Sender: TObject);
-    procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
-    procedure Geraestoque1Click(Sender: TObject);
-    procedure Processarinventrio1Click(Sender: TObject);
-    procedure Produtostransferidos1Click(Sender: TObject);
-    procedure getDadosCRUC(is_ref:String);
-    procedure getPedidosFornecedor(is_ref, uo:String);
-    procedure Log1Click(Sender: TObject);
-    procedure ListaCuponspordia1Click(Sender: TObject);
-
-    function insertParamBD(nParametro, loja, valor, descricao: String):boolean;
-    function updateParamBD(nParametro, loja, valor, descricao: String):boolean;
-    procedure RazoAnalticoRRANA1Click(Sender: TObject);
-    procedure RecebeNotanadoca1Click(Sender: TObject);
-    procedure InternarNotaEntrada1Click(Sender: TObject);
-    procedure Consultaestoque1Click(Sender: TObject);
-    procedure getWMSDocEntrada(var serie, numero, pessoa:String);
-    procedure mxOneInstance1InstanceExists(Sender: TObject);
-    procedure ConfiguraSeriesparacontingencia1Click(Sender: TObject);
-    procedure CadastrodeCEP1Click(Sender: TObject);
-    procedure IdTelnet1DataAvailable(Sender: TIdTelnet;
-      const Buffer: String);
-    procedure Cadastrodeimagens1Click(Sender: TObject);
-    procedure AlteraStatusdoCaixa1Click(Sender: TObject);
-    procedure CoolTrayIcon1Click(Sender: TObject);
-
-
-
+    procedure verificaPermissao(item:TmenuItem);
 
   private
     { Private declarations }
     DS_PERMISSOES:TdataSet;
   public
-     is_logado:boolean;
-
+     IS_LOGADO:boolean;
      PARAMS_APLICACAO: TStringList;
 
     { Public declarations }
   end;
 CONST
-   VERSAO = '11.09.03';
-   SUB_VERSAO = ' ';
+   VERSAO = '11.09.04';
+   SUB_VERSAO = ' D';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -267,18 +261,18 @@ var
 
 implementation
 
-uses uConReqDep, urequisicao, ufornACriticar, uPermissoes, uLogin, uTabela, upcoAlteradoPorPeriodo,
+uses  uCF, uConReqDep, urequisicao, {ufornACriticar,{ uPermissoes,} uLogin, uTabela, upcoAlteradoPorPeriodo,
      uOsDeposito, uAvarias, uPropostaLoja, uMapa, uDetEntrada, uTotalSaidas, uEnviaEmail,
      uprecoswell, uDescPedido, uAnaliseVenda, uEtiquetas, unNotasTransfrencia, uResumoEstoque,
      uPrecosCusto, uAlteraFinanceira, uDetalhesNotas, uRelatorioComissao, uComporEstoque,
-     unClientes, uAjustaNota, uAnaliseEstoque, uConReqProd, uCalcEN, uRelGeral, unMovDiario,
+     unClientes, uAjustaNota, uAnaliseEstoque, uConReqProd, uCalcEN, uRelGeral,
      uClassificaProd, uCompFornecedor, fmAbrirAvarias, uParametros,
      uRemoveRegTEF, uCadastrarNCM, uListaFornecedores, uAjustaSPED,
-     uCustoPorPedido, uCF, Math, funcDatas, uObterSaldoFiscal,
+     uCustoPorPedido, Math, funcDatas, uObterSaldoFiscal,
      uAjusteModPag, uGeraEstoque, uRelInventario, uSelCat, uTotalEntSai,
      uDetalhesCRUC, uPedidosFornecedor, umColetor, uResumoECF, uRRANA,
-     uInternaNota, uListaNotaWMS, fmMudaSerieNota, uCEP, uCadImagem,
-  uManutencaoCX;
+     uInternaNota, uListaNotaWMS, fmMudaSerieNota, uCEP, uCadImagem, uCadImpNFE,
+  uManutencaoCX{, uPermissoes;}  , ufornACriticar;
 {$R *.dfm}
 
 
@@ -293,8 +287,15 @@ begin
 end;
 
 procedure TfmMain.getTelasPermDoGrupo(grupo:String);
+var
+   cmd:String;
 begin
-   DS_PERMISSOES := funcSQl.getDataSetQ('Select distinct codTela, isAcessoRestrito, isPedeAutorizacao from zcf_telasPermitidas where grupo = ' + grupo + ' order by codTela' , conexao);
+   cmd :=
+   ' Select distinct codTela, isAcessoRestrito, isPedeAutorizacao' +
+   ' from zcf_telasPermitidas where grupo = ' + grupo +
+   ' and codTela in ( select tag from zcf_telas)'+
+   ' order by codTela';
+   DS_PERMISSOES := funcSQl.getDataSetQ(cmd, conexao);
 end;
 
 function TfmMain.isTelaRequerSenha( codTela:smallInt ):boolean;
@@ -315,18 +316,16 @@ procedure TfmMain.verificaPermissao(item:TmenuItem);
 var
    i:integer;
 begin
+    if (DS_PERMISSOES.Locate('codTela', intToStr(item.tag),[]) = true)  then
+       item.Visible := true
+    else
+       item.Visible := false;
+
    if (item.Count > 0) then
    begin
       for i:=0 to item.Count -1 do
-         verificaPermissao(item.Items[i]{, telas});
+         verificaPermissao(item.Items[i]);
     end
-    else
-    begin
-       if (DS_PERMISSOES.Locate('codTela', intToStr(item.tag),[]) = true) or (item.tag = 0) then
-          item.Visible := true
-       else
-          item.Visible := false;
-    end;
 end;
 
 procedure TfmMain.montarMenu(nomeloja, nomeUsuario, is_uo, is_usu:string);
@@ -373,14 +372,14 @@ begin
    if (funcoes.ExisteParametro('-nl') = true)  then
    begin
       fmMain.WindowState := wsNormal;
-      is_logado := true;
-// monta menu na Casa Freitas
+      IS_LOGADO := true;
 
-      montarMenu('Matriz', 'walter', '10033674','10000592');
+// monta menu na Casa Freitas
+      montarMenu('Matriz', 'walter', '10033589','10000592');
       wms1.Visible := true;
 
 //   montar menu na freitas
-//       montarMenu('Matriz', 'walter', '10001008','10001593');
+//     montarMenu('Matriz', 'walter', '10001008','10001593');
       fmMain.Width := 900;
       fmMain.Height := 700;
       fmMain.Left := 100;
@@ -406,7 +405,7 @@ begin
       StatusBar1.Visible := false;
    end;
 
-   if (is_logado = false) and not (funcoes.existeParametro('-ge') = true ) then
+   if (IS_LOGADO = false) and not (funcoes.existeParametro('-ge') = true ) then
    begin
       fmMain.Menu := nil;
       versao_BD := GetParamBD('comum.versao','');
@@ -423,7 +422,7 @@ begin
       end
       else
       begin
-         is_logado := true;
+         IS_LOGADO := true;
          Application.CreateForm(TfmLogin, fmLogin);
          fmLogin.Show();
          fmLogin.Caption := 'Login';
@@ -466,7 +465,7 @@ procedure TfmMain.appException(Sender: TObject; E: Exception);
 var
    str:String;
 begin
-   msgTela('', 'Erro:'+#13+e.Message, 0);
+   funcoes.msgTela('', 'Erro:'+#13+e.Message, 0);
    str:=  dateTimeTostr(now)+ ' '+ fmMain.getUoLogada() +   ' Usuario: ' + fmMain.getCdPesLogado() +#13+ e.Message;
    funcoes.gravaLog('Erro - Loja: ' + fmMain.getUoLogada() +'  usuario: '+ fmMain.getUserLogado()  + ' ' + e.Message );
 end;
@@ -617,11 +616,12 @@ end;
 
 procedure TfmMain.Permisses2Click(Sender: TObject);
 begin
-   if  fmPermissoes = nil then
+{   if  fmPermissoes = nil then
    begin
       Application.CreateForm(TfmPermissoes, fmPermissoes);
       fmPermissoes.Show;
    end;
+}
 end;
 
 procedure TfmMain.abreFormRequisicao(mostraMsg: Boolean;perfil:integer);
@@ -637,11 +637,11 @@ begin
       else
       if  (fmMain.getUoLogada() <> uoCD ) and ( perfil =  3 )  then
          msgTela('','Só posso acessar essa tela se estiver logado no CD.', MB_ICONERROR + MB_OK)
-      else   
+      else
       begin
          if (mostraMsg = true) then
             msgTela('','Essa tela só deverá ser utilizada para fazer requisições ' +#13+'de mercadorias vendidas ou encarte',mb_ok+MB_ICONWARNING);
-            
+
          Application.CreateForm(TfmOsDeposito, fmOsDeposito);
          fmOsDeposito.Show;
          fmOsDeposito.SetPerfil(perfil, uoCD );
@@ -848,7 +848,6 @@ end;
 
 procedure TfmMain.EnviarEmail( para, assunto, anexo:String; corpoMsg:Tstringlist; titulo:String);
 begin
-   Application.CreateForm(TfmEnviaEmail, fmEnviaEmail);
    fmEnviaEmail.enviarEmailGmail( fmMain.getUoLogada() , para , assunto, anexo , corpoMsg, Conexao, titulo, getCdPesLogado() );
 end;
 
@@ -951,18 +950,15 @@ begin
    result := PARAMS_APLICACAO.Values['uocd'];
 end;
 
-
 procedure TfmMain.Requisiodereposio1Click(Sender: TObject);
 begin
    abreFormRequisicao(false, 2);
 end;
 
-
 procedure TfmMain.RequisioparaoCDAbastecimento1Click(Sender: TObject);
 begin
    abreFormRequisicao(false, 3);
 end;
-
 
 procedure TfmMain.ConsultaarequisioCDporproduto1Click(Sender: TObject);
 begin
@@ -991,15 +987,6 @@ end;
 function TfmMain.getNomeLojaLogada(): String;
 begin
    result := fmMain.StatusBar1.Panels[0].Text;
-end;
-
-procedure TfmMain.Resunmomovimentodirio1Click(Sender: TObject);
-begin
-   if (fmMovDiario = nil) then
-   begin
-      Application.CreateForm(TfmMovDiario, fmMovDiario);
-      fmMovDiario.show()
-   end;
 end;
 
 procedure TfmMain.Alterafornpedidodecompra1Click(Sender: TObject);
@@ -1113,12 +1100,11 @@ begin
       else
       begin
          is_ref := funcsql.openSQL('select is_ref from crefe where cd_ref = ' + quotedStr(cd_ref), 'is_ref', Conexao );
-         execSQL('insert dscbr (CD_PESQ, TP_CDPESQ,IS_REF) Values ( '+ean+', 1, ' + is_ref  + ')', fmMain.Conexao);
+         execSQL('insert dscbr (CD_PESQ, TP_CDPESQ,IS_REF) Values ( '+ean+', 1, ' + is_ref  + ')');
          funcoes.MsgTela('','O EAN foi incluído com sucesso.', MB_OK + MB_ICONERROR )
       end;
    end;
 end;
-
 
 function TfmMain.telaAutWell(Grupos, cd_usu: string): String;
 begin
@@ -1190,7 +1176,6 @@ begin
     result := trim(copy(CB.Items[CB.itemIndex], 01, 30));
 end;
 
-
 procedure TfmMain.Listarcustodeitensporpedido1Click(Sender: TObject);
 begin
    if ( fmCustoPorPedido = nil) then
@@ -1221,9 +1206,15 @@ begin
    else
    begin
      try
+        fmMain.MsgStatus('Solicitando arquivo XML...');
+
         server := fmMain.GetParamBD('ServerNFE.ip',  ds.fieldByName('is_estoque').asString);
-        dirRemoto := fmMain.GetParamBD('ServerNFE.DirNFE', fmMain.getUoLogada() );
-        dirLocal :=  ExtractFilePath(paramStr(0))+'logs';
+
+        dirRemoto :=
+        fmMain.GetParamBD('ServerNFE.DirNFE', fmMain.getUoLogada() )+
+        '\'+funcDatas.getAnoMes(ds.fieldByName('dt_emis').asString)+'\';
+
+        dirLocal :=  funcoes.getDirLogs();
         arquivo:=  ds.FieldByName('chave_acesso_nfe').asString + '-NFE.XML';
 
         if (getFileFromACBR(server, dirRemoto, dirLocal, arquivo ) = true) then
@@ -1247,33 +1238,31 @@ procedure TfmMain.EnviarXML1Click(Sender: TObject);
 var
    cmd:String;
 begin
-   cmd := uGetNotas.getIsNota();
+   cmd := uCF.getIsNota();
    if (cmd <> '') then
       exportaXMLNota(cmd);
 end;
 
 procedure TfmMain.EnviarespelhoPDFdeNFeParaEmail1Click(Sender: TObject);
 var
-   cmd:String;
+   isNota, arqPDF:String;
    msgEmail: TStringList;
    ds:TdataSet;
 begin
-   cmd := uGetNotas.getIsNota();
-   if (cmd <> '') then
+   isNota := uCF.getIsNota();
+   if (isNota <> '') then
    begin
-      ds:= uCF.getDadosNota(cmd, '','','');
-
+      ds:= uCF.getDadosNota(isNota, '','','');
       screen.Cursor := crHourglass;
-
-      cmd := GetPDFNFe(cmd);
-      if (fileExists(cmd)= true) then
+      arqPDF := GetPDFNFe(isNota);
+      if (fileExists(arqPDF)= true) then
       begin
          msgEmail := TStringlist.Create();
          msgEmail.add( 'Segue cópia do DANFE da nota fiscal ' +  ds.FieldByName('Num').asString);
          msgEmail.add( 'Emitida pela loja: '+ ds.FieldByName('loja').asString );
-         enviarEmail('', 'Envio de PDF, nota fiscal eletrônica', cmd,  msgEmail, 'Envio de XML');
+         enviarEmail( '', 'Envio de PDF, nota fiscal eletrônica', arqPDF,  msgEmail, 'Envio de XML');
          ds.Free();
-         deleteFile(cmd);
+         deleteFile(isNota);
       end;
    end;
    screen.Cursor := crDefault;
@@ -1284,7 +1273,6 @@ begin
    FUNCOES.gravaLog(Buffer);
    RESP_TELNET := RESP_TELNET + Buffer;
 end;
-
 
 function TfmMain.executeTelnetCmd(uo, comando:String):boolean;
 var
@@ -1323,6 +1311,18 @@ begin
     end;
 end;
 
+function TfmMain.getSubPastaXML(strDataEmissao:String): String;
+begin
+
+    if (fmMain.getParamBD('ServerNFE.XMLPorMes','0') <> '0') then
+       strDataEmissao := funcDatas.getAnoMes(strDataEmissao)+'\'
+    else
+       strDataEmissao := '';
+
+   funcoes.gravaLog('getSubPastaXML():' + strDataEmissao);
+   result := strDataEmissao;
+end;
+
 function TfmMain.GetPDFNFe(isNota: String):String;
 var
   server, dirLocal, dirRemoto, arquivo :String;
@@ -1343,7 +1343,10 @@ begin
       try
          server := fmMain.GetParamBD('ServerNFE.ip',  ds.fieldByName('is_estoque').asString);
          dirLocal :=  ExtractFilePath(paramStr(0))+'logs';
-         dirRemoto := fmMain.GetParamBD('ServerNFE.DirNFE', fmMain.getUoLogada() );
+
+         dirRemoto :=
+         fmMain.GetParamBD('ServerNFE.DirNFE', fmMain.getUoLogada()) + fmMain.getSubPastaXML(ds.fieldByName('dt_emis').asString);
+
          arquivo :=  ds.FieldByName('chave_acesso_nfe').asString;
 
          if ( executeTelnetCmd( ds.fieldByName('is_estoque').asString, 'NFe.ImprimirDANFEPDF("' +dirRemoto+ arquivo+ '-NFE.XML'+ '")'  ) = true) then
@@ -1376,14 +1379,17 @@ begin
    screen.Cursor := crDefault;
 end;
 
-procedure TfmMain.ImprimirNFe1Click(Sender: TObject);
+procedure TfmMain.visualizarDANFE(Sender: TObject);
 var
    cmd:String;
 begin
-   cmd := uGetNotas.getIsNota();
+   cmd := uCF.getIsNota();
    if (cmd <> '') then
       cmd := fmMain.getPDFNFe(cmd);
-    if ( cmd <> '') then
+
+    gravaLog('fmMain.getPDFNFe()~> '+cmd);
+
+    if (cmd <> '') then
     begin
        fmMain.MsgStatus('Impressão....');
        funcoes.execFileExternal(fmMain, cmd );
@@ -1431,7 +1437,7 @@ var
    impressora, server, dirNFE, cmd:String;
    ds:TdataSet;
 begin
-   cmd := uGetNotas.getIsNota();
+   cmd := uCF.getIsNota();
    if (cmd <> '') then
    begin
       impressora:= getNomeImpressoraNFe();
@@ -1440,7 +1446,10 @@ begin
          if (ds.FieldByName('chave_acesso_nfe').AsString <> '') then
          begin
             server := funcSQL.getParamBD('ServerNFE.ip',ds.FieldByName('is_estoque').AsString, fmMain.conexao);
-            dirNFE := funcSQL.getParamBD('ServerNFE.DirNFE', ds.FieldByName('is_estoque').AsString, fmMain.conexao);
+
+            dirNFE := funcSQL.getParamBD('ServerNFE.DirNFE', ds.FieldByName('is_estoque').AsString, fmMain.conexao)+
+                      fmMain.getSubPastaXML(ds.fieldByName('dt_emis').asString);
+
             cmd :='NFE.ImprimirDANFE("' + dirNFE + ds.FieldByName('chave_acesso_nfe').AsString + '-nfe.xml","'+  impressora+'")';
             executeTelnetCmd( ds.FieldByName('is_estoque').AsString, cmd);
          end
@@ -1449,11 +1458,8 @@ begin
    end;
       msgStatus('');
 end;
-
+{
 procedure TfmMain.setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
-var
-   achou:boolean;
-   i:integer;
 begin
    achou := false;
    if ( achou = false) then
@@ -1470,7 +1476,6 @@ begin
    if (achou = false) then
       cb.ItemIndex := -1;
 end;
-
 procedure TfmMain.getListaLojas(cb:TadLabelComboBox; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario: String);
 begin
    cb.Items.Clear();
@@ -1478,6 +1483,7 @@ begin
    setaLojaLogadaNoComboBox(cb);
    cb.DropDownCount := cb.items.count;
 end;
+}
 
 procedure TfmMain.RegistroSCAN1Click(Sender: TObject);
 var
@@ -1504,7 +1510,7 @@ begin
          delete(dataSql, length(dataSql), 1);
          insert('T', dataSql, 11);
          delete(dataSql, 12, 1);
-                  
+
          dhCont := '<dhCont>'+ dataSql +'</dhCont>';
          xjust:= '<xJust>Sefaz ceara fora do ar</xJust>';
 
@@ -1743,6 +1749,22 @@ begin
    Application.Restore();
    Application.BringToFront();
 end;
+
+procedure TfmMain.ImpressorasNFE1Click(Sender: TObject);
+begin
+   if ( fmCadImpNFE = nil) then
+   begin
+      Application.CreateForm(TfmCadImpNFE, fmCadImpNFE);
+      fmCadImpNFE.show();
+   end;
+end;
+
+function TfmMain.execSQL(cmd:String):boolean;
+begin//
+   result := funcSQL.execSQL(cmd,  conexao);
+end;
+
+
 
 end.
 

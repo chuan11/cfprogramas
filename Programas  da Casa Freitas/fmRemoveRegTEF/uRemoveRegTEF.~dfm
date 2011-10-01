@@ -45,6 +45,7 @@ object fmRemRegTEF: TfmRemRegTEF
     ItemHeight = 13
     ParentBiDiMode = False
     TabOrder = 0
+    OnClick = cbLojasClick
     LabelDefs.Width = 23
     LabelDefs.Height = 13
     LabelDefs.Caption = 'Loja:'

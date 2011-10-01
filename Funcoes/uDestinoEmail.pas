@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, adLabelEdit, adLabelComboBox, ExtCtrls,
-  TFlatButtonUnit;
+  TFlatButtonUnit, adLabelMemo;
 
 type
   TfmDestEmail = class(TForm)
@@ -13,10 +13,11 @@ type
     cbLoja: TadLabelComboBox;
     edMail: TadLabelEdit;
     pnConfirma: TPanel;
-    BitBtn1: TFlatButton;
+    btOk: TFlatButton;
     FlatButton1: TFlatButton;
     lbEmail: TLabel;
-    procedure BitBtn1Click(Sender: TObject);
+    mmCorpoEmail: TadLabelMemo;
+    procedure btOkClick(Sender: TObject);
     procedure rgClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -30,12 +31,11 @@ var
 
 implementation
 
-uses uMain, funcsql, funcoes;
+uses uMain, funcsql, funcoes, uCF;
 
 {$R *.dfm}
 
-
-procedure TfmDestEmail.BitBtn1Click(Sender: TObject);
+procedure TfmDestEmail.btOkClick(Sender: TObject);
 begin
    if (rg.ItemIndex = 0) then
       lbEmail.Caption := funcsql.openSQL('Select email from zcf_tbuo (NOLOCK) where is_uo = ' + funcoes.getCodUO(cbLoja), 'email', fmMain.conexao)
@@ -60,10 +60,7 @@ end;
 
 procedure TfmDestEmail.FormShow(Sender: TObject);
 begin
-//   cbLoja.Items := funcsql.GetNomeLojas(fmMain.conexao, false,false,'','');
-//   cbLoja.ItemIndex := -1;
-   fmMain.getListaLojas(cbLoja, false, false, '' );
-
+   uCF.getListaLojas(cbLoja, false, false, '' );
 end;
 
 end.

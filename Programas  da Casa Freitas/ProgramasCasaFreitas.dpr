@@ -23,7 +23,6 @@ uses
   uReajuste in 'fmPrecos\uReajuste.pas' {fmReajuste},
   uDescPedido in 'fmDescontoPedido\uDescPedido.pas' {fmDescPed},
   uAnaliseVenda in 'fmAnaliseVenda\uAnaliseVenda.pas' {fmFaturamento},
-  uListaMapa in 'fmAnaliseVenda\uListaMapa.pas' {fmListaMapa},
   uEtiquetas in 'fmEtiquetas\uEtiquetas.pas' {fmEtiquetas},
   uPallet in 'fmEtiquetas\uPallet.pas' {Pallet},
   unNotasTransfrencia in 'fmRelNotasTransferidas\unNotasTransfrencia.pas' {fmNotasTransf},
@@ -43,17 +42,13 @@ uses
   uAnaliseEstoque in 'fmAnaliseEstoque\uAnaliseEstoque.pas' {fmAnaliseEstoque},
   uConReqProd in 'fmConREqProd\uConReqProd.pas' {fmConReqProduto},
   uCalcEN in 'fmCalcExnota\uCalcEN.pas' {fmCalcExNota},
-  uGetNotas in 'fmGetNotas\uGetNotas.pas',
   uRelGeral in 'fmRelatorioGeral\uRelGeral.pas' {fmRelGeral},
-  unMovDiario in 'fmMovDiario\unMovDiario.pas' {fmMovDiario},
-  uAbreMovDiario in 'fmMovDiario\uAbreMovDiario.pas' {fmDialogMov},
-  UAlteraForPedido in 'fmAlterafornecedorPedido\UAlteraForPedido.pas' {fmAlteraPedForn},
+  uAlteraForPedido in 'fmAlterafornecedorPedido\UAlteraForPedido.pas' {fmAlteraPedForn},
   uClassificaProd in 'fmClassificaProd\uClassificaProd.pas' {fmClassificaProd},
   uCompFornecedor in 'fmCompFornecedor\uCompFornecedor.pas' {fmCompFornecedor},
   system,
   sysUtils,
   windows,
-  uCadFornecedor in 'uCadFornecedor\uCadFornecedor.pas' {Form1},
   uListaFornecedores in 'FmFornecACriticar\uListaFornecedores.pas' {fmListaFornecedores},
   uParametros in 'fmParametros\uParametros.pas' {fmParametros},
   funcoes,
@@ -62,7 +57,6 @@ uses
   uAjustaSPED in 'fmAjustaSPED\uAjustaSPED.pas' {fmAjustaSPED},
   uCustoPorPedido in 'fmListaPrecosCustoPorNota\uCustoPorPedido.pas' {fmCustoPorPedido},
   uObterSaldoFiscal in 'fmObterSaldoFiscal\uObterSaldoFiscal.pas' {fmObterSaldoFiscal},
-  uAjusteModPag in 'fmAjusteModPag\uAjusteModPag.pas' {fmAjusteModPag},
   uAlteraModalidadePagto in 'fmRemoveRegTEF\uAlteraModalidadePagto.pas' {fmAlteraModPagto},
   uSelecionaUo in 'fmSelecionaUo\uSelecionaUo.pas' {fmSelecionaUo},
   uGeraEstoque in 'fmGeraEstoque\uGeraEstoque.pas' {fmGeraEstoque},
@@ -81,7 +75,14 @@ uses
   fmMudaSerieNota in 'fmMudaSerieNota\fmMudaSerieNota.pas' {fmAjustaSerie},
   uBuscaCidade in 'fmBuscaCidade\uBuscaCidade.pas' {fmBuscaDiversas},
   uCadImagem in 'fmCadImagem\uCadImagem.pas' {fmCadastro},
-  uManutencaoCX in 'fmManutencaoCx\uManutencaoCX.pas' {fmManutencaoCX};
+  uManutencaoCX in 'fmManutencaoCx\uManutencaoCX.pas' {fmManutencaoCX},
+  uCadImpNFE in 'fmCadastraImpNFE\uCadImpNFE.pas' {fmCadImpNFE},
+  uListaImpNFE in 'fmCadastraImpNFE\uListaImpNFE.pas' {fmListaImpNFE},
+  uTipoImpGeraEstoque in 'fmGeraEstoque\fmTipoImpressao\uTipoImpGeraEstoque.pas' {fmTipoImpressaoGera},
+  uPrecoPorPedido in 'fmPrecos\uPrecoPorPedido.pas',
+  uAjusteModPag in 'fmAjusteModPag\uAjusteModPag.pas',
+  uConReqDep in 'requisicoes\fmReqPorLoja\uConReqDep.pas',
+  uPermissoes in 'fmPermissoes\uPermissoes.pas' {fmPermissoes};
 
 {$R *.res}
 
@@ -95,6 +96,6 @@ begin
       Application.Initialize;
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
-  Application.Run;
+      Application.Run;
   end;
 end.

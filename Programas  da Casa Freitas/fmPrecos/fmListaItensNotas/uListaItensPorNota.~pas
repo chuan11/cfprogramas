@@ -34,17 +34,17 @@ type
 
 var
   fmListaItensNota: TfmListaItensNota;
-  gravaDadosSocket:boolean;
-implementation
 
-uses uMain, Uprecoswell, uCF, Math;
+  implementation
+
+uses uCF, Math;
 
 {$R *.dfm}
 
 
 procedure TfmListaItensNota.FormCreate(Sender: TObject);
 begin
-   fmMain.getListaLojas(cbLoja, false, false, '');
+   uCF.getListaLojas(cbLoja, false, false, '');
 end;
 
 procedure TfmListaItensNota.getIsNota;
@@ -56,7 +56,6 @@ begin
    DataSource1.DataSet := qrNota;
    for i:=0 to grid.Columns.Count -1 do
    grid.Columns[i].Visible := false;
-
 
    grid.Columns[qrNota.FieldByname('Serie').Index].Visible := true;
    grid.Columns[qrNota.FieldByname('Tipo').Index].Visible := true;

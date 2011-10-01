@@ -1,0 +1,5 @@
+inherited fmListaImpNFE: TfmListaImpNFE
+  Caption = 'fmListaImpNFE'
+  PixelsPerInch = 96
+  TextHeight = 13
+end
