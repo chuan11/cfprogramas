@@ -1,7 +1,7 @@
 object fmGeraEstoque: TfmGeraEstoque
-  Left = 297
-  Top = 122
-  Width = 1291
+  Left = 0
+  Top = 31
+  Width = 1280
   Height = 739
   Caption = 'Gera Estoque'
   Color = clBtnFace
@@ -26,7 +26,7 @@ object fmGeraEstoque: TfmGeraEstoque
   object grid: TSoftDBGrid
     Left = 0
     Top = 137
-    Width = 1275
+    Width = 1264
     Height = 532
     Align = alClient
     Ctl3D = False
@@ -49,7 +49,7 @@ object fmGeraEstoque: TfmGeraEstoque
   object pbRodape: TPanel
     Left = 0
     Top = 669
-    Width = 1275
+    Width = 1264
     Height = 32
     Align = alBottom
     BevelOuter = bvNone
@@ -186,7 +186,7 @@ object fmGeraEstoque: TfmGeraEstoque
   object pnTitulo: TPanel
     Left = 0
     Top = 0
-    Width = 1275
+    Width = 1264
     Height = 137
     Align = alTop
     BevelOuter = bvNone

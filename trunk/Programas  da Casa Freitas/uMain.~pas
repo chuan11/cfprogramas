@@ -105,6 +105,7 @@ type
     AlteraStatusdoCaixa1: TMenuItem;
     CoolTrayIcon1: TCoolTrayIcon;
     ImpressorasNFE1: TMenuItem;
+    ResumoCaixa1: TMenuItem;
 
     function delParamBD(nParametro, loja: String):boolean;
     function ehCampoPermitido(nParam:String): Boolean;
@@ -179,7 +180,6 @@ type
     procedure Geracaopreodecusto1Click(Sender: TObject);
     procedure Geraestoque1Click(Sender: TObject);
     procedure getDadosCRUC(is_ref:String);
-//    procedure getListaLojas(cb:TadLabelComboBox; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario: String);
     procedure getParametrosForm(form:Tform);
     procedure getPedidosFornecedor(is_ref, uo:String);
     procedure getRequisicoesPorProduto(cd_ref:String);
@@ -229,11 +229,11 @@ type
     procedure rocardeUsuario1Click(Sender: TObject);
     procedure saldofiscalpormes1Click(Sender: TObject);
     procedure setaAversoNobd1Click(Sender: TObject);
-//    procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
     procedure showGridCol(grid:TSoftDBGrid;qr:TdataSet;col:String;is_visible:Boolean);
     procedure timer1Timer(Sender: TObject);
     procedure tnDataAvailable(Sender: TIdTelnet; const Buffer: String);
     procedure verificaPermissao(item:TmenuItem);
+    procedure ResumoCaixa1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -245,8 +245,8 @@ type
     { Public declarations }
   end;
 CONST
-   VERSAO = '11.09.04';
-   SUB_VERSAO = ' D';
+   VERSAO = '11.10.00';
+   SUB_VERSAO = ' ';
    MSG_ERRO_TIT = '  Corrija antes os seguintes erros: ' +#13;
    MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
    MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
@@ -261,7 +261,7 @@ var
 
 implementation
 
-uses  uCF, uConReqDep, urequisicao, {ufornACriticar,{ uPermissoes,} uLogin, uTabela, upcoAlteradoPorPeriodo,
+uses uCF, urequisicao, {ufornACriticar,{ uPermissoes,} uLogin, uTabela, upcoAlteradoPorPeriodo,
      uOsDeposito, uAvarias, uPropostaLoja, uMapa, uDetEntrada, uTotalSaidas, uEnviaEmail,
      uprecoswell, uDescPedido, uAnaliseVenda, uEtiquetas, unNotasTransfrencia, uResumoEstoque,
      uPrecosCusto, uAlteraFinanceira, uDetalhesNotas, uRelatorioComissao, uComporEstoque,
@@ -272,7 +272,8 @@ uses  uCF, uConReqDep, urequisicao, {ufornACriticar,{ uPermissoes,} uLogin, uTab
      uAjusteModPag, uGeraEstoque, uRelInventario, uSelCat, uTotalEntSai,
      uDetalhesCRUC, uPedidosFornecedor, umColetor, uResumoECF, uRRANA,
      uInternaNota, uListaNotaWMS, fmMudaSerieNota, uCEP, uCadImagem, uCadImpNFE,
-  uManutencaoCX{, uPermissoes;}  , ufornACriticar;
+     uManutencaoCX{, uPermissoes;}  , ufornACriticar, uConReqDep,
+  uPermissoes, uResumoCaixa;
 {$R *.dfm}
 
 
@@ -607,7 +608,7 @@ end;
 
 procedure TfmMain.Fornecedoreacriticar1Click(Sender: TObject);
 begin
-   if fmFornACriticar = nil then
+   if (fmFornACriticar = nil) then
    begin
       Application.CreateForm(TfmFornACriticar, fmFornACriticar);
       fmFornACriticar.Show
@@ -616,26 +617,21 @@ end;
 
 procedure TfmMain.Permisses2Click(Sender: TObject);
 begin
-{   if  fmPermissoes = nil then
+   if  fmPermissoes = nil then
    begin
       Application.CreateForm(TfmPermissoes, fmPermissoes);
       fmPermissoes.Show;
    end;
-}
 end;
 
 procedure TfmMain.abreFormRequisicao(mostraMsg: Boolean;perfil:integer);
-var
-   uoCD:String;
 begin
-   uoCD := fmMain.GetParamBD('uocd','');
-
    if (fmOsDeposito = nil) then
    begin
-      if  (getUoLogada() = uoCD ) and ( perfil <> 3 )  then
+      if  (getUoLogada() = fmMain.GetParamBD('uocd','') ) and ( perfil <> 3 )  then
          msgTela('','O Cd não pode fazer requisições para ele mesmo.', MB_ICONERROR + MB_OK)
       else
-      if  (fmMain.getUoLogada() <> uoCD ) and ( perfil =  3 )  then
+      if  (fmMain.getUoLogada() <> fmMain.GetParamBD('uocd','') ) and ( perfil =  3 )  then
          msgTela('','Só posso acessar essa tela se estiver logado no CD.', MB_ICONERROR + MB_OK)
       else
       begin
@@ -644,7 +640,7 @@ begin
 
          Application.CreateForm(TfmOsDeposito, fmOsDeposito);
          fmOsDeposito.Show;
-         fmOsDeposito.SetPerfil(perfil, uoCD );
+         fmOsDeposito.SetPerfil(perfil, fmMain.GetParamBD('uocd','') );
       end;
    end;
 end;
@@ -848,7 +844,13 @@ end;
 
 procedure TfmMain.EnviarEmail( para, assunto, anexo:String; corpoMsg:Tstringlist; titulo:String);
 begin
-   fmEnviaEmail.enviarEmailGmail( fmMain.getUoLogada() , para , assunto, anexo , corpoMsg, Conexao, titulo, getCdPesLogado() );
+   screen.Cursor := crHourGlass;
+   Application.CreateForm(TfmEnviaEmail, fmEnviaEmail);
+   fmEnviaEmail.Show;
+   fmEnviaEmail.enviarEmailGmail( fmMain.getUoLogada() , para, assunto, anexo, corpoMsg, Conexao, titulo, getCdPesLogado() );
+   fmEnviaEmail.Close();
+   fmEnviaEmail := nil;
+   screen.Cursor := 0;
 end;
 
 procedure TfmMain.N1Click(Sender: TObject);
@@ -1068,7 +1070,7 @@ end;
 
 procedure TfmMain.Parmetrosdosistema1Click(Sender: TObject);
 begin
-   if ( fmParametros = nil) then
+   if (fmParametros = nil) then
    begin
       Application.CreateForm(TfmParametros, fmParametros);
       fmParametros.show;
@@ -1765,6 +1767,15 @@ begin//
 end;
 
 
+
+procedure TfmMain.ResumoCaixa1Click(Sender: TObject);
+begin
+   if ( fmResumoCaixa = nil) then
+   begin
+      Application.CreateForm(TfmResumoCaixa, fmResumoCaixa);
+      fmResumoCaixa.Show();
+   end;
+end;
 
 end.
 

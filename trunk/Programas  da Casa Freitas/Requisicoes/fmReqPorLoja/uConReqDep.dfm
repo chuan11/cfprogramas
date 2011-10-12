@@ -1,6 +1,6 @@
 object fmConReqDep: TfmConReqDep
-  Left = 342
-  Top = 264
+  Left = 346
+  Top = 134
   Width = 795
   Height = 516
   Color = clBtnFace

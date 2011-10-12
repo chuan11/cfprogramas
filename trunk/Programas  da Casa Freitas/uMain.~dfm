@@ -1,7 +1,7 @@
 object fmMain: TfmMain
-  Left = 431
-  Top = 246
-  Width = 800
+  Left = 298
+  Top = 192
+  Width = 984
   Height = 570
   Caption = 'fmMain'
   Color = clBtnFace
@@ -24,7 +24,7 @@ object fmMain: TfmMain
   object StatusBar1: TStatusBar
     Left = 0
     Top = 493
-    Width = 784
+    Width = 968
     Height = 19
     Panels = <
       item
@@ -289,6 +289,11 @@ object fmMain: TfmMain
           Tag = 408
           Caption = 'Cadastro de CEP'
           OnClick = CadastrodeCEP1Click
+        end
+        object ResumoCaixa1: TMenuItem
+          Tag = 409
+          Caption = 'ResumoCaixa'
+          OnClick = ResumoCaixa1Click
         end
       end
       object Relatorios2: TMenuItem

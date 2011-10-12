@@ -43,6 +43,7 @@ procedure TfmManutencaoCX.FormCreate(Sender: TObject);
 begin
    carregaCampos(fmManutencaoCX);
    carregaOpcoesDeCaixa();
+   uCF.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
 end;
 
 procedure TfmManutencaoCX.cbLojasChange(Sender: TObject);
@@ -57,7 +58,7 @@ var
    cmd:String;
 begin
    cmd :=
-   'Select statusCaixa from caixas where codLoja=' + funcoes.getCodUO(cbLojas) +
+   'Select statusCaixa, codCaixa from caixas where codLoja=' + funcoes.getCodUO(cbLojas) +
    'and  codCaixa= ' + funcoes.getCodCaixa(cbCaixas);
    ds:= funcSQL.getDataSetQ(cmd, fmMain.Conexao);
 

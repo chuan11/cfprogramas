@@ -107,23 +107,26 @@ end;
 
 function getParamBD(nParametro, loja: String; conexao : TADOConnection):String;
 var
-   cmd:String;
+  ds:TdataSet;
+  cmd:String;
 begin
-      cmd := 'Select valor from zcf_paramGerais where nm_param = ' + quotedStr(nParametro);
+    cmd := 'Select valor from zcf_paramGerais where nm_param = ' + quotedStr(nParametro);
+     if (loja <> '') then
+       cmd := cmd + ' and uo = ' + quotedStr(loja);
 
-      if (loja <> '') then
-         cmd := cmd + ' and uo = ' + quotedStr(loja);
+    ds:= getDataSetq(cmd, conexao);
 
-      cmd:= funcsql.openSQL(cmd,'valor', conexao);
-
-      if (cmd <> '') then
-         result := cmd
-      else
-      begin
-         funcoes.MsgTela('','Nao consegui ler o parametro de BD: ' + nParametro +#13+'Erros de execução do programa poderão ocorrer.', MB_ICONERROR +- mb_ok);
-         funcoes.gravaLog(#13+'Parametro ' + nParametro + ' nao existe.' +#13 );
-         result := '';
-      end;
+    if (ds.IsEmpty = false) then
+       cmd := ds.Fields[0].AsString
+    else
+    begin
+       insertParamBD(nParametro, loja, '', '', conexao);
+       cmd := '';
+       funcoes.MsgTela('','Não consegui ler o parametro de BD: ' + nParametro +#13+'Erros de execução do programa poderão ocorrer.', MB_ICONERROR +- mb_ok);
+       funcoes.gravaLog(#13+'Parametro ' + nParametro + ' não existe.' +#13 );
+   end;
+   ds.free;
+   result := cmd;
 end;
 
 function delParamBD(nParametro, loja: String; conexao : TADOConnection):boolean;

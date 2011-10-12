@@ -77,7 +77,7 @@ uses uMain, funcoes, funcSQL, uCF, uAlteraModalidadePagto;
 procedure TfmRemRegTEF.FormCreate(Sender: TObject);
 begin
    funcoes.carregaCampos(fmRemRegTEF);
-   fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
    dt.Date := now;
 end;
 

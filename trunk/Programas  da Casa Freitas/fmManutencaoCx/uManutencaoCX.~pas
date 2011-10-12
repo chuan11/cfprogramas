@@ -43,6 +43,7 @@ procedure TfmManutencaoCX.FormCreate(Sender: TObject);
 begin
    carregaCampos(fmManutencaoCX);
    carregaOpcoesDeCaixa();
+   uCF.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
 end;
 
 procedure TfmManutencaoCX.cbLojasChange(Sender: TObject);

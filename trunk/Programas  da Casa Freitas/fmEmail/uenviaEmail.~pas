@@ -105,7 +105,7 @@ var
 
       fmEnviaEmail.Memo1.Lines.add('Remetente: ' + nmRemetente );
 
-      with msg do
+      with fmEnviaEmail.msg do
       begin
          Create(nil);
          if (corpoMsg <> nil) then
@@ -121,14 +121,14 @@ var
       end;
 
       if (anexo <> '' )then
-         TIdAttachment.create(msg.MessageParts, TFileName(anexo));
+         TIdAttachment.create(fmEnviaEmail.msg.MessageParts, TFileName(anexo));
       try
-         idsmtp.Connect();
-         idsmtp.Send(msg);
+         fmEnviaEmail.idsmtp.Connect();
+         fmEnviaEmail.idsmtp.Send(fmEnviaEmail.msg);
          fmEnviaEmail.Memo1.Lines.add('');
          fmEnviaEmail.Memo1.Lines.add('E-mail enviado para: ' + para,   );
          fmEnviaEmail.Memo1.Lines.add('');
-         idsmtp.Disconnect;
+         fmEnviaEmail.idsmtp.Disconnect;
          sleep(500);
          result := true;
       except

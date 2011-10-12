@@ -175,7 +175,8 @@ begin
                                    valor,
                                    nParcelas,
                                    tb.FieldByName('seqTefTransCaixa').AsString,
-                                   tb.FieldByName('dataSessaoCaixa').asString
+                                   tb.FieldByName('dataSessaoCaixa').asString,
+                                   true
                                  )  = true ) then
       begin
          cmd:= 'Alt mod, uo=' + tb.FieldByName('codLoja').AsString +
@@ -317,13 +318,14 @@ begin
    tb.Post();
 
    if ( uCF.alterarModPagamento( tb.FieldByName('codLoja').AsString,
-                                 tb.FieldByName('seqtransacaoCaixa').AsString,
+                                 tb.FieldByName('seqTransacaoCaixa').AsString,
                                  tb.FieldByName('SeqModPagtoPorTransCaixa').AsString,
                                  codMod,
                                  valor,
                                  nParcelas,
                                  tb.FieldByName('seqTefTransCaixa').AsString,
-                                 tb.FieldByName('dataSessaoCaixa').asString
+                                 tb.FieldByName('dataSessaoCaixa').asString,
+                                 false
                                )  = true ) then
    begin
       cmd:= 'Exclusao de modalidade, loja = ' + tb.FieldByName('codLoja').AsString +

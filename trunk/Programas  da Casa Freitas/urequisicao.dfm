@@ -1,6 +1,6 @@
 object fmReqLojas: TfmReqLojas
-  Left = 578
-  Top = 281
+  Left = 560
+  Top = 177
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Simples requisi'#231#227'o de mercadorias entre lojas.'

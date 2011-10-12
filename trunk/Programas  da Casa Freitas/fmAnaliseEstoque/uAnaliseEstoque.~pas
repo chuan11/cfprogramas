@@ -3,7 +3,7 @@ unit uAnaliseEstoque;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, funcoes, funcsql,
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, DB, ADODB, Grids, DBGrids, SoftDBGrid, StdCtrls,
   adLabelComboBox, adLabelEdit, Buttons, fCtrls;
 
@@ -41,7 +41,8 @@ var
   QT_MESES_VENDA_PREVISTA, UOCD:String;
 
 implementation
-uses uMain;
+
+uses uMain, funcoes, funcsql, uCF;
 
 {$R *.dfm}
 
@@ -73,7 +74,7 @@ begin
    fmMain.getParametrosForm(fmAnaliseEstoque);
 
 
-   fmMain.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
 
    edEnd.text := '';
 end;

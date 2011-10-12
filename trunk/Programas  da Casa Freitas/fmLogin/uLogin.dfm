@@ -1,6 +1,6 @@
 object fmLogin: TfmLogin
-  Left = 768
-  Top = 522
+  Left = 745
+  Top = 386
   BorderIcons = []
   BorderStyle = bsSingle
   ClientHeight = 179
@@ -66,7 +66,7 @@ object fmLogin: TfmLogin
     Left = 268
     Top = 22
     Width = 173
-    Height = 21
+    Height = 24
     BevelInner = bvLowered
     BevelKind = bkSoft
     BevelOuter = bvNone
@@ -74,8 +74,14 @@ object fmLogin: TfmLogin
     BiDiMode = bdRightToLeft
     Color = clInfoBk
     DropDownCount = 15
-    ItemHeight = 13
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ItemHeight = 16
     ParentBiDiMode = False
+    ParentFont = False
     TabOrder = 2
     LabelDefs.Width = 20
     LabelDefs.Height = 13
@@ -86,7 +92,7 @@ object fmLogin: TfmLogin
     Left = 268
     Top = 63
     Width = 174
-    Height = 21
+    Height = 24
     BevelInner = bvLowered
     BevelKind = bkSoft
     BevelOuter = bvNone
@@ -94,8 +100,14 @@ object fmLogin: TfmLogin
     BiDiMode = bdRightToLeft
     Color = clInfoBk
     DropDownCount = 15
-    ItemHeight = 13
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ItemHeight = 16
     ParentBiDiMode = False
+    ParentFont = False
     TabOrder = 3
     OnEnter = cbUserEnter
     LabelDefs.Width = 39
@@ -107,7 +119,7 @@ object fmLogin: TfmLogin
     Left = 268
     Top = 104
     Width = 174
-    Height = 19
+    Height = 22
     LabelDefs.Width = 31
     LabelDefs.Height = 13
     LabelDefs.Caption = 'Senha'
@@ -116,7 +128,13 @@ object fmLogin: TfmLogin
     ParentCtl3D = False
     PasswordChar = '*'
     Color = clInfoBk
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
     MaxLength = 6
+    ParentFont = False
     TabOrder = 4
   end
 end

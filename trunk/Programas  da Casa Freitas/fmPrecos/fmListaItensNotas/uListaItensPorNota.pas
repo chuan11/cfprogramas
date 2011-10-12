@@ -24,6 +24,7 @@ type
     procedure getIsNota();
     procedure btOkClick(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
 
     
   private
@@ -53,9 +54,11 @@ begin
    qrNota := ucf.getDadosNota('', funcoes.getCodUO(cbLoja), edSerie.Text, edNNota.Text );
 
    DataSource1.DataSet := qrNota;
-   for i:=0 to grid.Columns.Count -1 do
-   grid.Columns[i].Visible := false;
 
+   for i:=0 to grid.Columns.Count -1 do
+    grid.Columns[i].Visible := false;
+
+   grid.Columns[qrNota.FieldByname('dt_emis').Index].Visible := true;
    grid.Columns[qrNota.FieldByname('Serie').Index].Visible := true;
    grid.Columns[qrNota.FieldByname('Tipo').Index].Visible := true;
    grid.Columns[qrNota.FieldByname('Situacao').Index].Visible := true;
@@ -109,6 +112,12 @@ begin
       else
          btPesqClick(nil);
    end;
+end;
+
+procedure TfmListaItensNota.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+   action := CaFree; 
 end;
 
 end.

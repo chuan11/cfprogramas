@@ -480,15 +480,19 @@ end;
 
 procedure TfmGeraEstoque.gridDblClick(Sender: TObject);
 begin
+   screen.Cursor := crHourGlass;
    if (tbGE.IsEmpty = false) then
       uCF.CarregaImagem(tbGE.fieldByName('is_ref').asString, Image );
+   screen.Cursor := crDefault;
 end;
 
 procedure TfmGeraEstoque.gridCellClick(Column: TColumn);
 begin
+   screen.Cursor := crHourGlass;
    if (tbGE.IsEmpty = false) then
       if (cbCarregaImg.Checked = true) then
          uCF.CarregaImagem(tbGE.fieldByName('is_ref').asString, Image );
+   screen.Cursor := crDefault;         
 end;
 
 procedure TfmGeraEstoque.gridTitleClick(Column: TColumn);
@@ -869,7 +873,7 @@ end;
 procedure TfmGeraEstoque.FormCreate(Sender: TObject);
 begin
    cbPrecos.items := funcsQL.getListaPrecos( fmMain.Conexao, true, true, true, '13' ); // getListaPrecos (sender);
-   fmMain.getListaLojas( cbLoja, false, false, '' );
+   uCF.getListaLojas( cbLoja, false, false, '' );
 
    funcoes.carregaCampos(fmGeraEstoque);
    edit1.Text := '';

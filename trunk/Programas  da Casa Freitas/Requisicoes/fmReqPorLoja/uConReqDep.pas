@@ -263,9 +263,9 @@ end;
 
 procedure TfmConReqDep.fsBitBtn1Click(Sender: TObject);
 begin
-   if dti.Date > dtf.Date then
-      msgTela('','Data inicial menor que a final',mb_ok + MB_ICONERROR);
-   ConsultaPedidos(nil);
+   if (dti.Date > dtf.Date) then
+      funcoes.msgTela('','Data inicial menor que a final',mb_ok + MB_ICONERROR);
+   consultaPedidos(nil);
 end;
 
 procedure TfmConReqDep.FormClose(Sender: TObject;

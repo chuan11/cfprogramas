@@ -67,7 +67,7 @@ type
     procedure btDadosNFEClick(Sender: TObject);
     procedure btIncluiXMLClick(Sender: TObject);
     procedure btDeleteXMLClick(Sender: TObject);
-    function  isGrupoprivilegiado():boolean;
+    function  isGrupoRestrito():boolean;
 
   private
     { Private declarations }
@@ -77,7 +77,7 @@ type
 
 var
   fmAjustaNota: TfmAjustaNota;
-  IS_GRUPO_PERMITIDO:boolean;
+  IS_GRUPO_RESTRITO:boolean;
 implementation
 
 uses uMain, uListaFornecedores, uCF;
@@ -163,7 +163,7 @@ var
   codigo:String;
   ds:TDataSet;
 begin
-   if ( isGrupoprivilegiado()) = true then
+   if ( isGrupoRestrito() = false ) then
    begin
       if (lbTipo.Caption = 'Entrada') then
          codigo:= uCF.getFmDadosPessoa('Fornecedor')
@@ -262,7 +262,7 @@ end;
 procedure TfmAjustaNota.FormCreate(Sender: TObject);
 begin
   cbOperIntegrada.Items := funcsql.getOperIntegradasFiscais(fmMain.Conexao);
-  IS_GRUPO_PERMITIDO := not( fmMain.isGrupoRestrito( fmMain.Ajustedenotas1.Tag ));
+  IS_GRUPO_RESTRITO := fmMain.isGrupoRestrito( fmMain.Ajustedenotas1.Tag );
 end;
 
 procedure TfmAjustaNota.btOkClick(Sender: TObject);
@@ -284,7 +284,7 @@ begin
    end;
 
    if (edCodNFE.text <> '') then
-      if (isGrupoprivilegiado() = true) then
+      if (isGrupoRestrito() = false ) then
          if (msgTela('', 'Não Altere uma nota fiscal eletrônica a menos que você saiba realmente o que está fazendo...'+#13+'Altera mesmo ?', MB_YESNO + MB_ICONWARNING) = mrNo) then
             isAltera := false;
 
@@ -338,7 +338,7 @@ procedure TfmAjustaNota.btDadosNFEClick(Sender: TObject);
 var
   codNfe, cmd:String;
 begin
-   if isGrupoprivilegiado() then
+   if (isGrupoRestrito() = false )then
    begin
       if ( edCodNFE.Text = '') then
       begin
@@ -404,11 +404,11 @@ begin
       end;
 end;
 
-function TfmAjustaNota.isGrupoPrivilegiado: boolean;
+function TfmAjustaNota.isGrupoRestrito:boolean;
 begin
-    if (IS_GRUPO_PERMITIDO = false) then
+    if (IS_GRUPO_RESTRITO = true) then
        msgTela('', 'Você não tem acesso a essa função', MB_OK + MB_ICONERROR);
-    result := IS_GRUPO_PERMITIDO;
+    result := IS_GRUPO_RESTRITO;
 end;
 
 end.

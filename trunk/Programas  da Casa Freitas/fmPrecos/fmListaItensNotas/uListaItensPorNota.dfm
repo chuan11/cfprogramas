@@ -17,6 +17,7 @@ object fmListaItensNota: TfmListaItensNota
   OldCreateOrder = False
   ParentBiDiMode = False
   Position = poMainFormCenter
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   DesignSize = (

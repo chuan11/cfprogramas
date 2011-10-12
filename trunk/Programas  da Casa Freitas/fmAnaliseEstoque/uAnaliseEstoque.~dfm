@@ -1,6 +1,6 @@
 object fmAnaliseEstoque: TfmAnaliseEstoque
-  Left = 33
-  Top = 10
+  Left = 172
+  Top = 37
   Width = 723
   Height = 556
   Caption = 'fmAnaliseEstoque'

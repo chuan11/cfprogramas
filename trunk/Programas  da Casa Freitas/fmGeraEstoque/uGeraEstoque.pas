@@ -64,7 +64,6 @@ type
     procedure FlatButton1Click(Sender: TObject);
     procedure FlatButton2Click(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure SalvaColDbgrid(NomeForm:string;Dbgrid:tdbgrid);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ADOConnection1WillExecute(Connection: TADOConnection; var CommandText: WideString; var CursorType: TCursorType;      var LockType: TADOLockType; var CommandType: TCommandType;      var ExecuteOptions: TExecuteOptions; var EventStatus: TEventStatus;      const Command: _Command; const Recordset: _Recordset);
     procedure ADOConnection1ExecuteComplete(Connection: TADOConnection; RecordsAffected: Integer; const Error: Error;      var EventStatus: TEventStatus; const Command: _Command;      const Recordset: _Recordset);
@@ -103,11 +102,13 @@ type
     procedure FlatButton3Click(Sender: TObject);
     procedure Vermovimentodoestoque1Click(Sender: TObject);
     procedure imprimeGeraEstoqueComImagens();
-
     function getParametrosGeraEstoque():TStringlist;
     procedure gridDblClick(Sender: TObject);
-
     procedure limpaImagem();
+
+    procedure verificaDadosDasVendas();
+
+
 
   private
     { Private declarations }
@@ -123,13 +124,55 @@ implementation
 uses uMain, ucf, {uforn, }uExportaTable;
 
 {$R *.dfm}
+procedure TfmGeraEstoque.CriarTabela(Sender: Tobject);
+var
+  i:integer;
+begin
+   tbGE.TableName := funcSQL.criaTabelaTemporaria(fmMain.Conexao, getTableGeraEstoque('') );
+   tbGE.Open;
+
+   grid.Columns[0].Width := 60;
+   grid.Columns[1].Width := 290;
+   grid.Columns[2].Width :=  82;
+   grid.Columns[3].Width :=  88;
+   grid.Columns[4].Width :=  65;
+   grid.Columns[5].Width :=  65;
+   grid.Columns[6].Width :=  65;
+   grid.Columns[7].Width :=  80;
+   grid.Columns[8].Visible := false;
+
+   for i:=0 to grid.Columns.Count -1 do
+      grid.Columns[i].Title.Font.Style :=[fsbold];
+end;
+
+
+procedure TfmGeraEstoque.FormCreate(Sender: TObject);
+begin
+   cbPrecos.items := funcsQL.getListaPrecos( fmMain.Conexao, true, true, true, '13' ); // getListaPrecos (sender);
+   uCF.getListaLojas( cbLoja, false, false, '' );
+
+   funcoes.carregaCampos(fmGeraEstoque);
+   edit1.Text := '';
+   cbCalculaEntSaiTotal.Checked := false;
+   lbForn.Items.Clear();
+
+   cbLojaChange(Sender);
+   fmGeraEstoque.CriarTabela(Sender);
+
+   rgTpBuscaClick(Sender);
+
+   UO_CD := fmMain.getUOCD();
+
+   pnforn.Top := 55;
+   pnforn.Left := edit1.Left;
+end;
+
 
 procedure TfmGeraEstoque.limpaImagem;
 begin
    Image.picture.Assign(nil);
    Image.Refresh();
 end;
-
 
 function TfmGeraEstoque.getTableGeraEstoque(campoExtra:String):String;
 begin
@@ -160,7 +203,7 @@ begin
                    );
 end;
 
-procedure TfmGeraEstoque.calcularVenda;
+procedure TfmGeraEstoque.calcularVenda();
 var
    dataI:Tdate;
 begin
@@ -198,9 +241,9 @@ var
 begin
    strDisponivel := '0';
 
-   strEstoque := ' dbo.Z_CF_EstoqueNaLoja (crefe.is_ref , '+ copy(cbLoja.Items[cbLoja.itemIndex], 51, 08) + ' , '+ strDisponivel + ')';
+   strEstoque := ' dbo.Z_CF_EstoqueNaLoja (crefe.is_ref , '+ funcoes.getCodUO(cbLoja) + ' , '+ strDisponivel + ')';
 
-   
+
    query := TadoQuery.Create(fmGeraEstoque);
    Query.Connection := fmMain.Conexao;
    Query.SQL.Clear;
@@ -240,14 +283,6 @@ end;
 function TfmGeraEstoque.getIniDtVen():TDate;
 begin
    result := (now - (30 * spedit.Value));
-end;
-
-procedure TfmGeraEstoque.SalvaColDbgrid(NomeForm:string;Dbgrid:tdbgrid);
-var
-  i:integer;
-begin
-   for i:=0 to dbgrid.FieldCount-1 do
-    funcoes.WParReg('PosEstoque','Z_' +NomeForm+ '_'+ IntToStr(i) , IntToStr(dbgrid.Columns[i].Width) );
 end;
 
 procedure TfmGeraEstoque.imprimeGeraEstoqueComImagens;
@@ -442,28 +477,6 @@ begin
      MosraFormRequisicoes(Sender);
 end;
 
-procedure TfmGeraEstoque.CriarTabela(Sender: Tobject);
-var
-  i:integer;
-begin
-   tbGE.TableName := funcSQL.criaTabelaTemporaria(fmMain.Conexao, getTableGeraEstoque('') );
-   tbGE.Open;
-
-   grid.Columns[0].Width := 60;
-   grid.Columns[1].Width := 290;
-   grid.Columns[2].Width :=  82;
-   grid.Columns[3].Width :=  88;
-   grid.Columns[4].Width :=  65;
-   grid.Columns[5].Width :=  65;
-   grid.Columns[6].Width :=  65;
-   grid.Columns[7].Width :=  80;
-   grid.Columns[8].Visible := false;
-
-   for i:=0 to grid.Columns.Count -1 do
-      grid.Columns[i].Title.Font.Style :=[fsbold];
-end;
-
-
 procedure TfmGeraEstoque.rgTpBuscaClick(Sender: TObject);
 begin
     Case rgTpBusca.ItemIndex of
@@ -480,15 +493,19 @@ end;
 
 procedure TfmGeraEstoque.gridDblClick(Sender: TObject);
 begin
+   screen.Cursor := crHourGlass;
    if (tbGE.IsEmpty = false) then
       uCF.CarregaImagem(tbGE.fieldByName('is_ref').asString, Image );
+   screen.Cursor := crDefault;
 end;
 
 procedure TfmGeraEstoque.gridCellClick(Column: TColumn);
 begin
+   screen.Cursor := crHourGlass;
    if (tbGE.IsEmpty = false) then
       if (cbCarregaImg.Checked = true) then
          uCF.CarregaImagem(tbGE.fieldByName('is_ref').asString, Image );
+   screen.Cursor := crDefault;         
 end;
 
 procedure TfmGeraEstoque.gridTitleClick(Column: TColumn);
@@ -542,6 +559,10 @@ procedure TfmGeraEstoque.FormActivate(Sender: TObject);
 begin
    edit1.SetFocus;
    rgTpBusca.ItemIndex := 0 ;
+
+
+
+
 end;
 
 
@@ -572,7 +593,7 @@ procedure TfmGeraEstoque.getDadosEstoqueCD;
 var
   data:Tdate;
 begin
-   fmMain.msgStatus('Obtendo estoques cod CD');
+   fmMain.msgStatus('Obtendo estoques CD');
    data:= now;
 
    tbGE.First();
@@ -690,8 +711,6 @@ begin
 
    if (dsItens.IsEmpty = false ) then
      dsItens.first;
-
-   fmMain.msgStatus('inserindo na grid....');
 
    while (dsItens.Eof = false) do
    begin
@@ -866,25 +885,15 @@ begin
    end;
 end;
 
-procedure TfmGeraEstoque.FormCreate(Sender: TObject);
+procedure TfmGeraEstoque.verificaDadosDasVendas;
+var
+  dsDias:TdataSet;
+  cmd :String;
 begin
-   cbPrecos.items := funcsQL.getListaPrecos( fmMain.Conexao, true, true, true, '13' ); // getListaPrecos (sender);
-   uCF.getListaLojas( cbLoja, false, false, '' );
 
-   funcoes.carregaCampos(fmGeraEstoque);
-   edit1.Text := '';
-   cbCalculaEntSaiTotal.Checked := false;
-   lbForn.Items.Clear();
 
-   cbLojaChange(Sender);
-   fmGeraEstoque.CriarTabela(Sender);
 
-   rgTpBuscaClick(Sender);
 
-   UO_CD := fmMain.getUOCD();
-
-   pnforn.Top := 55;
-   pnforn.Left := edit1.Left;
 end;
 
 end.
