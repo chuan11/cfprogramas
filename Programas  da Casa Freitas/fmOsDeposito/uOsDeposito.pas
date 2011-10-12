@@ -65,11 +65,11 @@ type
 var
   fmOsDeposito: TfmOsDeposito;
   DUR_ESTOQUE, MESES_VD_MEDIA, MAX_ITENS_REQ, PERFIL,  QT_DIAS_PEND: integer;
-  PEDE_PROD_MAISON,IS_REQ_SALVA:Boolean;
+  IS_VERIFICA_SEPARACAO, USA_QT_MAX_REQ, PEDE_PROD_MAISON,IS_REQ_SALVA:Boolean;
   IS_CRITICA_VD_MEDIA, UO_CD, PC_VAREJO, COL_UO_MAPA_SEPARACAO:String;
 implementation
 
-uses umain, funcoes, funcSQL, verificaSenhas, funcDatas, uCF;
+uses umain, funcoes, funcSQL, verificaSenhas, funcDatas, cf;
 {$R *.dfm}
 
 procedure TfmOsDeposito.bloqueiaSessaoRequisicao(uo: String);
@@ -86,7 +86,7 @@ procedure TfmOsDeposito.fechaSessaoRequisicao(uo: String);
 begin
    funcsql.execSQL('delete from zcf_paramGerais where nm_param = ''osDeposito.reqAberta'' and uo = ' + uo, fmMain.Conexao );
 end;
-         
+
 function TfmOsDeposito.verificaRequisicaoAberta: Boolean;
 var
    uo:String;
@@ -134,14 +134,13 @@ begin
         datai := now - diasDesdePrimVenda ;
 
 //pegar a venda do ultimo semestre (ou antes, se houver)
-      qtVendaSemestre :=   strToInt( uCF.getVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, datai, dataf)) ;
+      qtVendaSemestre :=   strToInt( cf.getVendaProduto(tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, datai, dataf)) ;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' qtVendaUltimoSemestre: ' + floatToStr(qtVendaSemestre) );
       qtVendaSemestre :=  ( qtVendaSemestre / diasDesdePrimVenda ) * DUR_ESTOQUE;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' Venda Media semestre: ' + floatToStr(qtVendaSemestre) );
 
-
 //pegar a venda do ultimo mes
-      qtVendaMes := strToInt(uCF.getVendaProduto( tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, (dataf-30), dataf)) ;
+      qtVendaMes := strToInt( cf.getVendaProduto(tb.fieldByname('is_ref').asString, fmMain.getUoLogada(), UO_CD, datai-30, dataf)) ;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' qtVendaUltimoMes: ' + floatToStr(qtVendaMes) );
       qtVendaMes :=  ( qtVendaSemestre / 30 ) * DUR_ESTOQUE;
       funcoes.gravaLog ( tb.fieldByname('codigo').asString + ' Venda Media mes: ' + floatToStr(qtVendaMes) );
@@ -204,16 +203,17 @@ begin
    ds:= funcSQL.isReqPendProduto(fmMain.Conexao, fmMain.getUoLogada, is_ref, QT_DIAS_PEND );
    if (ds.IsEmpty = false) then
    begin
-       cmd :='    Já existe quantidade pedida e não transferida desse produto '+#13+
+      cmd := '            Atenção ' +#13+
+             ' Já existe quantidade pedida e não transferida desse produto '+#13+
              ' a menos de ' + IntToStr(QT_DIAS_PEND)  + ' dias. ' +#13+
-             ' Requisicao: ' + ds.fieldByName('is_planod').AsString + #13+
+             ' Requisição: ' + ds.fieldByName('is_planod').AsString + #13+
              ' Quantidade: ' + ds.fieldByName('qt_ped').AsString + #13 +
              ' Data: ' + ds.fieldByName('dt_movpd').AsString + #13;
 
       if (showErro = true) then
          msgTela('',cmd, MB_OK+MB_ICONERROR);
 
-      ds.Destroy;
+      ds.free();;
 
       if (PERFIL = 2) then
          result:= true
@@ -233,14 +233,21 @@ var
    aux, erro:String;
 begin
    aux := Query.fieldbyname('fornecedor').AsString;
-   if aux = '' then aux := '0';
+
+   if aux = '' then
+      aux := '0';
+
    aux := funcsql.GetValorWell( 'O','select codFornecedor from zcf_FornCritReq where codfornecedor = ' + aux, 'codFornecedor' , fmMain.conexao );
+
    if aux = '' then
    begin
      if (Query.fieldbyname('embalagem').AsInteger <> 0) and ( Query.fieldbyname('embalagem').AsInteger <> 1 ) then
         if (cbCritica.Checked = false) then
            if  ( tb.FieldByName('Qt Pedida').AsInteger  mod Query.fieldbyname('embalagem').AsInteger > 0 ) then
-              erro := ' - Esse produto deve ser pedido em caixa fechada. ' + #13+ '    A caixa dele tem ' + Query.fieldbyname('embalagem').AsString  + ' unidades.' + #13;
+              erro := ' - Esse produto deve ser pedido em caixa fechada. ' +
+                      #13+ '    A caixa dele tem ' +
+                      Query.fieldbyname('embalagem').AsString
+                      + ' unidades.' + #13;
    end;
 
    if (tb.Fields[1].asString = '0')  then
@@ -267,6 +274,7 @@ begin
    result := erro;
 end;
 
+
 procedure TfmOsDeposito.GetDadosProdutos(cod:string);
 var
   cmd:string;
@@ -274,7 +282,7 @@ var
 begin
    fmMain.MsgStatus('Consultando codigo.');
 
-   cmd :=' exec Z_CF_getInformacoesProduto ' + QuotedStr(cod) + ' , '+ UO_CD +' , '+ '-1';
+   cmd :=' exec Z_CF_getInformacoesProduto ' + quotedStr(cod) + ' , '+ UO_CD +' , '+ '-1';
 
    destravaGrid(nil);
    query.Connection := fmMain.Conexao;
@@ -299,8 +307,9 @@ begin
    end
    else
    begin
-      if (perfil =  2) then
+      if (perfil =  2) and (IS_VERIFICA_SEPARACAO = true) then
       begin
+
          if isEmSeparacao( query.FieldByName('is_ref').AsString, true ) = true then
           begin
              grid.SelectedIndex := 0;
@@ -308,7 +317,7 @@ begin
           end;
        end;
 
-      if existeQuantidadePendente(fmMain.getUoLogada(), query.FieldByName('is_ref').AsString, true ) = false then
+      if (existeQuantidadePendente(fmMain.getUoLogada(), query.FieldByName('is_ref').AsString, true ) = false) then
       begin
          tb.FieldByName('codigo').AsString := query.fieldByName('codigo').AsString;
          tb.FieldByName('Descricao').AsString := query.fieldByName('descricao').AsString;
@@ -327,8 +336,14 @@ begin
          tb.FieldByName('Est Loja').AsString := query.fieldByName('EstoqueDisponivel').AsString;
          tb.FieldByName('Pc Loja').AsString := query.fieldByName('PRECO').AsString;
 
-         if perfil = 2 then
-            tb.FieldByName('Pedido Maximo').AsInteger := getValorMaxPedReabatecimento();
+         if (perfil = 2) then
+         begin
+            if  (USA_QT_MAX_REQ = true) then
+               tb.FieldByName('Pedido Maximo').AsInteger := getValorMaxPedReabatecimento()
+            else
+               tb.FieldByName('Pedido Maximo').AsInteger := tb.FieldByName('Est CD').asInteger;
+         end;
+
       end;
    end;
    travaGrid(nil);
@@ -363,6 +378,8 @@ begin
    MESES_VD_MEDIA :=  strToInt(fmMain.GetParamBD('mesesVendaMedia', '')  );
    DUR_ESTOQUE := strToInt(fmMain.GetParamBD('osDeposito.qtDiasDurEstoque', '')  );
    IS_CRITICA_VD_MEDIA := fmMain.GetParamBD('osDeposito.uosCriticaReq', fmMain.getUoLogada() ) ;
+   IS_VERIFICA_SEPARACAO := (fmMain.GetParamBD('osDeposito.verificaSeparacao', '') <> '0');
+   USA_QT_MAX_REQ := (fmMain.GetParamBD('osDeposito.usaQtMaxDeReq', '') <> '0');
 end;
 
 procedure TfmOsDeposito.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -384,7 +401,7 @@ begin
    if (PERFIL <> 3) then
    begin
       if ( grid.SelectedIndex = 0) and ( grid.SelectedField.AsString <> '' ) then
-         GetDadosProdutos( grid.SelectedField.AsString);
+          GetDadosProdutos( grid.SelectedField.AsString);
 
       if ( grid.SelectedIndex = 1) then
          if ( tb.FieldByName('Descricao').AsString <> '' ) then
@@ -606,7 +623,8 @@ begin
    PERFIL := 3;
 //   cbLojas.Items := funcsql.GetNomeLojas(fmMain.Conexao, false, false,'','');
 
-   uCF.getListaLojas(cbLojas, false, false, '');
+   cf.getListaLojas(cbLojas, false, false, '');
+
 
    cbLojas.Visible := true;
    btNova.Visible := false;
@@ -638,10 +656,8 @@ begin
    nGerados := '';
    tb.First();
 
-// ajustar esse laco para criar uma requisicao de produtos apenas da tramonina
 
-
-   while tb.Eof = false do
+   while ( tb.Eof = false) do
    begin
       tbAux := TADOTable.Create(nil);
       tbAux.Connection := fmMain.Conexao;
@@ -656,7 +672,8 @@ begin
          end;
 
       aux := '';
-      aux := funcsql.gerarRequisicao( fmMain.Conexao, tbAux, funcoes.getCodPc(cbLojas), fmMain.getUserLogado(), false, false, ocoReq, QT_DIAS_PEND );
+//      aux := funcsql.gerarRequisicao( fmMain.Conexao, tbAux, funcoes.getCodPc(cbLojas), fmMain.getUserLogado(), false, false, ocoReq, QT_DIAS_PEND );
+      aux := cf.gerarRequisicao( tbAux, funcoes.getCodPc(cbLojas), UO_CD, fmMain.getUserLogado(), false, false, ocoReq, QT_DIAS_PEND );
       if (aux <> '') then
          nGerados := nGerados  + aux + ' ';
    end;

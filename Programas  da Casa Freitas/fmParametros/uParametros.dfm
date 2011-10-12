@@ -40,7 +40,7 @@ object fmParametros: TfmParametros
     OnDblClick = gdParamDblClick
     AlternateColor = True
     ColorLow = clInfoBk
-    ColorHigh = 15790322
+    ColorHigh = clWindow
   end
   object cbParametros: TadLabelComboBox
     Left = 3

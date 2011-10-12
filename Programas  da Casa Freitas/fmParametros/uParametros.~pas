@@ -32,7 +32,7 @@ var
 
 implementation
 
-uses uMain;
+uses uMain, funcoes;
 
 {$R *.dfm}
 
@@ -94,7 +94,8 @@ end;
 
 procedure TfmParametros.gdParamDblClick(Sender: TObject);
 begin
-   tbParam.Delete();
+   if (funcoes.msgTela('','Remove esse parametro ?' , mb_Iconquestion + Mb_Yesno) = mrYes) then
+      tbParam.Delete();
 end;
 
 end.

@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, adLabelEdit, TFlatButtonUnit, DB, ADODB, Grids,
-  DBGrids, SoftDBGrid, adLabelComboBox,funcoes, funcsql;
+  DBGrids, SoftDBGrid, adLabelComboBox;
 
 type
   TfmAlteraPedForn = class(TForm)
@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses uMain;
+uses uMain, funcsql, funcoes, uCF;
 
 {$R *.dfm}
 
@@ -55,7 +55,7 @@ begin
      dbgrid.Columns[1].Width := 250;
      dbgrid.Columns[2].Width := 80;
 
-     fmMain.getListaLojas(cb2, false, false, fmMain.getCdPesLogado() );
+     uCF.getListaLojas(cb2, false, false, fmMain.getCdPesLogado() );
 
      cb2.Enabled := true;
      dbgrid.Enabled := true;

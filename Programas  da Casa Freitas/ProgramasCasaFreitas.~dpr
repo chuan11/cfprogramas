@@ -80,7 +80,12 @@ uses
   uListaImpNFE in 'fmCadastraImpNFE\uListaImpNFE.pas' {fmListaImpNFE},
   uTipoImpGeraEstoque in 'fmGeraEstoque\fmTipoImpressao\uTipoImpGeraEstoque.pas' {fmTipoImpressaoGera},
   uPrecoPorPedido in 'fmPrecos\uPrecoPorPedido.pas',
-  uAjusteModPag in 'fmAjusteModPag\uAjusteModPag.pas';
+  uAjusteModPag in 'fmAjusteModPag\uAjusteModPag.pas',
+  uConReqDep in 'requisicoes\fmReqPorLoja\uConReqDep.pas',
+  uPermissoes in 'fmPermissoes\uPermissoes.pas' {fmPermissoes},
+  uResumoCaixa in 'fmResumoCaixa\uResumoCaixa.pas' {fmResumoCaixa},
+  uCF in 'uCF\uCF.pas',
+  cf in '..\cf.pas';
 
 {$R *.res}
 

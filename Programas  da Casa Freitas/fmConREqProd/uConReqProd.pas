@@ -38,7 +38,7 @@ var
   is_ref:String;
 implementation
 
-uses uMain, funcsql,funcoes, uCF;
+uses uMain, funcsql,funcoes, cf;
 
 {$R *.dfm}
 
@@ -89,29 +89,28 @@ end;
 
 procedure TfmConReqProduto.btConsultarClick(Sender: TObject);
 var
-   str,erro:String;
+   erro:String;
+   ds:Tdataset;
 begin
-   str:= '';
-   str:= funcsql.openSQL('Select is_ref from dscbr where cd_pesq = ' + quotedstr(edCodigo.text) + ' or is_ref = ' + edCodigo.text, 'is_ref', fmMain.Conexao);
-
-   if str = '' then
-     erro := ' -Produto não cadastrado.';
-
    if dti.Date > dtf.Date then
      erro := ' -Intervalo de data inválido';
 
-   if erro <> '' then
+   if (erro <> '') then
       msgTEla('','Corrija antes esses erros: ' + erro , MB_ICONERROR + mb_ok)
    else
-      ConsultaPedidos(Sender, str);
+   begin
+      ds:= cf.getDadosProd(fmMain.getUOCD, edCodigo.text, '', '101', true );
+
+      if (ds.IsEmpty = false) then
+         ConsultaPedidos(Sender, ds.fieldByName('is_ref').AsString  );
+
+      ds.Free();
+   end;
 end;
 
 procedure TfmConReqProduto.FormCreate(Sender: TObject);
 begin
-//   cbLojas.Items := funcSql.GetNomeLojas(fmMain.Conexao,true,false,'','');
-
-   uCF.getListaLojas(cbLojas, true, false, fmMain.getCdPesLogado() );
-
+   cf.getListaLojas(cbLojas, true, false, fmMain.getCdPesLogado());
    preparaParaConsultar(nil, '');
 end;
 

@@ -82,7 +82,10 @@ uses
   uPrecoPorPedido in 'fmPrecos\uPrecoPorPedido.pas',
   uAjusteModPag in 'fmAjusteModPag\uAjusteModPag.pas',
   uConReqDep in 'requisicoes\fmReqPorLoja\uConReqDep.pas',
-  uPermissoes in 'fmPermissoes\uPermissoes.pas' {fmPermissoes};
+  uPermissoes in 'fmPermissoes\uPermissoes.pas' {fmPermissoes},
+  uResumoCaixa in 'fmResumoCaixa\uResumoCaixa.pas' {fmResumoCaixa},
+  uCF in 'uCF\uCF.pas',
+  cf in '..\cf.pas';
 
 {$R *.res}
 
@@ -96,6 +99,6 @@ begin
       Application.Initialize;
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
-      Application.Run;
+  Application.Run;
   end;
 end.

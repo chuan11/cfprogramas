@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, funcoes, funcsql,
   Dialogs, StdCtrls, adLabelComboBox, TFlatButtonUnit, ExtCtrls, adodb, db,
   adLabelEdit, adLabelNumericEdit, ComCtrls, fCtrls, Buttons, Grids,
-  DBGrids, SoftDBGrid, Menus, {uGetNotas,} funcDatas;
+  DBGrids, SoftDBGrid, Menus, funcDatas;
 
 type
   TfmAjustaNota = class(TForm)

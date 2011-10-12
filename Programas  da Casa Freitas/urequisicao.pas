@@ -49,7 +49,7 @@ var
   FinalizarPrograma:Boolean;
 implementation
 
-uses umain, uEmail, uCF;
+uses umain, uEmail, cf;
 
 {$R *.dfm}
 
@@ -75,7 +75,7 @@ end;
 
 procedure TfmReqLojas.FormCreate(Sender: TObject);
 begin
-   uCF.getListaLojas( cbOrigem, false, false, '' );
+   cf.getListaLojas( cbOrigem, false, false, '' );
 end;
 
 procedure TfmReqLojas.edDescricaoEnter(Sender: TObject);
@@ -84,19 +84,18 @@ begin
       edCodigo.SetFocus;
 end;
 
-
 procedure TfmReqLojas.BuscarDadosProduto(Sender: TObject);
 var
   ds: TdataSet;
 begin
-   ds := uCF.getDadosProd(funcoes.getCodUO(cbOrigem), edCodigo.Text, '', '101', true );
+   ds := cf.getDadosProd(funcoes.getCodUO(cbOrigem), edCodigo.Text, '', '101', true );
 
    if (ds.IsEmpty = false) then
    begin
-      edDescricao.text := ds.fieldByName('codigo').AsString;
+      edDescricao.text := ds.fieldByName('DESCRICAO').AsString;
       edSaldo.Text := ds.fieldByName('EstoqueDisponivel').AsString;
       edQuant.SetFocus
-   end   
+   end
    else
       edCodigo.SetFocus;
    ds.free();
@@ -114,7 +113,7 @@ begin
    if (key = vk_return) and (funcoes.SohNumeros(edQuant.Text) <> '' ) then
    begin
       table.AppendRecord([edCodigo.Text, edDescricao.Text, funcoes.SohNumeros(edQuant.Text)]);
-      LimparEdits(Sender);      
+      LimparEdits(Sender);
    end;
 end;
 
@@ -231,7 +230,7 @@ end;
 
 procedure TfmReqLojas.edCodigoKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-   if key = vk_return then
+   if (key = vk_return) then
       BuscarDadosProduto(Sender);
 end;
 

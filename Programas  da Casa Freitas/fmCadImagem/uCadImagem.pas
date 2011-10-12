@@ -178,12 +178,12 @@ end;
 procedure TfmCadastro.btAlterarClick(Sender: TObject);
 begin
    if (lbIs_ref.Caption <> '') then
-      if( MsgTela('','Deseja alterar a imagem desse produto? ', MB_YESNO + MB_ICONQUESTION) = mrYes ) then
+//      if( MsgTela('','Deseja alterar a imagem desse produto? ', MB_YESNO + MB_ICONQUESTION) = mrYes ) then
       begin
          funcSQl.execSQL('Delete from zcf_crefe_imagens where is_ref = ' + lbIs_ref.Caption, fmMain.Conexao );
          incluirImgagem(false);
          LimparCampos();
-         msgTela('', 'Alteração efetuada.',MB_OK + MB_ICONEXCLAMATION);
+//         msgTela('', 'Alteração efetuada.',MB_OK + MB_ICONEXCLAMATION);
       end;
 end;
 
@@ -233,7 +233,7 @@ begin
           begin
              fmMain.msgStatus(edCodigo.Text + ' ' + edDescricao.Text + #13+ 'Imagem não cadastrada, incluir');
              carregaimagem( lbArquivos.Items.Strings[i]  );
-             incluirImgagem(true);
+             incluirImgagem(false);
           end
           else
           begin

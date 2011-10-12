@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses uMain, funcsql, funcoes, uCF;
+uses uMain, funcsql, funcoes, cf;
 
 {$R *.dfm}
 
@@ -49,13 +49,13 @@ begin
   query1.SQL.add(str);
   query1.Open;
   FormShow(Sender);
-  if  query1.IsEmpty = false  then
+  if (query1.IsEmpty = false)  then
   begin
      dbgrid.Columns[0].Width := 150;
      dbgrid.Columns[1].Width := 250;
      dbgrid.Columns[2].Width := 80;
 
-     uCF.getListaLojas(cb2, false, false, fmMain.getCdPesLogado() );
+     cf.getListaLojas(cb2, false, false, fmMain.getCdPesLogado() );
 
      cb2.Enabled := true;
      dbgrid.Enabled := true;

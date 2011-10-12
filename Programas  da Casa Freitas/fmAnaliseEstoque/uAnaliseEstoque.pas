@@ -42,7 +42,7 @@ var
 
 implementation
 
-uses uMain, funcoes, funcsql, uCF;
+uses uMain, funcoes, funcsql, cf;
 
 {$R *.dfm}
 
@@ -51,8 +51,9 @@ var
    cmd:String;
    i:integer;
 begin
-   if tb.Active = true then
+   if (tb.Active = true) then
       tb.Close();
+
    cmd :=  '( is_ref int, Codigo varchar(08), Descricao varchar(50), [Data Ult Entrada] varchar(10), [Qt ult Entrada] int, [Qt pedida] int, ' +
            '[Venda ultimo ano] int, [Vl ultima Compra] money,  Estoque int, [Venda Media] decimal, [Prev Venda] decimal, [Divergencia Ped x Previsto]  varchar(03)  )';
    tb.TableName :=  funcsql.criaTabelaTemporaria(fmMain.Conexao, cmd);
@@ -66,15 +67,14 @@ procedure TfmAnaliseEstoque.FormActivate(Sender: TObject);
 begin
    CBPRECO01.Items := funcsql.getListaPrecos(fmMain.Conexao, true, false, false, fmMain.getGrupoLogado());
    CBPRECO01.ItemIndex := 0;
-//   cbLoja.Items := funcsql.GetNomeLojas(fmMain.Conexao, false, false, fmMain.lbPes.Caption,'');
 
    cbLoja.ItemIndex := 0;
-   UOCD := fmMain.GetParamBD('uocd','');
+   UOCD := fmMain.getUOCD();
    QT_MESES_VENDA_PREVISTA := fmMain.GetParamBD('qtMesesPrevisaoVenda','');
    fmMain.getParametrosForm(fmAnaliseEstoque);
 
 
-   uCF.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
+   cf.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
 
    edEnd.text := '';
 end;
@@ -117,7 +117,6 @@ begin
 
       if ds.IsEmpty = false then
       begin
-
          tb.Edit;
          tb.FieldByName('Data Ult Entrada').AsString:= ds.fieldByname('Data Entrada').asString;
          tb.FieldByName('Qt ult Entrada').AsInteger := ds.fieldByname('Quant Recebida').AsInteger;

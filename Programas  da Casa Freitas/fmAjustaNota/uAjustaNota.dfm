@@ -1,6 +1,6 @@
 object fmAjustaNota: TfmAjustaNota
-  Left = 194
-  Top = 121
+  Left = 246
+  Top = 191
   Width = 793
   Height = 526
   Caption = 'Ajuste de notas fiscais.'

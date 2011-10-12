@@ -632,7 +632,6 @@ begin
    end;
 end;
 
-
 function openSQL(comando,retorno:string; Connection : TADOConnection):String;
 begin
     result := getValorWell( 'O', comando, retorno, connection);

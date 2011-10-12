@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms, ADODB,
   TFlatButtonUnit, StdCtrls, adLabelEdit, adLabelComboBox,
-  Dialogs, funcoes, funcsql, Buttons, Grids, DBGrids, SoftDBGrid, DB,
+  Dialogs, Buttons, Grids, DBGrids, SoftDBGrid, DB,
   fCtrls, ScktComp;
 
 type
@@ -35,12 +35,11 @@ type
 var
   fmListaItensNota: TfmListaItensNota;
 
-  implementation
+implementation
 
-uses uCF, Math;
+uses uCF, Math, funcoes, funcsql;
 
 {$R *.dfm}
-
 
 procedure TfmListaItensNota.FormCreate(Sender: TObject);
 begin
