@@ -1,3 +1,4 @@
+
 unit uCF;
 
 interface
@@ -5,12 +6,12 @@ interface
    uses ADODB, Classes, sysutils, Dialogs, forms, DBGrids,
         ComCTRLs, mxExport, adLabelComboBox, windows, QStdCtrls, DB, DBCtrls, Controls, messages, adLabelCheckListBox,
         IdBaseComponent, IdComponent, IdRawBase, IdRawClient, IdIcmpClient, IdTelnet, SoftDBGrid, ExtCtrls,
-        uMain, funcsql, uListaFornecedores, funcDatas, funcoes, uSelecionaUo, uListaImpNFE;
+        uMain, funcsql, uListaFornecedores, funcDatas, funcoes, uSelecionaUo, uListaImpNFE, uListaItensPorNota;
 
 
    procedure listaTabelaPrecos(tipoPesquisa, tpEstoque:smallInt; ds_ref, cd_ref, uo, pc01, pc02, numNivel, vlNivel:String; qr:TADOQuery);
    function ajustaCodigoNCM(isRef, ncm_sh:String):boolean;
-   function alterarModPagamento(uo, seqtransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String):boolean;
+   function alterarModPagamento(uo, seqtransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String; pegaNSU:boolean):boolean;
    function excluirCEP(cep:String):boolean;
    function getAutorizadoresPorTela(codTela:smallInt; grupoUser:String):String;
    function getCEP(nr_CEP:String):TdataSet;
@@ -29,9 +30,11 @@ interface
    function getDetalhesCRUC(is_ref:String):TdataSet;
    function getEntradasPorItem(is_ref, uo:String):TdataSet;
    function getEstoqueProduto(uo, is_ref, tipoSaldo:String; data:Tdate):String;
+   function getEstoqueParaRequisicao(is_ref, uo:String):integer;
    function getFileFromACBR(server, dirRemoto, dirLocal, arquivo: String): boolean;
    function getFmDadosPessoa(codPerfil: String):String;
    function getImagemProduto(is_ref:String):TdataSet;
+   function getIsNota():String;
    function getIsrefPorFaixaCodigo(cd_ref, numNivel, codCat:String; soAtivos:boolean):TdataSet;
    function getIsUo(mostraEscritorio:boolean):String;
    function getItensDeUmaNota(isNota:String):TDataSet;
@@ -84,6 +87,10 @@ interface
    function  getNsuTef():String;
 
    procedure CarregaImagem(is_ref:String; image: TImage);
+   procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
+
+
+procedure getListaLojas(cb:TadLabelComboBox; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario: String);
 
 implementation
 
@@ -157,7 +164,7 @@ begin
       if (is_ref = '') then
       begin
          if (mostraMsg = true) then
-            msgTela('','Produto não cadastrado ('+ is_ref+')', MB_ICONERROR + MB_OK)
+            msgTela('','Produto não cadastrado ('+is_ref+' '+cd_ref + ')', MB_ICONERROR + MB_OK)
       end
       else
       begin
@@ -952,7 +959,7 @@ begin
 end;
 
 
-function alterarModPagamento(uo, seqTransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String):boolean;
+function alterarModPagamento(uo, seqTransacao, seqModalidade, codNovaModalidade, valor, numParcelas, seqTEFTransCaixa, dataTrans:String; pegaNSU:boolean):boolean;
 var
    dsTEF:TdataSet;
    nsuTEF, cmd:String;
@@ -964,13 +971,12 @@ begin
 
 // determinar se a nova modalidade é em cartão, se sim, insere o registro TEF
    if (dsTEF.fieldByName('tp_mve').asString = 'B') or (dsTEF.fieldByName('tp_mve').asString = 'T') then
-   begin
-      nsuTEF := getNsuTef();
-      insereRegistroTEF(uo, seqTransacao, seqModalidade, dsTEF.fieldByName('tp_mve').asString, valor, numParcelas, dataTrans, nsuTEF);
-   end;
+      if (pegaNSU = true) then
+      begin
+         nsuTEF := getNsuTef();
+         insereRegistroTEF(uo, seqTransacao, seqModalidade, dsTEF.fieldByName('tp_mve').asString, valor, numParcelas, dataTrans, nsuTEF);
+      end;
    dsTEF.free();
-
-
 
    cmd := '  update ModalidadesPagtoPorTransCaixa'+
           '  set codModalidadePagto = ' + codNovaModalidade +
@@ -1041,7 +1047,7 @@ begin
    Application.CreateForm(TfmSelecionaUo, fmSelecionaUo);
 
    aux := '';
-   fmMain.getListaLojas( fmSelecionaUo.cbLojas, false, false, '');
+   getListaLojas( fmSelecionaUo.cbLojas, false, false, '');
 
    if (mostraEscritorio = true) then
       fmSelecionaUo.cbLojas.Items.add(funcoes.preencheCampo(50,' ','D','Escritorio'));
@@ -1387,6 +1393,7 @@ begin
 
       if ( ds.isEmpty = false) then
         saldo := ds.fieldByName(strTpSaldo).asString;
+
    end
    else
       funcoes.gravaLog('DataBD dif da atual: ' + dateToStr(data) + ' ' + dateToStr(funcSQL.getDateBd(fmMain.conexao))  );
@@ -1394,6 +1401,15 @@ begin
    ds.free();
    result := saldo;
 end;
+
+
+function getEstoqueParaRequisicao(is_ref, uo:String):integer;
+begin
+result := 0;
+end;
+
+
+
 
 function getDetalhesCRUC(is_ref:String):TdataSet;
 var
@@ -1757,6 +1773,49 @@ begin
    dsImagem.free();
 end;
 
+function getIsNota():String;
+var
+  aux:String;
+begin
+   aux := '';
+   application.CreateForm(TfmListaItensNota, fmListaItensNota );
+   fmListaItensNota.ShowModal ;
+
+   if (fmListaItensNota.ModalResult = mrOk) then
+      aux := fmListaItensNota.Caption;
+
+   fmListaItensNota := nil;
+   result := aux;
+end;
+
+procedure getListaLojas(cb:TadLabelComboBox; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean; usuario: String);
+begin
+   cb.Items.Clear();
+   cb.Items := funcSQL.getNomeLojas2( fmMain.conexao, IncluirLinhaTodas, IncluiNenhuma, usuario );
+   setaLojaLogadaNoComboBox(cb);
+   cb.DropDownCount := cb.items.count;
+end;
+
+procedure setaLojaLogadaNoComboBox(cb:TadLabelComboBox);
+var
+   achou:boolean;
+   i:integer;
+begin
+   achou := false;
+   if ( achou = false) then
+      cb.itemIndex := -1;
+   for i:=0 to cb.Items.count-1 do
+   begin
+      cb.ItemIndex := i;
+      if (funcoes.getCodUO(cb) = fmMain.getUoLogada() ) then
+      begin
+         achou := true;
+         break;
+      end;
+   end;
+   if (achou = false) then
+      cb.ItemIndex := -1;
+end;
 
 end.
 
