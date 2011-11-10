@@ -37,15 +37,15 @@ type
 
 var
   fmTotalSaidas: TfmTotalSaidas;
-  fmUO, fmIS_REF:String;
+  fmIS_REF:String;
 implementation
 
-uses uMain,   funcoes, funcsql, uCF;
+uses uMain,   funcoes, funcsql, cf;
 
 {$R *.dfm}
 procedure TfmTotalSaidas.FormCreate(Sender: TObject);
 begin
-   uCF.getListaLojas(cbLoja, false, false, '');
+   cf.getListaLojas( cbLoja, true, false, '');
 end;
 
 procedure TfmTotalSaidas.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -60,19 +60,15 @@ var
 begin
    if (lbDados.Caption = '') then
    begin
-      ds:= uCF.getDadosProd(uo, '', is_ref, '101', false);
+      ds:= cf.getDadosProd(uo, '', is_ref, '101', false);
       lbDados.Caption := ds.fieldByName('codigo').AsString + '  '+
                          ds.fieldByName('descricao').AsString;
       ds.free();
    end;
 
-   if( uo = '') then
-      uo := fmMain.getUOCD();
-
-   fmUO := UO;
    fmIS_REF := is_ref;
 
-   ds:= uCF.getVdItemDetPorLojaPeriodo(is_ref, uo, fmMain.getUOCD(), inicio, fim);
+   ds:= cf.getVdItemDetPorLojaPeriodo(is_ref, uo, fmMain.getUOCD(), inicio, fim);
 
    dataSource1.DataSet := ds;
    lbTotal.caption := funcSQL.somaColTable(ds, 'qt_mov', true);

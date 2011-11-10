@@ -53,7 +53,7 @@ procedure TfmCadastraNCM.FlatButton1Click(Sender: TObject);
 var
    cmd:String;
 begin
-   cmd := uCF.getIsNota();
+   cmd := fmMain.getIsNota();
    if (cmd <> '' )then
       carregaItensNota(cmd);
 end;

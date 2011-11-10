@@ -97,6 +97,7 @@ begin
    if (ds <> nil) then
       ds.Free();
 
+
    ds:= uCF.getDadosProd( funcoes.getCodUo(cbLojas), EdCodigo.Text, '', fmMain.getCodPreco(cbPrecos), true  );
    if (ds.IsEmpty = false ) then
    begin
@@ -111,7 +112,6 @@ begin
       DBGrid.Columns[ ds.FieldByName('codigo').Index].Width := 50;
       DBGrid.Columns[ ds.FieldByName('fornecedor').Index].Visible := false;
       DBGrid.Columns[ ds.FieldByName('categoria').Index].Visible := false;
-
 
       edQuant.SetFocus;
    end
@@ -499,18 +499,28 @@ begin
    Palets1Click(Sender);
 end;
 
-
 procedure TfmEtiquetas.FlatButton3Click(Sender: TObject);
+var
+   erro:String;
 begin
-   ListaEansProduto(Sender);
+   erro := '';
+
+   if (cbLojas.ItemIndex < 0) then
+      erro := ' - Escolha uma loja' + #13;
+
+   if ( cbPrecos.ItemIndex < 0 ) then
+      erro := erro + ' - Escolha um preço.' + #13;
+
+   if ( EdCodigo.Text = '') then
+      erro := erro + ' - Informe o código.' + #13;
+
+     if (erro <> '') then
+     begin
+       erro := 'Corrija esses erros antes' + #13+ erro;
+       msgTela('', erro, MB_ICONERROR + MB_OK)
+     end
+     else
+       listaEansProduto(Sender);
 end;
-
-
-
 end.
-
-
-// CMD /C EXECUTA E E ENCERRADO
-// CMD /D EXECUTA E MANTEM
-
 

@@ -8,7 +8,7 @@ uses
   TFlatButtonUnit, adLabelComboBox, adLabelEdit;
 
 type
-  TfmRelGeral1 = class(TfmRelGeral)
+    TfmRelGeral1 = class(TfmRelGeral)
     edCodigo: TadLabelEdit;
     procedure FormCreate(Sender: TObject);
     procedure btOkClick(Sender: TObject);
@@ -25,7 +25,7 @@ var
 implementation
 
 {$R *.dfm}
-uses uMain, uCF, funcoes, funcDatas, funcSQL;
+uses uMain, uCF, funcoes, funcDatas, funcSQL, cf;
 
 
 procedure TfmRelGeral1.FormCreate(Sender: TObject);
@@ -33,8 +33,8 @@ begin
    inherited;
    cbCaixas.Visible := false;
    cbDetAvaForn.Visible := false;
-   dti.date := funcSQL.getDateBd(fmMain.Conexao);
-   dtf.Date := dti.Date;
+   di.date := funcSQL.getDateBd(fmMain.Conexao);
+   df.Date := di.Date;
 end;
 
 procedure TfmRelGeral1.btOkClick(Sender: TObject);
@@ -52,7 +52,7 @@ begin
 
      tbMov := TADOTable.create(nil);
      tbMov.Connection := fmMain.Conexao;
-     dsItens:= uCF.getIsrefPorFaixaCodigo(edCodigo.Text, '0','0', true);
+     dsItens:= cf.getIsrefPorFaixaCodigo(edCodigo.Text, '0','0', true);
 
      if (dsItens.IsEmpty = false) then
      begin
@@ -63,15 +63,15 @@ begin
         end;
      end;
      dsItens.free();
-     uCF.calculaRRANA( tbItens, tbMov, itens, funcoes.getCodUO(cbLojas), dti.Date, dtf.Date);
+     uCF.calculaRRANA( tbItens, tbMov, itens, funcoes.getCodUO(cbLojas), di.Date, df.Date);
 
 
 
     if (tbMov.IsEmpty = false) then
      begin
         Params:= TStringlist.create();
-        params.Add(dateToStr(dti.Date));
-        params.Add(dateToStr(dtf.date));
+        params.Add(dateToStr(di.Date));
+        params.Add(dateToStr(df.date));
         params.Add(funcoes.getNomeUO(cbLojas));
         params.Add(fmMain.getNomeUsuario()) ;
 

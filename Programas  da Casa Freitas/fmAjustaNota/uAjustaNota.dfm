@@ -158,6 +158,7 @@ object fmAjustaNota: TfmAjustaNota
       Font.Style = []
       MaxLength = 3
       ParentFont = False
+      PopupMenu = PopupMenu1
       TabOrder = 7
     end
     object edEmitDest: TadLabelEdit
@@ -269,6 +270,7 @@ object fmAjustaNota: TfmAjustaNota
       Font.Name = 'MS Sans Serif'
       Font.Style = []
       ParentFont = False
+      PopupMenu = PopupMenu1
       TabOrder = 8
     end
     object RadioGroup1: TRadioGroup
@@ -597,5 +599,12 @@ object fmAjustaNota: TfmAjustaNota
     DataSet = qrXML
     Left = 576
     Top = 77
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 136
+    Top = 117
+    object Alteraserie1: TMenuItem
+      Caption = 'Altera serie'
+    end
   end
 end

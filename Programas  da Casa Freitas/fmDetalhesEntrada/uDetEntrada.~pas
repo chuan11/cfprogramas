@@ -43,7 +43,7 @@ begin
    lst := funcsql.GetValoresSQL(lst, ' Select cd_ref, ds_ref from crefe (nolock) where is_ref = ' + is_ref, fmMain.Conexao);
    label2.Caption := lst[0] + '   ' + lst[1];
 
-   DataSource1.DataSet := uCF.getEntradasPorItem(is_ref,'');
+   DataSource1.DataSet := uCF.getEntradasPorItem(is_ref, '');
    if SoftDBGrid1.Columns.Count -1 > 2 then
    begin
       SoftDBGrid1.Columns[0].Width := 50;

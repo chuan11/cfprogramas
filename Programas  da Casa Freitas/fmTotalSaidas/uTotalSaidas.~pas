@@ -45,7 +45,7 @@ uses uMain,   funcoes, funcsql, uCF;
 {$R *.dfm}
 procedure TfmTotalSaidas.FormCreate(Sender: TObject);
 begin
-   fmMain.getListaLojas(cbLoja, false, false, '');
+   uCF.getListaLojas(cbLoja, false, false, '');
 end;
 
 procedure TfmTotalSaidas.FormClose(Sender: TObject; var Action: TCloseAction);

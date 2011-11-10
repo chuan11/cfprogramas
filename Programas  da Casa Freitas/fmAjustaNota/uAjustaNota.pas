@@ -53,6 +53,12 @@ type
     btDeleteXML: TfsBitBtn;
     dtEntSai: TfsDateTimePicker;
     Label5: TLabel;
+    PopupMenu1: TPopupMenu;
+    Alteraserie1: TMenuItem;
+
+    procedure ajustaDadosICM();
+    procedure ajustaAliquotaIcmITens();
+
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FlatButton1Click(Sender: TObject);
     procedure btEmisDestClick(Sender: TObject);
@@ -60,13 +66,13 @@ type
     procedure pesquisaNota(is_nota:String);
     procedure carregaDadosICMS(is_nota:String);
     procedure btCancelaClick(Sender: TObject);
-    procedure ajustaDadosICM();
     procedure FormCreate(Sender: TObject);
     procedure tbICMBeforePost(DataSet: TDataSet);
     procedure gdICMSColExit(Sender: TObject);
     procedure btDadosNFEClick(Sender: TObject);
     procedure btIncluiXMLClick(Sender: TObject);
     procedure btDeleteXMLClick(Sender: TObject);
+
     function  isGrupoRestrito():boolean;
 
   private
@@ -80,8 +86,21 @@ var
   IS_GRUPO_RESTRITO:boolean;
 implementation
 
-uses uMain, uListaFornecedores, uCF;
+uses uMain, uListaFornecedores, cf, uCF;
 {$R *.dfm}
+
+
+procedure TfmAjustaNota.ajustaAliquotaIcmITens();
+var
+   cmd:String;
+begin
+   tbICM.First();
+   cmd:= 'update dmovi ' +
+         'set pc_icm= ' + tbIcm.fieldByName('').asString + ', '+
+         'valorIcms= (vl_item - vl_desc) * ( '+  tbIcm.fieldByName('').asString +'/ 100) ' +
+         'where is_nota= ' + edIsNota.Text;
+
+end;
 
 procedure TfmAjustaNota.tbICMBeforePost(DataSet: TDataSet);
 begin
@@ -102,7 +121,7 @@ var
 begin
      ds := TADOQuery.create(nil);
 
-     ds:= uCF.getDadosNota(is_nota,'','','');
+     ds:= cf.getDadosNota(is_nota,'','','');
 
      edIsNota.text := ds.fieldByname('is_nota').asString;
      edSerie.Text := ds.fieldByname('serie').asString;
@@ -160,31 +179,19 @@ end;
 
 procedure TfmAjustaNota.btEmisDestClick(Sender: TObject);
 var
-  codigo:String;
-  ds:TDataSet;
+  cd_pes, ds_pes:String;
 begin
    if ( isGrupoRestrito() = false ) then
    begin
       if (lbTipo.Caption = 'Entrada') then
-         codigo:= uCF.getFmDadosPessoa('Fornecedor')
+         fmMain.getDadosFornecedor(cd_pes, ds_pes)
       else
-         codigo:= uCF.getFmDadosPessoa('Cliente');
+         fmMain.getDadosCliente(cd_pes, ds_pes);
 
-      if (codigo <> '') then
+      if (cd_pes <> '') then
       begin
-         if (lbTipo.Caption = 'Entrada') then
-         begin
-            ds := uCF.getDadosFornecedor(codigo, '');
-            lbCodPes.caption := ds.FieldByName('codigo').asString;
-            edEmitDest.text := ds.FieldByName('nome').asString;
-         end
-         else
-         begin
-            ds := uCF.getDadosCliente(codigo, '');
-            lbCodPes.caption := ds.FieldByName('codigo').asString;
-            edEmitDest.text := ds.FieldByName('nome').asString;
-         end;
-         ds.free();
+         lbCodPes.caption := cd_pes;
+         edEmitDest.text := ds_pes;
       end;
    end;
 end;
@@ -224,7 +231,7 @@ var
 begin
    btCancelaClick(nil);
    cmd := '';
-   cmd := uCF.getIsNota();
+   cmd := fmMain.getIsNota();
 
    if cmd <> '' then
       pesquisaNota(cmd)
@@ -257,7 +264,6 @@ begin
        tbICM.Next();
   end;
 end;
-
 
 procedure TfmAjustaNota.FormCreate(Sender: TObject);
 begin
@@ -320,6 +326,7 @@ begin
          funcsql.execSQL(cmd, fmMain.Conexao);
 
          ajustaDadosICM();
+         ajustaAliquotaIcmITens();
          msgTela('','A nota foi Alterada...', MB_ICONEXCLAMATION + MB_OK );
       end;
 end;
@@ -357,7 +364,6 @@ begin
       qrXML.SQL.Clear();
       funcSQL.getQuery2( fmMain.Conexao, qrXML,  'select codigo_nfe, nrLote_nfe, xml_nfe, chave_acesso_nfe, protocolo_autorizacao_nfe, dt_autorizacao_nfe from nf_eletronica where codigo_nfe = ' + codNFE);
       gridXML.Columns[qrXML.FieldByName('xml_nfe').Index ].Width := 30;
-      btDadosNFE.Enabled := false;
       pnXML.Visible := true;
    end;
 end;

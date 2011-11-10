@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE>Nuova pagina 1</TITLE>
+<META http-equiv=Content-Language content=it>
+<META content="Microsoft FrontPage 5.0" name=GENERATOR>
+<META content=FrontPage.Editor.Document name=ProgId>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252"></HEAD>
+<BODY>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial size=2>Specifies 
+wheter the control is dragging immediatly when the mouse is down.</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><B>__property bool</B> <FONT color=#008000>AutomaticMove </FONT>= { 
+<B>read</B>=FAutomaticMove, <B>write</B>=SetAutomaticMove };</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><B>Description</B><BR>Use AutomaticMove to specify whether the control is 
+dragging automatically. If AutomaticMove is <B>true</B>, a drag operation is 
+immediatly performed when the mouse is down.<BR>&nbsp;</FONT></P>
+<HR>
+
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial size=2>Indicates 
+whether the MainForm is transparent in according to TransparentColor 
+property.</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><BR><B>__property bool</B> <FONT color=#008000>TransparentMainForm</FONT> = { 
+<B>read</B>=FTransparentMainForm, <B>write</B>=SetTransparentMainForm };</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><B>Description</B></FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial size=2>Use 
+TransparentForm to specify that the MainForm be drawn transparently. If 
+TransparentForm is<B> true,</B> the MainForm is transparent.</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial><B><FONT 
+size=2>Note:</FONT></B><FONT size=2> This property work with Property of the 
+MainForm ( BorderStyle, Color, TransparentColor, TransparentColorValue 
+).</FONT></FONT><FONT face=Arial 
+size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<HR>
+
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial size=2>Specifies 
+the Bitmap that appears on the Canvas of the control.</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><BR><B>__property </B>Graphics::TBitmap* <FONT 
+color=#008000>Bitmap</FONT> = { <B>read</B>=FBitmap, <B>write</B>=SetBitmap 
+};</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><B><FONT face=Arial 
+size=2>Description</FONT></B></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial size=2>Use 
+Bitmap to load a bitmap wich will showing on the Canvas of the component. 
+</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<HR>
+
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial size=2>Indicates 
+whether the bitmap covers its rectangular area.<BR>&nbsp;</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2>_<B>_property bool</B> <FONT color=#008000>Transparent </FONT>= { 
+<B>read</B>=FTransparent, <B>write</B>=SetTransparent };<BR>&nbsp;</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><B>Description</B></FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial size=2>Use 
+Transparent to specify that the bitmap be drawn transparently. If Transparent is 
+<B>true</B> the transparent area is clipping, in according to TransparentColor 
+property. If Transparent is false, this area is recreated.</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial><B><FONT 
+size=2>Note:</FONT></B><FONT size=2> This property work with "Region functions" 
+of Win SDK.</FONT></FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<HR>
+
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2>Determines which color of the bitmap is to be transparent when the bitmap 
+is drawn.</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><B>__property</B> TColor <FONT color=#008000>TransparentColor </FONT>= { 
+<B>read</B>=FTransparentColor, <B>write</B>=SetTransparentColor };</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><B>Description</B><BR>Use TransparentColor to determine how to draw the 
+bitmap transparently.</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<HR>
+
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2>Determines the range of the transparent colors, when the Transparent 
+property is <B>true</B>.</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><BR><B>__property int </B><FONT color=#008000>TransparentTolerance</FONT> 
+= {<B> read</B>=FTransparentTolerance,<B> write</B>=SetTransparentTolerance 
+};<BR>&nbsp;</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><B>Description</B></FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial size=2>Use 
+TransparentTolerance to specify a range of transparent colors. A value of 0 make 
+transparent only the pixels of the Bitmap property which have a color equal to 
+TransparentColor property. With a value x&gt;0, will be transparent all the 
+pixels in a range of color (TransparentColor-x, TransparentColor+x).</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<HR>
+
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2>Determines the degree of translucence of the MainForm.</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><B>__property int</B> <FONT color=#008000>Translucence </FONT>= {<B> 
+read</B>=FTranslucence,<B> write</B>=SetTranslucence };<BR>&nbsp;</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial 
+size=2><B>Description</B></FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial size=2>Use 
+translucence for make semi-invisible the MainForm of the application. This work 
+with AlphaBlend and AlphaBlendValue of&nbsp; MainForm.</FONT></P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<HR>
+
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px">&nbsp;</P>
+<P style="MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px"><FONT face=Arial color=#008000 
+size=2>For all others properties, see the standard documentation of 
+TCustomControl and Ancestors.</FONT></P></BODY></HTML>

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DB, ADODB, Grids, DBGrids, SoftDBGrid, TFlatButtonUnit, funcoes, funcSQL, uUtil,
+  Dialogs, DB, ADODB, Grids, DBGrids, SoftDBGrid, TFlatButtonUnit, funcoes, funcSQL,
   StdCtrls, Buttons, fCtrls;
 
 type

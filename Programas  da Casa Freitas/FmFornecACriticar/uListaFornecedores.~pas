@@ -38,16 +38,16 @@ var
   PERFIL:String;
 implementation
 
-uses funcoes , uCF, {uMain, } funcSQL;
+uses funcoes, cf, funcSQL;
 
 {$R *.dfm}
 
 procedure TfmListaFornecedores.listarFornecedor();
 begin
  if length( funcoes.SohNumeros(edit1.Text)) = length(edit1.Text) then
-    dsPes.DataSet := uCF.getDadosFornecedor(edit1.Text,'')
+    dsPes.DataSet := cf.getDadosFornecedor(edit1.Text,'')
  else
-    dsPes.DataSet := uCF.getDadosFornecedor('', edit1.Text);
+    dsPes.DataSet := cf.getDadosFornecedor('', edit1.Text);
 
    if dsPes.DataSet.IsEmpty = false then
    begin
@@ -58,9 +58,9 @@ end;
 procedure TfmListaFornecedores.listarCliente();
 begin
    if length( funcoes.SohNumeros(edit1.Text)) = length(edit1.Text) then
-      dsPes.DataSet := uCF.getDadosCliente(edit1.Text,'')
+      dsPes.DataSet := cf.getDadosCliente(edit1.Text,'')
    else
-      dsPes.DataSet := uCF.getDadosCliente('', edit1.Text);
+      dsPes.DataSet := cf.getDadosCliente('', edit1.Text);
 
    if (dsPes.DataSet.IsEmpty = false) then
    begin

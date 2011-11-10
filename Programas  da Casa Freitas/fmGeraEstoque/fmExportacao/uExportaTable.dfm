@@ -1,6 +1,6 @@
 object fmExportaTable: TfmExportaTable
-  Left = 705
-  Top = 309
+  Left = 999
+  Top = 322
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Destino'
@@ -36,7 +36,7 @@ object fmExportaTable: TfmExportaTable
     Width = 75
     Height = 29
     Caption = 'Ok'
+    ModalResult = 1
     TabOrder = 1
-    OnClick = Button1Click
   end
 end

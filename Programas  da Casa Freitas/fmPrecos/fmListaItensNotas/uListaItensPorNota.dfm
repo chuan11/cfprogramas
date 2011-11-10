@@ -34,7 +34,7 @@ object fmListaItensNota: TfmListaItensNota
     BevelInner = bvNone
     BevelKind = bkFlat
     Style = csDropDownList
-    Color = clInfoBk
+    Color = clHighlightText
     Ctl3D = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -65,7 +65,7 @@ object fmListaItensNota: TfmListaItensNota
     Ctl3D = False
     ParentCtl3D = False
     CharCase = ecUpperCase
-    Color = clInfoBk
+    Color = clHighlightText
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
@@ -88,7 +88,7 @@ object fmListaItensNota: TfmListaItensNota
     AutoSize = False
     Ctl3D = False
     ParentCtl3D = False
-    Color = clInfoBk
+    Color = clHighlightText
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
@@ -98,10 +98,10 @@ object fmListaItensNota: TfmListaItensNota
     TabOrder = 2
   end
   object btPesq: TFlatButton
-    Left = 531
-    Top = 12
-    Width = 96
-    Height = 28
+    Left = 655
+    Top = 6
+    Width = 134
+    Height = 37
     Caption = '&Pesquisar'
     Glyph.Data = {
       76010000424D7601000000000000760000002800000020000000100000000100
@@ -141,7 +141,7 @@ object fmListaItensNota: TfmListaItensNota
     ColorHigh = clWindow
   end
   object btOk: TfsBitBtn
-    Left = 623
+    Left = 624
     Top = 250
     Width = 77
     Height = 25
@@ -171,7 +171,7 @@ object fmListaItensNota: TfmListaItensNota
     NumGlyphs = 2
   end
   object fsBitBtn2: TfsBitBtn
-    Left = 709
+    Left = 710
     Top = 249
     Width = 81
     Height = 25
@@ -200,7 +200,6 @@ object fmListaItensNota: TfmListaItensNota
     NumGlyphs = 2
   end
   object qrNota: TADOQuery
-    Connection = fmMain.Conexao
     Parameters = <>
     Left = 104
     Top = 144

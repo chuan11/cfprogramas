@@ -1,8 +1,8 @@
 object fmGeraEstoque: TfmGeraEstoque
-  Left = 315
-  Top = 41
-  Width = 1291
-  Height = 739
+  Left = 288
+  Top = 82
+  Width = 1022
+  Height = 736
   Caption = 'Gera Estoque'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -26,8 +26,8 @@ object fmGeraEstoque: TfmGeraEstoque
   object grid: TSoftDBGrid
     Left = 0
     Top = 137
-    Width = 1275
-    Height = 532
+    Width = 1006
+    Height = 529
     Align = alClient
     Ctl3D = False
     DataSource = DataSource1
@@ -48,8 +48,8 @@ object fmGeraEstoque: TfmGeraEstoque
   end
   object pbRodape: TPanel
     Left = 0
-    Top = 669
-    Width = 1275
+    Top = 666
+    Width = 1006
     Height = 32
     Align = alBottom
     BevelOuter = bvNone
@@ -186,7 +186,7 @@ object fmGeraEstoque: TfmGeraEstoque
   object pnTitulo: TPanel
     Left = 0
     Top = 0
-    Width = 1275
+    Width = 1006
     Height = 137
     Align = alTop
     BevelOuter = bvNone
@@ -629,8 +629,8 @@ object fmGeraEstoque: TfmGeraEstoque
       FlatFont.Style = []
     end
     object pnForn: TPanel
-      Left = 83
-      Top = 143
+      Left = 499
+      Top = 52
       Width = 199
       Height = 49
       TabOrder = 15

@@ -1,6 +1,6 @@
 object fmCriarMapa: TfmCriarMapa
-  Left = 552
-  Top = 303
+  Left = 483
+  Top = 305
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'Selecione os itens do mapa de separa'#231#227'o'

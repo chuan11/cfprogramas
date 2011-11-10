@@ -78,13 +78,11 @@ end;
 
 
 function TfmEnviaEmail.enviarEmailGmail(uo, para, assunto, anexo: String; corpoMsg: Tstringlist;
-                                      conexao: TADOConnection; titulo, pesSender:String ):boolean;
+                                     conexao: TADOConnection; titulo, pesSender:String ):boolean;
 var
   i:integer;
   nmRemetente:String;
  begin
-   Application.CreateForm(TfmEnviaEmail, fmEnviaEmail);
-   fmEnviaEmail.Show;
 
    if (para  = '') then
       getMailDestino(Conexao, uo, para, corpoMsg);
@@ -93,7 +91,10 @@ var
    begin
       screen.Cursor := crHourGlass;
 
-      fmEnviaEmail.memo1.Lines.add('E-mail para :' + 'para');
+      IdSMTP.Username := fmMain.getParamBD('comum.emailUser', '');
+      IdSMTP.Password := fmMain.getParamBD('comum.emailpassword', '');
+
+      fmEnviaEmail.memo1.Lines.add('E-mail para: '+ para);
       fmEnviaEmail.panel1.Caption := titulo;
       fmEnviaEmail.Refresh();
 
@@ -101,10 +102,9 @@ var
          nmRemetente := funcsql.getEmail(uo, conexao);
 
       if (pos('@', nmRemetente) = 0 ) then
-         nmRemetente := uo+'@casafreitas.com.br';
+         nmRemetente := uo+ fmMain.getParamBD('comum.emailNomedominio', '');
 
       fmEnviaEmail.Memo1.Lines.add('Remetente: ' + nmRemetente );
-
       with fmEnviaEmail.msg do
       begin
          Create(nil);
@@ -121,7 +121,11 @@ var
       end;
 
       if (anexo <> '' )then
+      begin
+         Memo1.Lines.add('Adicionando anexos...');
          TIdAttachment.create(fmEnviaEmail.msg.MessageParts, TFileName(anexo));
+      end;
+
       try
          fmEnviaEmail.idsmtp.Connect();
          fmEnviaEmail.idsmtp.Send(fmEnviaEmail.msg);
@@ -145,15 +149,11 @@ var
        msgtela('',#13+'O endereço é inválido ou não foi preenchido. ' +#13+#13, 16 + 0 );
        result := false;
     end;
-   fmEnviaEmail.Close();
-   fmEnviaEmail := nil;
-   screen.Cursor := 0;
 end;
 
 
 procedure TfmEnviaEmail.FormClose(Sender: TObject;var Action: TCloseAction);
 begin
-   fmEnviaEmail := nil;
    action := caFree;
 end;
 

@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, TFlatButtonUnit, StdCtrls, ExtCtrls, ComCtrls, fCtrls,
-  adLabelComboBox, funcoes,funcsql, DB, ADODB, Grids, DBGrids, SoftDBGrid,
+  adLabelComboBox, DB, ADODB, Grids, DBGrids, SoftDBGrid,
   Buttons;
 
 type
@@ -47,7 +47,7 @@ var
   fmRelatorioComissao: TfmRelatorioComissao;
 
 implementation
-uses uMain;
+uses uMain, funcoes,funcsql, uCF;
 {$R *.dfm}
 
 procedure TfmRelatorioComissao.FormClose(Sender: TObject;var Action: TCloseAction);
@@ -64,7 +64,7 @@ end;
 procedure TfmRelatorioComissao.FormCreate(Sender: TObject);
 begin
 //   cbLoja.items := funcsQL.GetNomeLojas( fmMain.Conexao, false, false, fmMain.lbPes.caption,'' ); // getListaPrecos (sender);
-   fmMain.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
 
    fmMain.getParametrosForm(fmRelatorioComissao);
    OpenTempTable( tb,  'is_oper integer, cd_mve int, valor money, TipoPrecoSugerido int, cd_vend int, cd_pes int, seq int identity(01,01) ', fmMain.Conexao);
@@ -316,20 +316,9 @@ begin
 end;
 
 procedure TfmRelatorioComissao.FlatButton1Click(Sender: TObject);
-var
-   erro:String;
 begin
-   if dataf.Date < datai.Date then
-      erro := MSG_DATA1_MAIORQ_DATA2;
-   if cbLoja.itemIndex < 0 then
-      erro := MSG_FALTA_LOJA;
-
-   if erro <> '' then
-   begin
-      erro := '   Corrija antes esses erros ' +  #13+ erro;
-      msgTEla('', erro, MB_OK + MB_ICONERROR);
-   end
-   else
+   if (funcoes.isIntervDataValido(datai.Date, dataf.Date, true) = true ) and
+      ( funcoes.faltaLoja(cbLoja) = false ) then
    begin
       geraComissao(nil);
       memo1.Lines.Add(copy(cbLoja.Items[cbLoja.itemindex], 01,30)

@@ -30,7 +30,7 @@ object fmNotasTransf: TfmNotasTransf
     Shape = bsFrame
   end
   object Label1: TLabel
-    Left = 116
+    Left = 114
     Top = 34
     Width = 15
     Height = 13
@@ -42,30 +42,6 @@ object fmNotasTransf: TfmNotasTransf
     Width = 100
     Height = 13
     Caption = 'Intervalo da Consulta'
-  end
-  object dti: TDateTimePicker
-    Left = 12
-    Top = 31
-    Width = 98
-    Height = 21
-    BevelInner = bvSpace
-    BevelOuter = bvSpace
-    BevelKind = bkSoft
-    Date = 39570.510398935170000000
-    Time = 39570.510398935170000000
-    TabOrder = 0
-  end
-  object dtf: TDateTimePicker
-    Left = 137
-    Top = 31
-    Width = 98
-    Height = 21
-    BevelInner = bvSpace
-    BevelOuter = bvSpace
-    BevelKind = bkSoft
-    Date = 39570.510398935170000000
-    Time = 39570.510398935170000000
-    TabOrder = 1
   end
   object cbStatus: TadLabelComboBox
     Left = 451
@@ -87,7 +63,7 @@ object fmNotasTransf: TfmNotasTransf
     ItemIndex = 0
     ParentBiDiMode = False
     ParentFont = False
-    TabOrder = 2
+    TabOrder = 0
     Text = 'Nao confirmadas'
     Items.Strings = (
       'Nao confirmadas'
@@ -122,7 +98,7 @@ object fmNotasTransf: TfmNotasTransf
       0000}
     Layout = blGlyphLeft
     NumGlyphs = 2
-    TabOrder = 3
+    TabOrder = 1
     ModalResult = 1
     OnClick = btOkClick
   end
@@ -139,7 +115,7 @@ object fmNotasTransf: TfmNotasTransf
     ParentBiDiMode = False
     ParentCtl3D = False
     PopupMenu = PopupMenu1
-    TabOrder = 4
+    TabOrder = 2
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
@@ -196,7 +172,7 @@ object fmNotasTransf: TfmNotasTransf
       DA9B0700000000000000EF090909FF9A0000000000009B07EDEDDBFF50000000
       00000052529A53520000}
     Layout = blGlyphLeft
-    TabOrder = 5
+    TabOrder = 3
     OnClick = FlatButton1Click
   end
   object cbLojas: TadLabelComboBox
@@ -220,11 +196,29 @@ object fmNotasTransf: TfmNotasTransf
     ParentBiDiMode = False
     ParentCtl3D = False
     ParentFont = False
-    TabOrder = 6
+    TabOrder = 4
     LabelDefs.Width = 60
     LabelDefs.Height = 13
     LabelDefs.Caption = 'Loja destino:'
     Colors.WhenEnterFocus.BackColor = clInfoBk
+  end
+  object di: TfsDateTimePicker
+    Left = 10
+    Top = 30
+    Width = 95
+    Height = 22
+    Date = 39906.649664583330000000
+    Time = 39906.649664583330000000
+    TabOrder = 5
+  end
+  object df: TfsDateTimePicker
+    Left = 141
+    Top = 30
+    Width = 95
+    Height = 22
+    Date = 39906.649664583330000000
+    Time = 39906.649664583330000000
+    TabOrder = 6
   end
   object DataSource1: TDataSource
     DataSet = tb

@@ -316,20 +316,9 @@ begin
 end;
 
 procedure TfmRelatorioComissao.FlatButton1Click(Sender: TObject);
-var
-   erro:String;
 begin
-   if dataf.Date < datai.Date then
-      erro := MSG_DATA1_MAIORQ_DATA2;
-   if cbLoja.itemIndex < 0 then
-      erro := MSG_FALTA_LOJA;
-
-   if erro <> '' then
-   begin
-      erro := '   Corrija antes esses erros ' +  #13+ erro;
-      msgTEla('', erro, MB_OK + MB_ICONERROR);
-   end
-   else
+   if (funcoes.isIntervDataValido(datai, dataf, true) = true ) and
+      ( funcoes.faltaLoja(cbLoja) = false ) then
    begin
       geraComissao(nil);
       memo1.Lines.Add(copy(cbLoja.Items[cbLoja.itemindex], 01,30)

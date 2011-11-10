@@ -10,7 +10,7 @@ type
   TfmExportaTable = class(TForm)
     RadioGroup1: TRadioGroup;
     Button1: TButton;
-    procedure Button1Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
   public
@@ -25,33 +25,10 @@ implementation
 {$R *.dfm}
 uses uMain, funcoes, funcSQL, uGeraEstoque;
 
-procedure TfmExportaTable.Button1Click(Sender: TObject);
-var
-   arq:String;
-   msgEmail:TStringlist;
+procedure TfmExportaTable.FormClose(Sender: TObject;
+  var Action: TCloseAction);
 begin
-
-
-   if (radioGroup1.ItemIndex = 0) then
-      funcSQl.exportacaoDeTabela( fmGeraEstoque.tbGE, xtExcel, xsView, '')
-   else
-   begin
-      arq:= funcSQl.exportacaoDeTabela( fmGeraEstoque.tbGE, xtExcel, xsFile, '');
-      if (fileExists(arq) = true) then
-      begin
-         msgEmail := TStringList.Create
-         msgEmail.Add('Arquivo  enviado pelo geraEstoque:')
-
-         fmMain.EnviarEmail('', 'Exportação do gera estoque'
-
-
-
-
-
-
-
-      end;
-   end;
+    action := caFree;
 end;
 
 end.

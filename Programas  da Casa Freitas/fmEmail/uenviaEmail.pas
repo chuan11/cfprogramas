@@ -91,8 +91,8 @@ var
    begin
       screen.Cursor := crHourGlass;
 
-      IdSMTP.Username := fmMain.getParamBD('comum.emailUser', '');
-      IdSMTP.Password := fmMain.getParamBD('comum.emailpassword', '');
+      IdSMTP.Username := fmMain.getParamBD('comum.emailUser', '0');
+      IdSMTP.Password := fmMain.getParamBD('comum.emailpassword', '0');
 
       fmEnviaEmail.memo1.Lines.add('E-mail para: '+ para);
       fmEnviaEmail.panel1.Caption := titulo;

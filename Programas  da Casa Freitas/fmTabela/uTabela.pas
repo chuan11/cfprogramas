@@ -55,9 +55,7 @@ type
     btGetCategorias: TFlatButton;
     FlatButton1: TFlatButton;
     Animate: TAnimate;
-    function GetNumLojas(sender: tobject): Tstrings;
     procedure FlatButton1Click(Sender: TObject);
-    function GetNomeLojas(sender: tobject): Tstrings;
     procedure FormKeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure cbItensClick(Sender: TObject);
@@ -87,65 +85,11 @@ var
 
 implementation
 
-uses uMain, uCF;
+uses uMain, uCF, cf;
 
 {$R *.dfm}
-
-function TfmTabela.GetNumLojas(sender: tobject): Tstrings;
-var
-   query:tadoquery;
-   aux:tStrings;
-begin
-   query := Tadoquery.Create(query);
-   query.Connection := fmMain.Conexao;
-   query.SQL.Clear;
-   query.SQL.Add('Select DS_TIPOPRECO, tp_preco from ttpco with(NoLock) ');
-   query.Open;
-
-   aux := TstringList.create();
-   query.First;
-
-   while query.Eof = false do
-   begin
-      aux.add(query.Fields[0].AsString+query.Fields[1].AsString );
-      query.Next;
-   end;
-   Result := aux;
-   query.Destroy;
-
-   AUX.ADD('Preco de custo                                     1');
-   AUX.ADD('Custo ultima compra                               10');
-
-// descricao do 01 ao 50
-//is_uo do 51 ao 58
-end;
-
-function TfmTabela.GetNomeLojas(sender: tobject): Tstrings;
-var
-   query:tadoquery;
-   aux:tStrings;
-begin
-   query := Tadoquery.Create(query);
-   query.Connection := fmMain.Conexao;
-   query.SQL.Clear;
-   query.SQL.Add('select ds_uo,is_uo from zcf_tbuo with(Nolock) where TP_ESTOQUE in (1,2) order by ds_uo');
-   query.Open;
-
-   aux := TstringList.create();
-   query.First;
-   while query.Eof = false do
-   begin
-      aux.add(funcoes.preencheCampo(50,' ','D',query.Fields[0].AsString) +query.Fields[1].AsString );
-      query.Next;
-   end;
-   Result := aux;
-   query.Destroy;
-end;
-
 procedure tfmTabela.PesquisaCodigos(sender:tobject);
 begin
-//  fmMain.Conexao.CommandTimeout := 0;
-
   SCREEN.CURSOR := crhourglass;
   fmMain.MsgStatus('');
   animate.Visible:= true;
@@ -402,7 +346,7 @@ end;
 
 procedure TfmTabela.FormCreate(Sender: TObject);
 begin
-   cbpreco01.Items := funcsql.getListaPrecos( fmMain.Conexao, true, true, true, fmMain.getGrupoLogado() );
+   cbpreco01.Items := cf.getListaPrecos( true, true, true, fmMain.getGrupoLogado() );
    cbPreco02.Items := cbPreco01.Items;
    funcoes.carregaCampos(fmTabela);
    uCF.getListaLojas(cbLoja, false, false, '');

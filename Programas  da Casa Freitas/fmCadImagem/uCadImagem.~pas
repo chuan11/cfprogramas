@@ -48,6 +48,7 @@ type
     procedure FlatButton1Click(Sender: TObject);
     procedure FlatButton3Click(Sender: TObject);
     procedure contaArquivos();
+    procedure chamaAlteracaoProduto(mostraMsg:boolean);
   private
     { Private declarations }
   public
@@ -177,14 +178,7 @@ end;
 
 procedure TfmCadastro.btAlterarClick(Sender: TObject);
 begin
-   if (lbIs_ref.Caption <> '') then
-      if( MsgTela('','Deseja alterar a imagem desse produto? ', MB_YESNO + MB_ICONQUESTION) = mrYes ) then
-      begin
-         funcSQl.execSQL('Delete from zcf_crefe_imagens where is_ref = ' + lbIs_ref.Caption, fmMain.Conexao );
-         incluirImgagem(false);
-         LimparCampos();
-         msgTela('', 'Alteração efetuada.',MB_OK + MB_ICONEXCLAMATION);
-      end;
+   chamaAlteracaoProduto(true);
 end;
 
 procedure TfmCadastro.CheckBox1Click(Sender: TObject);
@@ -195,7 +189,7 @@ end;
 procedure TfmCadastro.btExcluirClick(Sender: TObject);
 begin
    if (lbIs_ref.Caption <> '') then
-      if (msgTela('', 'Deseja escluir a imagem ?', MB_ICONQUESTION + MB_YESNO) = mrYes ) then
+      if (msgTela('', 'Deseja excluir a imagem ?', MB_ICONQUESTION + MB_YESNO) = mrYes ) then
       begin
          funcSQl.execSQL('Delete from zcf_crefe_imagens where is_ref = ' + lbIs_ref.Caption, fmMain.Conexao );
          LimparCampos();
@@ -233,13 +227,13 @@ begin
           begin
              fmMain.msgStatus(edCodigo.Text + ' ' + edDescricao.Text + #13+ 'Imagem não cadastrada, incluir');
              carregaimagem( lbArquivos.Items.Strings[i]  );
-             incluirImgagem(true);
+             incluirImgagem(false);
           end
           else
           begin
              fmMain.msgStatus(edCodigo.Text + ' ' + edDescricao.Text + #13+ 'Imagem já cadastrada, alterar' );
              carregaimagem( lbArquivos.Items.Strings[i] );
-             btAlterarClick(nil);
+             chamaAlteracaoProduto(false);
           end;
      end;
      if nArquivos > 0 then
@@ -377,5 +371,28 @@ begin
    incluirImgagem(true);
 end;
 
+
+procedure TfmCadastro.chamaAlteracaoProduto(mostraMsg: boolean);
+var
+  altera:boolean;
+begin
+   altera := true;
+
+   if (mostraMsg = true) then
+      if( MsgTela('','Deseja alterar a imagem desse produto? ', MB_YESNO + MB_ICONQUESTION) = mrNo ) then
+         altera := false;
+
+   if (altera = true) then
+      if (lbIs_ref.Caption <> '') then
+      begin
+         funcSQl.execSQL('Delete from zcf_crefe_imagens where is_ref = ' + lbIs_ref.Caption, fmMain.Conexao );
+         incluirImgagem(false);
+         LimparCampos();
+
+         if (mostraMsg = true) then
+            msgTela('', 'Alteração efetuada.',MB_OK + MB_ICONEXCLAMATION);
+      end;
+
+end;
 
 end.

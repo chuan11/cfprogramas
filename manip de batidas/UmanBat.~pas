@@ -114,7 +114,7 @@ type
   end;
 const
    TITULO = 'Utilitário para editar batidas e arquivos';
-   VERSAO ='11.02.01';
+   VERSAO ='11.10.01';
 var
   Form2: TForm2;
   arq:TextFile;

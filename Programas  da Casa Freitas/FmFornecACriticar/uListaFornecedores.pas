@@ -38,29 +38,29 @@ var
   PERFIL:String;
 implementation
 
-uses funcoes , uCF, funcSQL;
+uses funcoes, cf, funcSQL;
 
 {$R *.dfm}
 
 procedure TfmListaFornecedores.listarFornecedor();
 begin
  if length( funcoes.SohNumeros(edit1.Text)) = length(edit1.Text) then
-    dsPes.DataSet := uCF.getDadosFornecedor(edit1.Text,'')
+    dsPes.DataSet := cf.getDadosFornecedor(edit1.Text,'')
  else
-    dsPes.DataSet := uCF.getDadosFornecedor('', edit1.Text);
+    dsPes.DataSet := cf.getDadosFornecedor('', edit1.Text);
 
-   if dsPes.DataSet.IsEmpty = false then
+   if (dsPes.DataSet.IsEmpty = false) then
    begin
-      fnGrid.Columns[  dspes.DataSet.FieldByName('Nome').Index ].Width := 150;
+      fnGrid.Columns[dspes.DataSet.FieldByName('Nome').Index ].Width := 150;
    end;
 end;
 
 procedure TfmListaFornecedores.listarCliente();
 begin
    if length( funcoes.SohNumeros(edit1.Text)) = length(edit1.Text) then
-      dsPes.DataSet := uCF.getDadosCliente(edit1.Text,'')
+      dsPes.DataSet := cf.getDadosCliente(edit1.Text,'')
    else
-      dsPes.DataSet := uCF.getDadosCliente('', edit1.Text);
+      dsPes.DataSet := cf.getDadosCliente('', edit1.Text);
 
    if (dsPes.DataSet.IsEmpty = false) then
    begin

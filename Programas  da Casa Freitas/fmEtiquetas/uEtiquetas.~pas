@@ -133,7 +133,7 @@ begin
    if str <> '' then
       edLocalImp.Text := str;
 
-   fmMain.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
+   uCF.getListaLojas(cbLojas, false, false, fmMain.getCdPesLogado() );
 end;
 
 

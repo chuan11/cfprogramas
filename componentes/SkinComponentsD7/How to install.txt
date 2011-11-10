@@ -1,0 +1,1 @@
+Put this folder (SkinComponentsD7) in Projects folder of Delphi (X:\Program files\Borland\Delphi7\Projects\ , with X=C,D,etc...). Open SkinComponentsD7 folder and run Install.exe, then click Install button.

@@ -315,9 +315,6 @@ begin
    ds.close;
 end;
 
-
-
-
 function TDBClass.numRegistros: integer;
 begin
    result := dsTemplates.RecordCount;

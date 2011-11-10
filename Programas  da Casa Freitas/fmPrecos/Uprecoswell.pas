@@ -244,10 +244,7 @@ begin
    if (table.IsEmpty = true) then
       erro := erro + '- Nenhum preço para lancar.' +#13;
 
-   if ( dtf.date < dti.Date) then
-      erro := erro + MSG_DATA1_MENORQ_DATA2;
-
-   if (erro = '') then
+   if (erro = '')  and (funcoes.isIntervDataValido(dti, dtf, true) = true) then
    begin
       if (application.MessageBox(pchar( #13 + 'Deseja efetivar realmente esse preços ?? '+#13), '',mb_yesNo ) = mryes) then
          chamaLancamentoDePrecos();
@@ -603,7 +600,7 @@ procedure TfmLancaPrecos.Gerarprecoapartirdeumanota1Click(Sender: TObject);
 var
    cmd:String;
 begin
-   cmd := uCF.getIsNota();
+   cmd := fmMain.getIsNota();
    if (cmd <> '') then
       getPrecosDeUmaNota(cmd);
 end;

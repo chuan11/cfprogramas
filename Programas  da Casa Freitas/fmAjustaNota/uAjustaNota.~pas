@@ -53,6 +53,8 @@ type
     btDeleteXML: TfsBitBtn;
     dtEntSai: TfsDateTimePicker;
     Label5: TLabel;
+    PopupMenu1: TPopupMenu;
+    Alteraserie1: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FlatButton1Click(Sender: TObject);
     procedure btEmisDestClick(Sender: TObject);
@@ -67,7 +69,7 @@ type
     procedure btDadosNFEClick(Sender: TObject);
     procedure btIncluiXMLClick(Sender: TObject);
     procedure btDeleteXMLClick(Sender: TObject);
-    function  isGrupoprivilegiado():boolean;
+    function  isGrupoRestrito():boolean;
 
   private
     { Private declarations }
@@ -77,10 +79,10 @@ type
 
 var
   fmAjustaNota: TfmAjustaNota;
-  IS_GRUPO_PERMITIDO:boolean;
+  IS_GRUPO_RESTRITO:boolean;
 implementation
 
-uses uMain, uListaFornecedores, uCF;
+uses uMain, uListaFornecedores, cf, uCF;
 {$R *.dfm}
 
 procedure TfmAjustaNota.tbICMBeforePost(DataSet: TDataSet);
@@ -102,7 +104,7 @@ var
 begin
      ds := TADOQuery.create(nil);
 
-     ds:= uCF.getDadosNota(is_nota,'','','');
+     ds:= cf.getDadosNota(is_nota,'','','');
 
      edIsNota.text := ds.fieldByname('is_nota').asString;
      edSerie.Text := ds.fieldByname('serie').asString;
@@ -160,31 +162,19 @@ end;
 
 procedure TfmAjustaNota.btEmisDestClick(Sender: TObject);
 var
-  codigo:String;
-  ds:TDataSet;
+  cd_pes, ds_pes:String;
 begin
-   if ( isGrupoprivilegiado()) = true then
+   if ( isGrupoRestrito() = false ) then
    begin
       if (lbTipo.Caption = 'Entrada') then
-         codigo:= uCF.getFmDadosPessoa('Fornecedor')
+         fmMain.getDadosFornecedor(cd_pes, ds_pes)
       else
-         codigo:= uCF.getFmDadosPessoa('Cliente');
+         fmMain.getDadosCliente(cd_pes, ds_pes);
 
-      if (codigo <> '') then
+      if (cd_pes <> '') then
       begin
-         if (lbTipo.Caption = 'Entrada') then
-         begin
-            ds := uCF.getDadosFornecedor(codigo, '');
-            lbCodPes.caption := ds.FieldByName('codigo').asString;
-            edEmitDest.text := ds.FieldByName('nome').asString;
-         end
-         else
-         begin
-            ds := uCF.getDadosCliente(codigo, '');
-            lbCodPes.caption := ds.FieldByName('codigo').asString;
-            edEmitDest.text := ds.FieldByName('nome').asString;
-         end;
-         ds.free();
+         lbCodPes.caption := cd_pes;
+         edEmitDest.text := ds_pes;
       end;
    end;
 end;
@@ -224,7 +214,7 @@ var
 begin
    btCancelaClick(nil);
    cmd := '';
-   cmd := uCF.getIsNota();
+   cmd := fmMain.getIsNota();
 
    if cmd <> '' then
       pesquisaNota(cmd)
@@ -262,7 +252,7 @@ end;
 procedure TfmAjustaNota.FormCreate(Sender: TObject);
 begin
   cbOperIntegrada.Items := funcsql.getOperIntegradasFiscais(fmMain.Conexao);
-  IS_GRUPO_PERMITIDO := not( fmMain.isGrupoRestrito( fmMain.Ajustedenotas1.Tag ));
+  IS_GRUPO_RESTRITO := fmMain.isGrupoRestrito( fmMain.Ajustedenotas1.Tag );
 end;
 
 procedure TfmAjustaNota.btOkClick(Sender: TObject);
@@ -284,7 +274,7 @@ begin
    end;
 
    if (edCodNFE.text <> '') then
-      if (isGrupoprivilegiado() = true) then
+      if (isGrupoRestrito() = false ) then
          if (msgTela('', 'Não Altere uma nota fiscal eletrônica a menos que você saiba realmente o que está fazendo...'+#13+'Altera mesmo ?', MB_YESNO + MB_ICONWARNING) = mrNo) then
             isAltera := false;
 
@@ -338,7 +328,7 @@ procedure TfmAjustaNota.btDadosNFEClick(Sender: TObject);
 var
   codNfe, cmd:String;
 begin
-   if isGrupoprivilegiado() then
+   if (isGrupoRestrito() = false )then
    begin
       if ( edCodNFE.Text = '') then
       begin
@@ -357,7 +347,6 @@ begin
       qrXML.SQL.Clear();
       funcSQL.getQuery2( fmMain.Conexao, qrXML,  'select codigo_nfe, nrLote_nfe, xml_nfe, chave_acesso_nfe, protocolo_autorizacao_nfe, dt_autorizacao_nfe from nf_eletronica where codigo_nfe = ' + codNFE);
       gridXML.Columns[qrXML.FieldByName('xml_nfe').Index ].Width := 30;
-      btDadosNFE.Enabled := false;
       pnXML.Visible := true;
    end;
 end;
@@ -404,11 +393,11 @@ begin
       end;
 end;
 
-function TfmAjustaNota.isGrupoPrivilegiado: boolean;
+function TfmAjustaNota.isGrupoRestrito:boolean;
 begin
-    if (IS_GRUPO_PERMITIDO = false) then
+    if (IS_GRUPO_RESTRITO = true) then
        msgTela('', 'Você não tem acesso a essa função', MB_OK + MB_ICONERROR);
-    result := IS_GRUPO_PERMITIDO;
+    result := IS_GRUPO_RESTRITO;
 end;
 
 end.

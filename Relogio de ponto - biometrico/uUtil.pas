@@ -28,7 +28,7 @@ const
 
 function ativaEmpregado(matricula: String): boolean;
 function connectionIsClosed():boolean;
-function deletaEmpregado(cartaoPonto:String):boolean;
+function deletaEmpregado(matricula:String):boolean;
 function desativaEmpregado(matricula:String; dataDemissao:Tdate):boolean;
 function Enroll(mat,lado,nome:string): Integer;
 function ExtractTemplate(): Integer;
@@ -700,9 +700,9 @@ begin
    result := db.getDetalheEmpregado(cartaoPonto);
 end;
 
-function deletaEmpregado(cartaoPonto:String):boolean;
+function deletaEmpregado(matricula:String):boolean;
 begin
-   result := db.deletaEmpregado(cartaoPonto);
+   result := db.deletaEmpregado(matricula);
 end;
 
 function lerParametroBD(parametro:String):String;
