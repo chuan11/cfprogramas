@@ -1,6 +1,6 @@
 object fmCriarMapa: TfmCriarMapa
-  Left = 483
-  Top = 305
+  Left = 666
+  Top = 352
   BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'Selecione os itens do mapa de separa'#231#227'o'
@@ -15,16 +15,16 @@ object fmCriarMapa: TfmCriarMapa
   FormStyle = fsStayOnTop
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object lbForn: TLabel
-    Left = 464
-    Top = 3
-    Width = 29
+  object lbIsNota: TLabel
+    Left = 356
+    Top = 8
+    Width = 39
     Height = 13
-    Caption = 'lbForn'
-    Visible = False
+    Caption = 'lbIsNota'
   end
   object rg: TRadioGroup
     Left = 4
@@ -49,7 +49,7 @@ object fmCriarMapa: TfmCriarMapa
   object cbPreco: TadLabelComboBox
     Left = 325
     Top = 65
-    Width = 214
+    Width = 188
     Height = 24
     BevelInner = bvLowered
     BevelKind = bkSoft
@@ -97,7 +97,7 @@ object fmCriarMapa: TfmCriarMapa
     Colors.WhenEnterFocus.BackColor = clInfoBk
   end
   object edCod: TadLabelEdit
-    Left = 152
+    Left = 150
     Top = 22
     Width = 115
     Height = 22
@@ -115,25 +115,6 @@ object fmCriarMapa: TfmCriarMapa
     ParentFont = False
     TabOrder = 3
   end
-  object edSerie: TadLabelEdit
-    Left = 271
-    Top = 21
-    Width = 32
-    Height = 22
-    LabelDefs.Width = 27
-    LabelDefs.Height = 13
-    LabelDefs.Caption = 'Serie '
-    Colors.WhenEnterFocus.BackColor = clInfoBk
-    Ctl3D = False
-    ParentCtl3D = False
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 4
-  end
   object clb1: TadLabelCheckListBox
     Left = 4
     Top = 146
@@ -143,7 +124,7 @@ object fmCriarMapa: TfmCriarMapa
     Ctl3D = False
     ItemHeight = 13
     ParentCtl3D = False
-    TabOrder = 5
+    TabOrder = 4
     LabelDefs.Width = 77
     LabelDefs.Height = 13
     LabelDefs.Caption = 'Loja para incluir:'
@@ -158,7 +139,7 @@ object fmCriarMapa: TfmCriarMapa
     Caption = 'Seleciona todas'
     Checked = True
     State = cbChecked
-    TabOrder = 6
+    TabOrder = 5
     OnClick = fsCheckBox1Click
     FlatFont.Charset = DEFAULT_CHARSET
     FlatFont.Color = clWindowText
@@ -185,7 +166,7 @@ object fmCriarMapa: TfmCriarMapa
     Font.Name = 'MS Sans Serif'
     Font.Style = []
     ParentFont = False
-    TabOrder = 7
+    TabOrder = 6
   end
   object cbEstoque: TfsCheckBox
     Left = 7
@@ -193,50 +174,30 @@ object fmCriarMapa: TfmCriarMapa
     Width = 230
     Height = 15
     Caption = 'Selecione at'#233' os itens que n'#227'o t'#234'm estoque.'
-    TabOrder = 8
+    TabOrder = 7
     FlatFont.Charset = DEFAULT_CHARSET
     FlatFont.Color = clWindowText
     FlatFont.Height = -11
     FlatFont.Name = 'MS Sans Serif'
     FlatFont.Style = []
   end
-  object edForn: TadLabelEdit
-    Left = 355
-    Top = 21
-    Width = 193
-    Height = 22
-    LabelDefs.Width = 54
-    LabelDefs.Height = 13
-    LabelDefs.Caption = 'Fornecedor'
-    Colors.WhenEnterFocus.BackColor = clInfoBk
-    Ctl3D = False
-    ParentCtl3D = False
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -13
-    Font.Name = 'MS Sans Serif'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 9
-  end
   object btForn: TBitBtn
-    Left = 551
+    Left = 542
     Top = 19
-    Width = 30
+    Width = 24
     Height = 25
     Caption = '...'
-    TabOrder = 10
+    TabOrder = 8
     OnClick = btFornClick
   end
-  object bitBtn2: TBitBtn
+  object btOk: TBitBtn
     Left = 434
     Top = 287
     Width = 71
     Height = 27
     Caption = '&Ok'
-    ModalResult = 1
-    TabOrder = 11
-    OnClick = BitBtn2Click
+    TabOrder = 9
+    OnClick = btOkClick
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -263,7 +224,7 @@ object fmCriarMapa: TfmCriarMapa
     Height = 27
     Caption = '&Cancela'
     ModalResult = 2
-    TabOrder = 12
+    TabOrder = 10
     Glyph.Data = {
       DE010000424DDE01000000000000760000002800000024000000120000000100
       0400000000006801000000000000000000001000000000000000000000000000
@@ -282,5 +243,25 @@ object fmCriarMapa: TfmCriarMapa
       3333333333333333333888330000333333333333333333333333333333333333
       0000}
     NumGlyphs = 2
+  end
+  object edIsNota: TadLabelEdit
+    Left = 293
+    Top = 22
+    Width = 248
+    Height = 22
+    LabelDefs.Width = 53
+    LabelDefs.Height = 13
+    LabelDefs.Caption = 'Nota Fiscal'
+    Colors.WhenEnterFocus.BackColor = clInfoBk
+    Ctl3D = False
+    ParentCtl3D = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 11
+    OnEnter = edIsNotaEnter
   end
 end

@@ -88,7 +88,7 @@ var
 
 implementation
 
-uses uCriaMapa, uMain, fmAbrirAvarias, uCF ;
+uses uCriaMapa, uMain, fmAbrirAvarias, cf;
 
 {$R *.dfm}
 
@@ -102,7 +102,7 @@ begin
      if tb.Fields[i].AsString <> '' then
         soma := soma + tb.Fields[i].AsInteger;
 
-   if soma > tb.fieldByName('Estoque').asinteger then
+   if (soma > tb.fieldByName('Estoque').asinteger) then
       erro := 'A soma dos separados excede a quantidade disponivel.';
 
    if (alteraValores = true) then
@@ -116,8 +116,8 @@ begin
    if erro <> '' then
    begin
       result := false;
-      if mostraErro = true then
-         msgTela('',erro,mb_iconerror + MB_OK);
+      if (mostraErro = true) then
+         funcoes.msgTela('', erro, mb_iconerror + MB_OK);
    end
    else
       result := true;
@@ -162,7 +162,7 @@ var
    dsItem:TdataSet;
    numMapa,cmd:String;
 begin
-   dsItem :=  uCF.getDadosProd(fmMain.getUoLogada(), codigo, '', '5', true);
+   dsItem := cf.getDadosProd(fmMain.getUoLogada(), codigo, '', '5', true);
    if ( dsItem.IsEmpty=false ) then
    begin
       numMapa := lbNumMp.Caption;
@@ -439,9 +439,10 @@ end;
 
 procedure TfmMapa.Nova1Click(Sender: TObject);
 begin
-   if alterada = true then
-      if MsgTela('','Foram feitas alterações no mapa, deseja salva-las? ', MB_YESNO ) = mrYes then
+   if (alterada = true )then
+      if funcoes.msgTela('','Foram feitas alterações no mapa, deseja salva-las? ', MB_YESNO ) = mrYes then
          Salvar1Click(Sender);
+
     fecharMapa();
     Application.CreateForm(TfmCriarMapa, fmCriarMapa);
     fmCriarMapa.showModal;
@@ -532,7 +533,8 @@ begin
           end;
           if  tbReq.RecordCount <> 0 then
           begin
-             cmd := funcsql.gerarRequisicao( fmMain.Conexao, tbReq, uos[i], autorizador, false, true, ocoItens, QT_DIAS_PEND);
+//             cmd := funcsql.gerarRequisicao( fmMain.Conexao, tbReq, uos[i], autorizador, false, false, ocoItens, QT_DIAS_PEND);
+             cmd :=   cf.gerarRequisicao( tbReq, uos[i], fmMain.getUOCD(), autorizador, false, false, ocoItens, QT_DIAS_PEND);
              lj:= lj + cmd +'   ';
           end;
       end;
@@ -562,7 +564,7 @@ begin
       if msgTela('', 'Após a aprovação, são feitas as requisições para o depósito, continua? ', MB_YESNO + MB_ICONQUESTION ) = mrYes then
       begin
          Salvar1Click(nil);
-         if errosDeSeparacao(nil) = false then
+         if (errosDeSeparacao(nil) = false) then
          begin
             aut := VerificaSenhas.TelaAutorizacao2(fmMain.Conexao, '-1', getParamBD('autorizadoresAvarias','', fmMain.Conexao) + lbCodCriador.Caption);
             if  (aut <> '') then
@@ -641,14 +643,13 @@ end;
 procedure TfmMapa.VerRequisicoes1Click(Sender: TObject);
 begin
    if tb.IsEmpty = false then
-      fmMain.getRequisicoesPorProduto( tb.FieldByName('is_ref').asString);
+     fmMain.abreTelaConsultaRequisicao(tb.FieldByName('codigo').asString, '999', now()-30);
 end;
 
 procedure TfmMapa.gridTitleClick(Column: TColumn);
 begin
    if (Column.FieldName = 'n') then
    begin
-
       if (funcoes.msgTela('',' Remover os itens marcados ?', MB_YESNO + MB_ICONQUESTION) = mrYes) then
       begin
          tb.First();

@@ -64,7 +64,6 @@ type
     Exportarlista1: TMenuItem;
     rgTpPesqCliente: TRadioGroup;
     Edit1: TEdit;
-    Edit2: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure rgTpPesquisaClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -270,14 +269,16 @@ var
  lin,col, i, j, num :integer;
  tbImpressao:TADOTable;
 
- regInicial, regFinal:integer;
+// regInicial, regFinal:integer;
 begin
-//   verificaCEPinvalido(nil);
+{//   verificaCEPinvalido(nil);
 
 // COLOCAR CAMPOS EM BRANCO PARA POSICIONAR  o inicio da impressao
    lin := Floor(edLinha.Value);
    col := Floor(edColuna.Value-1);
+
    num := tbEtq.fieldByName('num').asInteger + 1 ;
+
    for i:= 1 to ((2 * lin ) - 2) + (1* col) do
    begin
        tbEtq.Append;
@@ -289,7 +290,7 @@ begin
    end;
 
 //   fmMain.impressaoRave(tbEtq,'rpEtqCliente', nil);
-
+}
   imprimebobina();
 
 end;

@@ -1,7 +1,7 @@
 object fmConReqProduto: TfmConReqProduto
-  Left = 326
-  Top = 248
-  Width = 723
+  Left = 366
+  Top = 246
+  Width = 780
   Height = 450
   BorderIcons = [biSystemMenu]
   Caption = 'Consulta requisi'#231#245'es por produto.'
@@ -13,18 +13,18 @@ object fmConReqProduto: TfmConReqProduto
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poScreenCenter
+  Position = poMainFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
   DesignSize = (
-    707
+    764
     412)
   PixelsPerInch = 96
   TextHeight = 13
   object grid: TSoftDBGrid
     Left = 3
     Top = 55
-    Width = 701
+    Width = 758
     Height = 344
     Anchors = [akLeft, akTop, akRight, akBottom]
     Ctl3D = False
@@ -43,7 +43,7 @@ object fmConReqProduto: TfmConReqProduto
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 707
+    Width = 764
     Height = 52
     Align = alTop
     TabOrder = 1

@@ -92,7 +92,7 @@ var
   DS:TdataSet;
 implementation
 
-uses umain, uPrecoPorPedido, uReajuste, uListaItensPorNota, uCF{, uGetNotas};
+uses umain, uPrecoPorPedido, uReajuste, uListaItensPorNota, uCF;
 
 {$R *.dfm}
 
@@ -244,8 +244,8 @@ begin
    if (table.IsEmpty = true) then
       erro := erro + '- Nenhum preço para lancar.' +#13;
 
-   if ( dtf.date < dti.Date) then
-      erro := erro + MSG_DATA1_MENORQ_DATA2;
+   if funcoes.isIntervDataValido(dti.date, dtf.date, true) then
+      erro := erro + ' Erro ';
 
    if (erro = '') then
    begin
@@ -603,7 +603,7 @@ procedure TfmLancaPrecos.Gerarprecoapartirdeumanota1Click(Sender: TObject);
 var
    cmd:String;
 begin
-   cmd := uCF.getIsNota();
+   cmd := fmMain.getIsNota();
    if (cmd <> '') then
       getPrecosDeUmaNota(cmd);
 end;

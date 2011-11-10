@@ -381,17 +381,9 @@ var
    canExecute:Boolean;
 begin
    canExecute := true;
-   if ( (dataf.Date - datai.Date) > 31 ) then
-   begin
-      funcoes.msgTela('', MSG_PER_MQ_31D, MB_ICONERROR + MB_OK);
-      canExecute := false;
-   end;
 
-   if (dataf.Date < datai.Date)  then
-   begin
-      funcoes.msgTela('', MSG_DATA1_MAIORQ_DATA2, MB_ICONERROR + MB_OK);
+   if (funcoes.isIntervDataValido(datai, dataf, true) = true) then 
       canExecute := false;
-   end;
 
    if (canExecute = true) then
       if (isAcessoRestrito = true) then

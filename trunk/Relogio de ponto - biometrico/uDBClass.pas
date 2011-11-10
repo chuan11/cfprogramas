@@ -40,7 +40,7 @@ type
   public
     function ativaEmpregado(matricula:String):boolean;
     function addTemplate(template: TTemplate; mat,lado,nome:string): Integer;
-    function deletaEmpregado(cartaoPonto:String):boolean;
+    function deletaEmpregado(matricula:String):boolean;
     function desativaEmpregado(matricula:String; dataDemissao:Tdate):boolean;
     function getAutorizadores():Tstrings;
     function getBatidas(dtInicio,dtFim,cartao:String):TStringList;
@@ -713,9 +713,9 @@ begin
 end;
 
 
-function TDBClass.deletaEmpregado(cartaoPonto:String):boolean;
+function TDBClass.deletaEmpregado(matricula:String):boolean;
 begin
-   result := funcSQl.execSQL('delete from zcf_pontoEmpregados where cartaoPonto = ' + quotedStr(cartaoPonto), connection );
+   result := funcSQl.execSQL('delete from zcf_pontoEmpregados where matricula = ' + quotedStr(matricula), connection );
 end;
 
 function TDBClass.lerParametroBD(parametro:String):String;

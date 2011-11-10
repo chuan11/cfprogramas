@@ -21,11 +21,12 @@ type
     btConsultar: TFlatButton;
     Label1: TLabel;
     Label2: TLabel;
-    procedure ConsultaPedidos(Sender:Tobject; is_ref:String);
-    procedure btConsultarClick(Sender: TObject);
+    procedure consultaPedidos(is_ref:String);
+    procedure btConsultarClick( sender:Tobject);
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure preparaParaConsultar(Sender:Tobject; Str:String);
+    procedure consultaExterna(cd_ref, uo:String; dataInicio:Tdate);
+
 
   private
     { Private declarations }
@@ -42,7 +43,7 @@ uses uMain, funcsql,funcoes, cf;
 
 {$R *.dfm}
 
-procedure TfmConReqProduto.ConsultaPedidos(Sender: Tobject; is_ref:String);
+procedure TfmConReqProduto.ConsultaPedidos(is_ref:String);
 var
   cmd:String;
   i:integer;
@@ -62,7 +63,7 @@ begin
           +' where '
           +' dspdi.dt_movpd between ' + funcoes.DateTimeToSqlDateTime(dti.DateTime,' 00:00:00')
           +' and ' + funcoes.DateTimeToSqlDateTime(dtf.DateTime, ' 23:59:59')
-          +' and dspd.is_estoque = 10033674' ; 
+          +' and dspd.is_estoque= '+ fmMain.getUOCD() ;
 
           if cbLojas.ItemIndex > 0 then
              cmd := cmd +' and dspdi.is_estoque = ' + trim(copy(cbLojas.Items[cbLojas.ItemIndex],40,50));
@@ -87,7 +88,7 @@ begin
    grid.Columns[08].Width := 78;
 end;
 
-procedure TfmConReqProduto.btConsultarClick(Sender: TObject);
+procedure TfmConReqProduto.btConsultarClick( sender:Tobject);
 var
    erro:String;
    ds:Tdataset;
@@ -102,7 +103,7 @@ begin
       ds:= cf.getDadosProd(fmMain.getUOCD, edCodigo.text, '', '101', true );
 
       if (ds.IsEmpty = false) then
-         ConsultaPedidos(Sender, ds.fieldByName('is_ref').AsString  );
+         ConsultaPedidos(ds.fieldByName('is_ref').AsString  );
 
       ds.Free();
    end;
@@ -110,31 +111,24 @@ end;
 
 procedure TfmConReqProduto.FormCreate(Sender: TObject);
 begin
-   cf.getListaLojas(cbLojas, true, false, fmMain.getCdPesLogado());
-   preparaParaConsultar(nil, '');
+   cf.getListaLojas( cbLojas, true, false, fmMain.getCdPesLogado());
+   dti.Date := now;
+   dtf.Date := now;
 end;
 
 procedure TfmConReqProduto.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-   fmConReqProduto:= nil;   
+   fmConReqProduto:= nil;
    action := CaFree;
 end;
 
-procedure TfmConReqProduto.preparaParaConsultar(Sender: Tobject; Str: String);
-var
-   aux:String;
+procedure TfmConReqProduto.consultaExterna(cd_ref, uo: String; dataInicio: Tdate);
 begin
-   if cbLojas.Items.Count - 1 > 0 then
-      cbLojas.ItemIndex := 0 ;
-      
-   aux := dateToStr(now);
-   delete(aux,01,02);
-   insert('01',aux,01);
-   dti.Date :=  strTodate(aux);
-   dtf.Date := now;
-   edCodigo.Text := str;
-   if str <> '' then
-      btConsultarClick(nil);
+   edCodigo.Text := cd_ref;
+   edCodigo.Enabled := false;
+   setaLojaLogadaNoComboBox(cbLojas, uo);
+   dti.Date := dataInicio;
+   btConsultarClick(nil);
 end;
 
 end.

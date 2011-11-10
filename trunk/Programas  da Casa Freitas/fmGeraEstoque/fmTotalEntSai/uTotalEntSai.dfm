@@ -1,6 +1,6 @@
 object fmTotalEntSai: TfmTotalEntSai
-  Left = 594
-  Top = 266
+  Left = 454
+  Top = 204
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Total de entradas e sa'#237'das'

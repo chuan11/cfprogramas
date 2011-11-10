@@ -14,7 +14,8 @@ interface
    function gerarRequisicao(Conexao:TADOConnection; tb:TADOTable; uo,usuario:String; mostraNumero, ehReqDeVenda:Boolean; var ocoItens:TStringList; QT_DIAS_PEND:integer):String;
    function getADODataSetQ(comando:String; conexao:TADOConnection):TADODataSet;
    function getCaixas(Connection:TADOConnection; uo:String; IncluirLinhaTodas:Boolean; IncluiNenhuma:Boolean): Tstrings;
-   function getContadorWell(conexao:TADOConnection; campo:String):String;
+   function getContadorWell(conexao:TADOConnection; campo:String):String; overload;
+   function getContadorWell(conexao:TADOConnection; campo:String; quantidade:integer):integer; overload;
    function getCustoPorData(uo,is_ref, data:String; conexao:TADOconnection):String;
    function getDataBd(conexao:TADOConnection ; diasARecuar:integer):String; overload;
    function getDataBd(conexao:TADOConnection):String;  overload;
@@ -66,7 +67,7 @@ interface
    procedure organizarTabela(var tabela:TADOTable;Coluna:Tcolumn );
    function isReqPendProduto(conexao:TADoConnection; uo, is_ref:String; QT_DIAS_PEND:integer ): TDataSet;
 
-   function exportacaoDeTabela(tb:TADOTAble; tipoSaida:TmxExportType; estilo:TmxExportStyle; nomeArq:String):String;
+   function exportacaoDeTabela(tb:TdataSet; tipoSaida:TmxExportType; estilo:TmxExportStyle; nomeArq:String):String;
 
 implementation
 
@@ -90,11 +91,23 @@ begin
    result := getDataSetQ(cmd, Conexao );
 end;
 
-function getContadorWell(conexao:TADOConnection; campo:String):String;
+function getContadorWell(conexao:TADOConnection; campo:String; quantidade:integer):integer; overload;
+var
+   cmd:String;
+begin
+   cmd :=
+   ' begin declare @P1 int set @P1=0 exec stoObterContador ' +
+   quotedStr(campo)+ ', @P1 output, @QtdContador= '+ intToStr(quantidade) +
+   ' select @P1 as contador end';
+
+   result:= strToInt(funcSql.GetValorWell( 'O', cmd, 'contador', conexao));
+end;
+
+function getContadorWell(conexao:TADOConnection; campo:String):String; overload;
 begin
 { Exemplo de alguns contadores
  pagamento:  SeqModPagtoPorTransCaixa
-}
+
    result:=
    funcSql.GetValorWell( 'O',
                          ' begin declare @P1 int set @P1=0 exec stoObterContador ' +
@@ -103,6 +116,8 @@ begin
                           'is_oper',
                           conexao
                        );
+}
+   result := intToStr(getContadorWell(conexao, campo, 0));
 end;
 
 function getParamBD(nParametro, loja: String; conexao : TADOConnection):String;
@@ -803,7 +818,7 @@ begin
    export.Execute;
 end;
 
-function exportacaoDeTabela(tb:TADOTAble;  tipoSaida:TmxExportType;  estilo:TmxExportStyle; nomeArq:String):String;
+function exportacaoDeTabela(tb:TdataSet;  tipoSaida:TmxExportType;  estilo:TmxExportStyle; nomeArq:String):String;
 var
    export1:TmxDataSetExport;
 begin

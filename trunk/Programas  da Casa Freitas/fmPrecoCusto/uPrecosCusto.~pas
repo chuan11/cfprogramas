@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, adLabelComboBox, DB, ADODB,funcoes,FuncSQL, Grids,
   DBGrids, SoftDBGrid, adLabelEdit, adLabelNumericEdit, TFlatButtonUnit,
-  TFlatCheckBoxUnit, fCtrls, {uGetNotas, }adLabelSpinEdit;
+  TFlatCheckBoxUnit, fCtrls, adLabelSpinEdit;
 
 type
   TfmPrecoCustos = class(TForm)

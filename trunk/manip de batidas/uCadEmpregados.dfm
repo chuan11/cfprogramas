@@ -1,6 +1,6 @@
 object fmCadEmpregados: TfmCadEmpregados
-  Left = 379
-  Top = 197
+  Left = 381
+  Top = 198
   Width = 766
   Height = 541
   Caption = 'Cadastro de empregados.'
@@ -193,7 +193,6 @@ object fmCadEmpregados: TfmCadEmpregados
       Colors.WhenEnterFocus.BackColor = clInfoBk
       Ctl3D = False
       ParentCtl3D = False
-      ReadOnly = True
       TabOrder = 2
       Text = 'adLabelEdit1'
     end

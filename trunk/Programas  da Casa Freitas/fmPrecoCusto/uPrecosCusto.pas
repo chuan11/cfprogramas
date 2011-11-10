@@ -445,7 +445,7 @@ var
   cmd:String;
 begin
    cmd := '';
-   cmd := uCF.getIsNota();
+   cmd := fmMain.getIsNota();
    if cmd <> '' then
    begin
       if (TipoAjuste = '1') then

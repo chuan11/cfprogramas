@@ -1,6 +1,6 @@
 object fmTotalSaidas: TfmTotalSaidas
-  Left = 398
-  Top = 149
+  Left = 300
+  Top = 223
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Venda total no per'#237'odo'
@@ -97,9 +97,9 @@ object fmTotalSaidas: TfmTotalSaidas
   end
   object FlatButton1: TFlatButton
     Left = 247
-    Top = 98
-    Width = 72
-    Height = 27
+    Top = 95
+    Width = 81
+    Height = 31
     Caption = '&Recalcula'
     TabOrder = 2
     OnClick = FlatButton1Click
@@ -113,7 +113,6 @@ object fmTotalSaidas: TfmTotalSaidas
     BevelInner = bvNone
     BevelKind = bkFlat
     Style = csDropDownList
-    Color = clInfoBk
     Ctl3D = True
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

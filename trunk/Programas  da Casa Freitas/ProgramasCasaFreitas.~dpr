@@ -41,7 +41,6 @@ uses
   uAjustaNota in 'fmAjustaNota\uAjustaNota.pas' {fmAjustaNota},
   uAnaliseEstoque in 'fmAnaliseEstoque\uAnaliseEstoque.pas' {fmAnaliseEstoque},
   uConReqProd in 'fmConREqProd\uConReqProd.pas' {fmConReqProduto},
-  uCalcEN in 'fmCalcExnota\uCalcEN.pas' {fmCalcExNota},
   uRelGeral in 'fmRelatorioGeral\uRelGeral.pas' {fmRelGeral},
   uAlteraForPedido in 'fmAlterafornecedorPedido\UAlteraForPedido.pas' {fmAlteraPedForn},
   uClassificaProd in 'fmClassificaProd\uClassificaProd.pas' {fmClassificaProd},
@@ -85,7 +84,10 @@ uses
   uPermissoes in 'fmPermissoes\uPermissoes.pas' {fmPermissoes},
   uResumoCaixa in 'fmResumoCaixa\uResumoCaixa.pas' {fmResumoCaixa},
   uCF in 'uCF\uCF.pas',
-  cf in '..\cf.pas';
+  cf in '..\cf.pas',
+  uExportaPedido in 'fmExportaPedido\uExportaPedido.pas' {fmExportaPedido},
+  uItensSemMov in 'fmItensSemMov\uItensSemMov.pas' {fmItensSemMov},
+  unAjusteNumeracao in 'fmAjustaNumeracao\unAjusteNumeracao.pas' {fmAjustaNumNF};
 
 {$R *.res}
 
@@ -99,6 +101,7 @@ begin
       Application.Initialize;
       Application.Title := 'Programas Loja';
       Application.CreateForm(TfmMain, fmMain);
+  Application.CreateForm(TfmAjustaNumNF, fmAjustaNumNF);
   Application.Run;
   end;
 end.

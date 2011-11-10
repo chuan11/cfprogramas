@@ -1,6 +1,6 @@
 object fmCadastro: TfmCadastro
-  Left = 217
-  Top = 125
+  Left = 166
+  Top = 96
   Width = 789
   Height = 570
   ActiveControl = CheckBox1

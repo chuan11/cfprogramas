@@ -53,7 +53,7 @@ var
 implementation
 
 {$R *.dfm}
-uses uMain, uCF;
+uses uMain, cf;
 
 procedure TfmCompFornecedor.FormCreate(Sender: TObject);
 begin
@@ -122,7 +122,7 @@ begin
       params.Add(dateToStr(dti.Date));
       params.Add(dateToStr(dtf.Date) );
       params.Add(fmMain.getNomeUsuario() );
-      fmMain.impressaoRaveQr2(qrCredores, tbFichas, 'rpParcFornFicha', params );
+      fmMain.impressaoRaveQr4(qrCredores, tbFichas, nil, nil, 'rpParcFornFicha', params );
    end
    else
       msgTela('','Não contrei nenhum compromisso que satisfaça esses critérios.', MB_ICONERROR + mb_ok);
@@ -139,14 +139,13 @@ end;
 
 procedure TfmCompFornecedor.carregaCodFornecedor(cod: String);
 var
-   codigo:String;
+   cd_pes, ds_pes:String;
    ds:TdataSet;
 begin
-   codigo := uCF.getFmDadosPessoa('F');
-   if ( codigo <> '') then
+   fmMain.getDadosFornecedor(cd_pes, ds_pes);
+   if ( cd_pes <> '') then
    begin
-      ds := TDataSet.Create(nil);
-      ds := uCF.getDadosFornecedor(codigo,'');
+      ds := cf.getDadosFornecedor(cd_pes,'');
       edCodForn.Text := ds.fieldByName('is_cred').AsString;
       lbCred.Caption := ds.fieldByName('fornecedor').AsString;
       ds.Destroy();
@@ -156,14 +155,13 @@ begin
       edCodForn.Text := '';
       lbCred.Caption := '';
    end;
+   ds.Free();
    edCodForn.SelectAll();
 end;
 
 procedure TfmCompFornecedor.FlatButton1Click(Sender: TObject);
 begin
-   if (dti.Date > dtf.Date) then
-      msgTela('',    MSG_DATA1_MAIORQ_DATA2, MB_ICONERROR +   MB_OK)
-   else
+   if ( funcoes.isIntervDataValido(dti.date, dtf.Date, true) = true) then
       listarFichas();
 end;
 

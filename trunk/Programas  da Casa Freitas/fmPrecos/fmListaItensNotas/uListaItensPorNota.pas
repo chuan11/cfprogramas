@@ -38,25 +38,25 @@ var
 
 implementation
 
-uses uCF, Math, funcoes, funcsql;
+uses cf, funcoes, funcsql;
 
 {$R *.dfm}
 
 procedure TfmListaItensNota.FormCreate(Sender: TObject);
 begin
-   uCF.getListaLojas(cbLoja, false, false, '');
+   cf.getListaLojas(cbLoja, false, false, '');
 end;
 
 procedure TfmListaItensNota.getIsNota;
 var
    i:integer;
 begin
-   qrNota := ucf.getDadosNota('', funcoes.getCodUO(cbLoja), edSerie.Text, edNNota.Text );
+   qrNota := cf.getDadosNota('', funcoes.getCodUO(cbLoja), edSerie.Text, edNNota.Text );
 
    DataSource1.DataSet := qrNota;
 
    for i:=0 to grid.Columns.Count -1 do
-    grid.Columns[i].Visible := false;
+      grid.Columns[i].Visible := false;
 
    grid.Columns[qrNota.FieldByname('dt_emis').Index].Visible := true;
    grid.Columns[qrNota.FieldByname('Serie').Index].Visible := true;
@@ -84,7 +84,7 @@ begin
    end
    else
       getIsNota();
-   edSerie.SetFocus();   
+   edSerie.SetFocus();
 end;
 
 procedure TfmListaItensNota.btOkClick(Sender: TObject);
@@ -117,7 +117,7 @@ end;
 procedure TfmListaItensNota.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
-   action := CaFree; 
+   action := CaFree;
 end;
 
 end.

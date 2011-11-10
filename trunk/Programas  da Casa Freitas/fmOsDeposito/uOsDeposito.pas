@@ -167,7 +167,10 @@ function TfmOsDeposito.isEmSeparacao(is_ref:String; mostraMsgErro:boolean):Boole
 var
   cmd : String;
   ds:TDataSet;
+  res:boolean;
 begin
+   res := false;
+
    fmMain.MsgStatus('Consultando mapa dse separação.');
 
    cmd := 'select i.num, isNull(i.' + COL_UO_MAPA_SEPARACAO + ',0) as qtMapa from zcf_MapaSeparacaoI i (nolock) ' +
@@ -175,9 +178,7 @@ begin
 
     ds:= funcsql.getDataSetQ(cmd, fmMain.Conexao);
 
-    if (ds.IsEmpty = true) then
-       result := false
-    else
+    if (ds.IsEmpty = false ) then
        if (ds.fieldByname('qtMapa').AsInteger > 0) then
        begin
          cmd := ' Você não pode pedir esse item agora, pois existe ' +#13+
@@ -185,11 +186,12 @@ begin
                 ' Dados do mapa: ' + #13+
                 ' Numero do mapa: ' + ds.fieldByname('num').AsString + '.' + #13+
                 ' Quantidade: '+ ds.fieldByname('qtMapa').AsString + '.';
-         msgTela('',cmd , MB_OK + MB_ICONERROR);
-         result := true;
+         funcoes.msgTela('',cmd , MB_OK + MB_ICONERROR);
+         res := true;
         end;
-    ds.Destroy();
+    ds.free();
     fmMain.MsgStatus('');
+    result := res;
 end;
 
 
@@ -278,7 +280,6 @@ end;
 procedure TfmOsDeposito.GetDadosProdutos(cod:string);
 var
   cmd:string;
-  ds:TdataSet;
 begin
    fmMain.MsgStatus('Consultando codigo.');
 
@@ -486,7 +487,7 @@ begin
       tb.Delete;
 
    tb.close;
-   cbCritica.enabled := false;
+//   cbCritica.enabled := false;
    ocoItens.free;
 end;
 
@@ -534,11 +535,16 @@ begin
 end;
 
 procedure TfmOsDeposito.cbCriticaClick(Sender: TObject);
+var
+   grupos, users:String;
 begin
-   if cbCritica.Enabled = true then
+   grupos:= fmMain.getParamBD('osDeposito.grupoAutorizador', '0');
+   users := fmMain.getParamBD('osDeposito.usersAutorizador', '0');
+
+   if (cbCritica.Enabled = true) then
    begin
       if cbCritica.Checked = true then
-         if verificaSenhas.TelaAutorizacao2( fmMain.Conexao, '13',' 10000032, 10000613') <> '' then
+         if (verificaSenhas.TelaAutorizacao2( fmMain.Conexao, grupos, users) <> '' )then
             cbCritica.Checked := true
          else
             cbCritica.Checked := false;
@@ -549,7 +555,6 @@ procedure TfmOsDeposito.tbAfterCancel(DataSet: TDataSet);
 begin
    tb.Edit;
 end;
-
 
 procedure TfmOsDeposito.carregaTabelaRequisicao(Sender: TObject; uo:String);
 var
@@ -612,7 +617,8 @@ begin
     grid.Columns[5].Width := 70;
     grid.Columns[6].Width := 70;
     fmMain.MsgStatus('');
-    cbCritica.Enabled := true;
+
+    cbCritica.Enabled := (USA_QT_MAX_REQ);
 
     if perfil <> 2 then
        grid.Columns[tb.FieldByname('pedido maximo').Index].Visible := false;
@@ -621,11 +627,7 @@ end;
 procedure TfmOsDeposito.preparaParaLiberarRequisicao(Sender: Tobject);
 begin
    PERFIL := 3;
-//   cbLojas.Items := funcsql.GetNomeLojas(fmMain.Conexao, false, false,'','');
-
    cf.getListaLojas(cbLojas, false, false, '');
-
-
    cbLojas.Visible := true;
    btNova.Visible := false;
    grid.Enabled := false;
@@ -644,7 +646,7 @@ end;
 procedure TfmOsDeposito.geraRequisicaoReabastecimento(Sender: Tobject);
 var
   tbAux:TADOTable;
-  cmd, uo, aux,nGerados:String;
+  uo, aux,nGerados:String;
   i:integer;
   ocoReq, msgDeReq:Tstringlist;
 begin
@@ -657,7 +659,7 @@ begin
    tb.First();
 
 
-   while ( tb.Eof = false) do
+   while (tb.Eof = false) do
    begin
       tbAux := TADOTable.Create(nil);
       tbAux.Connection := fmMain.Conexao;
@@ -672,10 +674,12 @@ begin
          end;
 
       aux := '';
-//      aux := funcsql.gerarRequisicao( fmMain.Conexao, tbAux, funcoes.getCodPc(cbLojas), fmMain.getUserLogado(), false, false, ocoReq, QT_DIAS_PEND );
       aux := cf.gerarRequisicao( tbAux, funcoes.getCodPc(cbLojas), UO_CD, fmMain.getUserLogado(), false, false, ocoReq, QT_DIAS_PEND );
+
       if (aux <> '') then
          nGerados := nGerados  + aux + ' ';
+
+       tbAux.free();
    end;
 
 
@@ -715,7 +719,6 @@ begin
    funcSql.execSQL('delete from zcf_dspd where is_uo=' + funcoes.getNumUO(cbLojas) , fmMain.Conexao );
    fechaSessaoRequisicao(uo);
    tb.close();
-   tbAux.Destroy();
 
    ocoReq.Free();
    msgDeReq.Free();

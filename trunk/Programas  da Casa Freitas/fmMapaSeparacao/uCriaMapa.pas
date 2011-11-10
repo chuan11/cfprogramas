@@ -14,23 +14,24 @@ type
     cbPreco: TadLabelComboBox;
     cbLoja: TadLabelComboBox;
     edCod: TadLabelEdit;
-    edSerie: TadLabelEdit;
     clb1: TadLabelCheckListBox;
     fsCheckBox1: TfsCheckBox;
     edNome: TadLabelEdit;
     cbEstoque: TfsCheckBox;
-    edForn: TadLabelEdit;
-    lbForn: TLabel;
     btForn: TBitBtn;
-    bitBtn2: TBitBtn;
+    btOk: TBitBtn;
     bitBtn3: TBitBtn;
+    edIsNota: TadLabelEdit;
+    lbIsNota: TLabel;
     procedure rgClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure fsCheckBox1Click(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
+    procedure btOkClick(Sender: TObject);
     function criarMapa(Sender:TObject):String;
     procedure insereItensMapa(nMapa:String);
     procedure btFornClick(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure edIsNotaEnter(Sender: TObject);
   private
     { Private declarations }
   public
@@ -42,7 +43,7 @@ var
 
 implementation
 
-uses uMain, uMapa, ufornACriticar, uCF, uListaFornecedores;
+uses uMain, uMapa, ufornACriticar, cf, uListaFornecedores;
 
 {$R *.dfm}
 
@@ -51,38 +52,35 @@ begin
    Case rg.ItemIndex of
    0:begin
         edCod.LabelDefs.Caption := 'Pedido de compra ';
-        edSerie.visible := false;
         cbLoja.Visible := false;
-        edForn.Visible := false;
         btForn.Visible := false;
+        edIsNota.Visible:= false;
      end;
    1:begin
         edCod.LabelDefs.Caption := 'Faixa de codigo ';
-        edSerie.visible := false;
         cbLoja.Visible := true;
-        edForn.Visible := false;
         btForn.Visible := false;
+        edIsNota.Visible:= false;
      end;
    2:begin
-        edCod.LabelDefs.Caption := 'Nota de entrada ';
-        edSerie.visible := true;
+        edCod.visible := false;
         cbLoja.Visible := true;
-        edForn.Visible := true;
         btForn.Visible := true;
+        edIsNota.Visible:= true;
      end;
    end
 end;
 
 procedure TfmCriarMapa.FormCreate(Sender: TObject);
 begin
-   uCF.getListaLojas( cbLoja, false, false, fmMain.getCdPesLogado() );
-
+   cf.getListaLojas(cbLoja, false, false, fmMain.getCdPesLogado() );
    cbPreco.Items := funcSQl.getListaPrecos(fmMain.Conexao,true,true,false, fmMain.getGrupoLogado());
    cbPreco.ItemIndex :=0;
    clb1.Items.Clear;
    clb1.Items := funcsql.getListagem( 'Select cd_uo +' + quotedStr(' ') + '+ ds_uo from zcf_tbuo where geramapa = 1 order by cd_uo', fmMain.Conexao );
    fsCheckBox1Click(nil);
    rgClick(nil);
+   lbIsNota.Caption := '';
 end;
 
 procedure TfmCriarMapa.fsCheckBox1Click(Sender: TObject);
@@ -98,10 +96,10 @@ var
   tipo, numMapa, cmd:String;
   i:integer;
 begin
-   if rg.ItemIndex = 0 then
+   if (rg.ItemIndex = 0) then
      numMapa := edCod.Text
-   else if rg.ItemIndex = 2 then
-      numMapa := edCod.Text+edSerie.Text
+   else if (rg.ItemIndex = 2) then
+      numMapa := funcoes.SohNumerosPositivos(edIsNota.Text)
    else if rg.ItemIndex = 1 then
    begin
        tipo := 'N';
@@ -157,7 +155,7 @@ begin
       cmdItens := ' Select is_ref from crefe with(nolock) where cd_ref like ' + quotedStr(edCod.Text + '%') + strEstoque
    else if rg.ItemIndex = 2 then
    begin
-      cmdItens :=  ' Select is_ref from dmovi with(nolock) where is_nota in ( Select is_nota from dnota where is_estoque = ' + funcoes.getNumUO(cbLoja) + ' and     sr_docf = '+ quotedStr(edSerie.text) + ' and nr_docf = ' +  edCod.Text +  ' and  cd_pes = ' + lbForn.Caption  + ' )'  ;
+      cmdItens :=  ' Select is_ref from dmovi with(nolock) where is_nota = ' + lbIsNota.Caption ;
    end;
    qrItens.sql.Add(cmdItens);
    qrItens.Open;
@@ -179,9 +177,9 @@ begin
       begin
           cmd := ' Insert zcf_mapaSeparacaoI( num, is_ref, estI, saldo, pco, caixa ) '+
                  ' Select '+ nMapa+ ', dmovi.is_ref, dmovi.qt_mov, dmovi.qt_mov,  '+
-                 ' dbo.z_cf_funObterPrecoProduto_CF( '+ fmMain.getCodPreco(cbPreco)  +   ' , crefe.is_Ref, 10033674, 0), crefe.qt_emb '+
+                 ' dbo.z_cf_funObterPrecoProduto_CF( '+ fmMain.getCodPreco(cbPreco)  +   ', crefe.is_Ref, ' + fmMain.getUOCD() + ', 0), crefe.qt_emb '+
                  ' from dmovi inner join crefe (nolock) on dmovi.is_ref = crefe.is_ref ' +
-                 ' where dmovi.is_nota in ( Select is_nota from dnota where is_estoque = ' + funcoes.getNumUO(cbLoja) + ' and     sr_docf = '+ quotedStr(edSerie.text) + ' and nr_docf = ' +  edCod.Text + ' and cd_pes = ' + lbForn.Caption + ')'  ;
+                 ' where dmovi.is_nota= ' + lbIsNota.caption ;
       end
       else
       begin
@@ -209,7 +207,7 @@ begin
    end;
 end;
 
-procedure TfmCriarMapa.BitBtn2Click(Sender: TObject);
+procedure TfmCriarMapa.btOkClick(Sender: TObject);
 var
   nMapa, erro:String;
 begin
@@ -225,14 +223,8 @@ begin
          erro := erro+' - Informe a faixa de código. '+#13;
 
    if  (rg.ItemIndex = 2) then
-   begin
-      if (edCod.Text = '' ) then
-         erro := erro+' - Informe o numero da nota. '+#13;
-      if (edSerie.text = '' ) then
-         erro := erro+' - Informe a serie da nota. '+#13;
-      if (lbForn.Caption = '' ) then
-         erro := erro+' - Informe o fornecedor da nota. '+#13;
-   end;
+     if (lbIsNota.Caption = '') then
+        erro := erro+' - Informe os dados da nota'+#13;     
 
    if erro = '' then
    begin
@@ -248,6 +240,7 @@ begin
          if (nMapa  <> '') then
                insereItensMapa( nMapa );
 
+         btOk.ModalResult := mrOk;
       except
          on e:Exception do
          begin
@@ -260,22 +253,40 @@ begin
    begin
      erro := 'Corrija antes esse problemas '+#13 + erro;
      funcoes.MsgTela('',erro,mb_iconError+mb_ok);
+     btOk.ModalResult := mrNone;
    end;
 end;
 
 procedure TfmCriarMapa.btFornClick(Sender: TObject);
 var
-  cod:String;
+  isNota:String;
   ds:TdataSet;
 begin
-   cod := uCF.getFmDadosPessoa('Fornecedor');
-   if ( cod <> '')then
+   isNota := fmMain.getIsNota();
+   if ( isNota <> '') then
    begin
-      ds := uCF.getDadosFornecedor(cod,'');
-      edForn.Text :=  ds.FieldByName('nome').asString;
-      lbForn.caption :=  ds.FieldByName('codigo').asString;
-      ds.Destroy();
-   end;
+      ds:= cf.getDadosNota(isNota, '', '', '');
+      edIsNota.text :=
+      trim(ds.fieldByname('serie').asString) + '-' +
+      trim(ds.fieldByname('num').asString) + ' '+
+      trim(ds.fieldByname('Emissor/Destino').asString);
+      lbIsNota.Caption := ds.fieldByname('is_nota').asString;
+      ds.free();
+   end
+   else
+      lbIsNota.Caption := '';
+end;
+
+procedure TfmCriarMapa.FormCloseQuery(Sender: TObject;
+  var CanClose: Boolean);
+begin
+   if (ModalResult  = mrAbort) then
+     canClose := false;
+end;
+
+procedure TfmCriarMapa.edIsNotaEnter(Sender: TObject);
+begin
+btForn.SetFocus();
 end;
 
 end.

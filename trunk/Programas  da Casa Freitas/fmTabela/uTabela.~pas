@@ -405,7 +405,7 @@ begin
    cbpreco01.Items := funcsql.getListaPrecos( fmMain.Conexao, true, true, true, fmMain.getGrupoLogado() );
    cbPreco02.Items := cbPreco01.Items;
    funcoes.carregaCampos(fmTabela);
-   fmMain.getListaLojas(cbLoja, false, false, '');
+   uCF.getListaLojas(cbLoja, false, false, '');
 end;
 
 procedure TfmTabela.btGetCategoriasClick(Sender: TObject);

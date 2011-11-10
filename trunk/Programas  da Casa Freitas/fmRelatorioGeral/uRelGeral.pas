@@ -5,31 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, DB, ADODB, ComCtrls, StdCtrls, TFlatButtonUnit, adLabelComboBox,
-  Grids, DBGrids, fCtrls;
+  Grids, DBGrids, fCtrls, ExtCtrls;
 
 type
   TfmRelGeral = class(TForm)
-    cbLojas: TadLabelComboBox;
-    btOk: TFlatButton;
-    GroupBox1: TGroupBox;
-    dti: TDateTimePicker;
-    dtf: TDateTimePicker; qr: TADOQuery;
-    Label1: TLabel;
-    qris_uo: TIntegerField;
-    qrds_uo: TStringField;
-    qrcd_ref: TStringField;
-    qrds_ref: TStringField;
-    qrpedido: TIntegerField;
-    qrqt: TIntegerField;
-    qrund: TBCDField;
-    qrtVenda: TBCDField;
-    qrpcVarejo: TBCDField;
-    qrtVarejo: TBCDField;
-    qrcmu: TBCDField;
-    qrtCMU: TBCDField;
-    qrDifCMU: TBCDField;
-    qrDifVenda: TBCDField;
-    qrprejuizo: TBCDField;
     tbValoresAvarias: TADOTable;
     tbValoresAvariasis_uo: TStringField;
     tbValoresAvariasds_uo: TStringField;
@@ -43,10 +22,8 @@ type
     tbValoresAvarias_TotalqtItens: TIntegerField;
     tbValoresAvarias_TotalvalorTotalCusto: TBCDField;
     tbValoresAvarias_TotalvalorTotalVenda: TBCDField;
-    cbDetAvaForn: TfsCheckBox;
     tbValoresAvariasFornecedor: TStringField;
     tbValoresAvarias_Totalfornecedor: TStringField;
-    cbCaixas: TadLabelComboBox;
     tbPreviaDeCaixa: TADOTable;
     tbPreviaDeCaixacodLoja: TIntegerField;
     tbPreviaDeCaixadescEstacao: TStringField;
@@ -77,6 +54,31 @@ type
     tbVendasCartaonumparcelas: TIntegerField;
     tbVendasCartaotp_mve: TStringField;
     tbVendasCartaotefMagnetico: TStringField;
+    Panel1: TPanel;
+    cbLojas: TadLabelComboBox;
+    btOk: TFlatButton;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    di: TfsDateTimePicker;
+    df: TfsDateTimePicker;
+    cbDetAvaForn: TfsCheckBox;
+    cbCaixas: TadLabelComboBox;
+    qr: TADOQuery;
+    qris_uo: TIntegerField;
+    qrds_uo: TStringField;
+    qrcd_ref: TStringField;
+    qrds_ref: TStringField;
+    qrpedido: TIntegerField;
+    qrqt: TIntegerField;
+    qrund: TBCDField;
+    qrtVenda: TBCDField;
+    qrpcVarejo: TBCDField;
+    qrtVarejo: TBCDField;
+    qrcmu: TBCDField;
+    qrtCMU: TBCDField;
+    qrDifCMU: TBCDField;
+    qrDifVenda: TBCDField;
+    qrprejuizo: TBCDField;
 
     function getParametrosRelatorioAvarias():TstringList;
     procedure ajustaTelaParaAvarias();
@@ -90,13 +92,14 @@ type
     procedure calCulaValoresAvarias();
     procedure cargaDadosConciliacao();
     procedure cbLojasClick(Sender: TObject);
-    procedure dtiChange(Sender: TObject);
+    procedure diChange(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
     procedure gerarVendaAvarias();
     procedure getDescCaixas();
     procedure listaVendasEmCartao();
     procedure setPerfil(p:integer);
+    procedure FormCreate(Sender: TObject);
     
   private
     { Private declarations }
@@ -117,8 +120,8 @@ uses uMain, uCF, funcoes, funcsql;
 
 procedure TfmRelGeral.ajustaTelaParaAvarias;
 begin
-   dti.Date := now;
-   dtf.Date := now;
+   di.Date := now;
+   df.Date := now;
 
    uCF.getListaLojas( cbLojas, true, false, fmMain.getCdPesLogado() );
    fmRelGeral.caption := 'Valores totais de avarias.';
@@ -131,8 +134,8 @@ var
   params:TstringList;
 begin
    params := TStringList.Create();
-   params.Add( dateToStr(dti.date));
-   params.Add( dateToStr(dtf.date));
+   params.Add( dateToStr(di.date));
+   params.Add( dateToStr(df.date));
    params.Add( fmMain.getNomeLojaLogada() );
    params.Add( fmMain.getNomeUsuario() );
    result := params;
@@ -146,7 +149,7 @@ begin
    funcoes.gravaLog('calCulaTotalAvariasPorFornecedor()');
 
 // Lista as avarias
-   uCF.calculaTotaisAvariasPorFornecedor( tbValoresAvarias, cbLojas, dti.date, dtf.date);
+   uCF.calculaTotaisAvariasPorFornecedor( tbValoresAvarias, cbLojas, di.date, df.date);
 
 // carrega os partametros
    params := getParametrosRelatorioAvarias();
@@ -165,12 +168,12 @@ var
    params:TStringList;
 begin
 // calcular os totais por loja
-   uCF.calculaTotaisAvariasPorLoja(tbValoresAvarias, cbLojas, dti.date, dtf.date);
+   uCF.calculaTotaisAvariasPorLoja(tbValoresAvarias, cbLojas, di.date, df.date);
 
    params :=  getParametrosRelatorioAvarias();
 
 // pegar o total de venda
-   params.Add( uCF.getTotaisVendaAvaria(cbLojas, dti.Date, dtf.Date, tbValoresAvarias.TableName) );
+   params.Add( uCF.getTotaisVendaAvaria(cbLojas, di.Date, df.Date, tbValoresAvarias.TableName) );
 
 //  pegar os totais por tipo para colocar no resumo
    uCF.getTotaIsPorTipoDeAvaria( tbValoresAvarias_Total,  tbValoresAvarias.TableName);
@@ -204,7 +207,7 @@ begin
           ' from zcf_avariasDescontos z (nolock) '+
           ' inner join crefe c (nolock) on z.is_ref = c.is_ref '+
           ' inner join zcf_tbuo l (nolock)  on z.is_uo = l.is_uo  where ' +
-          ' z.data between ' + funcoes.DateTimeToSqlDateTime(dti.Date,' 00:00:00') +' and ' + funcoes.DateTimeToSqlDateTime(dtf.Date,' 23:59:00');
+          ' z.data between ' + funcoes.DateTimeToSqlDateTime(di.Date,' 00:00:00') +' and ' + funcoes.DateTimeToSqlDateTime(df.Date,' 23:59:00');
 
    if (cbLojas.ItemIndex > 0) then
 
@@ -214,17 +217,17 @@ begin
    funcsql.getQuery(fmMain.Conexao, qr , cmd);
 
    Params := TStringList.Create();
-   params.Add( dateToStr(dti.Date ));
-   params.Add( dateToStr(dtf.Date ));
+   params.Add( dateToStr(di.Date ));
+   params.Add( dateToStr(df.Date ));
    params.Add( cbLojas.Items[cbLojas.ItemIndex] );
    params.Add( fmMain.getNomeUsuario() );
 
    fmMain.impressaoRaveQr(qr,'rpVendaAvarias' , params );
 end;
 
-procedure TfmRelGeral.dtiChange(Sender: TObject);
+procedure TfmRelGeral.diChange(Sender: TObject);
 begin
-   dtf.Date := dti.Date;
+   df.Date := di.Date;
 end;
 
 procedure TfmRelGeral.FormShow(Sender: TObject);
@@ -249,15 +252,15 @@ begin
 
    if (IS_GRUPO_PERMITIDO_CARTAO = false) then
    begin
-      dti.MinDate :=  funcSQL.getDateBd(fmMain.Conexao)-2;
-      dtf.visible := false;
+      di.MinDate :=  funcSQL.getDateBd(fmMain.Conexao)-2;
+      df.visible := false;
       fmRelGeral.Caption := fmRelGeral.Caption + '(restrito)';
    end
    else
       fmRelGeral.Caption := fmRelGeral.Caption + '(Sem restrição)';
 
-   dti.Date := funcSQL.getDateBd( fmMain.Conexao);
-   dtf.Date := dti.Date;
+   di.Date := funcSQL.getDateBd( fmMain.Conexao);
+   df.Date := di.Date;
    getDescCaixas();
 end;
 
@@ -267,7 +270,7 @@ begin
    cbLojas.Visible := false;
    cbCaixas.Visible := false;
    btOk.Left := GroupBox1.Left + GroupBox1.Width + 20;
-   dti.Date :=  funcSQL.getDateBd(fmMain.Conexao);
+   di.Date :=  funcSQL.getDateBd(fmMain.Conexao);
    fmRelGeral.Caption := 'Carga de vendas para conciliação';
    fmRelGeral.WindowState := wsNormal;
 end;
@@ -281,7 +284,7 @@ end;
 procedure TfmRelGeral.cargaDadosConciliacao;
 begin
    msgTela('',' Se já houver alguma carga já feita ela será excluída.',0);
-   uCF.cargaDadosConciliacao(tbPreviaDeCaixa, dti, dtf);
+   uCF.cargaDadosConciliacao(tbPreviaDeCaixa, di, df);
 end;
 
 procedure TfmRelGeral.listaVendasEmCartao;
@@ -293,12 +296,12 @@ begin
    param := TStringlist.Create();
 
    fmMain.msgStatus('Gerando previa de caixa');
-   uCF.listaRecebimentosCaixa( tbPreviaDeCaixa, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, dtf, false, false, true );
+   uCF.listaRecebimentosCaixa( tbPreviaDeCaixa, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), di, df, false, false, true );
    if (tbPreviaDeCaixa.IsEmpty = false) then
    begin
 // pegar os operadores do caixa
       fmMain.msgStatus('Listando operadores');
-      ucf.getOperadoresPorCaixa(tbOperadores, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), dti, fmMain.conexao);
+      ucf.getOperadoresPorCaixa(tbOperadores, funcoes.getCodUO(cbLojas), funcoes.getCodCaixa(cbCaixas), di, fmMain.conexao);
 
 // listar os recebimentos do caixa
       fmMain.msgStatus('Agrupando recebimentos do caixa');
@@ -314,11 +317,11 @@ begin
       totais := uCF.getTotalCartaoPorModo(tbVendasCartao);
 
 // listar as vendas estornadas
-      ds:= uCF.getVendasEstornadas( funcoes.getCodUO(cblojas), funcoes.getCodCaixa(cbCaixas), dti.Date, dtf.Date);
+      ds:= uCF.getVendasEstornadas( funcoes.getCodUO(cblojas), funcoes.getCodCaixa(cbCaixas), di.Date, df.Date);
 
       param.add( funcoes.getNomeUO(cbLojas) );
       param.add( funcoes.getNomeDoCx(cbCaixas) );
-      param.add( dateToStr(dti.date) + ' a ' +  dateToStr(dtf.date) );
+      param.add( dateToStr(di.date) + ' a ' +  dateToStr(df.date) );
       param.add( fmMain.getNomeUsuario() );
 
       for i:=0 to Totais.Count-1 do
@@ -354,7 +357,7 @@ begin
    cmd:= 'cd_ref varchar(08), ds_ref varchar(60), QtTransferida int';
    funcSQL.getTable( fmMain.Conexao, tb, cmd);
 
-   uCF.getListaProdutosTransferidos(tb, funcoes.getCodUO(cbLojas), dti.date, dtf.date);
+   uCF.getListaProdutosTransferidos(tb, funcoes.getCodUO(cbLojas), di.date, df.date);
 
    tb.Open();
    tb.sort := 'QtTransferida DESC';
@@ -363,7 +366,7 @@ begin
    begin
       params := TStringList.create();
       params.add( funcoes.getNomeUO(cbLojas) );
-      params.add( dateToStr(dti.date)+' até '+ dateToStr(dtf.date) );
+      params.add( dateToStr(di.date)+' até '+ dateToStr(df.date) );
       fmMain.impressaoRaveQr4(tb, nil, nil, nil, 'rpProdTransferidos', params);
    end
    else
@@ -372,16 +375,8 @@ end;
 
 
 procedure TfmRelGeral.btOkClick(Sender: TObject);
-var
-   erro:String;
 begin
-   if (dtf.Date < dti.Date) then
-     erro := MSG_DATA1_MAIORQ_DATA2;
-
-   if ((dtf.Date - dti.Date) > 31) then
-     erro := MSG_PER_MQ_31D;
-
-  if (erro = '') then
+  if (funcoes.isIntervDataValido(di, df, true) = true) then
   begin
     case PERFIL of
        1:gerarVendaAvarias();
@@ -391,19 +386,14 @@ begin
        112:produtosTransferidosGeraLista();
     end;
   end
-  else
-  begin
-     erro := MSG_ERRO_TIT +  erro;
-     msgTela('', erro, MB_OK + MB_ICONERROR);
-  end;
 end;
 
 
 procedure TfmRelGeral.produtosTransferidosAjustaTela;
 begin
     cbCaixas.Visible := false;
-    dti.Date := funcSQL.getDateBd(fmMain.Conexao);
-    dtf.Date := dti.Date;
+    di.Date := funcSQL.getDateBd(fmMain.Conexao);
+    df.Date := di.Date;
 end;
 
 procedure TfmRelGeral.setPerfil(P: integer);
@@ -419,5 +409,11 @@ begin
 end;
 
 
+
+procedure TfmRelGeral.FormCreate(Sender: TObject);
+begin
+//
+
+end;
 
 end.

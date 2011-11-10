@@ -29,7 +29,7 @@ type
     procedure fsCheckBox1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     function criarMapa(Sender:TObject):String;
-    procedure insereItensMapa(Sender:Tobject;nAvaria:String);
+    procedure insereItensMapa(nMapa:String);
     procedure btFornClick(Sender: TObject);
   private
     { Private declarations }
@@ -137,7 +137,7 @@ begin
       result := '';
 end;
 
-procedure TfmCriarMapa.insereItensMapa(Sender: Tobject; nAvaria: String);
+procedure TfmCriarMapa.insereItensMapa(nMapa: String);
 var
    cmd, strEstoque:string;
    cmdItens:String;
@@ -167,26 +167,26 @@ begin
       if rg.ItemIndex = 0 then
       begin
          cmd := ' Insert zcf_mapaSeparacaoI( num, is_ref, estI, saldo, pco, caixa ) '+
-                ' Select '+ nAvaria+ ' , dsipe.is_ref, '+
+                ' Select '+ nMapa+ ' , dsipe.is_ref, '+
                 ' dsipe.qt_ped, '+
                 ' dsipe.qt_ped, '+
                 ' dbo.z_cf_funObterPrecoProduto_CF( 101, dsipe.is_Ref, 10033674, 0), '+
                 ' crefe.qt_emb ' +
                 ' from dsipe (nolock) inner join crefe (nolock) on dsipe.is_ref = crefe.is_ref ' +
-                ' where dsipe.is_pedf = ' + nAvaria  +  ' Order by dsipe.is_ref' ;
+                ' where dsipe.is_pedf = ' + nMapa  +  ' Order by dsipe.is_ref' ;
       end
       else if rg.ItemIndex = 2 then
       begin
           cmd := ' Insert zcf_mapaSeparacaoI( num, is_ref, estI, saldo, pco, caixa ) '+
-                 ' Select '+ nAvaria+ ' , dmovi.is_ref, dmovi.qt_mov, dmovi.qt_mov,  '+
-                 ' dbo.z_cf_funObterPrecoProduto_CF( '+ fmMain .getCodPreco(cbPreco)  +   ' , crefe.is_Ref, 10033674, 0), crefe.qt_emb '+
+                 ' Select '+ nMapa+ ', dmovi.is_ref, dmovi.qt_mov, dmovi.qt_mov,  '+
+                 ' dbo.z_cf_funObterPrecoProduto_CF( '+ fmMain.getCodPreco(cbPreco)  +   ' , crefe.is_Ref, 10033674, 0), crefe.qt_emb '+
                  ' from dmovi inner join crefe (nolock) on dmovi.is_ref = crefe.is_ref ' +
                  ' where dmovi.is_nota in ( Select is_nota from dnota where is_estoque = ' + funcoes.getNumUO(cbLoja) + ' and     sr_docf = '+ quotedStr(edSerie.text) + ' and nr_docf = ' +  edCod.Text + ' and cd_pes = ' + lbForn.Caption + ')'  ;
       end
       else
       begin
          cmd := ' Insert zcf_mapaSeparacaoI( num, is_ref, estI, saldo, pco, caixa ) '+
-                ' Select '+ nAvaria+ ' , is_ref, '+
+                ' Select '+ nMapa+ ' , is_ref, '+
                 ' dbo.z_cf_EstoqueNaLoja( is_ref, 10033674, 1), '+
                 ' dbo.z_cf_EstoqueNaLoja( is_ref, 10033674, 1), '+
                 ' dbo.z_cf_funObterPrecoProduto_CF( 101, is_Ref, 10033674, 0), '+
@@ -197,14 +197,14 @@ begin
 
       if (funcsql.execSQL(cmd, fmMain.Conexao) = true ) then
       begin
-          MsgTela('','Criada o mapa de número: ' + nAvaria+ #13+ 'O mapa será carregado.', MB_ICONEXCLAMATION + MB_OK  );
-          fmMapa.CarregaMapa( nAvaria);
+          MsgTela('','Criada o mapa de número: ' +nMapa+ #13+ 'O mapa será carregado.', MB_ICONEXCLAMATION + MB_OK  );
+          fmMapa.CarregaMapa(nMapa);
           BitBtn3.Click;
       end;
    end
    else
    begin
-      funcSQl.execSQL('delete from zcf_mapaSeparacao where num = ' +nAvaria , fmMain.Conexao);
+      funcSQl.execSQL('delete from zcf_mapaSeparacao where num = ' +nMapa , fmMain.Conexao);
       MsgTela('','A opção que você escolheu não encontrou nenhum item para a seleção', MB_OK + MB_ICONERROR ) ;
    end;
 end;
@@ -244,13 +244,15 @@ begin
                         '   no estoque no momento da aprovação do mapa de separação', MB_OK + MB_ICONWARNING);
 
          nMapa := criarMapa(nil);
-         if nMapa  <> '' then
-               insereItensMapa( nil, nMapa );
+
+         if (nMapa  <> '') then
+               insereItensMapa( nMapa );
+
       except
          on e:Exception do
          begin
             if pos('PK__zcf_mapaseparaca', e.Message) > 0 then
-            msgTela('','Já existe um mapa de separação com esses dados.', MB_ICONERROR + MB_OK);
+            funcoes.msgTela('','Já existe um mapa de separação com esses dados.', MB_ICONERROR + MB_OK);
          end;
       end;
    end
@@ -263,16 +265,13 @@ end;
 
 procedure TfmCriarMapa.btFornClick(Sender: TObject);
 var
-  cod:String;
-  ds:TdataSet;
+  cod, name:String;
 begin
-   cod := uCF.getFmDadosPessoa('Fornecedor');
-   if ( cod <> '')then
+   fmMain.getDadosFornecedor(cod, name);
+   if ( cod <> '') then
    begin
-      ds := uCF.getDadosFornecedor(cod,'');
-      edForn.Text :=  ds.FieldByName('nome').asString;
-      lbForn.caption :=  ds.FieldByName('codigo').asString;
-      ds.Destroy();
+      edForn.Text :=  cod;
+      lbForn.caption :=  name;
    end;
 end;
 

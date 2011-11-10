@@ -176,7 +176,6 @@ begin
                                    nParcelas,
                                    tb.FieldByName('seqTefTransCaixa').AsString,
                                    tb.FieldByName('dataSessaoCaixa').asString,
-                                   true
                                  )  = true ) then
       begin
          cmd:= 'Alt mod, uo=' + tb.FieldByName('codLoja').AsString +
@@ -275,10 +274,10 @@ begin
                                   tb.FieldByName('dataSessaoCaixa').asString
                                  )  = true ) then
       begin
-         cmd:= 'Insercao de modalidade, loja = ' + tb.FieldByName('codLoja').AsString +
-               ' data: ' + tb.FieldByName('dataSessaoCaixa').asString +
+         cmd:= 'Insere mod: lj= ' + tb.FieldByName('codLoja').AsString +
+               ' dt: ' + tb.FieldByName('dataSessaoCaixa').asString +
                ' SeqModPagtoPorTransCaixa: '+ tb.FieldByName('SeqModPagtoPorTransCaixa').AsString +
-               ' Dados: '+ descMod +'/'+ valor +' ' + nParcelas + 'Paracelas';
+               ', '+ trim(descMod) +':'+ valor +'-' + nParcelas + 'P';
 
          logAlteracoesBD( fmMain.conexao, fmRemRegTEF.Name, fmMain.getNomeUsuario(), cmd);
          msgTela('','Dados inseridos, para ver a alteração gere o dia novamente! ', MB_OK  + MB_ICONEXCLAMATION);
@@ -325,7 +324,6 @@ begin
                                  nParcelas,
                                  tb.FieldByName('seqTefTransCaixa').AsString,
                                  tb.FieldByName('dataSessaoCaixa').asString,
-                                 false
                                )  = true ) then
    begin
       cmd:= 'Exclusao de modalidade, loja = ' + tb.FieldByName('codLoja').AsString +

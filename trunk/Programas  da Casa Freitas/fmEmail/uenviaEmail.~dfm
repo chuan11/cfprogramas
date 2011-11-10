@@ -57,8 +57,6 @@ object fmEnviaEmail: TfmEnviaEmail
     Port = 465
     AuthenticationType = atLogin
     MailAgent = 'pop.gmail.com'
-    Password = '10033585'
-    Username = 'casafreitas@casafreitas.com.br'
     Left = 104
     Top = 104
   end

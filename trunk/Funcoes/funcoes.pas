@@ -3,8 +3,8 @@ unit funcoes;
 interface
 uses printers,windows,dialogs,SysUtils,classes,MaskUtils,Registry,   unMsgTela2,
      Messages, Variants, Graphics, Controls, Forms,QStdCtrls,StdCtrls,dateUtils,
-     adLabelComboBox, TFlatButtonUnit, ADODB, SoftDBGrid,
-     QExtCtrls, ShellAPI, adLabelCheckListBox, ComCtrls, TFlatCheckBoxUnit, IniFiles;
+     adLabelComboBox, TFlatButtonUnit, ADODB, SoftDBGrid, fCtrls,
+          QExtCtrls, ShellAPI, adLabelCheckListBox, ComCtrls, TFlatCheckBoxUnit, IniFiles;
 
 
        function AaaaMdDdToDdMmAaaa(str:string):string;
@@ -34,6 +34,7 @@ uses printers,windows,dialogs,SysUtils,classes,MaskUtils,Registry,   unMsgTela2,
        function execFileExternal(form:Tform; arq:String):Boolean;
        function ExisteParametro(Parametro:String):boolean;
        function existsParam(sessao, parametro:String):boolean;
+       function faltaLoja(cb:TadLabelComboBox):boolean;
        function FiltraNum(str:string;NumDec:integer):string;
        function FiltraStr(str:string):string;
        function floatToDinheiro(valor:Real):String;
@@ -57,6 +58,7 @@ uses printers,windows,dialogs,SysUtils,classes,MaskUtils,Registry,   unMsgTela2,
        function getNomeCX(cbox:TcomboBox):string;
        function getNumUO(cbox:TcomboBox):string;
        function getParamLnComando(nmParam:String):String;
+       function getPortaImpressora: String;
        Function getWinDir: String;
        function gravaArqParam(sessao,parametro,valor:String):boolean;
        function GravaLinhaEmUmArquivo(nomeArq,texto:string):boolean;
@@ -64,6 +66,8 @@ uses printers,windows,dialogs,SysUtils,classes,MaskUtils,Registry,   unMsgTela2,
        function gravaParam(nomeArq,Str:string;numParam:integer):boolean;
        function horaToInt(hora:string):integer;
        function intToHora(x:integer):String;
+       function isIntervDataValido(di, df:TfsDateTimePicker; mostraMsg:boolean):boolean; overload;
+       function isIntervDataValido(di, df:TfsDateTimePicker; mostraMsg:boolean; qtDiasInterv:integer):boolean; overload;
        function lerParam(nomeArq:string;numParam:integer):string;
        function lerParamNome(nomeArq:string;nomeParam:string):string;
        function limparLog():boolean;
@@ -99,21 +103,20 @@ uses printers,windows,dialogs,SysUtils,classes,MaskUtils,Registry,   unMsgTela2,
        procedure Criaparametro(arq,nome,valor:string; numParam:integer);
        procedure imprimeArquivoPorta(NomeArq:String; nomePorta:string);
        procedure limparCamposform(  form:Tform);
-       procedure MontaArquivoImpressao(titulo,corpo:TStrings);
        procedure renomearArquivoUpgrade(arqNovo, arqAntigo:String);
        procedure salvaCampos(form:Tform);
        procedure salvaColunasDbGrid(grid: TSoftDbgrid);
-       procedure SetPrinterPage(Width, Height : LongInt);
        procedure WParReg(folder,NomeParametro,valor:string);
        procedure WParRegBolean(folder,NomeParametro:string; valor:Boolean);
        procedure WParRegDate(folder,NomeParametro:string; valor:Tdate);
        procedure WParRegint(folder,NomeParametro:string; valor:integer);
 
        function getArqImpPorta():String;
+       function getDigVerEAN13(CodS:string):string;
+       function isEAN13(cod:String):boolean;       
+
 
 implementation
-var
-   i:integer;
 
 function getCodUO(cb:TCustomComboBox): String; overload;
 begin
@@ -641,12 +644,6 @@ begin
    result := GravaLinhaEmUmArquivo( dir +'logs\' + ExtractFilename(ParamStr(0))  + '_log.txt', cmd);
 end;
 
-{
-function gravaLogErros(cmd:String):Boolean;
-begin
-   result := gravaLog(cmd);
-end;
-}
 function GravaLinhaEmUmArquivo(nomeArq,texto:string):boolean;
 var
    arq:textfile;
@@ -789,7 +786,8 @@ begin
    CxDialogo.DefaultExt := extensao;
    CxDialogo.Filter := 'Arquivo |*.'+extensao;
    CxDialogo.FileName := SugestaoNmArq;
-   if CxDialogo.Execute then
+
+   if (CxDialogo.Execute) then
       DialogSalvaArq := CxDialogo.FileName;
 end;
 procedure WParRegint(folder,NomeParametro:string; valor:integer);
@@ -806,7 +804,6 @@ procedure WParRegBolean(folder,NomeParametro:string; valor:Boolean);
 begin
    wParReg(folder,nomeParametro, BoolToStr(valor,true) )
 end;
-
 
 procedure WParReg(folder,NomeParametro,valor:string);
 var
@@ -937,7 +934,6 @@ begin
    result := str;
 end;
 
-
 function GetNomeDaEstacao() : string;
 var
    buffer : array[0..255] of char;
@@ -994,7 +990,6 @@ begin
     result := sinal + aux;
 end;
 
-
 function StrToData(Str:String):TdateTime;
 begin
    try
@@ -1002,15 +997,6 @@ begin
    except
       result := StrToDate('01/01/1900');
    end;
-end;
-
-Procedure MontaArquivoImpressao(titulo,corpo:Tstrings);
-begin
-
-end;
-
-function GetDadosConecxao(Arq:string):String;
-begin
 end;
 
 function MsgTela2(titulo, Msg: string; iconeBotao: integer): integer;
@@ -1028,32 +1014,13 @@ begin
    result := application.MessageBox(pchar(msg),pchar(titulo), iconeBotao );
 end;
 
-procedure SetPrinterPage(Width, Height : LongInt);
-var
-  Device : array[0..255] of char;
-  Driver : array[0..255] of char;
-  Port : array[0..255] of char;
-  hDMode : THandle;
-  PDMode : PDEVMODE;
-begin
-   printer.GetPrinter(Device, Driver, Port, hDMode);
-   if hDMode <> 0 then
-   begin
-      pDMode := GlobalLock( hDMode );
-      If pDMode <> nil then
-      begin
-         pDMode^.dmPaperSize := DMPAPER_USER;
-         pDMode^.dmPaperWidth := Width;
-         pDMode^.dmPaperLength := Height;
-         pDMode^.dmFields := pDMode^.dmFields or DM_PAPERSIZE;
-         GlobalUnlock( hDMode );
-     end;
-   end;
-end;
-
 procedure imprimeArquivoPorta(NomeArq:String; nomePorta:string);
+var
+   cmd:String;
 begin
-   Winexec( pchar('cmd.exe /c print /d:'+ nomePorta +' '+NomeArq), sw_normal);
+   cmd := 'cmd.exe /c print /d:'+ nomePorta +' '+NomeArq;
+   gravaLog(cmd);
+   Winexec( pchar(cmd), sw_normal);
 end;
 
 function ehParametroInicial(param:String):boolean;
@@ -1246,7 +1213,6 @@ end;
 function ArredondarPreco(num:real):real;
 var
   aux:string;
-  j:integer;
 begin
    aux := copy(  FloatToStrF(num, ffNumber,18,02)  ,length(FloatToStrF(num, ffNumber,18,02)),01);
    if aux = '0' then
@@ -1340,7 +1306,7 @@ end;
 
 function buscaEmCombobox(str:string; cbox:TCustomComboBox):integer;
 var
-  i,j:integer;
+  i:integer;
 begin
    for i:=0 to CBox.Items.count do
       if pos(str,CBox.Items[i]) > 0 then
@@ -1348,6 +1314,7 @@ begin
          cbox.ItemIndex := i;
          break;
       end;
+   result := i;
 end;
 
 procedure renomearArquivoUpgrade(arqNovo, arqAntigo:String);
@@ -1373,8 +1340,6 @@ begin
    nmArquivo := nmArquivo + '.ini';
    result := nmArquivo;
 end;
-
-
 
 function gravaArqParam(sessao,parametro,valor:String):boolean;
 var
@@ -1425,29 +1390,128 @@ end;
 
 function execFileExternal(form:Tform;  arq:String):Boolean;
 var
-  r:String;
   cmd:String;
 begin
-  gravaLog('start ' + arq);
-  result := (winexec(pchar('cmd.exe /c start ' + arq), sw_normal) > 31);
-{
-   case  (ShellExecute(form.Handle, nil, PChar(arq), nil, nil, SW_SHOWNORMAL) ) of
-      ERROR_FILE_NOT_FOUND, ERROR_PATH_NOT_FOUND: r := 'O arquivo não existe.';
-      ERROR_BAD_FORMAT: r := 'O arquivo está corrompido.';
-      SE_ERR_NOASSOC, SE_ERR_ASSOCINCOMPLETE: r := 'Não existe programa para abrir o arquivo.';
-      SE_ERR_SHARE, SE_ERR_OOM, SE_ERR_DDEBUSY,
-      SE_ERR_DDEFAIL, SE_ERR_DDETIMEOUT:  r := 'erro ao tentar abrir o arquivo.';
-    end;
-    gravaLog('Metodo shellexecute, retorno: ' + r);
-    if (r <> '') then
-    begin
-       msgTela('', r, MB_ICONERROR  + MB_OK);
-    end
-    else
-       result := true;
-}
+  cmd := 'cmd.exe /c start ' + arq;
+  result := (winexec(pchar(cmd), sw_normal) > 31);
 end;
 
+
+function isIntervDataValido(di, df:TfsDateTimePicker; mostraMsg:boolean; qtDiasInterv:integer):boolean; overload;
+const
+   MSG_DATA1_MAIORQ_DATA2 = ' - A data final não pode ser maior que a inicial.' + #13;
+   MSG_DATA1_MENORQ_DATA2 = ' - A data final não pode ser menor que a inicial.' + #13;
+var
+   erro:String;
+
+begin
+   erro := '';
+   if (df.date < di.Date) then
+      erro := MSG_DATA1_MAIORQ_DATA2;
+
+   if ((df.date - di.date) > qtDiasInterv ) then
+      erro := ' - Período maior que '+ intTostr(qtDiasInterv) + ' dias.'+ #13;;
+
+   if (erro <> '' ) and (mostraMsg = true ) then
+   begin
+     erro := '  Corrija antes os seguintes erros: ' +#13+  erro;
+     msgTela('', erro, MB_OK + MB_ICONERROR);
+   end;
+   result := (erro = '');
+end;
+
+function isIntervDataValido(di, df:TfsDateTimePicker; mostraMsg:boolean):boolean; overload;
+begin
+   result := isIntervDataValido(di, df, mostraMsg, 31);
+end;
+
+function faltaLoja(cb:TadLabelComboBox):boolean;
+const
+   MSG_FALTA_LOJA =  ' - Escolha uma loja. ' + #13;
+begin
+   if (cb.itemIndex < 0) then
+     msgTela('', MSG_FALTA_LOJA, MB_OK + MB_ICONERROR);
+
+   result := (cb.itemIndex < 0);
+end;
+
+function getPortaImpressora: String;
+var Driver, Device, Port : array[0..79] of char;
+Mode : THandle;
+palav: String;
+i: Integer;
+pdl :TPrintDialog;
+begin
+    pdl := TPrintDialog.Create(nil);
+
+if Printer.Printers.Count > 0 then
+begin
+if pdl.Execute then
+begin
+for i := 0 to 79 do
+Port[i] := '0';
+Printer.GetPrinter(Driver, Device, Port, Mode);
+palav := '';
+for i := 0 to 79 do
+palav := palav + Port[i];
+Result := palav;
+end
+else
+Result := '';
+end
+else
+begin
+Result := '';
+MessageDlg('Não há uma impressora instalada!', mtConfirmation, [mbok], 0);
+end;
+end;
+
+function getDigVerEAN13(CodS:string):string;
+ var
+    i,r,rd: integer;
+    CodN: array[1..12] of integer;
+    b: boolean;
+begin
+   // 1ª fase: calcula suma de digitos x 1 si impar, x 3 si par
+      b := false; r := 0;
+      for i := 1 to 12 do
+      begin
+           CodN[i] := 0;
+           b := Not b;
+           if b then
+           begin
+                CodN[i] := StrToInt(Copy(CodS,i,1)) * 1;
+           end
+           else
+           begin
+                CodN[i] := StrToInt(Copy(CodS,i,1)) * 3;
+           end;
+           r := r + CodN[i];
+      end;
+      rd := 0;
+      // 2ª fase encuentra decena superior
+      for i := r to r + 10 do
+      begin
+           if (i / 10) = Int(i / 10) then rd := i - r;
+      end;
+      if (rd = 10) then rd := 0;
+      result := inttostr(rd);
+ end;
+
+function isEAN13(cod:String):boolean;
+var
+   aux:String;
+   res:boolean;
+begin
+   res := false;
+   if (length(cod) = 13) then
+   begin
+      aux := copy(cod, 01, 12);
+      aux := aux + funcoes.getDigVerEAN13(aux);
+      res:= (aux = cod);
+   end;
+   result := res;
+end;
 
 
 end.

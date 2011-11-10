@@ -643,14 +643,13 @@ end;
 procedure TfmMapa.VerRequisicoes1Click(Sender: TObject);
 begin
    if tb.IsEmpty = false then
-      fmMain.getRequisicoesPorProduto( tb.FieldByName('is_ref').asString);
+     fmMain.abreTelaConsultaRequisicao(tb.FieldByName('cd_ref').asString, '999', now()-30);
 end;
 
 procedure TfmMapa.gridTitleClick(Column: TColumn);
 begin
    if (Column.FieldName = 'n') then
    begin
-
       if (funcoes.msgTela('',' Remover os itens marcados ?', MB_YESNO + MB_ICONQUESTION) = mrYes) then
       begin
          tb.First();

@@ -1,8 +1,8 @@
 object fmMain: TfmMain
-  Left = 298
-  Top = 192
-  Width = 984
-  Height = 570
+  Left = 334
+  Top = 130
+  Width = 946
+  Height = 569
   Caption = 'fmMain'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -23,8 +23,8 @@ object fmMain: TfmMain
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 493
-    Width = 968
+    Top = 492
+    Width = 930
     Height = 19
     Panels = <
       item
@@ -123,6 +123,10 @@ object fmMain: TfmMain
           Caption = 'Raz'#227'o Anal'#237'tico RRANA'
           OnClick = RazoAnalticoRRANA1Click
         end
+        object ListaItenssemmovimentao1: TMenuItem
+          Caption = 'Lista Itens sem movimenta'#231#227'o'
+          OnClick = ListaItenssemmovimentao1Click
+        end
       end
     end
     object compras1: TMenuItem
@@ -152,6 +156,11 @@ object fmMain: TfmMain
         Tag = 605
         Caption = 'Cadastro de imagens'
         OnClick = Cadastrodeimagens1Click
+      end
+      object RemoverEansinvalidos2: TMenuItem
+        Tag = 606
+        Caption = 'Remover EAN'#39'S invalidos'
+        OnClick = RemoverEansinvalidos2Click
       end
     end
     object Preos1: TMenuItem
@@ -198,6 +207,11 @@ object fmMain: TfmMain
           Tag = 207
           Caption = 'Listar custo de itens por pedido'
           OnClick = Listarcustodeitensporpedido1Click
+        end
+        object Exportacaodeitesdepedido1: TMenuItem
+          Tag = 208
+          Caption = 'Exportacao de itens de pedido'
+          OnClick = Exportacaodeitesdepedido1Click
         end
       end
     end
@@ -261,6 +275,11 @@ object fmMain: TfmMain
           Tag = 311
           Caption = 'Ativa desativada Emiss'#227'o NF-e em conting'#234'ncia'
           OnClick = ConfiguraSeriesparacontingencia1Click
+        end
+        object VerificaEANSdenota1: TMenuItem
+          Tag = 312
+          Caption = 'Verifica EANS de uma nota'
+          OnClick = VerificaEANSdenota1Click
         end
       end
     end

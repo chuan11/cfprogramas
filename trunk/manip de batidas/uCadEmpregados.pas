@@ -132,7 +132,7 @@ begin
   else
      dataDemissao := '';
 
-  if( uUtil.deletaEmpregado(edCartaoPonto.Text) = true) and
+  if( uUtil.deletaEmpregado(edMatricula.Text) = true) and
     (
    uUtil.insereEmpregado( lbEmpresa.Caption, edMatricula.Text, edCartaoPonto.Text,
                           edNome.Text, edFuncao.Text, lbDataAdmissao.Caption,

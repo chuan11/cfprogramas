@@ -7,6 +7,7 @@ uses
   sysUtils,
   windows,
   funcoes,
+//  relogioPonto in 'C:\Projetos\Relogio de ponto - biometrico\relogioPonto.dcu',
   uHorarios in 'uHorarios.pas' {fmHorarios},
   uDBClass in '..\Relogio de ponto - biometrico\uDBClass.pas',
   uUtil in '..\Relogio de ponto - biometrico\uUtil.pas',

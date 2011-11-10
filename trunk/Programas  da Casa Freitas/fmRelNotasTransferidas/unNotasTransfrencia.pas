@@ -5,13 +5,12 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, adLabelComboBox, Grids, DBGrids, SoftDBGrid,
-  TFlatButtonUnit, ComCtrls, ExtCtrls, funcoes,funcSql, DB, ADODB, Menus;
+  TFlatButtonUnit, ComCtrls, ExtCtrls, funcoes,funcSql, DB, ADODB, Menus,
+  fCtrls;
 
 type
   TfmNotasTransf = class(TForm)
     Bevel1: TBevel;
-    dti: TDateTimePicker;
-    dtf: TDateTimePicker;
     Label1: TLabel;
     cbStatus: TadLabelComboBox;
     Label2: TLabel;
@@ -24,6 +23,8 @@ type
     PopupMenu1: TPopupMenu;
     Detalhesdanota1: TMenuItem;
     Reiniciaroprocessoderecebimento1: TMenuItem;
+    di: TfsDateTimePicker;
+    df: TfsDateTimePicker;
     procedure btOkClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -50,13 +51,13 @@ var
    cmd:String;
    qrNotas:TADOQuery;
 begin
-   if ( (dtf.Date - dti.Date ) <= 31 ) then
+   if (funcoes.isIntervDataValido(di, df, true) = true) then
    begin
       while tb.IsEmpty = false do tb.Delete;
 
       cmd := 'Exec zcf_StoListarNotasTransferencia '+
-              funcoes.DateTimeToSqlDateTime(dti.Date,'') + ' , '+
-              funcoes.DateTimeToSqlDateTime(dtf.Date,'') + ' , 2, ' +
+              funcoes.DateTimeToSqlDateTime(di.Date,'') + ' , '+
+              funcoes.DateTimeToSqlDateTime(df.Date,'') + ' , 2, ' +
               funcoes.getNumUO(cbLojas);
 
 
@@ -103,9 +104,7 @@ begin
       end;
       fmMain.MsgStatus('Total de Notas: ' + intToStr(tb.RecordCount));
       tb.First;
-   end
-   else
-      msgTela('', MSG_PER_MQ_31D, MB_OK + MB_ICONERROR);
+   end;
 end;
 
 procedure TfmNotasTransf.FormClose(Sender: TObject;
@@ -117,8 +116,8 @@ end;
 
 procedure TfmNotasTransf.FormCreate(Sender: TObject);
 begin
-   dti.Date := now - 5;
-   dtf.Date := now;
+   di.Date := now - 5;
+   df.Date := now;
    tb.TableName := funcsql.criaTabelaTemporaria(fmMain.Conexao, '( is_nota int primary key, [Data Emissao] varchar(10), [Loja] varchar(40), [Serie] varchar(03), [Nota] varchar(06), [Valor] money, [Data Recebimento] varchar(10)) ');
    tb.Open;
 
@@ -142,8 +141,8 @@ begin
     begin
        par:= TStringList.Create();
        par.Add( funcoes.getNomeUO(cbLojas) );
-       par.Add(dateToStr(dti.date));
-       par.Add(dateToStr(dtf.date));
+       par.Add(dateToStr(di.date));
+       par.Add(dateToStr(df.date));
        par.Add(fmMain.StatusBar1.Panels[1].text);
        fmMain.impressaoRave(tb,'rpRelNotasT',par);
     end
